@@ -1,0 +1,28 @@
+{
+  "name": "discord-giveaways",
+  "version": "1.0.0",
+  "description": "A complete framework to facilitate the creation of giveaways using discord.js v12",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Androz2091/discord-giveaways.git"
+  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "giveaways",
+    "winner",
+    "framework",
+    "bot",
+    "discord-giveaways"
+  ],
+  "author": "Androz2091",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Androz2091/discord-giveaways/issues"
+  },
+  "homepage": "https://github.com/Androz2091/discord-giveaways#readme"
+}
