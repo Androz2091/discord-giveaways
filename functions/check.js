@@ -13,7 +13,7 @@ module.exports = async function check(client, settings){
             channel.messages.fetch(giveaway.messageID).then((message) => {
                 let remaining = giveaway.endAt - Date.now();
                 let sentence = utils.parseTime(remaining, settings);
-                let embed = new Discord.MessageEmbed()
+                let embed = new Discord.RichEmbed()
                     .setAuthor(giveaway.prize)
                     .setColor(settings.embedColor)
                     .setFooter(String(giveaway.winnersCount) + " " + settings.messages.winners)
@@ -65,7 +65,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
             let winners = uWinners.map((w) => "<@"+w.id+">").join(", ");
             let str = settings.messages.winners.substr(0, 1).toUpperCase()+
             settings.messages.winners.substr(1, settings.messages.winners.length)+": "+winners;
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.RichEmbed()
                 .setAuthor(giveawayData.prize)
                 .setColor("#000000")
                 .setFooter(settings.messages.endedAt)
@@ -80,7 +80,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
             utils.deleteGiveaway(giveawayData.giveawayID);
             deletedGiveaways.push(giveawayData.giveawayID);
         } else {
-            let embed = new Discord.MessageEmbed()
+            let embed = new Discord.RichEmbed()
                 .setAuthor(giveawayData.prize)
                 .setColor("#000000")
                 .setFooter(settings.messages.endedAt)
@@ -91,7 +91,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
             deletedGiveaways.push(giveawayData.giveawayID);
         }
     } else {
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.RichEmbed()
             .setAuthor(giveawayData.prize)
             .setColor("#000000")
             .setFooter(settings.messages.endedAt)

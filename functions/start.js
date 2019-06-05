@@ -19,7 +19,7 @@ module.exports = async function start(guildChannel, options, settings){
     let endAt = Date.now()+options.time;
     let remaining = endAt - Date.now();
     let sentence = utils.parseTime(remaining, settings);
-    let embed = new Discord.MessageEmbed()
+    let embed = new Discord.RichEmbed()
         .setAuthor(options.prize)
         .setColor(settings.embedColor)
         .setFooter(options.winnersCount + " " + settings.messages.winners)
