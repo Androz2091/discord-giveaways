@@ -88,7 +88,7 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
 
-### Translation
+### 🇫🇷 Translation
 
 You can also pass a `messages` parameter for `launch()` function, if you want to translate the bot text :
 
