@@ -56,7 +56,41 @@ You can pass a list of options to this method to customize the giveaway. Here is
 *   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 *   **options.reaction**: the reaction that users will have to react to in order to participate!
 
-You can also pass a `messages` parameter, if you want to translate the bot text :
+### Start a giveaway
+
+```Js
+client.on("message", (message) => {
+
+    const ms = require("ms"); // npm install ms
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === "start-giveaway"){
+        // g!start-giveaway 2d 1 Awesome prize !
+        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize"
+    
+        let time = ms(args[0]);
+        let winnersCount = args[1];
+        let prize = args.slice(2).join(" ");
+        giveaways.start(message.channel, {
+            time: ms(args[0]),
+            prize: args.slice(2).join(" ")
+            winnersCount: parseInt(args[1]),
+        });
+        // And the giveaway is started!
+    }
+});
+```
+
+This allows you to launch a giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the module does the rest!
+
+<a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
+    <img src="https://zupimages.net/up/19/23/5h0s.png"/>
+</a>
+
+### Translation
+
+You can also pass a `messages` parameter for `launch()` function, if you want to translate the bot text :
 
 * **options.messages.giveaway**: the message that will be displayed above the embeds
 * **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is terminated
@@ -100,35 +134,3 @@ giveaways.launch(client, {
     }
 });
 ```
-
-### Start a giveaway
-
-```Js
-client.on("message", (message) => {
-
-    const ms = require("ms"); // npm install ms
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if(command === "start-giveaway"){
-        // g!start-giveaway 2d 1 Awesome prize !
-        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize"
-    
-        let time = ms(args[0]);
-        let winnersCount = args[1];
-        let prize = args.slice(2).join(" ");
-        giveaways.start(message.channel, {
-            time: ms(args[0]),
-            prize: args.slice(2).join(" ")
-            winnersCount: parseInt(args[1]),
-        });
-        // And the giveaway is started!
-    }
-});
-```
-
-This allows you to launch a giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the module does the rest!
-
-<a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
-    <img src="https://zupimages.net/up/19/23/5h0s.png"/>
-</a>
