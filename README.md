@@ -74,7 +74,7 @@ client.on("message", (message) => {
         let prize = args.slice(2).join(" ");
         giveaways.start(message.channel, {
             time: ms(args[0]),
-            prize: args.slice(2).join(" ")
+            prize: args.slice(2).join(" "),
             winnersCount: parseInt(args[1]),
         });
         // And the giveaway is started!
