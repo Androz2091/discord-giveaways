@@ -1,6 +1,6 @@
 {
   "name": "discord-giveaways",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js v12",
   "main": "index.js",
   "scripts": {
