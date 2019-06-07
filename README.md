@@ -21,7 +21,7 @@ npm install --save discord-giveaways
 
 ### Launch of the module
 
-```js
+```Js
 const Discord = require("discord.js"),
 giveaways = require("discord-giveaways"),
 client = new Discord.Client(),
@@ -58,7 +58,7 @@ You can pass a list of options to this method to customize the giveaway. Here is
 
 ### Start a giveaway
 
-```js
+```Js
 client.on("message", (message) => {
 
     const ms = require("ms"); // npm install ms
@@ -68,10 +68,7 @@ client.on("message", (message) => {
     if(command === "start-giveaway"){
         // g!start-giveaway 2d 1 Awesome prize !
         // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize"
-    
-        let time = ms(args[0]);
-        let winnersCount = args[1];
-        let prize = args.slice(2).join(" ");
+
         giveaways.start(message.channel, {
             time: ms(args[0]),
             prize: args.slice(2).join(" "),
@@ -108,7 +105,7 @@ You can also pass a `messages` parameter for `launch()` function, if you want to
 
 Here are the default values :
 
-```js
+```Js
 giveaways.launch(client, {
     updateCountdownEvery: 5000,
     botsCanWin: false,
