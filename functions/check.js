@@ -10,7 +10,7 @@ module.exports = async function check(client, settings){
     giveaways.filter((g) => !deletedGiveaways.includes(g.giveawayID)).forEach(giveaway => {
         let channel = client.channels.get(giveaway.channelID);
         if(channel){
-            channel.messages.fetch(giveaway.messageID).then((message) => {
+            channel.fetchMessage(giveaway.messageID).then((message) => {
                 let remaining = giveaway.endAt - Date.now();
                 let sentence = utils.parseTime(remaining, settings);
                 let embed = new Discord.RichEmbed()
