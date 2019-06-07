@@ -66,9 +66,9 @@ module.exports = {
         if(typeof options.reaction === "string"){
             settings.reaction = options.reaction;
         }
-        if(typeof messages === "object"){
+        if(typeof options.messages === "object"){
             for(let messageType in settings.messages){
-                let value = messages[messageType];
+                let value = options.messages[messageType];
                 if(typeof value === "string"){
                     settings.messages[messageType] = value;
                 }
