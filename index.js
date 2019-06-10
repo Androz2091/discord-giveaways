@@ -67,12 +67,7 @@ module.exports = {
             settings.reaction = options.reaction;
         }
         if(typeof options.messages === "object"){
-            for(let messageType in settings.messages){
-                let value = options.messages[messageType];
-                if(typeof value === "string"){
-                    settings.messages[messageType] = value;
-                }
-            }
+            settings.messages = options.messages;
         }
         settings.launched = true;
         setInterval(fcheck, settings.updateCountdownEvery, client, settings);
