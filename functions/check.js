@@ -16,7 +16,7 @@ module.exports = async function check(client, settings){
                     .setColor(settings.embedColor)
                     .setFooter(String(giveaway.winnersCount) + " " + giveaway.messages.winners)
                     .setDescription(giveaway.messages.inviteToParticipate+"\n"+sentence)
-                    .setTimestamp(giveaway.endAt);
+                    .setTimestamp(new Date(giveaway.endAt).toISOString());
                 message.edit(giveaway.messages.giveaway, { embed: embed});
                 if(remaining < settings.updateCountdownEvery){
                     setTimeout(function(){
@@ -67,7 +67,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
                 .setColor("#000000")
                 .setFooter(giveawayData.messages.endedAt)
                 .setDescription(str)
-                .setTimestamp(giveawayData.endAt);
+                .setTimestamp(new Date(giveawayData.endAt).toISOString());
             message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
             message.channel.send(
                 giveawayData.messages.winMessage
@@ -81,7 +81,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
                 .setColor("#000000")
                 .setFooter(giveawayData.messages.endedAt)
                 .setDescription(giveawayData.messages.noWinner)
-                .setTimestamp(giveawayData.endAt);
+                .setTimestamp(new Date(giveawayData.endAt).toISOString());
             message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
             utils.deleteGiveaway(giveawayData.giveawayID);
         }
@@ -91,7 +91,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
             .setColor("#000000")
             .setFooter(giveawayData.messages.endedAt)
             .setDescription(giveawayData.messages.noWinner)
-            .setTimestamp(giveawayData.endAt);
+            .setTimestamp(new Date(giveawayData.endAt).toISOString());
         message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
         utils.deleteGiveaway(giveawayData.giveawayID);
     }

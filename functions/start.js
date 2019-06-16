@@ -19,7 +19,7 @@ module.exports = async function start(guildChannel, options, settings){
             .setColor(settings.embedColor)
             .setFooter(options.winnersCount + " " + options.messages.winners)
             .setDescription(options.messages.inviteToParticipate+"\n"+sentence)
-            .setTimestamp(endAt);
+            .setTimestamp(new Date(endAt).toISOString());
         guildChannel.send(options.messages.giveaway, { embed: embed }).then((msg) => {
             msg.react(settings.reaction);
             let giveawayData = {

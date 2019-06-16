@@ -1,6 +1,7 @@
 /* To know more information about this npm module, go here : https://npmjs.com/package/discord-giveaways */
 const Discord = require("discord.js"),
 fs = require("fs"),
+path = require("path"),
 ms = require("ms");
 
 let parentDirectory = __dirname.split(path.sep);
