@@ -3,23 +3,21 @@ const giveaways = require("../giveaways.json"),
 utils = require("./utils.js"),
 Discord = require("discord.js");
 
-let deletedGiveaways = [];
-
 module.exports = async function check(client, settings){
 
-    giveaways.filter((g) => !deletedGiveaways.includes(g.giveawayID)).forEach(giveaway => {
+    giveaways.filter((g) => !g.ended).forEach((giveaway) => {
         let channel = client.channels.get(giveaway.channelID);
         if(channel){
             channel.fetchMessage(giveaway.messageID).then((message) => {
                 let remaining = giveaway.endAt - Date.now();
-                let sentence = utils.parseTime(remaining, settings);
+                let sentence = utils.parseTime(remaining, giveaway);
                 let embed = new Discord.RichEmbed()
                     .setAuthor(giveaway.prize)
                     .setColor(settings.embedColor)
-                    .setFooter(String(giveaway.winnersCount) + " " + settings.messages.winners)
-                    .setDescription(settings.messages.inviteToParticipate+"\n"+sentence)
+                    .setFooter(String(giveaway.winnersCount) + " " + giveaway.messages.winners)
+                    .setDescription(giveaway.messages.inviteToParticipate+"\n"+sentence)
                     .setTimestamp(giveaway.endAt);
-                message.edit(settings.messages.giveaway, { embed: embed});
+                message.edit(giveaway.messages.giveaway, { embed: embed});
                 if(remaining < settings.updateCountdownEvery){
                     setTimeout(function(){
                         endGiveaway(giveaway, channel, message, settings);
@@ -28,11 +26,9 @@ module.exports = async function check(client, settings){
             }).catch((err) => {
                 console.log(err);
                 utils.deleteGiveaway(giveaway.giveawayID);
-                deletedGiveaways.push(giveaway.giveawayID);
             });
         } else {
             utils.deleteGiveaway(giveaway.giveawayID);
-            deletedGiveaways.push(giveaway.giveawayID);
         }
     });
     
@@ -42,6 +38,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
 
     let guild = channel.guild;
     let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
+    reaction.users = await reaction.fetchUsers();
     if(reaction){
         let users = (settings.botsCanWin ?
             reaction.users
@@ -63,42 +60,39 @@ async function endGiveaway(giveawayData, channel, message, settings){
         if(users.size > 0){
             let uWinners = users.random(giveawayData.winnersCount).filter((u) => u);
             let winners = uWinners.map((w) => "<@"+w.id+">").join(", ");
-            let str = settings.messages.winners.substr(0, 1).toUpperCase()+
-            settings.messages.winners.substr(1, settings.messages.winners.length)+": "+winners;
+            let str = giveawayData.messages.winners.substr(0, 1).toUpperCase()+
+            giveawayData.messages.winners.substr(1, giveawayData.messages.winners.length)+": "+winners;
             let embed = new Discord.RichEmbed()
                 .setAuthor(giveawayData.prize)
                 .setColor("#000000")
-                .setFooter(settings.messages.endedAt)
+                .setFooter(giveawayData.messages.endedAt)
                 .setDescription(str)
                 .setTimestamp(giveawayData.endAt);
-            message.edit(settings.messages.giveawayEnded, { embed: embed });
+            message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
             message.channel.send(
-                settings.messages.winMessage
+                giveawayData.messages.winMessage
                     .replace("{winners}", winners)
                     .replace("{prize}", giveawayData.prize)
             )
             utils.deleteGiveaway(giveawayData.giveawayID);
-            deletedGiveaways.push(giveawayData.giveawayID);
         } else {
             let embed = new Discord.RichEmbed()
                 .setAuthor(giveawayData.prize)
                 .setColor("#000000")
-                .setFooter(settings.messages.endedAt)
-                .setDescription(settings.messages.noWinner)
+                .setFooter(giveawayData.messages.endedAt)
+                .setDescription(giveawayData.messages.noWinner)
                 .setTimestamp(giveawayData.endAt);
-            message.edit(settings.messages.giveawayEnded, { embed: embed });
+            message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
             utils.deleteGiveaway(giveawayData.giveawayID);
-            deletedGiveaways.push(giveawayData.giveawayID);
         }
     } else {
         let embed = new Discord.RichEmbed()
             .setAuthor(giveawayData.prize)
             .setColor("#000000")
-            .setFooter(settings.messages.endedAt)
-            .setDescription(settings.messages.noWinner)
+            .setFooter(giveawayData.messages.endedAt)
+            .setDescription(giveawayData.messages.noWinner)
             .setTimestamp(giveawayData.endAt);
-        message.edit(settings.messages.giveawayEnded, { embed: embed });
+        message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
         utils.deleteGiveaway(giveawayData.giveawayID);
-        deletedGiveaways.push(giveawayData.giveawayID);
     }
 }

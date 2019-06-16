@@ -1,13 +1,12 @@
 const fs = require("fs"),
 path = require("path");
-let giveaways = require("../giveaways");
 
 let parentDirectory = __dirname.split(path.sep);
 parentDirectory.pop();
 let jsonPath = parentDirectory.join(path.sep)+path.sep+"giveaways.json";
 
 module.exports = {
-    parseTime(milliseconds, settings){
+    parseTime(milliseconds, options){
         let roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
         let days = roundTowardsZero(milliseconds / 86400000),
 		hours = roundTowardsZero(milliseconds / 3600000) % 24,
@@ -18,11 +17,11 @@ module.exports = {
         isMinutes = minutes > 0,
         isSeconds = seconds > 0;
         let pattern = 
-        (!isDays ? "" : ((isHours || isMinutes || isSeconds) ? `{days} ${settings.messages.units.days || "days"}, ` : `{days} ${settings.messages.units.days || "days"}`))+
-        (!isHours ? "" : ((isMinutes || isSeconds) ? `{hours} ${settings.messages.units.hours || "hours"}, ` : `{hours} ${settings.messages.units.hours || "hours"}`))+
-        (!isMinutes ? "" : ((isSeconds) ? `{minutes} ${settings.messages.units.minutes || "minutes"}, ` : `{minutes} ${settings.messages.units.minutes || "minutes"}`))+
-        (!isSeconds ? "" : `{seconds} ${settings.messages.units.seconds || "seconds"}`);
-        let sentence = settings.messages.timeRemaining
+        (!isDays ? "" : ((isHours || isMinutes || isSeconds) ? `{days} ${options.messages.units.days}, ` : `{days} ${options.messages.units.days}`))+
+        (!isHours ? "" : ((isMinutes || isSeconds) ? `{hours} ${options.messages.units.hours}, ` : `{hours} ${options.messages.units.hours}`))+
+        (!isMinutes ? "" : ((isSeconds) ? `{minutes} ${options.messages.units.minutes}, ` : `{minutes} ${options.messages.units.minutes}`))+
+        (!isSeconds ? "" : `{seconds} ${options.messages.units.seconds}`);
+        let sentence = options.messages.timeRemaining
             .replace("{duration}", pattern)
             .replace("{days}", days)
             .replace("{hours}", hours)
@@ -31,7 +30,8 @@ module.exports = {
         return sentence;
     },
     deleteGiveaway(giveawayID){
-        giveaways = giveaways.filter((giveaway) => giveaway.giveawayID !== giveawayID);
+        let giveaways = require(jsonPath);
+        giveaways.find((g) => g.giveawayID === giveawayID).ended = true;
         fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
     }
 }
