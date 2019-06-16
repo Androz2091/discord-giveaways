@@ -21,7 +21,8 @@ npm install --save discord-giveaways
 *   [2.0.0](https://www.npmjs.com/package/discord-giveaways/v/2.0.0) Full code update
 *   [2.0.2](https://www.npmjs.com/package/discord-giveaways/v/2.0.1) Fix error `DiscordAPIError: Invalid Form Body
 embed.timestamp`
-*   [2.0.3](https://www.npmjs.com/package/discord-giveaways/v/2.0.2) Add `fetch()` function to get the complete list of the giveaways
+*   [2.0.3](https://www.npmjs.com/package/discord-giveaways/v/2.0.3) Add `fetch()` function to get the complete list of the giveaways!
+*   [2.0.4](https://www.npmjs.com/package/discord-giveaways/v/2.0.4) Add `reroll()` function to reroll a giveaway!
 
 ## Examples
 
@@ -109,6 +110,28 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
     // The list of the current giveaways (not ended)
     let notEnded = allGiveaways.filter((g) => !g.ended);
 ```
+## Reroll a giveaway
+
+```js
+client.on("message", (message) => {
+
+    const ms = require("ms"); // npm install ms
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === "reroll"){
+        let messageID = args[0];
+        giveaways.reroll(messageID).catch((err) => {
+            message.channel.send("No giveaway found for "+messageID+", please check and try again");
+        });
+    }
+
+});
+```
+
+<a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
+    <img src="https://zupimages.net/up/19/24/mhuo.png"/>
+</a>
 
 ### 🇫🇷 Translation
 
@@ -154,3 +177,17 @@ giveaways.start(message.channel, {
     }
 });
 ```
+
+And for the `reroll()` function:
+
+```js
+giveaways.reroll(messageID, {
+    congrat: ":tada: New winner(s) : {winners}! Congratulations!",
+    error: "No valid participations, no winners can be chosen!"
+}).catch((err) => {
+    message.channel.send("No giveaway found for "+messageID+", please check and try again");
+});
+```
+
+**options.congrat**: the message of congratulations
+**options.error**: the error message if there is no valid participations.

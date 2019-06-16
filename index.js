@@ -17,6 +17,7 @@ const settings = {
     ignoreIfHasPermission: [],
     embedColor: "#FF0000",
     reaction: "🎉",
+    client: null,
     launched: false
 }
 
@@ -60,6 +61,7 @@ module.exports = {
             settings.reaction = options.reaction;
         }
         settings.launched = true;
+        settings.client = client;
         setInterval(fcheck, settings.updateCountdownEvery, client, settings);
     },
 
@@ -67,6 +69,7 @@ module.exports = {
      * Start a giveaway
      * @param {object} guildChannel The channel for the giveaway
      * @param {object} options The options for the giveaway
+     * @returns The giveaway data
      */
     async start(guildChannel, options){
         return new Promise(function(resolve, reject){
@@ -114,9 +117,70 @@ module.exports = {
 
     /**
      * Returns the list of the giveaways
+     * @returns An array with the giveaways
      */
     fetch(){
         let giveaways = require(jsonPath);
         return giveaways;
+    },
+
+    /**
+     * Choose new winner(s) for the giveaway
+     * @param {string} messageID The message ID of the giveaway to reroll
+     */
+    async reroll(messageID, options){
+        if(!options){
+            options = {
+                congrat: ":tada: New winner(s) : {winners}! Congratulations!",
+                error: "No valid entries, no winners can be chosen!"
+            }
+        }
+        let giveaways = require(jsonPath);
+        let giveaway = giveaways.find((g) => g.messageID === messageID);
+        if(!giveaway){
+            throw new Error("No giveaway found with message ID "+messageID);
+        }
+        if(!giveaway.ended){
+            throw new Error("The giveaway with message ID "+messageID+" is not ended. Please wait and retry.");
+        }
+        let channel = settings.client.channels.get(giveaway.channelID);
+        if(!channel){
+            throw new Error("Cannot get channel "+giveaway.channelID);
+        }
+        let message = await channel.fetchMessage(giveaway.messageID).catch((err) => {
+            throw new Error("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
+        });
+        let guild = message.guild;
+        let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
+        reaction.users = await reaction.fetchUsers();
+        if(reaction){
+            let users = (settings.botsCanWin ?
+                reaction.users
+                    .filter((u) => u.id !== message.client.id)
+                    .filter((u) => guild.members.get(u.id)) : 
+                reaction.users
+                    .filter((u) => !u.bot)
+                    .filter((u) => u.id !== message.client.id)
+                    .filter((u) => guild.members.get(u.id))
+            );
+            users.forEach((user) => {
+                let member = guild.members.get(user.id);
+                settings.ignoreIfHasPermission.forEach((perm) => {
+                    if(member.hasPermission(perm)){
+                        users = users.filter((u) => u.id !== user.id);
+                    }
+                });
+            });
+            if(users.size < 1){
+                return channel.send(options.error);
+            } else {
+                let uWinners = users.random(giveaway.winnersCount).filter((u) => u);
+                let winners = uWinners.map((w) => "<@"+w.id+">").join(", ");
+                channel.send(options.congrat
+                    .replace("{winners}", winners)
+                );
+                return uWinners;
+            }
+        }
     }
 }
