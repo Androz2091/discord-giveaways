@@ -25,6 +25,7 @@ module.exports = async function start(guildChannel, options, settings){
             let giveawayData = {
                 messageID: msg.id,
                 channelID: guildChannel.id,
+                guildID: guildChannel.guild.id,
                 prize: options.prize,
                 time: options.time,
                 endAt: endAt,

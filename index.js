@@ -6,7 +6,7 @@ ms = require("ms");
 
 let parentDirectory = __dirname.split(path.sep);
 parentDirectory.pop();
-let jsonPath = parentDirectory.join(path.sep)+path.sep+"giveaways.json";
+let jsonPath = parentDirectory.join(path.sep)+path.sep+"discord-giveaways/giveaways.json";
 
 const fcheck = require("./functions/check"),
 fstart = require("./functions/start");
@@ -110,5 +110,13 @@ module.exports = {
                 reject(err);
             });
         });
+    },
+
+    /**
+     * Returns the list of the giveaways
+     */
+    fetch(){
+        let giveaways = require(jsonPath);
+        return giveaways;
     }
 }

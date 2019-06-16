@@ -19,8 +19,9 @@ npm install --save discord-giveaways
 ## Changelog
 
 *   [2.0.0](https://www.npmjs.com/package/discord-giveaways/v/2.0.0) Full code update
-*   [2.O.1](https://www.npmjs.com/package/discord-giveaways/v/2.0.1) Fix error `DiscordAPIError: Invalid Form Body
+*   [2.0.2](https://www.npmjs.com/package/discord-giveaways/v/2.0.1) Fix error `DiscordAPIError: Invalid Form Body
 embed.timestamp`
+*   [2.0.3](https://www.npmjs.com/package/discord-giveaways/v/2.0.2) Add `fetch()` function to get the complete list of the giveaways
 
 ## Examples
 
@@ -95,6 +96,19 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
+
+## Fetch the giveaways
+
+```js
+    // The list of all the giveaways
+    let allGiveaways = giveaways.fetch();
+
+    // The list of all the giveaways on the server with ID "1909282092"
+    let onServer = allGiveaways.filter((g) => g.guildID === "1909282092");
+
+    // The list of the current giveaways (not ended)
+    let notEnded = allGiveaways.filter((g) => !g.ended);
+```
 
 ### 🇫🇷 Translation
 
