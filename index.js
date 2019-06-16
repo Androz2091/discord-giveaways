@@ -132,7 +132,7 @@ module.exports = {
         if(!options){
             options = {
                 congrat: ":tada: New winner(s) : {winners}! Congratulations!",
-                error: "No valid entries, no winners can be chosen!"
+                error: "No valid participations, no winners can be chosen!"
             }
         }
         let giveaways = require(jsonPath);
