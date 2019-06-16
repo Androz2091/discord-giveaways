@@ -16,6 +16,12 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 npm install --save discord-giveaways
 ```
 
+## Changelog
+
+*   [2.0.0](https://www.npmjs.com/package/discord-giveaways/v/2.0.0) Full code update
+*   [2.O.1](https://www.npmjs.com/package/discord-giveaways/v/2.0.1) Fix error `DiscordAPIError: Invalid Form Body
+embed.timestamp`
+
 ## Examples
 
 ### Launch of the module
