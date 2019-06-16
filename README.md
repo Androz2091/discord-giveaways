@@ -2,11 +2,10 @@
 A complete framework to facilitate the creation of giveaways using discord.js
 # Discord Giveaways
 
-**Note**: If you are using Discord.js v12 or higher, type `npm install Androz2091/discord-giveaways#v12` instead of `npm install discord-giveaways`
-
 Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows you to easily create giveaways!
 
 *   The duration of the Giveaway is customizable!
+*   Automatic restart after bot crash
 *   Update of the timer every X seconds!
 *   The strings are fully customizable so you can adapt them to your language!
 *   And customizable prize, customizable number of winners, customizable ignored members, and more!
@@ -72,12 +71,18 @@ client.on("message", (message) => {
         giveaways.start(message.channel, {
             time: ms(args[0]),
             prize: args.slice(2).join(" "),
-            winnersCount: parseInt(args[1]),
+            winnersCount: parseInt(args[1])
+        }).then((gData) => {
+            console.log(gData); // {...} (messageid, end date and more)
         });
         // And the giveaway is started!
     }
 });
 ```
+
+**options.time**: the giveaway duration
+**options.prize**: the giveaway prize
+**options.winnersCount**: the number of giveaway winners
 
 This allows you to launch a giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the module does the rest!
 
@@ -87,7 +92,7 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
 
 ### 🇫🇷 Translation
 
-You can also pass a `messages` parameter for `launch()` function, if you want to translate the bot text :
+You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
 
 * **options.messages.giveaway**: the message that will be displayed above the embeds
 * **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is terminated
@@ -103,15 +108,13 @@ You can also pass a `messages` parameter for `launch()` function, if you want to
 * **options.messages.units.hours**: simply the word "hours" in your language
 * **options.messages.units.days**: simply the word "days" in your language
 
-Here are the default values :
+For example :
 
 ```js
-giveaways.launch(client, {
-    updateCountdownEvery: 5000,
-    botsCanWin: false,
-    ignoreIfHasPermission: [],
-    embedColor: "#FF0000",
-    reaction: "🎉",
+giveaways.start(message.channel, {
+    time: ms(args[0]),
+    prize: args.slice(2).join(" "),
+    winnersCount: parseInt(args[1]),
     messages: {
         giveaway: "@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉",
         giveawayEnded: "@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉",
