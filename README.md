@@ -139,7 +139,6 @@ client.on("message", (message) => {
 ```js
 client.on("message", (message) => {
 
-    const ms = require("ms"); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -156,8 +155,8 @@ client.on("message", (message) => {
 });
 ```
 
-**options.newWinnersCount**: the new number of winners
-**options.newPrize**: the new prize
+**options.newWinnersCount**: the new number of winners  
+**options.newPrize**: the new prize  
 **options.addTime**: the number of milliseconds to add to the giveaway duration
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
