@@ -134,6 +134,34 @@ client.on("message", (message) => {
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
 </a>
 
+## Edit a giveaway
+
+```js
+client.on("message", (message) => {
+
+    const ms = require("ms"); // npm install ms
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === "edit"){
+        let messageID = args[0];
+        let newWinnersCount = args[1];
+        let newPrize = args.slice(2).join(" ");
+        giveaways.edit(messageID, {
+            winnersCount: newWinnersCount,
+            prize: newPrize
+        });
+        message.channel.send("Giveaway updated!");
+    }
+
+});
+```
+
+**options.winnersCount**: the new number of winners
+**options.prize**: the new prize
+**options.time**: the new giveaway duration
+**options.messages**: the new translation (more information below on translations)
+
 ### 🇫🇷 Translation
 
 You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
