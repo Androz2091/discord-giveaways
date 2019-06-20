@@ -100,7 +100,7 @@ module.exports = {
                 throw new Error(options.prize+" is not a string.");
             }
             if(typeof options.winnersCount !== "number"){
-                throw new Element(options.winnersCount+" is not a number.");
+                throw new Error(options.winnersCount+" is not a number.");
             }
             fstart(guildChannel, options, settings).then((data) => {
                 resolve({
