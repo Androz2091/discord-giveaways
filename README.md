@@ -145,11 +145,10 @@ client.on("message", (message) => {
 
     if(command === "edit"){
         let messageID = args[0];
-        let newWinnersCount = args[1];
-        let newPrize = args.slice(2).join(" ");
         giveaways.edit(messageID, {
-            winnersCount: newWinnersCount,
-            prize: newPrize
+            newWinnersCount: 3,
+            newPrize: "New Prize!",
+            addTime: 5000
         });
         message.channel.send("Giveaway updated!");
     }
@@ -157,10 +156,11 @@ client.on("message", (message) => {
 });
 ```
 
-**options.winnersCount**: the new number of winners
-**options.prize**: the new prize
-**options.time**: the new giveaway duration
-**options.messages**: the new translation (more information below on translations)
+**options.newWinnersCount**: the new number of winners
+**options.newPrize**: the new prize
+**options.addTime**: the number of milliseconds to add to the giveaway duration
+
+⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
 ### 🇫🇷 Translation
 

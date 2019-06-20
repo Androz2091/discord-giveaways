@@ -6,6 +6,7 @@ Discord = require("discord.js");
 module.exports = async function check(client, settings){
 
     giveaways.filter((g) => !g.ended).forEach((giveaway) => {
+        giveaway.endAt = parseInt(giveaway.createdAt+giveaway.time);
         let channel = client.channels.get(giveaway.channelID);
         if(channel){
             channel.fetchMessage(giveaway.messageID).then((message) => {

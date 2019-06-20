@@ -205,9 +205,14 @@ module.exports = {
                 nGiveaways.push(g);
             }
         });
-        for(let option in options){
-            let value = options[option];
-            giveaway[option] = value;
+        if(options.newPrize){
+            giveaway.prize = options.newPrize;
+        }
+        if(options.newWinnersCount){
+            giveaway.winnersCount = options.newWinnersCount;
+        }
+        if(options.addTime){
+            giveaway.time = options.addTime + giveaway.time;
         }
         nGiveaways.push(giveaway);
         fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");

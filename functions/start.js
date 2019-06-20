@@ -28,7 +28,6 @@ module.exports = async function start(guildChannel, options, settings){
                 guildID: guildChannel.guild.id,
                 prize: options.prize,
                 time: options.time,
-                endAt: endAt,
                 createdAt: Date.now(),
                 giveawayID: randomstring.generate(5),
                 winnersCount: options.winnersCount,
