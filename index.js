@@ -182,5 +182,35 @@ module.exports = {
                 return uWinners;
             }
         }
+    },
+
+    /**
+     * Edit some options for a giveaway
+     * @param {string} messageID The message ID of the giveaway to reroll
+     * @param {object} options The new options
+     * @returns The new giveaway
+     */
+    edit(messageID, options){
+        let giveaways = require(jsonPath);
+        let giveaway = giveaways.find((g) => g.messageID === messageID);
+        if(!giveaway){
+            throw new Error("No giveaway found with message ID "+messageID);
+        }
+        if(giveaway.ended){
+            throw new Error("The giveaway with message ID "+messageID+" is ended.");
+        }
+        let nGiveaways = [];
+        giveaways.forEach((g) => {
+            if(g.messageID !== messageID){
+                nGiveaways.push(g);
+            }
+        });
+        for(let option in options){
+            let value = options[option];
+            giveaway[option] = value;
+        }
+        nGiveaways.push(giveaway);
+        fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
+        return giveaway;
     }
 }
