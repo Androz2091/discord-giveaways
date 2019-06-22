@@ -76,7 +76,7 @@ module.exports = {
             if(!settings.launched){
                 throw new Error("Please use the launch() function before starting to create giveaways!");
             }
-            if(options.messages !== "object"){
+            if(typeof options.messages !== "object"){
                 options.messages = {
                     giveaway: "@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉",
                     giveawayEnded: "@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉",
