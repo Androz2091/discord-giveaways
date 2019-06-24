@@ -29,7 +29,6 @@
   "homepage": "https://github.com/Androz2091/discord-giveaways#readme",
   "dependencies": {
     "discord.js": "11.5.1",
-    "fs": "0.0.1-security",
     "randomstring": "^1.1.5"
   }
 }
