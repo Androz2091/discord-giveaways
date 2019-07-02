@@ -1,5 +1,3 @@
-# discord-giveaways
-A complete framework to facilitate the creation of giveaways using discord.js
 # Discord Giveaways
 
 Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows you to easily create giveaways!
