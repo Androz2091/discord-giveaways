@@ -9,7 +9,8 @@ parentDirectory.pop();
 let jsonPath = parentDirectory.join(path.sep)+path.sep+"discord-giveaways/giveaways.json";
 
 const fcheck = require("./functions/check"),
-fstart = require("./functions/start");
+fstart = require("./functions/start"),
+futils = require("./functions/utils");
 
 const settings = {
     updateCountdownEvery: 5000,
@@ -216,6 +217,31 @@ module.exports = {
         }
         nGiveaways.push(giveaway);
         fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
+        return giveaway;
+    },
+
+    /**
+     * Delete a giveaway and delete the message
+     * @param {string} messageID The message ID of the giveaway to delete
+     */
+    async delete(messageID){
+        let giveaways = require(jsonPath);
+        let giveaway = giveaways.find((g) => g.messageID === messageID);
+        if(!giveaway){
+            throw new Error("No giveaway found with message ID "+messageID);
+        }
+        if(giveaway.ended){
+            throw new Error("The giveaway with message ID "+messageID+" is ended.");
+        }
+        let channel = settings.client.channels.get(giveaway.channelID);
+        if(!channel){
+            throw new Error("Cannot get channel "+giveaway.channelID);
+        }
+        let message = await channel.fetchMessage(giveaway.messageID).catch((err) => {
+            throw new Error("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
+        });
+        message.delete();
+        futils.deleteGiveaway(giveaway.giveawayID);
         return giveaway;
     }
 }

@@ -22,7 +22,8 @@ embed.timestamp`
 *   [2.0.3](https://www.npmjs.com/package/discord-giveaways/v/2.0.3) Add `fetch()` function to get the complete list of the giveaways!
 *   [2.0.4](https://www.npmjs.com/package/discord-giveaways/v/2.0.4) Add `reroll()` function to reroll a giveaway!
 *   [2.0.5](https://www.npmjs.com/package/discord-giveaways/v/2.0.5) Add `edit()` function to edit a giveaway!
-*   [2.0.9](https://www.npmjs.com/package/discord-giveaways/v/2.0.6) Fix a bug with the translation
+*   [2.0.9](https://www.npmjs.com/package/discord-giveaways/v/2.0.9) Fix a bug with the translation
+*   [2.1.3](https://www.npmjs.com/package/discord-giveaways/v/2.1.3) Add `delete()` function to delete a giveaway
 
 ## Examples
 
@@ -160,7 +161,27 @@ client.on("message", (message) => {
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
-### 🇫🇷 Translation
+## Delete a giveaway
+
+```js
+client.on("message", (message) => {
+
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === "delete"){
+        let messageID = args[0];
+        giveaways.delete(messageID).catch((err) => {
+            message.channel.send("No giveaway found for "+messageID+", please check and try again");
+        });
+    }
+
+});
+```
+
+When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it.
+
+## 🇫🇷 Translation
 
 You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
 
