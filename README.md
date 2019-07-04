@@ -99,7 +99,7 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
 
-## Fetch the giveaways
+### Fetch the giveaways
 
 ```js
     // The list of all the giveaways
@@ -111,7 +111,7 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
     // The list of the current giveaways (not ended)
     let notEnded = allGiveaways.filter((g) => !g.ended);
 ```
-## Reroll a giveaway
+### Reroll a giveaway
 
 ```js
 client.on("message", (message) => {
@@ -134,7 +134,7 @@ client.on("message", (message) => {
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
 </a>
 
-## Edit a giveaway
+### Edit a giveaway
 
 ```js
 client.on("message", (message) => {
@@ -161,7 +161,7 @@ client.on("message", (message) => {
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
-## Delete a giveaway
+### Delete a giveaway
 
 ```js
 client.on("message", (message) => {
