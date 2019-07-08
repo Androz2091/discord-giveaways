@@ -39,10 +39,10 @@ module.exports = {
         if(!isNaN(options.updateCountdownEvery)){
             settings.updateCountdownEvery = options.updateCountdownEvery;
         }
-        if(typeof options.botsCanWin === "boolean"){
+        if(options.botsCanWin){
             settings.botsCanWin = options.botsCanWin;
         }
-        if(typeof options.ignoreIfHasPermission === "array"){
+        if(options.ignoreIfHasPermission){
             let permissions = ["ADMINISTRATOR","CREATE_INSTANT_INVITE","KICK_MEMBERS","BAN_MEMBERS","MANAGE_CHANNELS","MANAGE_GUILD","ADD_REACTIONS","VIEW_AUDIT_LOG","PRIORITY_SPEAKER","STREAM","VIEW_CHANNEL","SEND_MESSAGES","SEND_TTS_MESSAGES","MANAGE_MESSAGES","EMBED_LINKS","ATTACH_FILES","READ_MESSAGE_HISTORY","MENTION_EVERYONE","USE_EXTERNAL_EMOJIS","CONNECT","SPEAK","MUTE_MEMBERS","DEAFEN_MEMBERS","MOVE_MEMBERS","USE_VAD","CHANGE_NICKNAME","MANAGE_NICKNAMES","MANAGE_ROLES","MANAGE_WEBHOOKS","MANAGE_EMOJIS"];
             let invalidPermissions = options.ignoreIfHasPermission.filter((perm) => !permissions.includes(perm));
             if(invalidPermissions[0]){
@@ -50,7 +50,7 @@ module.exports = {
             }
             settings.ignoreIfHasPermission = options.ignoreIfHasPermission;
         }
-        if(typeof options.embedColor === "string"){
+        if(options.embedColor){
             let hex = (options.embedColor.startsWith("#") ? options.embedColor.substr(1, options.embedColor.length) : options.embedColor);
             let number = parseInt(hex, 16);
             if(isNaN(number)){
@@ -58,7 +58,7 @@ module.exports = {
             }
             settings.embedColor = options.embedColor;
         }
-        if(typeof options.reaction === "string"){
+        if(options.reaction){
             settings.reaction = options.reaction;
         }
         settings.launched = true;
@@ -77,7 +77,7 @@ module.exports = {
             if(!settings.launched){
                 throw new Error("Please use the launch() function before starting to create giveaways!");
             }
-            if(typeof options.messages !== "object"){
+            if(!options.messages){
                 options.messages = {
                     giveaway: "@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉",
                     giveawayEnded: "@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉",
@@ -91,16 +91,16 @@ module.exports = {
                     units: { seconds: "seconds", minutes: "minutes", hours: "hours", days: "days" }
                 }
             }
-            if(typeof guildChannel !== "object"){
+            if(!guildChannel){
                 throw new Error(guildChannel+" is not a valid guildchannel.");
             }
-            if(typeof options.time !== "number"){
+            if(!options.time){
                 throw new Error(options.time+" is not a number.");
             }
-            if(typeof options.prize !== "string"){
+            if(!options.prize){
                 throw new Error(options.prize+" is not a string.");
             }
-            if(typeof options.winnersCount !== "number"){
+            if(!options.winnersCount){
                 throw new Error(options.winnersCount+" is not a number.");
             }
             fstart(guildChannel, options, settings).then((data) => {
