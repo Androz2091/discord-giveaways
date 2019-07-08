@@ -148,12 +148,12 @@ module.exports = {
         if(!channel){
             throw new Error("Cannot get channel "+giveaway.channelID);
         }
-        let message = await channel.fetchMessage(giveaway.messageID).catch((err) => {
+        let message = await channel.messages.fetch(giveaway.messageID).catch((err) => {
             throw new Error("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
         });
         let guild = message.guild;
         let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
-        reaction.users = await reaction.fetchUsers();
+        reaction.users = await reaction.users.fetch();
         if(reaction){
             let users = (settings.botsCanWin ?
                 reaction.users
@@ -237,7 +237,7 @@ module.exports = {
         if(!channel){
             throw new Error("Cannot get channel "+giveaway.channelID);
         }
-        let message = await channel.fetchMessage(giveaway.messageID).catch((err) => {
+        let message = await channel.messages.fetch(giveaway.messageID).catch((err) => {
             throw new Error("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
         });
         message.delete();
