@@ -9,7 +9,7 @@ module.exports = async function check(client, settings){
         giveaway.endAt = parseInt(giveaway.createdAt+giveaway.time);
         let channel = client.channels.get(giveaway.channelID);
         if(channel){
-            channel.fetchMessage(giveaway.messageID).then((message) => {
+            channel.messages.fetch(giveaway.messageID).then((message) => {
                 let remaining = giveaway.endAt - Date.now();
                 let sentence = utils.parseTime(remaining, giveaway);
                 let embed = new Discord.RichEmbed()
@@ -39,7 +39,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
 
     let guild = channel.guild;
     let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
-    reaction.users = await reaction.fetchUsers();
+    reaction.users = await reaction.users.fetch();
     if(reaction){
         let users = (settings.botsCanWin ?
             reaction.users
