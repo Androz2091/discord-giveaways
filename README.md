@@ -16,14 +16,12 @@ npm install --save discord-giveaways
 
 ## Changelog
 
-*   [2.0.0](https://www.npmjs.com/package/discord-giveaways/v/2.0.0) Full code update
-*   [2.0.2](https://www.npmjs.com/package/discord-giveaways/v/2.0.2) Fix error `DiscordAPIError: Invalid Form Body
-embed.timestamp`
 *   [2.0.3](https://www.npmjs.com/package/discord-giveaways/v/2.0.3) Add `fetch()` function to get the complete list of the giveaways!
 *   [2.0.4](https://www.npmjs.com/package/discord-giveaways/v/2.0.4) Add `reroll()` function to reroll a giveaway!
 *   [2.0.5](https://www.npmjs.com/package/discord-giveaways/v/2.0.5) Add `edit()` function to edit a giveaway!
 *   [2.0.9](https://www.npmjs.com/package/discord-giveaways/v/2.0.9) Fix a bug with the translation
 *   [2.1.3](https://www.npmjs.com/package/discord-giveaways/v/2.1.3) Add `delete()` function to delete a giveaway
+*   [2.1.5](https://www.npmjs.com/package.discord-giveaways/v/2.1.5) Update to discord.js v12
 
 ## Examples
 
