@@ -234,7 +234,7 @@ module.exports = {
                 giveaway.time = options.addTime + giveaway.time;
             }
             if(options.setEndTimestamp){
-                giveaway.time = setEndTimestamp - Date.now() + giveaway.time;
+                giveaway.time = options.setEndTimestamp - Date.now() + giveaway.time;
             }
             nGiveaways.push(giveaway);
             fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
