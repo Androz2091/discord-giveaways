@@ -1,5 +1,6 @@
 const DiscordV12 = require("discord.js-v12"),
-DiscordV11 = require("discord.js-v11");
+DiscordV11 = require("discord.js-v11"),
+randomstring = require("randomstring");
 
 const giveaways = require("./giveaways.json"),
 fs = require("fs"),
