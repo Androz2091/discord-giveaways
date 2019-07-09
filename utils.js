@@ -31,13 +31,16 @@ function parseTime(milliseconds, options){
     hours = roundTowardsZero(milliseconds / 3600000) % 24,
     minutes = roundTowardsZero(milliseconds / 60000) % 60,
     seconds = roundTowardsZero(milliseconds / 1000) % 60;
+    if(seconds === 0){
+        seconds++;
+    }
     let isDays = days > 0,
     isHours = hours > 0,
     isMinutes = minutes > 0;
     let pattern = 
-    (!isDays ? "" : ((isHours || isMinutes || isSeconds) ? `{days} ${options.messages.units.days}, ` : `{days} ${options.messages.units.days}`))+
-    (!isHours ? "" : ((isMinutes || isSeconds) ? `{hours} ${options.messages.units.hours}, ` : `{hours} ${options.messages.units.hours}`))+
-    (!isMinutes ? "" : ((isSeconds) ? `{minutes} ${options.messages.units.minutes}, ` : `{minutes} ${options.messages.units.minutes}`))+
+    (!isDays ? "" : ((isHours || isMinutes) ? `{days} ${options.messages.units.days}, ` : `{days} ${options.messages.units.days}`))+
+    (!isHours ? "" : ((isMinutes) ? `{hours} ${options.messages.units.hours}, ` : `{hours} ${options.messages.units.hours}`))+
+    (!isMinutes ? "" : `{minutes} ${options.messages.units.minutes}, `)+
     (`{seconds} ${options.messages.units.seconds}`);
     let sentence = options.messages.timeRemaining
         .replace("{duration}", pattern)
