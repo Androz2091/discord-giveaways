@@ -246,6 +246,7 @@ module.exports = {
      */
     async delete(messageID){
         return new Promise(async function(resolve, reject){
+            let version = utils.getVersion(settings.client);
             let giveaways = require(jsonPath);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
