@@ -88,8 +88,8 @@ async function start(channel, options, settings){
             msg.react(settings.reaction);
             let giveawayData = {
                 messageID: msg.id,
-                channelID: guildChannel.id,
-                guildID: guildChannel.guild.id,
+                channelID: channel.id,
+                guildID: channel.guild.id,
                 prize: options.prize,
                 time: options.time,
                 createdAt: Date.now(),
