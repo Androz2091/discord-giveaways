@@ -84,7 +84,7 @@ async function start(channel, options, settings){
             .setDescription(options.messages.inviteToParticipate+"\n"+sentence)
             .setTimestamp(new Date(endAt).toISOString());
 
-        guildChannel.send(options.messages.giveaway, { embed: embed }).then((msg) => {
+        channel.send(options.messages.giveaway, { embed: embed }).then((msg) => {
             msg.react(settings.reaction);
             let giveawayData = {
                 messageID: msg.id,
