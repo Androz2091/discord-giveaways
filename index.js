@@ -74,7 +74,7 @@ module.exports = {
     async start(guildChannel, options){
         return new Promise(function(resolve, reject){
             if(!settings.launched){
-                reject("Please use the launch() function before starting to create giveaways!");
+                return reject("Please use the launch() function before starting to create giveaways!");
             }
             if(!options.messages){
                 options.messages = {
@@ -91,16 +91,16 @@ module.exports = {
                 }
             }
             if(!guildChannel){
-                reject(guildChannel+" is not a valid guildchannel.");
+                return reject(guildChannel+" is not a valid guildchannel.");
             }
             if(!options.time){
-                reject(options.time+" is not a number.");
+                return reject(options.time+" is not a number.");
             }
             if(!options.prize){
-                reject(options.prize+" is not a string.");
+                return reject(options.prize+" is not a string.");
             }
             if(!options.winnersCount){
-                reject(options.winnersCount+" is not a number.");
+                return reject(options.winnersCount+" is not a number.");
             }
             utils.start(guildChannel, options, settings).then((data) => {
                 resolve({
@@ -140,14 +140,14 @@ module.exports = {
             let giveaways = require(jsonPath);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
-                reject("No giveaway found with message ID "+messageID);
+                return reject("No giveaway found with message ID "+messageID);
             }
             if(!giveaway.ended){
-                reject("The giveaway with message ID "+messageID+" is not ended. Please wait and retry.");
+                return reject("The giveaway with message ID "+messageID+" is not ended. Please wait and retry.");
             }
             let channel = settings.client.channels.get(giveaway.channelID);
             if(!channel){
-                reject("Cannot get channel "+giveaway.channelID);
+                return reject("Cannot get channel "+giveaway.channelID);
             }
             let message = null;
             if(version === "v12"){
@@ -211,10 +211,10 @@ module.exports = {
             let giveaways = require(jsonPath);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
-                reject("No giveaway found with message ID "+messageID);
+                return reject("No giveaway found with message ID "+messageID);
             }
             if(giveaway.ended){
-                reject("The giveaway with message ID "+messageID+" is ended.");
+                return reject("The giveaway with message ID "+messageID+" is ended.");
             }
             let nGiveaways = [];
             giveaways.forEach((g) => {
@@ -249,14 +249,14 @@ module.exports = {
             let giveaways = require(jsonPath);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
-                reject("No giveaway found with message ID "+messageID);
+                return reject("No giveaway found with message ID "+messageID);
             }
             if(giveaway.ended){
-                reject("The giveaway with message ID "+messageID+" is ended.");
+                return reject("The giveaway with message ID "+messageID+" is ended.");
             }
             let channel = settings.client.channels.get(giveaway.channelID);
             if(!channel){
-                reject("Cannot get channel "+giveaway.channelID);
+                return reject("Cannot get channel "+giveaway.channelID);
             }
             let message = null;
             if(version === "v12"){
@@ -269,7 +269,7 @@ module.exports = {
                 utils.markAsEnded(giveaway.giveawayID);
                 resolve(giveaway);
             } else {
-                reject("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
+                return reject("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
             }
         });
     }
