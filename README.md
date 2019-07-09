@@ -16,12 +16,12 @@ npm install --save discord-giveaways
 
 ## Changelog
 
-*   [2.0.3](https://www.npmjs.com/package/discord-giveaways/v/2.0.3) Add `fetch()` function to get the complete list of the giveaways!
-*   [2.0.4](https://www.npmjs.com/package/discord-giveaways/v/2.0.4) Add `reroll()` function to reroll a giveaway!
-*   [2.0.5](https://www.npmjs.com/package/discord-giveaways/v/2.0.5) Add `edit()` function to edit a giveaway!
-*   [2.0.9](https://www.npmjs.com/package/discord-giveaways/v/2.0.9) Fix a bug with the translation
-*   [2.1.3](https://www.npmjs.com/package/discord-giveaways/v/2.1.3) Add `delete()` function to delete a giveaway
-*   [2.1.5](https://www.npmjs.com/package.discord-giveaways/v/2.1.5) Update to discord.js v12
+*   Add `fetch()` function to get the complete list of the giveaways!
+*   Add `reroll()` function to reroll a giveaway!
+*   Add `edit()` function to edit a giveaway!
+*   Fix a bug with the translation
+*   Add `delete()` function to delete a giveaway
+*   Supports Discord.js v11 **and** Discord.js v12
 
 ## Examples
 
@@ -120,7 +120,9 @@ client.on("message", (message) => {
 
     if(command === "reroll"){
         let messageID = args[0];
-        giveaways.reroll(messageID).catch((err) => {
+        giveaways.reroll(messageID).then(() => {
+            message.channel.send("Success! Giveaway rerolled!");
+        }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
         });
     }
@@ -146,8 +148,11 @@ client.on("message", (message) => {
             newWinnersCount: 3,
             newPrize: "New Prize!",
             addTime: 5000
+        }).then(() => {
+            message.channel.send("Success! Giveaway updated!");
+        }).catch((err) => {
+            message.channel.send("No giveaway found for "+messageID+", please check and try again");
         });
-        message.channel.send("Giveaway updated!");
     }
 
 });
@@ -156,6 +161,7 @@ client.on("message", (message) => {
 **options.newWinnersCount**: the new number of winners  
 **options.newPrize**: the new prize  
 **options.addTime**: the number of milliseconds to add to the giveaway duration
+**options.setEndTimestamp**: the timestamp of the new end date. `Date.now()+1000`
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
@@ -169,7 +175,9 @@ client.on("message", (message) => {
 
     if(command === "delete"){
         let messageID = args[0];
-        giveaways.delete(messageID).catch((err) => {
+        giveaways.delete(messageID).then(() => {
+            message.channel.send("Success! Giveaway deleted!");
+        }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
         });
     }

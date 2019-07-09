@@ -179,7 +179,7 @@ async function check(client, settings){
 
     let version = getVersion(client);
 
-    giveaways.filter((g) => !g.ended).forEach((giveaway) => {
+    giveaways.filter((g) => !g.ended).forEach(async (giveaway) => {
         giveaway.endAt = parseInt(giveaway.createdAt+giveaway.time);
         let channel = client.channels.get(giveaway.channelID);
         if(channel){
