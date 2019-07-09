@@ -2,13 +2,10 @@ const DiscordV12 = require("discord.js-v12"),
 DiscordV11 = require("discord.js-v11"),
 randomstring = require("randomstring");
 
-const giveaways = require("./giveaways.json"),
-fs = require("fs"),
+const fs = require("fs"),
 path = require("path");
 
-let parentDirectory = __dirname.split(path.sep);
-parentDirectory.pop();
-let jsonPath = parentDirectory.join(path.sep)+path.sep+"giveaways.json";
+let jsonPath = __dirname+path.sep+"giveaways.json";
 
 /**
  * Gets the discord.js version of the user
@@ -68,6 +65,7 @@ function markAsEnded(giveawayID){
  * @param {object} settings The settings defined with the launch() function
  */
 async function start(channel, options, settings){
+    let giveaways = require(jsonPath);
     return new Promise(function(resolve, reject){
         let endAt = Date.now()+options.time,
         remaining = endAt-Date.now(),
@@ -107,6 +105,7 @@ async function start(channel, options, settings){
 }
 
 async function endGiveaway(giveawayData, channel, message, settings){
+    let giveaways = require(jsonPath);
     let version = getVersion(message.client);
     let embed = null;
     if(version === "v12"){
@@ -115,7 +114,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
         embed = new DiscordV11.RichEmbed();
     }
     let guild = channel.guild;
-    let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
+    let reaction = message.reactions.find((r) => r.emoji.name === settings.reaction);
     if(version === "v12"){
         reaction.users = await reaction.users.fetch();
     } else {
@@ -178,6 +177,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
 
 async function check(client, settings){
 
+    let giveaways = require(jsonPath);
     let version = getVersion(client);
 
     giveaways.filter((g) => !g.ended).forEach(async (giveaway) => {
@@ -195,6 +195,9 @@ async function check(client, settings){
                 sentence = parseTime(remaining, giveaway),
                 version = getVersion(settings.client),
                 embed = null;
+                if(remaining < 0){
+                    endGiveaway(giveaway, channel, message, settings);
+                }
                 if(version === "v12"){
                     embed = new DiscordV12.MessageEmbed();
                 } else {

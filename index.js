@@ -5,9 +5,7 @@ DiscordV12 = require("discord.js-v12");
 const fs = require("fs"), // To write giveaways.json file
 path = require("path");   // To get the giveaways.json file location
 
-let parentDirectory = __dirname.split(path.sep);
-parentDirectory.pop();
-let jsonPath = parentDirectory.join(path.sep)+path.sep+"discord-giveaways/giveaways.json";
+let jsonPath = __dirname+path.sep+"giveaways.json";
 
 // Utils functions
 const utils = require("./utils");
@@ -159,7 +157,7 @@ module.exports = {
             }
             if(message){
                 let guild = message.guild;
-                let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
+                let reaction = message.reactions.find((r) => r.emoji.name === settings.reaction);
                 if(version === "v12"){
                     reaction.users = await reaction.users.fetch();
                 } else {
@@ -234,7 +232,7 @@ module.exports = {
                 giveaway.time = options.addTime + giveaway.time;
             }
             if(options.setEndTimestamp){
-                giveaway.time = options.setEndTimestamp - Date.now() + giveaway.time;
+                giveaway.time = options.setEndTimestamp - giveaway.createdAt;
             }
             nGiveaways.push(giveaway);
             fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
