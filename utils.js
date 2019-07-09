@@ -70,7 +70,7 @@ async function start(channel, options, settings){
     return new Promise(function(resolve, reject){
         let endAt = Date.now()+options.time,
         remaining = endAt-Date.now(),
-        sentence = utils.parseTime(remaining, options),
+        sentence = parseTime(remaining, options),
         version = getVersion(settings.client),
         embed = null;
         if(version === "v12"){
@@ -191,7 +191,7 @@ async function check(client, settings){
             }
             if(message){
                 let remaining = giveaway.endAt - Date.now(),
-                sentence = utils.parseTime(remaining, giveaway),
+                sentence = parseTime(remaining, giveaway),
                 version = getVersion(settings.client),
                 embed = null;
                 if(version === "v12"){
