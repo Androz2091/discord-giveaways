@@ -1,17 +1,18 @@
 /* To know more information about this npm module, go here : https://npmjs.com/package/discord-giveaways */
-const Discord = require("discord.js"),
-fs = require("fs"),
-path = require("path"),
-ms = require("ms");
+const DiscordV11 = require("discord.js-v11"),
+DiscordV12 = require("discord.js-v12");
+
+const fs = require("fs"), // To write giveaways.json file
+path = require("path");   // To get the giveaways.json file location
 
 let parentDirectory = __dirname.split(path.sep);
 parentDirectory.pop();
 let jsonPath = parentDirectory.join(path.sep)+path.sep+"discord-giveaways/giveaways.json";
 
-const fcheck = require("./functions/check"),
-fstart = require("./functions/start"),
-futils = require("./functions/utils");
+// Utils functions
+const utils = require("./utils");
 
+/* DEFAULT SETTINGS */
 const settings = {
     updateCountdownEvery: 5000,
     botsCanWin: false,
@@ -63,7 +64,7 @@ module.exports = {
         }
         settings.launched = true;
         settings.client = client;
-        setInterval(fcheck, settings.updateCountdownEvery, client, settings);
+        setInterval(utils.check, settings.updateCountdownEvery, client, settings);
     },
 
     /**
@@ -75,7 +76,7 @@ module.exports = {
     async start(guildChannel, options){
         return new Promise(function(resolve, reject){
             if(!settings.launched){
-                throw new Error("Please use the launch() function before starting to create giveaways!");
+                reject("Please use the launch() function before starting to create giveaways!");
             }
             if(!options.messages){
                 options.messages = {
@@ -92,18 +93,18 @@ module.exports = {
                 }
             }
             if(!guildChannel){
-                throw new Error(guildChannel+" is not a valid guildchannel.");
+                reject(guildChannel+" is not a valid guildchannel.");
             }
             if(!options.time){
-                throw new Error(options.time+" is not a number.");
+                reject(options.time+" is not a number.");
             }
             if(!options.prize){
-                throw new Error(options.prize+" is not a string.");
+                reject(options.prize+" is not a string.");
             }
             if(!options.winnersCount){
-                throw new Error(options.winnersCount+" is not a number.");
+                reject(options.winnersCount+" is not a number.");
             }
-            fstart(guildChannel, options, settings).then((data) => {
+            utils.start(guildChannel, options, settings).then((data) => {
                 resolve({
                     ID: data.id,
                     messageID: data.messageID,
@@ -130,59 +131,74 @@ module.exports = {
      * @param {string} messageID The message ID of the giveaway to reroll
      */
     async reroll(messageID, options){
-        if(!options){
-            options = {
-                congrat: ":tada: New winner(s) : {winners}! Congratulations!",
-                error: "No valid participations, no winners can be chosen!"
+        return new Promise(async function(resolve, reject){
+            let version = utils.getVersion(settings.client);
+            if(!options){
+                options = {
+                    congrat: ":tada: New winner(s) : {winners}! Congratulations!",
+                    error: "No valid participations, no winners can be chosen!"
+                }
             }
-        }
-        let giveaways = require(jsonPath);
-        let giveaway = giveaways.find((g) => g.messageID === messageID);
-        if(!giveaway){
-            throw new Error("No giveaway found with message ID "+messageID);
-        }
-        if(!giveaway.ended){
-            throw new Error("The giveaway with message ID "+messageID+" is not ended. Please wait and retry.");
-        }
-        let channel = settings.client.channels.get(giveaway.channelID);
-        if(!channel){
-            throw new Error("Cannot get channel "+giveaway.channelID);
-        }
-        let message = await channel.messages.fetch(giveaway.messageID).catch((err) => {
-            throw new Error("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
-        });
-        let guild = message.guild;
-        let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
-        reaction.users = await reaction.users.fetch();
-        if(reaction){
-            let users = (settings.botsCanWin ?
-                reaction.users
-                    .filter((u) => u.id !== message.client.id)
-                    .filter((u) => guild.members.get(u.id)) : 
-                reaction.users
-                    .filter((u) => !u.bot)
-                    .filter((u) => u.id !== message.client.id)
-                    .filter((u) => guild.members.get(u.id))
-            );
-            users.forEach((user) => {
-                let member = guild.members.get(user.id);
-                settings.ignoreIfHasPermission.forEach((perm) => {
-                    if(member.hasPermission(perm)){
-                        users = users.filter((u) => u.id !== user.id);
-                    }
-                });
-            });
-            if(users.size < 1){
-                return channel.send(options.error);
+            let giveaways = require(jsonPath);
+            let giveaway = giveaways.find((g) => g.messageID === messageID);
+            if(!giveaway){
+                reject("No giveaway found with message ID "+messageID);
+            }
+            if(!giveaway.ended){
+                reject("The giveaway with message ID "+messageID+" is not ended. Please wait and retry.");
+            }
+            let channel = settings.client.channels.get(giveaway.channelID);
+            if(!channel){
+                reject("Cannot get channel "+giveaway.channelID);
+            }
+            let message = null;
+            if(version === "v12"){
+                message = await channel.messages.fetch(giveaway.messageID).catch((err) => {});
             } else {
-                let uWinners = users.random(giveaway.winnersCount).filter((u) => u);
-                let winners = uWinners.map((w) => "<@"+w.id+">").join(", ");
-                channel.send(options.congrat
-                    .replace("{winners}", winners)
-                );
-                return uWinners;
+                message = await channel.fetchMessage(giveaway.messageID).catch((err) => {});
             }
-        }
+            if(message){
+                let guild = message.guild;
+                let reaction = message.reactions.find((r) => r._emoji.name === settings.reaction);
+                if(version === "v12"){
+                    reaction.users = await reaction.users.fetch();
+                } else {
+                    reaction.users = await reaction.fetchUsers();
+                }
+                if(reaction){
+                    let users = (settings.botsCanWin ?
+                        reaction.users
+                            .filter((u) => u.id !== message.client.id)
+                            .filter((u) => guild.members.get(u.id)) : 
+                        reaction.users
+                            .filter((u) => !u.bot)
+                            .filter((u) => u.id !== message.client.id)
+                            .filter((u) => guild.members.get(u.id))
+                    );
+                    users.forEach((user) => {
+                        let member = guild.members.get(user.id);
+                        settings.ignoreIfHasPermission.forEach((perm) => {
+                            if(member.hasPermission(perm)){
+                                users = users.filter((u) => u.id !== user.id);
+                            }
+                        });
+                    });
+                    if(users.size < 1){
+                        channel.send(options.error);
+                        resolve("Return error message");
+                    } else {
+                        let uWinners = users.random(giveaway.winnersCount).filter((u) => u);
+                        let winners = uWinners.map((w) => "<@"+w.id+">").join(", ");
+                        channel.send(options.congrat
+                            .replace("{winners}", winners)
+                        );
+                        resolve(uWinners);
+                    }
+                }
+            } else {
+                reject("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
+            }
+        });
     },
 
     /**
@@ -191,33 +207,36 @@ module.exports = {
      * @param {object} options The new options
      * @returns The new giveaway
      */
-    edit(messageID, options){
-        let giveaways = require(jsonPath);
-        let giveaway = giveaways.find((g) => g.messageID === messageID);
-        if(!giveaway){
-            throw new Error("No giveaway found with message ID "+messageID);
-        }
-        if(giveaway.ended){
-            throw new Error("The giveaway with message ID "+messageID+" is ended.");
-        }
-        let nGiveaways = [];
-        giveaways.forEach((g) => {
-            if(g.messageID !== messageID){
-                nGiveaways.push(g);
+    async edit(messageID, options){
+        return new Promise(async function(resolve, reject){
+            let version = utils.getVersion(settings.client);
+            let giveaways = require(jsonPath);
+            let giveaway = giveaways.find((g) => g.messageID === messageID);
+            if(!giveaway){
+                reject("No giveaway found with message ID "+messageID);
             }
+            if(giveaway.ended){
+                reject("The giveaway with message ID "+messageID+" is ended.");
+            }
+            let nGiveaways = [];
+            giveaways.forEach((g) => {
+                if(g.messageID !== messageID){
+                    nGiveaways.push(g);
+                }
+            });
+            if(options.newPrize){
+                giveaway.prize = options.newPrize;
+            }
+            if(options.newWinnersCount){
+                giveaway.winnersCount = options.newWinnersCount;
+            }
+            if(options.addTime){
+                giveaway.time = options.addTime + giveaway.time;
+            }
+            nGiveaways.push(giveaway);
+            fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
+            resolve(giveaway);
         });
-        if(options.newPrize){
-            giveaway.prize = options.newPrize;
-        }
-        if(options.newWinnersCount){
-            giveaway.winnersCount = options.newWinnersCount;
-        }
-        if(options.addTime){
-            giveaway.time = options.addTime + giveaway.time;
-        }
-        nGiveaways.push(giveaway);
-        fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
-        return giveaway;
     },
 
     /**
@@ -225,23 +244,32 @@ module.exports = {
      * @param {string} messageID The message ID of the giveaway to delete
      */
     async delete(messageID){
-        let giveaways = require(jsonPath);
-        let giveaway = giveaways.find((g) => g.messageID === messageID);
-        if(!giveaway){
-            throw new Error("No giveaway found with message ID "+messageID);
-        }
-        if(giveaway.ended){
-            throw new Error("The giveaway with message ID "+messageID+" is ended.");
-        }
-        let channel = settings.client.channels.get(giveaway.channelID);
-        if(!channel){
-            throw new Error("Cannot get channel "+giveaway.channelID);
-        }
-        let message = await channel.messages.fetch(giveaway.messageID).catch((err) => {
-            throw new Error("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
+        return new Promise(async function(resolve, reject){
+            let giveaways = require(jsonPath);
+            let giveaway = giveaways.find((g) => g.messageID === messageID);
+            if(!giveaway){
+                reject("No giveaway found with message ID "+messageID);
+            }
+            if(giveaway.ended){
+                reject("The giveaway with message ID "+messageID+" is ended.");
+            }
+            let channel = settings.client.channels.get(giveaway.channelID);
+            if(!channel){
+                reject("Cannot get channel "+giveaway.channelID);
+            }
+            let message = null;
+            if(version === "v12"){
+                message = await channel.messages.fetch(giveaway.messageID).catch((err) => {});
+            } else {
+                message = await channel.fetchMessage(giveaway.messageID).catch((err) => {});
+            }
+            if(message){
+                message.delete();
+                utils.markAsEnded(giveaway.giveawayID);
+                resolve(giveaway);
+            } else {
+                reject("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);
+            }
         });
-        message.delete();
-        futils.deleteGiveaway(giveaway.giveawayID);
-        return giveaway;
     }
 }
