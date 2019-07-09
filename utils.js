@@ -222,8 +222,10 @@ async function check(client, settings){
 }
 
 module.exports = {
+    getVersion,
     parseTime,
     markAsEnded,
+    endGiveaway,
     start,
     check
 };
