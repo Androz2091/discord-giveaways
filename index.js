@@ -1,6 +1,5 @@
 /* To know more information about this npm module, go here : https://npmjs.com/package/discord-giveaways */
-const DiscordV11 = require("discord.js-v11"),
-DiscordV12 = require("discord.js-v12");
+const Discord = require("discord.js");
 
 const fs = require("fs"), // To write giveaways.json file
 path = require("path");   // To get the giveaways.json file location

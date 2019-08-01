@@ -1,5 +1,4 @@
-const DiscordV12 = require("discord.js-v12"),
-DiscordV11 = require("discord.js-v11"),
+const Discord = require("discord.js"),
 randomstring = require("randomstring");
 
 const fs = require("fs"),
@@ -12,11 +11,7 @@ let jsonPath = __dirname+path.sep+"giveaways.json";
  * @param {object} client The discord client
  */
 function getVersion(client){
-    if(client.ws){
-        return "v12";
-    } else {
-        return "v11";
-    }
+    return (parseInt(Discord.version.split(".")[0], 10) < 12 ? "v11" : "v12");
 }
 
 /**
@@ -76,9 +71,9 @@ async function start(channel, options, settings){
         version = getVersion(settings.client),
         embed = null;
         if(version === "v12"){
-            embed = new DiscordV12.MessageEmbed();
+            embed = new Discord.MessageEmbed();
         } else {
-            embed = new DiscordV11.RichEmbed();
+            embed = new Discord.RichEmbed();
         }
         embed.setAuthor(options.prize)
             .setColor(settings.embedColor)
@@ -112,9 +107,9 @@ async function endGiveaway(giveawayData, channel, message, settings){
     let version = getVersion(message.client);
     let embed = null;
     if(version === "v12"){
-        embed = new DiscordV12.MessageEmbed();
+        embed = new Discord.MessageEmbed();
     } else {
-        embed = new DiscordV11.RichEmbed();
+        embed = new Discord.RichEmbed();
     }
     let guild = channel.guild;
     let reaction = message.reactions.find((r) => r.emoji.name === settings.reaction);
@@ -202,9 +197,9 @@ async function check(client, settings){
                     endGiveaway(giveaway, channel, message, settings);
                 }
                 if(version === "v12"){
-                    embed = new DiscordV12.MessageEmbed();
+                    embed = new Discord.MessageEmbed();
                 } else {
-                    embed = new DiscordV11.RichEmbed();
+                    embed = new Discord.RichEmbed();
                 }
                 embed.setAuthor(giveaway.prize)
                     .setColor(settings.embedColor)

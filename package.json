@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Androz2091/discord-giveaways.git"
+    "url": "git+https://github.com/packcord/discord-giveaways.git"
   },
   "keywords": [
     "discord",
@@ -24,12 +24,10 @@
   "author": "Androz2091",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Androz2091/discord-giveaways/issues"
+    "url": "https://github.com/packcord/discord-giveaways/issues"
   },
-  "homepage": "https://github.com/Androz2091/discord-giveaways#readme",
+  "homepage": "https://github.com/packcord/discord-giveaways#readme",
   "dependencies": {
-    "discord.js-v11": "npm:discord.js@^11.5.1",
-    "discord.js-v12": "github:discordjs/discord.js",
     "randomstring": "^1.1.5"
   }
 }
