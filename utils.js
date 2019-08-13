@@ -186,7 +186,7 @@ async function check(client, settings){
             if(version === "v11"){
                 message = await channel.fetchMessage(giveaway.messageID).catch((err) => {});
             } else {
-                message = await channel.messages.fetch(giveaway.messageID);
+                message = await channel.messages.fetch(giveaway.messageID).catch((err) => {});
             }
             if(message){
                 let remaining = giveaway.endAt - Date.now(),
