@@ -22,6 +22,7 @@ npm install --save discord-giveaways
 *   Fix a bug with the translation
 *   Add `delete()` function to delete a giveaway
 *   Supports Discord.js v11 **and** Discord.js v12
+*   Add storage option
 
 ## Examples
 
@@ -47,9 +48,12 @@ client.on("ready", () => {
             "ADMINISTRATOR"
         ],
         embedColor: "#FF0000",
-        reaction: "🎉"
+        reaction: "🎉",
+        storage: __dirname+"/giveaways.json"
     });
 });
+
+client.login(settings.token);
 ```
 
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be launched.
@@ -61,6 +65,7 @@ You can pass a list of options to this method to customize the giveaway. Here is
 *   **options.ignoreIfHasPermission**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 *   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 *   **options.reaction**: the reaction that users will have to react to in order to participate!
+*   **options.storage**: the json file that will be used to store giveaways
 
 ### Start a giveaway
 
@@ -72,8 +77,8 @@ client.on("message", (message) => {
     const command = args.shift().toLowerCase();
 
     if(command === "start-giveaway"){
-        // g!start-giveaway 2d 1 Awesome prize !
-        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize"
+        // g!start-giveaway 2d 1 Awesome prize!
+        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
         giveaways.start(message.channel, {
             time: ms(args[0]),
@@ -87,8 +92,8 @@ client.on("message", (message) => {
 });
 ```
 
-**options.time**: the giveaway duration
-**options.prize**: the giveaway prize
+**options.time**: the giveaway duration  
+**options.prize**: the giveaway prize  
 **options.winnersCount**: the number of giveaway winners
 
 This allows you to launch a giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the module does the rest!
@@ -243,5 +248,5 @@ giveaways.reroll(messageID, {
 });
 ```
 
-**options.congrat**: the message of congratulations
+**options.congrat**: the message of congratulations  
 **options.error**: the error message if there is no valid participations.
