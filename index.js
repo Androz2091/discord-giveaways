@@ -4,8 +4,6 @@ const Discord = require("discord.js");
 const fs = require("fs"), // To write giveaways.json file
 path = require("path");   // To get the giveaways.json file location
 
-let jsonPath = __dirname+path.sep+"giveaways.json";
-
 // Utils functions
 const utils = require("./utils");
 
@@ -17,6 +15,7 @@ const settings = {
     embedColor: "#FF0000",
     reaction: "🎉",
     client: null,
+    storage: __dirname+"/giveaways.json",
     launched: false
 }
 
@@ -59,8 +58,14 @@ module.exports = {
         if(options.reaction){
             settings.reaction = options.reaction;
         }
+        if(options.storage){
+            settings.storage = options.storage;
+        }
         settings.launched = true;
         settings.client = client;
+        if(!fs.existsSync(settings.storage)){
+            fs.writeFileSync(settings.storage, "[]", "utf-8");
+        }
         setInterval(utils.check, settings.updateCountdownEvery, client, settings);
     },
 
@@ -119,7 +124,7 @@ module.exports = {
      * @returns An array with the giveaways
      */
     fetch(){
-        let giveaways = require(jsonPath);
+        let giveaways = require(settings.storage);
         return giveaways;
     },
 
@@ -136,7 +141,7 @@ module.exports = {
                     error: "No valid participations, no winners can be chosen!"
                 }
             }
-            let giveaways = require(jsonPath);
+            let giveaways = require(settings.storage);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
                 return reject("No giveaway found with message ID "+messageID);
@@ -207,7 +212,7 @@ module.exports = {
     async edit(messageID, options){
         return new Promise(async function(resolve, reject){
             let version = utils.getVersion(settings.client);
-            let giveaways = require(jsonPath);
+            let giveaways = require(settings.storage);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
                 return reject("No giveaway found with message ID "+messageID);
@@ -234,7 +239,7 @@ module.exports = {
                 giveaway.time = options.setEndTimestamp - giveaway.createdAt;
             }
             nGiveaways.push(giveaway);
-            fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
+            fs.writeFileSync(settings.storage, JSON.stringify(giveaways), "utf-8");
             resolve(giveaway);
         });
     },
@@ -246,7 +251,7 @@ module.exports = {
     async delete(messageID){
         return new Promise(async function(resolve, reject){
             let version = utils.getVersion(settings.client);
-            let giveaways = require(jsonPath);
+            let giveaways = require(settings.storage);
             let giveaway = giveaways.find((g) => g.messageID === messageID);
             if(!giveaway){
                 return reject("No giveaway found with message ID "+messageID);
@@ -266,7 +271,7 @@ module.exports = {
             }
             if(message){
                 message.delete();
-                utils.markAsEnded(giveaway.giveawayID);
+                utils.markAsEnded(giveaway.giveawayID, settings);
                 resolve(giveaway);
             } else {
                 return reject("Cannot fetch message "+giveaway.messageID+" in channel "+giveaway.channelID);

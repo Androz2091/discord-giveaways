@@ -4,8 +4,6 @@ randomstring = require("randomstring");
 const fs = require("fs"),
 path = require("path");
 
-let jsonPath = __dirname+path.sep+"giveaways.json";
-
 /**
  * Gets the discord.js version of the user
  * @param {object} client The discord client
@@ -50,10 +48,10 @@ function parseTime(milliseconds, options){
  * Mark a giveaway as ended
  * @param {sting} giveawayID The ID of the giveaway to mark as ended
  */
-function markAsEnded(giveawayID){
-    let giveaways = require(jsonPath);
+function markAsEnded(giveawayID, settings){
+    let giveaways = require(settings.storage);
     giveaways.find((g) => g.giveawayID === giveawayID).ended = true;
-    fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
+    fs.writeFileSync(settings.storage, JSON.stringify(giveaways), "utf-8");
 }
 
 /**
@@ -63,7 +61,7 @@ function markAsEnded(giveawayID){
  * @param {object} settings The settings defined with the launch() function
  */
 async function start(channel, options, settings){
-    let giveaways = require(jsonPath);
+    let giveaways = require(settings.storage);
     return new Promise(function(resolve, reject){
         let endAt = Date.now()+options.time,
         remaining = endAt-Date.now(),
@@ -96,14 +94,14 @@ async function start(channel, options, settings){
                 ended: false
             }
             giveaways.push(giveawayData);
-            fs.writeFileSync(jsonPath, JSON.stringify(giveaways), "utf-8");
+            fs.writeFileSync(settings.storage, JSON.stringify(giveaways), "utf-8");
             resolve(giveawayData);
         });
     });
 }
 
 async function endGiveaway(giveawayData, channel, message, settings){
-    let giveaways = require(jsonPath);
+    let giveaways = require(settings.storage);
     let version = getVersion(message.client);
     let embed = null;
     if(version === "v12"){
@@ -152,7 +150,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
                     .replace("{winners}", winners)
                     .replace("{prize}", giveawayData.prize)
             )
-            markAsEnded(giveawayData.giveawayID);
+            markAsEnded(giveawayData.giveawayID, settings);
         } else {
             embed.setAuthor(giveawayData.prize)
                 .setColor("#000000")
@@ -160,7 +158,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
                 .setDescription(giveawayData.messages.noWinner)
                 .setTimestamp(new Date(giveawayData.endAt).toISOString());
             message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
-            markAsEnded(giveawayData.giveawayID);
+            markAsEnded(giveawayData.giveawayID, settings);
         }
     } else {
         embed.setAuthor(giveawayData.prize)
@@ -169,13 +167,13 @@ async function endGiveaway(giveawayData, channel, message, settings){
             .setDescription(giveawayData.messages.noWinner)
             .setTimestamp(new Date(giveawayData.endAt).toISOString());
         message.edit(giveawayData.messages.giveawayEnded, { embed: embed });
-        markAsEnded(giveawayData.giveawayID);
+        markAsEnded(giveawayData.giveawayID, settings);
     }
 }
 
 async function check(client, settings){
 
-    let giveaways = require(jsonPath);
+    let giveaways = require(settings.storage);
     let version = getVersion(client);
 
     giveaways.filter((g) => !g.ended).forEach(async (giveaway) => {
@@ -213,10 +211,10 @@ async function check(client, settings){
                     }, remaining);
                 }
             } else {
-                markAsEnded(giveaway.giveawayID);
+                markAsEnded(giveaway.giveawayID, settings);
             }
         } else {
-            markAsEnded(giveaway.giveawayID);
+            markAsEnded(giveaway.giveawayID, settings);
         }
     });
 
