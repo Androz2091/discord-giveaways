@@ -87,7 +87,7 @@ client.on("message", (message) => {
         }).then((gData) => {
             console.log(gData); // {...} (messageid, end date and more)
         });
-        // And the giveaway is started!
+        // And the giveaway has started!
     }
 });
 ```
