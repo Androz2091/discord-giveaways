@@ -13,6 +13,7 @@ const settings = {
     botsCanWin: false,
     ignoreIfHasPermission: [],
     embedColor: "#FF0000",
+    embedColorEnd: "#000000",
     reaction: "🎉",
     client: null,
     storage: __dirname+"/giveaways.json",

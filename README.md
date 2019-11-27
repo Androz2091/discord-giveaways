@@ -48,6 +48,7 @@ client.on("ready", () => {
             "ADMINISTRATOR"
         ],
         embedColor: "#FF0000",
+        embedColorEnd: "#000000",
         reaction: "🎉",
         storage: __dirname+"/giveaways.json"
     });
@@ -64,6 +65,7 @@ You can pass a list of options to this method to customize the giveaway. Here is
 *   **options.botsCanWin**: whether the bots can win a giveaway
 *   **options.ignoreIfHasPermission**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 *   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
+*   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
 *   **options.reaction**: the reaction that users will have to react to in order to participate!
 *   **options.storage**: the json file that will be used to store giveaways
 

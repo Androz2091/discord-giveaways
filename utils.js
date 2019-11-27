@@ -140,7 +140,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
             let str = giveawayData.messages.winners.substr(0, 1).toUpperCase()+
             giveawayData.messages.winners.substr(1, giveawayData.messages.winners.length)+": "+winners;
             embed.setAuthor(giveawayData.prize)
-                .setColor("#000000")
+                .setColor(settings.embedColorEnd)
                 .setFooter(giveawayData.messages.endedAt)
                 .setDescription(str)
                 .setTimestamp(new Date(giveawayData.endAt).toISOString());
@@ -153,7 +153,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
             markAsEnded(giveawayData.giveawayID, settings);
         } else {
             embed.setAuthor(giveawayData.prize)
-                .setColor("#000000")
+                .setColor(settings.embedColorEnd)
                 .setFooter(giveawayData.messages.endedAt)
                 .setDescription(giveawayData.messages.noWinner)
                 .setTimestamp(new Date(giveawayData.endAt).toISOString());
@@ -162,7 +162,7 @@ async function endGiveaway(giveawayData, channel, message, settings){
         }
     } else {
         embed.setAuthor(giveawayData.prize)
-            .setColor("#000000")
+            .setColor(settings.embedColorEnd)
             .setFooter(giveawayData.messages.endedAt)
             .setDescription(giveawayData.messages.noWinner)
             .setTimestamp(new Date(giveawayData.endAt).toISOString());
