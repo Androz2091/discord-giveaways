@@ -95,16 +95,16 @@ module.exports = {
                     units: { seconds: "seconds", minutes: "minutes", hours: "hours", days: "days" }
                 }
             }
-            if(!guildChannel){
+            if(!guildChannel || !(guildChannel instanceof Discord.Channel)){
                 return reject(guildChannel+" is not a valid guildchannel.");
             }
-            if(!options.time){
+            if(!options.time || isNaN(time)){
                 return reject(options.time+" is not a number.");
             }
             if(!options.prize){
                 return reject(options.prize+" is not a string.");
             }
-            if(!options.winnersCount){
+            if(!options.winnersCount || isNaN(options.winnersCount)){
                 return reject(options.winnersCount+" is not a number.");
             }
             utils.start(guildChannel, options, settings).then((data) => {
