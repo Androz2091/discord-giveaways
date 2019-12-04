@@ -98,7 +98,7 @@ module.exports = {
             if(!guildChannel || !(guildChannel instanceof Discord.Channel)){
                 return reject(guildChannel+" is not a valid guildchannel.");
             }
-            if(!options.time || isNaN(time)){
+            if(!options.time || isNaN(options.time)){
                 return reject(options.time+" is not a number.");
             }
             if(!options.prize){
