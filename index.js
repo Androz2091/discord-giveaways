@@ -66,6 +66,8 @@ module.exports = {
         settings.client = client;
         if(!fs.existsSync(settings.storage)){
             fs.writeFileSync(settings.storage, "[]", "utf-8");
+        } else if(!Array.isArray(require(settings.storage))){
+            fs.writeFileSync(settings.storage, "[]", "utf-8");
         }
         setInterval(utils.check, settings.updateCountdownEvery, client, settings);
     },
