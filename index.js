@@ -56,6 +56,14 @@ module.exports = {
             }
             settings.embedColor = options.embedColor;
         }
+        if(options.embedColorEnd){
+            let hex = (options.embedColorEnd.startsWith("#") ? options.embedColorEnd.substr(1, options.embedColorEnd.length) : options.embedColorEnd);
+            let number = parseInt(hex, 16);
+            if(isNaN(number)){
+                throw new TypeError(options.embedColorEnd+" is not a valid hexadecimal value.");
+            }
+            settings.embedColorEnd = options.embedColorEnd;
+        }
         if(options.reaction){
             settings.reaction = options.reaction;
         }
