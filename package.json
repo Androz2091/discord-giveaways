@@ -1,10 +1,12 @@
 {
   "name": "discord-giveaways",
-  "version": "2.4.4",
+  "version": "3.0.0",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node index.js",
+    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,11 @@
   },
   "homepage": "https://github.com/packcord/discord-giveaways#readme",
   "dependencies": {
-    "randomstring": "^1.1.5"
+    "merge-options": "^2.0.0"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.6.3",
+    "minami": "^1.2.3",
+    "prettier": "^1.19.1"
   }
 }

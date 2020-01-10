@@ -30,28 +30,28 @@ npm install --save discord-giveaways
 
 ```js
 const Discord = require("discord.js"),
-giveaways = require("discord-giveaways"),
 client = new Discord.Client(),
 settings = {
     prefix: "g!",
     token: "Your Discord Token"
 };
 
+// Requires Manager from discord-giveaways
+const { GiveawaysManager } = require("discord-giveaways");
+// Starts updating currents giveaways
+const manager = new GiveawaysManager(client, {
+    storage: "./giveaways.json",
+    updateCountdownEvery: 5000,
+    default: {
+        botsCanWin: false,
+        exemptPermissions: [ "MANAGE_MESSAGES", "ADMINISTRATOR" ],
+        embedColor: "#FF0000",
+        reaction: "🎉"
+    }
+});
+
 client.on("ready", () => {
     console.log("I'm ready !");
-    giveaways.launch(client, {
-        updateCountdownEvery: 5000,
-        botsCanWin: false,
-        ignoreIfHasPermission: [
-            "MANAGE_MESSAGES",
-            "MANAGE_GUILD",
-            "ADMINISTRATOR"
-        ],
-        embedColor: "#FF0000",
-        embedColorEnd: "#000000",
-        reaction: "🎉",
-        storage: __dirname+"/giveaways.json"
-    });
 });
 
 client.login(settings.token);
@@ -61,13 +61,13 @@ After that, giveaways that are not yet completed will start to be updated again 
 You can pass a list of options to this method to customize the giveaway. Here is a list of them:
 
 *   **client**: the discord client (your discord bot instance)
-*   **options.updateCountdownEvery**: the number of seconds it will take to update the timers
-*   **options.botsCanWin**: whether the bots can win a giveaway
-*   **options.ignoreIfHasPermission**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
-*   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
-*   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
-*   **options.reaction**: the reaction that users will have to react to in order to participate!
 *   **options.storage**: the json file that will be used to store giveaways
+*   **options.updateCountdownEvery**: the number of seconds it will take to update the timers
+*   **options.default.botsCanWin**: whether the bots can win a giveaway
+*   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+*   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
+*   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
+*   **options.default.reaction**: the reaction that users will have to react to in order to participate!
 
 ### Start a giveaway
 
@@ -82,10 +82,10 @@ client.on("message", (message) => {
         // g!start-giveaway 2d 1 Awesome prize!
         // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
-        giveaways.start(message.channel, {
+        manager.start(message.channel, {
             time: ms(args[0]),
             prize: args.slice(2).join(" "),
-            winnersCount: parseInt(args[1])
+            winnerCount: parseInt(args[1])
         }).then((gData) => {
             console.log(gData); // {...} (messageid, end date and more)
         });
@@ -94,9 +94,14 @@ client.on("message", (message) => {
 });
 ```
 
-**options.time**: the giveaway duration  
-**options.prize**: the giveaway prize  
-**options.winnersCount**: the number of giveaway winners
+*   **options.time**: the giveaway duration  
+*   **options.prize**: the giveaway prize  
+*   **options.winnerCount**: the number of giveaway winners
+*   **options.botsCanWin**: whether the bots can win a giveaway
+*   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+*   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
+*   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
+*   **options.reaction**: the reaction that users will have to react to in order to participate!
 
 This allows you to launch a giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the module does the rest!
 
@@ -108,13 +113,13 @@ This allows you to launch a giveaway. Once the `start()` function is called, the
 
 ```js
     // The list of all the giveaways
-    let allGiveaways = giveaways.fetch();
+    let allGiveaways = manager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
     // The list of all the giveaways on the server with ID "1909282092"
-    let onServer = allGiveaways.filter((g) => g.guildID === "1909282092");
+    let onServer = manager.giveaways.filter((g) => g.guildID === "1909282092");
 
     // The list of the current giveaways (not ended)
-    let notEnded = allGiveaways.filter((g) => !g.ended);
+    let notEnded = manager.giveaways.filter((g) => !g.ended);
 ```
 ### Reroll a giveaway
 
@@ -127,7 +132,7 @@ client.on("message", (message) => {
 
     if(command === "reroll"){
         let messageID = args[0];
-        giveaways.reroll(messageID).then(() => {
+        manager.reroll(messageID).then(() => {
             message.channel.send("Success! Giveaway rerolled!");
         }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
@@ -136,6 +141,8 @@ client.on("message", (message) => {
 
 });
 ```
+
+**options.winnerCount**: the number of winners to pick
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -151,12 +158,12 @@ client.on("message", (message) => {
 
     if(command === "edit"){
         let messageID = args[0];
-        giveaways.edit(messageID, {
-            newWinnersCount: 3,
+        manager.edit(messageID, {
+            newWinnerCount: 3,
             newPrize: "New Prize!",
             addTime: 5000
         }).then(() => {
-            message.channel.send("Success! Giveaway updated!");
+            message.channel.send("Success! Giveaway will updated in less than "+(manager.updateCountdownEvery/1000)+" seconds.");
         }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
         });
@@ -165,7 +172,7 @@ client.on("message", (message) => {
 });
 ```
 
-**options.newWinnersCount**: the new number of winners  
+**options.newWinnerCount**: the new number of winners  
 **options.newPrize**: the new prize  
 **options.addTime**: the number of milliseconds to add to the giveaway duration
 **options.setEndTimestamp**: the timestamp of the new end date. `Date.now()+1000`
@@ -182,7 +189,7 @@ client.on("message", (message) => {
 
     if(command === "delete"){
         let messageID = args[0];
-        giveaways.delete(messageID).then(() => {
+        manager.delete(messageID).then(() => {
             message.channel.send("Success! Giveaway deleted!");
         }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
@@ -215,10 +222,10 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 For example :
 
 ```js
-giveaways.start(message.channel, {
+manager.start(message.channel, {
     time: ms(args[0]),
     prize: args.slice(2).join(" "),
-    winnersCount: parseInt(args[1]),
+    winnerCount: parseInt(args[1]),
     messages: {
         giveaway: "@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉",
         giveawayEnded: "@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉",
@@ -242,13 +249,15 @@ giveaways.start(message.channel, {
 And for the `reroll()` function:
 
 ```js
-giveaways.reroll(messageID, {
-    congrat: ":tada: New winner(s) : {winners}! Congratulations!",
-    error: "No valid participations, no winners can be chosen!"
+manager.reroll(messageID, {
+    messages: {
+        congrat: ":tada: New winner(s) : {winners}! Congratulations!",
+        error: "No valid participations, no winners can be chosen!"
+    }
 }).catch((err) => {
     message.channel.send("No giveaway found for "+messageID+", please check and try again");
 });
 ```
 
-**options.congrat**: the message of congratulations  
-**options.error**: the error message if there is no valid participations.
+**options.messages.congrat**: the message of congratulations  
+**options.messages.error**: the error message if there is no valid participations.

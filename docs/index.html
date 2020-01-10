@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Giveaway.html">Giveaway</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#fetchMessage">fetchMessage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#roll">roll</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="GiveawaysManager.html">GiveawaysManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#start">start</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="GiveawaysManager.html#event:end">end</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>Discord Giveaways</h1>
+<p>Discord Giveaways is a powerful <a href="https://nodejs.org">Node.js</a> module that allows you to easily create giveaways!</p>
+<ul>
+<li>The duration of the Giveaway is customizable!</li>
+<li>Automatic restart after bot crash</li>
+<li>Update of the timer every X seconds!</li>
+<li>The strings are fully customizable so you can adapt them to your language!</li>
+<li>And customizable prize, customizable number of winners, customizable ignored members, and more!</li>
+</ul>
+<h2>Installation</h2>
+<pre class="prettyprint source lang-js"><code>npm install --save discord-giveaways
+</code></pre>
+<h2>Changelog</h2>
+<ul>
+<li>Add <code>fetch()</code> function to get the complete list of the giveaways!</li>
+<li>Add <code>reroll()</code> function to reroll a giveaway!</li>
+<li>Add <code>edit()</code> function to edit a giveaway!</li>
+<li>Fix a bug with the translation</li>
+<li>Add <code>delete()</code> function to delete a giveaway</li>
+<li>Supports Discord.js v11 <strong>and</strong> Discord.js v12</li>
+<li>Add storage option</li>
+</ul>
+<h2>Examples</h2>
+<h3>Launch of the module</h3>
+<pre class="prettyprint source lang-js"><code>const Discord = require(&quot;discord.js&quot;),
+client = new Discord.Client(),
+settings = {
+    prefix: &quot;g!&quot;,
+    token: &quot;Your Discord Token&quot;
+};
+
+// Requires Manager from discord-giveaways
+const { GiveawaysManager } = require(&quot;discord-giveaways&quot;);
+// Starts updating currents giveaways
+const manager = new GiveawaysManager(client, {
+    storage: &quot;./giveaways.json&quot;,
+    updateCountdownEvery: 5000,
+    default: {
+        botsCanWin: false,
+        exemptPermissions: [ &quot;MANAGE_MESSAGES&quot;, &quot;ADMINISTRATOR&quot; ],
+        embedColor: &quot;#FF0000&quot;,
+        reaction: &quot;🎉&quot;
+    }
+});
+
+client.on(&quot;ready&quot;, () => {
+    console.log(&quot;I'm ready !&quot;);
+});
+
+client.login(settings.token);
+</code></pre>
+<p>After that, giveaways that are not yet completed will start to be updated again and new giveaways can be launched.
+You can pass a list of options to this method to customize the giveaway. Here is a list of them:</p>
+<ul>
+<li><strong>client</strong>: the discord client (your discord bot instance)</li>
+<li><strong>options.storage</strong>: the json file that will be used to store giveaways</li>
+<li><strong>options.updateCountdownEvery</strong>: the number of seconds it will take to update the timers</li>
+<li><strong>options.default.botsCanWin</strong>: whether the bots can win a giveaway</li>
+<li><strong>options.default.exemptPermissions</strong>: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.</li>
+<li><strong>options.default.embedColor</strong>: a hexadecimal color for the embeds of giveaways.</li>
+<li><strong>options.default.embedColorEnd</strong>: a hexadecimal color the embeds of giveaways when they are ended.</li>
+<li><strong>options.default.reaction</strong>: the reaction that users will have to react to in order to participate!</li>
+</ul>
+<h3>Start a giveaway</h3>
+<pre class="prettyprint source lang-js"><code>client.on(&quot;message&quot;, (message) => {
+
+    const ms = require(&quot;ms&quot;); // npm install ms
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === &quot;start-giveaway&quot;){
+        // g!start-giveaway 2d 1 Awesome prize!
+        // will create a giveaway with a duration of two days, with one winner and the prize will be &quot;Awesome prize!&quot;
+
+        manager.start(message.channel, {
+            time: ms(args[0]),
+            prize: args.slice(2).join(&quot; &quot;),
+            winnerCount: parseInt(args[1])
+        }).then((gData) => {
+            console.log(gData); // {...} (messageid, end date and more)
+        });
+        // And the giveaway has started!
+    }
+});
+</code></pre>
+<ul>
+<li><strong>options.time</strong>: the giveaway duration</li>
+<li><strong>options.prize</strong>: the giveaway prize</li>
+<li><strong>options.winnerCount</strong>: the number of giveaway winners</li>
+<li><strong>options.botsCanWin</strong>: whether the bots can win a giveaway</li>
+<li><strong>options.exemptPermissions</strong>: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.</li>
+<li><strong>options.embedColor</strong>: a hexadecimal color for the embeds of giveaways.</li>
+<li><strong>options.embedColorEnd</strong>: a hexadecimal color the embeds of giveaways when they are ended.</li>
+<li><strong>options.reaction</strong>: the reaction that users will have to react to in order to participate!</li>
+</ul>
+<p>This allows you to launch a giveaway. Once the <code>start()</code> function is called, the giveaway starts and you only have to observe the result, the module does the rest!</p>
+<a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
+    <img src="https://zupimages.net/up/19/23/5h0s.png"/>
+</a>
+<h3>Fetch the giveaways</h3>
+<pre class="prettyprint source lang-js"><code>    // The list of all the giveaways
+    let allGiveaways = manager.giveaways; // [ {Giveaway}, {Giveaway} ]
+
+    // The list of all the giveaways on the server with ID &quot;1909282092&quot;
+    let onServer = manager.giveaways.filter((g) => g.guildID === &quot;1909282092&quot;);
+
+    // The list of the current giveaways (not ended)
+    let notEnded = manager.giveaways.filter((g) => !g.ended);
+</code></pre>
+<h3>Reroll a giveaway</h3>
+<pre class="prettyprint source lang-js"><code>client.on(&quot;message&quot;, (message) => {
+
+    const ms = require(&quot;ms&quot;); // npm install ms
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === &quot;reroll&quot;){
+        let messageID = args[0];
+        manager.reroll(messageID).then(() => {
+            message.channel.send(&quot;Success! Giveaway rerolled!&quot;);
+        }).catch((err) => {
+            message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
+        });
+    }
+
+});
+</code></pre>
+<p><strong>options.winnerCount</strong>: the number of winners to pick</p>
+<a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
+    <img src="https://zupimages.net/up/19/24/mhuo.png"/>
+</a>
+<h3>Edit a giveaway</h3>
+<pre class="prettyprint source lang-js"><code>client.on(&quot;message&quot;, (message) => {
+
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === &quot;edit&quot;){
+        let messageID = args[0];
+        manager.edit(messageID, {
+            newWinnerCount: 3,
+            newPrize: &quot;New Prize!&quot;,
+            addTime: 5000
+        }).then(() => {
+            message.channel.send(&quot;Success! Giveaway will updated in less than &quot;+(manager.updateCountdownEvery/1000)+&quot; seconds.&quot;);
+        }).catch((err) => {
+            message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
+        });
+    }
+
+});
+</code></pre>
+<p><strong>options.newWinnerCount</strong>: the new number of winners<br>
+<strong>options.newPrize</strong>: the new prize<br>
+<strong>options.addTime</strong>: the number of milliseconds to add to the giveaway duration
+<strong>options.setEndTimestamp</strong>: the timestamp of the new end date. <code>Date.now()+1000</code></p>
+<p>⚠️ Tips: to reduce giveaway time, define <code>addTime</code> with a negative number! For example <code>addTime: -5000</code> will reduce giveaway time by 5 seconds!</p>
+<h3>Delete a giveaway</h3>
+<pre class="prettyprint source lang-js"><code>client.on(&quot;message&quot;, (message) => {
+
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === &quot;delete&quot;){
+        let messageID = args[0];
+        manager.delete(messageID).then(() => {
+            message.channel.send(&quot;Success! Giveaway deleted!&quot;);
+        }).catch((err) => {
+            message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
+        });
+    }
+
+});
+</code></pre>
+<p>When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it.</p>
+<h2>🇫🇷 Translation</h2>
+<p>You can also pass a <code>messages</code> parameter for <code>start()</code> function, if you want to translate the bot text :</p>
+<ul>
+<li><strong>options.messages.giveaway</strong>: the message that will be displayed above the embeds</li>
+<li><strong>options.messages.giveawayEnded</strong>: the message that will be displayed above the embeds when the giveaway is terminated</li>
+<li><strong>options.messages.timeRemaining</strong>: the message that displays the remaining time (the timer)</li>
+<li><strong>options.messages.inviteToParticipate</strong>: the message that invites users to participate</li>
+<li><strong>options.messages.winMessage</strong>: the message that will be displayed to congratulate the winner(s) when the giveaway is terminated</li>
+<li><strong>options.messages.embedFooter</strong>: the message displayed at the bottom of the embeds</li>
+<li><strong>options.messages.noWinner</strong>: the message that is displayed if no winner can be drawn</li>
+<li><strong>options.messages.winners</strong>: simply the word &quot;winner&quot; in your language</li>
+<li><strong>options.messages.endedAt</strong>: simply the words &quot;Ended at&quot; in your language</li>
+<li><strong>options.messages.units.seconds</strong>: simply the word &quot;seconds&quot; in your language</li>
+<li><strong>options.messages.units.minutes</strong>: simply the word &quot;minutes&quot; in your language</li>
+<li><strong>options.messages.units.hours</strong>: simply the word &quot;hours&quot; in your language</li>
+<li><strong>options.messages.units.days</strong>: simply the word &quot;days&quot; in your language</li>
+</ul>
+<p>For example :</p>
+<pre class="prettyprint source lang-js"><code>manager.start(message.channel, {
+    time: ms(args[0]),
+    prize: args.slice(2).join(&quot; &quot;),
+    winnerCount: parseInt(args[1]),
+    messages: {
+        giveaway: &quot;@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉&quot;,
+        giveawayEnded: &quot;@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉&quot;,
+        timeRemaining: &quot;Time remaining: **{duration}**!&quot;,
+        inviteToParticipate: &quot;React with 🎉 to participate!&quot;,
+        winMessage: &quot;Congratulations, {winners}! You won **{prize}**!&quot;,
+        embedFooter: &quot;Giveaways&quot;,
+        noWinner: &quot;Giveaway cancelled, no valid participations.&quot;,
+        winners: &quot;winner(s)&quot;,
+        endedAt: &quot;Ended at&quot;,
+        units: {
+            seconds: &quot;seconds&quot;,
+            minutes: &quot;minutes&quot;,
+            hours: &quot;hours&quot;,
+            days: &quot;days&quot;
+        }
+    }
+});
+</code></pre>
+<p>And for the <code>reroll()</code> function:</p>
+<pre class="prettyprint source lang-js"><code>manager.reroll(messageID, {
+    messages: {
+        congrat: &quot;:tada: New winner(s) : {winners}! Congratulations!&quot;,
+        error: &quot;No valid participations, no winners can be chosen!&quot;
+    }
+}).catch((err) => {
+    message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
+});
+</code></pre>
+<p><strong>options.messages.congrat</strong>: the message of congratulations<br>
+<strong>options.messages.error</strong>: the error message if there is no valid participations.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
