@@ -49,14 +49,14 @@
 
     <section class="readme">
         <article><h1>Discord Giveaways</h1>
-<p><a href="https://npmjs.com/discord-backup"><img src="https://img.shields.io/npm/dt/discord-giveaways?style=for-the-badge" alt="downloadsBadge"></a>
-<a href="https://npmjs.com/discord-backup"><img src="https://img.shields.io/npm/v/discord-giveaways?style=for-the-badge" alt="versionBadge"></a>
+<p><a href="https://npmjs.com/discord-giveaways"><img src="https://img.shields.io/npm/dt/discord-giveaways?style=for-the-badge" alt="downloadsBadge"></a>
+<a href="https://npmjs.com/discord-giveaways"><img src="https://img.shields.io/npm/v/discord-giveaways?style=for-the-badge" alt="versionBadge"></a>
 <a href="https://discord-giveaways.js.org"><img src="https://img.shields.io/badge/Documentation-Click%20here-blue?style=for-the-badge" alt="doc"></a>
 <a href="https://patreon.com/Androz2091"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2FAndroz2091%2Fpledges&amp;style=for-the-badge" alt="patreonBadge"></a></p>
 <p>Discord Giveaways is a powerful <a href="https://nodejs.org">Node.js</a> module that allows you to easily create giveaways!</p>
 <ul>
 <li>The duration of the Giveaway is customizable!</li>
-<li>Automatic restart after bot crash</li>
+<li>Automatic restart after bot crash!</li>
 <li>Update of the timer every X seconds!</li>
 <li>The strings are fully customizable so you can adapt them to your language!</li>
 <li>And customizable prize, customizable number of winners, customizable ignored members, and more!</li>
@@ -93,8 +93,8 @@ client.on(&quot;ready&quot;, () => {
 
 client.login(settings.token);
 </code></pre>
-<p>After that, giveaways that are not yet completed will start to be updated again and new giveaways can be launched.
-You can pass a list of options to this method to customize the giveaway. Here is a list of them:</p>
+<p>After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
+You can pass an options object to customize the giveaways. Here is a list of them:</p>
 <ul>
 <li><strong>client</strong>: the discord client (your discord bot instance)</li>
 <li><strong>options.storage</strong>: the json file that will be used to store giveaways</li>
@@ -128,16 +128,16 @@ You can pass a list of options to this method to customize the giveaway. Here is
 });
 </code></pre>
 <ul>
-<li><strong>options.time</strong>: the giveaway duration</li>
-<li><strong>options.prize</strong>: the giveaway prize</li>
-<li><strong>options.winnerCount</strong>: the number of giveaway winners</li>
-<li><strong>options.botsCanWin</strong>: whether the bots can win a giveaway</li>
+<li><strong>options.time</strong>: the giveaway duration.</li>
+<li><strong>options.prize</strong>: the giveaway prize.</li>
+<li><strong>options.winnerCount</strong>: the number of giveaway winners.</li>
+<li><strong>options.botsCanWin</strong>: whether the bots can win a giveaway.</li>
 <li><strong>options.exemptPermissions</strong>: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.</li>
 <li><strong>options.embedColor</strong>: a hexadecimal color for the embeds of giveaways.</li>
 <li><strong>options.embedColorEnd</strong>: a hexadecimal color the embeds of giveaways when they are ended.</li>
-<li><strong>options.reaction</strong>: the reaction that users will have to react to in order to participate!</li>
+<li><strong>options.reaction</strong>: the reaction that users will have to react to in order to participate.</li>
 </ul>
-<p>This allows you to launch a giveaway. Once the <code>start()</code> function is called, the giveaway starts and you only have to observe the result, the module does the rest!</p>
+<p>This allows you to start a new giveaway. Once the <code>start()</code> function is called, the giveaway starts and you only have to observe the result, the package does the rest!</p>
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
@@ -169,7 +169,7 @@ You can pass a list of options to this method to customize the giveaway. Here is
 
 });
 </code></pre>
-<p><strong>options.winnerCount</strong>: the number of winners to pick</p>
+<p><strong>options.winnerCount</strong>: the number of winners to pick.</p>
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
 </a>
@@ -194,10 +194,10 @@ You can pass a list of options to this method to customize the giveaway. Here is
 
 });
 </code></pre>
-<p><strong>options.newWinnerCount</strong>: the new number of winners<br>
-<strong>options.newPrize</strong>: the new prize<br>
-<strong>options.addTime</strong>: the number of milliseconds to add to the giveaway duration
-<strong>options.setEndTimestamp</strong>: the timestamp of the new end date. <code>Date.now()+1000</code></p>
+<p><strong>options.newWinnerCount</strong>: the new number of winners.<br>
+<strong>options.newPrize</strong>: the new prize.<br>
+<strong>options.addTime</strong>: the number of milliseconds to add to the giveaway duration.<br>
+<strong>options.setEndTimestamp</strong>: the timestamp of the new end date. <code>Date.now()+1000</code>.</p>
 <p>⚠️ Tips: to reduce giveaway time, define <code>addTime</code> with a negative number! For example <code>addTime: -5000</code> will reduce giveaway time by 5 seconds!</p>
 <h3>Delete a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on(&quot;message&quot;, (message) => {
@@ -220,20 +220,21 @@ You can pass a list of options to this method to customize the giveaway. Here is
 <h2>🇫🇷 Translation</h2>
 <p>You can also pass a <code>messages</code> parameter for <code>start()</code> function, if you want to translate the bot text :</p>
 <ul>
-<li><strong>options.messages.giveaway</strong>: the message that will be displayed above the embeds</li>
-<li><strong>options.messages.giveawayEnded</strong>: the message that will be displayed above the embeds when the giveaway is terminated</li>
-<li><strong>options.messages.timeRemaining</strong>: the message that displays the remaining time (the timer)</li>
-<li><strong>options.messages.inviteToParticipate</strong>: the message that invites users to participate</li>
-<li><strong>options.messages.winMessage</strong>: the message that will be displayed to congratulate the winner(s) when the giveaway is terminated</li>
-<li><strong>options.messages.embedFooter</strong>: the message displayed at the bottom of the embeds</li>
-<li><strong>options.messages.noWinner</strong>: the message that is displayed if no winner can be drawn</li>
-<li><strong>options.messages.winners</strong>: simply the word &quot;winner&quot; in your language</li>
-<li><strong>options.messages.endedAt</strong>: simply the words &quot;Ended at&quot; in your language</li>
-<li><strong>options.messages.units.seconds</strong>: simply the word &quot;seconds&quot; in your language</li>
-<li><strong>options.messages.units.minutes</strong>: simply the word &quot;minutes&quot; in your language</li>
-<li><strong>options.messages.units.hours</strong>: simply the word &quot;hours&quot; in your language</li>
-<li><strong>options.messages.units.days</strong>: simply the word &quot;days&quot; in your language</li>
+<li><strong>options.messages.giveaway</strong>: the message that will be displayed above the embeds.</li>
+<li><strong>options.messages.giveawayEnded</strong>: the message that will be displayed above the embeds when the giveaway is ended.</li>
+<li><strong>options.messages.timeRemaining</strong>: the message that displays the remaining time (the timer).</li>
+<li><strong>options.messages.inviteToParticipate</strong>: the message that invites users to participate.</li>
+<li><strong>options.messages.winMessage</strong>: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.</li>
+<li><strong>options.messages.embedFooter</strong>: the message displayed at the bottom of the embeds.</li>
+<li><strong>options.messages.noWinner</strong>: the message that is displayed if no winner can be drawn.</li>
+<li><strong>options.messages.winners</strong>: simply the word &quot;winner&quot; in your language.</li>
+<li><strong>options.messages.endedAt</strong>: simply the words &quot;Ended at&quot; in your language.</li>
+<li><strong>options.messages.units.seconds</strong>: simply the word &quot;seconds&quot; in your language.</li>
+<li><strong>options.messages.units.minutes</strong>: simply the word &quot;minutes&quot; in your language.</li>
+<li><strong>options.messages.units.hours</strong>: simply the word &quot;hours&quot; in your language.</li>
+<li><strong>options.messages.units.days</strong>: simply the word &quot;days&quot; in your language.</li>
 </ul>
+<p><strong>Note</strong>: units should be in the plural.</p>
 <p>For example :</p>
 <pre class="prettyprint source lang-js"><code>manager.start(message.channel, {
     time: ms(args[0]),
@@ -253,7 +254,8 @@ You can pass a list of options to this method to customize the giveaway. Here is
             seconds: &quot;seconds&quot;,
             minutes: &quot;minutes&quot;,
             hours: &quot;hours&quot;,
-            days: &quot;days&quot;
+            days: &quot;days&quot;,
+            pluralS: false // Not needed, because units end with a S so it will automatically removed if the unit value is lower than 2
         }
     }
 });
@@ -268,7 +270,7 @@ You can pass a list of options to this method to customize the giveaway. Here is
     message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
 });
 </code></pre>
-<p><strong>options.messages.congrat</strong>: the message of congratulations<br>
+<p><strong>options.messages.congrat</strong>: the congratulatory message.<br>
 <strong>options.messages.error</strong>: the error message if there is no valid participations.</p></article>
     </section>
 
