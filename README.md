@@ -1,5 +1,11 @@
 # Discord Giveaways
 
+[![downloadsBadge](https://img.shields.io/npm/dt/discord-giveaways?style=for-the-badge)](https://npmjs.com/discord-backup)
+[![versionBadge](https://img.shields.io/npm/v/discord-giveaways?style=for-the-badge)](https://npmjs.com/discord-backup)
+[![doc](https://img.shields.io/badge/Documentation-Click%20here-blue?style=for-the-badge)](https://discord-giveaways.js.org)
+[![patreonBadge](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2FAndroz2091%2Fpledges&style=for-the-badge)](https://patreon.com/Androz2091)
+
+
 Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows you to easily create giveaways!
 
 *   The duration of the Giveaway is customizable!
@@ -13,16 +19,6 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 ```js
 npm install --save discord-giveaways
 ```
-
-## Changelog
-
-*   Add `fetch()` function to get the complete list of the giveaways!
-*   Add `reroll()` function to reroll a giveaway!
-*   Add `edit()` function to edit a giveaway!
-*   Fix a bug with the translation
-*   Add `delete()` function to delete a giveaway
-*   Supports Discord.js v11 **and** Discord.js v12
-*   Add storage option
 
 ## Examples
 
