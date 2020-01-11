@@ -9,7 +9,7 @@
 Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows you to easily create giveaways!
 
 *   The duration of the Giveaway is customizable!
-*   Automatic restart after bot crash
+*   Automatic restart after bot crash!
 *   Update of the timer every X seconds!
 *   The strings are fully customizable so you can adapt them to your language!
 *   And customizable prize, customizable number of winners, customizable ignored members, and more!
@@ -53,8 +53,8 @@ client.on("ready", () => {
 client.login(settings.token);
 ```
 
-After that, giveaways that are not yet completed will start to be updated again and new giveaways can be launched.
-You can pass a list of options to this method to customize the giveaway. Here is a list of them:
+After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
+You can pass an options object to customize the giveaways. Here is a list of them:
 
 *   **client**: the discord client (your discord bot instance)
 *   **options.storage**: the json file that will be used to store giveaways
@@ -90,16 +90,16 @@ client.on("message", (message) => {
 });
 ```
 
-*   **options.time**: the giveaway duration  
-*   **options.prize**: the giveaway prize  
-*   **options.winnerCount**: the number of giveaway winners
-*   **options.botsCanWin**: whether the bots can win a giveaway
-*   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
-*   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
+*   **options.time**: the giveaway duration.  
+*   **options.prize**: the giveaway prize.  
+*   **options.winnerCount**: the number of giveaway winners.  
+*   **options.botsCanWin**: whether the bots can win a giveaway.  
+*   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.  
+*   **options.embedColor**: a hexadecimal color for the embeds of giveaways.  
 *   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
-*   **options.reaction**: the reaction that users will have to react to in order to participate!
+*   **options.reaction**: the reaction that users will have to react to in order to participate.  
 
-This allows you to launch a giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the module does the rest!
+This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the package does the rest!
 
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
@@ -138,7 +138,7 @@ client.on("message", (message) => {
 });
 ```
 
-**options.winnerCount**: the number of winners to pick
+**options.winnerCount**: the number of winners to pick.
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -168,10 +168,10 @@ client.on("message", (message) => {
 });
 ```
 
-**options.newWinnerCount**: the new number of winners  
-**options.newPrize**: the new prize  
-**options.addTime**: the number of milliseconds to add to the giveaway duration
-**options.setEndTimestamp**: the timestamp of the new end date. `Date.now()+1000`
+**options.newWinnerCount**: the new number of winners.  
+**options.newPrize**: the new prize.  
+**options.addTime**: the number of milliseconds to add to the giveaway duration.  
+**options.setEndTimestamp**: the timestamp of the new end date. `Date.now()+1000`.  
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
@@ -201,19 +201,21 @@ When you use the delete function, the giveaway data and the message of the givea
 
 You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
 
-* **options.messages.giveaway**: the message that will be displayed above the embeds
-* **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is terminated
-* **options.messages.timeRemaining**: the message that displays the remaining time (the timer)
-* **options.messages.inviteToParticipate**: the message that invites users to participate
-* **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is terminated
-* **options.messages.embedFooter**: the message displayed at the bottom of the embeds
-* **options.messages.noWinner**: the message that is displayed if no winner can be drawn
-* **options.messages.winners**: simply the word "winner" in your language
-* **options.messages.endedAt**: simply the words "Ended at" in your language
-* **options.messages.units.seconds**: simply the word "seconds" in your language
-* **options.messages.units.minutes**: simply the word "minutes" in your language
-* **options.messages.units.hours**: simply the word "hours" in your language
-* **options.messages.units.days**: simply the word "days" in your language
+* **options.messages.giveaway**: the message that will be displayed above the embeds.
+* **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
+* **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
+* **options.messages.inviteToParticipate**: the message that invites users to participate.
+* **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
+* **options.messages.embedFooter**: the message displayed at the bottom of the embeds.
+* **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
+* **options.messages.winners**: simply the word "winner" in your language.
+* **options.messages.endedAt**: simply the words "Ended at" in your language.
+* **options.messages.units.seconds**: simply the word "seconds" in your language.
+* **options.messages.units.minutes**: simply the word "minutes" in your language.
+* **options.messages.units.hours**: simply the word "hours" in your language.
+* **options.messages.units.days**: simply the word "days" in your language.
+
+**Note**: units should be in the plural.
 
 For example :
 
@@ -236,7 +238,8 @@ manager.start(message.channel, {
             seconds: "seconds",
             minutes: "minutes",
             hours: "hours",
-            days: "days"
+            days: "days",
+            pluralS: false // Not needed, because units end with a S so it will automatically removed if the unit value is lower than 2
         }
     }
 });
@@ -255,5 +258,5 @@ manager.reroll(messageID, {
 });
 ```
 
-**options.messages.congrat**: the message of congratulations  
+**options.messages.congrat**: the congratulatory message.  
 **options.messages.error**: the error message if there is no valid participations.
