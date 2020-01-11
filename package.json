@@ -26,9 +26,9 @@
   "author": "Androz2091",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/packcord/discord-giveaways/issues"
+    "url": "https://github.com/Androz2091/discord-giveaways/issues"
   },
-  "homepage": "https://github.com/packcord/discord-giveaways#readme",
+  "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
     "merge-options": "^2.0.0"
   },
