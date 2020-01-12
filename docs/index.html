@@ -65,6 +65,7 @@
 <pre class="prettyprint source lang-js"><code>npm install --save discord-giveaways
 </code></pre>
 <h2>Examples</h2>
+<p>You can read this example bot on Github: <a href="https://github.com/Androz2091/giveaways-bot">giveaways-bot</a></p>
 <h3>Launch of the module</h3>
 <pre class="prettyprint source lang-js"><code>const Discord = require(&quot;discord.js&quot;),
 client = new Discord.Client(),
@@ -86,6 +87,8 @@ const manager = new GiveawaysManager(client, {
         reaction: &quot;🎉&quot;
     }
 });
+// We now have a giveawaysManager property to access the manager everywhere!
+client.giveawaysManager = manager;
 
 client.on(&quot;ready&quot;, () => {
     console.log(&quot;I'm ready !&quot;);
@@ -116,7 +119,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
         // g!start-giveaway 2d 1 Awesome prize!
         // will create a giveaway with a duration of two days, with one winner and the prize will be &quot;Awesome prize!&quot;
 
-        manager.start(message.channel, {
+        client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
             prize: args.slice(2).join(&quot; &quot;),
             winnerCount: parseInt(args[1])
@@ -143,13 +146,13 @@ You can pass an options object to customize the giveaways. Here is a list of the
 </a>
 <h3>Fetch the giveaways</h3>
 <pre class="prettyprint source lang-js"><code>    // The list of all the giveaways
-    let allGiveaways = manager.giveaways; // [ {Giveaway}, {Giveaway} ]
+    let allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
     // The list of all the giveaways on the server with ID &quot;1909282092&quot;
-    let onServer = manager.giveaways.filter((g) => g.guildID === &quot;1909282092&quot;);
+    let onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === &quot;1909282092&quot;);
 
     // The list of the current giveaways (not ended)
-    let notEnded = manager.giveaways.filter((g) => !g.ended);
+    let notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 </code></pre>
 <h3>Reroll a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on(&quot;message&quot;, (message) => {
@@ -160,7 +163,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 
     if(command === &quot;reroll&quot;){
         let messageID = args[0];
-        manager.reroll(messageID).then(() => {
+        client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send(&quot;Success! Giveaway rerolled!&quot;);
         }).catch((err) => {
             message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
@@ -181,7 +184,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 
     if(command === &quot;edit&quot;){
         let messageID = args[0];
-        manager.edit(messageID, {
+        client.giveawaysManager.edit(messageID, {
             newWinnerCount: 3,
             newPrize: &quot;New Prize!&quot;,
             addTime: 5000
@@ -207,7 +210,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 
     if(command === &quot;delete&quot;){
         let messageID = args[0];
-        manager.delete(messageID).then(() => {
+        client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send(&quot;Success! Giveaway deleted!&quot;);
         }).catch((err) => {
             message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
@@ -236,7 +239,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 </ul>
 <p><strong>Note</strong>: units should be in the plural.</p>
 <p>For example :</p>
-<pre class="prettyprint source lang-js"><code>manager.start(message.channel, {
+<pre class="prettyprint source lang-js"><code>client.giveawaysManager.start(message.channel, {
     time: ms(args[0]),
     prize: args.slice(2).join(&quot; &quot;),
     winnerCount: parseInt(args[1]),
@@ -261,7 +264,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 });
 </code></pre>
 <p>And for the <code>reroll()</code> function:</p>
-<pre class="prettyprint source lang-js"><code>manager.reroll(messageID, {
+<pre class="prettyprint source lang-js"><code>client.giveawaysManager.reroll(messageID, {
     messages: {
         congrat: &quot;:tada: New winner(s) : {winners}! Congratulations!&quot;,
         error: &quot;No valid participations, no winners can be chosen!&quot;

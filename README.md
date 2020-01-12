@@ -22,6 +22,8 @@ npm install --save discord-giveaways
 
 ## Examples
 
+You can read this example bot on Github: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
+
 ### Launch of the module
 
 ```js
@@ -45,6 +47,8 @@ const manager = new GiveawaysManager(client, {
         reaction: "🎉"
     }
 });
+// We now have a giveawaysManager property to access the manager everywhere!
+client.giveawaysManager = manager;
 
 client.on("ready", () => {
     console.log("I'm ready !");
@@ -78,7 +82,7 @@ client.on("message", (message) => {
         // g!start-giveaway 2d 1 Awesome prize!
         // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
-        manager.start(message.channel, {
+        client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
             prize: args.slice(2).join(" "),
             winnerCount: parseInt(args[1])
@@ -109,13 +113,13 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 
 ```js
     // The list of all the giveaways
-    let allGiveaways = manager.giveaways; // [ {Giveaway}, {Giveaway} ]
+    let allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
     // The list of all the giveaways on the server with ID "1909282092"
-    let onServer = manager.giveaways.filter((g) => g.guildID === "1909282092");
+    let onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === "1909282092");
 
     // The list of the current giveaways (not ended)
-    let notEnded = manager.giveaways.filter((g) => !g.ended);
+    let notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 ```
 ### Reroll a giveaway
 
@@ -128,7 +132,7 @@ client.on("message", (message) => {
 
     if(command === "reroll"){
         let messageID = args[0];
-        manager.reroll(messageID).then(() => {
+        client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send("Success! Giveaway rerolled!");
         }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
@@ -154,7 +158,7 @@ client.on("message", (message) => {
 
     if(command === "edit"){
         let messageID = args[0];
-        manager.edit(messageID, {
+        client.giveawaysManager.edit(messageID, {
             newWinnerCount: 3,
             newPrize: "New Prize!",
             addTime: 5000
@@ -185,7 +189,7 @@ client.on("message", (message) => {
 
     if(command === "delete"){
         let messageID = args[0];
-        manager.delete(messageID).then(() => {
+        client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send("Success! Giveaway deleted!");
         }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
@@ -220,7 +224,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 For example :
 
 ```js
-manager.start(message.channel, {
+client.giveawaysManager.start(message.channel, {
     time: ms(args[0]),
     prize: args.slice(2).join(" "),
     winnerCount: parseInt(args[1]),
@@ -248,7 +252,7 @@ manager.start(message.channel, {
 And for the `reroll()` function:
 
 ```js
-manager.reroll(messageID, {
+client.giveawaysManager.reroll(messageID, {
     messages: {
         congrat: ":tada: New winner(s) : {winners}! Congratulations!",
         error: "No valid participations, no winners can be chosen!"
