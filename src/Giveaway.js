@@ -55,7 +55,7 @@ class Giveaway extends EventEmitter {
          * The number of winners for this giveaway
          * @type {number}
          */
-        this.winnerCount = options.winnerCount;
+        this.winnerCount = parseInt(options.winnerCount);
         /**
          * The giveaway messages
          * @type {GiveawaysMessages}
