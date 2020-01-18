@@ -15,9 +15,9 @@ const Discord = require('discord.js');
  * @property {string} [endedAt='End at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {Object} [units]
  * @property {string} [units.seconds='seconds'] The name of the 'seconds' units
- * @property {string} [units.seconds='minutes'] The name of the 'minutes' units
- * @property {string} [units.seconds='hours'] The name of the 'hours' units
- * @property {string} [units.seconds='days'] The name of the 'days' units
+ * @property {string} [units.minutes='minutes'] The name of the 'minutes' units
+ * @property {string} [units.hours='hours'] The name of the 'hours' units
+ * @property {string} [units.days='days'] The name of the 'days' units
  * @property {Boolean} [units.pluralS='false'] Whether to force removing the "S" which marks the plural when the value is lower than 2
  */
 const GiveawaysMessages = {
