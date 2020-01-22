@@ -8,14 +8,6 @@ const readFileAsync = promisify(readFile);
 const Discord = require('discord.js');
 const { defaultGiveawaysManagerOptions, defaultGiveawaysMessages, defaultGiveawayRerollOptions } = require('./Util');
 const Giveaway = require('./Giveaway');
-const {
-    GIVEAWAY_NOT_FOUND,
-    GIVEAWAY_NOT_ENDED,
-    GIVEAWAY_ENDED,
-    GIVEAWAY_CHANNEL,
-    GIVEAWAY_MESSAGE,
-    MANAGER_NOT_READY
-} = require('./errors');
 
 /**
  * Giveaways Manager
@@ -68,18 +60,18 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             let giveawayData = this.giveaways.find(g => g.messageID === messageID);
             if (!giveawayData) {
-                throw new Error(GIVEAWAY_NOT_FOUND);
+                return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
             if (giveaway.ended) {
-                throw new Error(GIVEAWAY_ENDED);
+                return reject('Giveaway with message ID ' + giveaway.messageID + ' is already ended');
             }
             if (!giveaway.channel) {
-                throw new Error(GIVEAWAY_CHANNEL);
+                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) {
-                throw new Error(GIVEAWAY_MESSAGE);
+                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
             }
             let winners = await giveaway.roll();
             this.emit('end', giveaway, winners);
@@ -142,7 +134,7 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options = {}) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) {
-                throw new Error(MANAGER_NOT_READY);
+                return reject('The manager is not ready yet.');
             }
             if (!options.messages) {
                 options.messages = defaultGiveawaysMessages;
@@ -205,18 +197,18 @@ class GiveawaysManager extends EventEmitter {
             options = mergeOptions(defaultGiveawayRerollOptions, options);
             let giveawayData = this.giveaways.find(g => g.messageID === messageID);
             if (!giveawayData) {
-                throw new Error(GIVEAWAY_NOT_FOUND);
+                return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
             if (!giveaway.ended) {
-                throw new Error(GIVEAWAY_NOT_ENDED);
+                return reject('Giveaway with message ID ' + giveaway.messageID + ' is not ended.');
             }
             if (!giveaway.channel) {
-                throw new Error(GIVEAWAY_CHANNEL);
+                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) {
-                throw new Error(GIVEAWAY_MESSAGE);
+                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
             }
             let winners = await giveaway.roll();
             if (winners.length > 0) {
@@ -247,18 +239,18 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             let giveawayData = this.giveaways.find(g => g.messageID === messageID);
             if (!giveawayData) {
-                throw new Error(GIVEAWAY_NOT_FOUND);
+                return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
             if (giveaway.ended) {
-                throw new Error(GIVEAWAY_ENDED);
+                return reject('Giveaway with message ID ' + giveaway.messageID + ' is already ended.');
             }
             if (!giveaway.channel) {
-                throw new Error(GIVEAWAY_CHANNEL);
+                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) {
-                throw new Error(GIVEAWAY_MESSAGE);
+                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
             }
             // Update data
             let modifiedGiveawayData = giveawayData;
@@ -282,15 +274,15 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             let giveawayData = this.giveaways.find(g => g.messageID === messageID);
             if (!giveawayData) {
-                throw new Error(GIVEAWAY_NOT_FOUND);
+                return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
             if (!giveaway.channel) {
-                throw new Error(GIVEAWAY_CHANNEL);
+                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) {
-                throw new Error(GIVEAWAY_MESSAGE);
+                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
             }
             // Delete the giveaway message
             giveaway.message.delete();
