@@ -48,7 +48,7 @@ const GiveawaysMessages = {
  * @property {string} [DJSlib] The Discord.js library version you want to use
  * @property {Object} [default] The default options for new giveaways.
  * @property {Boolean} [botsCanWin=false] Whether the bots are able to win a giveaway.
- * @property {Array<PermissionsResolvable>} [exemptPermissions=['MANAGE_MESSAGES', 'ADMINISTRATOR']] Members with any of these permissions won't be able to win a giveaway.
+ * @property {Array<PermissionsResolvable>} [exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
  * @property {string} [embedColor='#FF0000'] The giveaway embeds color when they are running
  * @property {string} [embedColorEnd='#000000'] The giveaway embeds color when they are ended
@@ -60,7 +60,7 @@ const GiveawaysManagerOptions = {
     DJSlib: Discord.version.split('.')[0] === '12' ? 'master' : 'stable',
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
+        exemptPermissions: [],
         exemptMembers: () => false,
         embedColor: '#FF0000',
         reaction: '🎉'
