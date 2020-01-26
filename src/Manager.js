@@ -281,11 +281,10 @@ class GiveawaysManager extends EventEmitter {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) {
-                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
+            if (giveaway.message) {
+                // Delete the giveaway message
+                giveaway.message.delete();
             }
-            // Delete the giveaway message
-            giveaway.message.delete();
             this.giveaways = this.giveaways.filter(g => g.messageID !== giveawayData.messageID);
             await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
             resolve();
