@@ -268,9 +268,10 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {string} messageID  The message ID of the giveaway
+     * @param {Boolean} doNotDeleteMessage Whether the giveaway message shouldn't be deleted
      * @returns {Promise<void>}
      */
-    delete(messageID) {
+    delete(messageID, doNotDeleteMessage) {
         return new Promise(async (resolve, reject) => {
             let giveawayData = this.giveaways.find(g => g.messageID === messageID);
             if (!giveawayData) {
@@ -280,10 +281,12 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
-            await giveaway.fetchMessage().catch(() => {});
-            if (giveaway.message) {
-                // Delete the giveaway message
-                giveaway.message.delete();
+            if(!doNotDeleteMessage){
+                await giveaway.fetchMessage().catch(() => {});
+                if (giveaway.message) {
+                    // Delete the giveaway message
+                    giveaway.message.delete();
+                }
             }
             this.giveaways = this.giveaways.filter(g => g.messageID !== giveawayData.messageID);
             await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
