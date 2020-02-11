@@ -140,7 +140,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get channel() {
-        return this.client.channels.get(this.channelID);
+        return this.manager.master ? this.client.channels.cache.get(this.channelID) : this.client.channels.get(this.channelID);
     }
 
     /**
@@ -225,9 +225,9 @@ class Giveaway extends EventEmitter {
         let users = (this.manager.master ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
             .filter(u => u.id !== this.message.client.id)
-            .filter(u => this.channel.guild.members.get(u.id))
-            .filter(u => !(this.exemptMembers(this.channel.guild.members.get(u.id))))
-            .filter(u => !this.exemptPermissions.some(p => this.channel.guild.members.get(u.id).hasPermission(p)))
+            .filter(u => this.manager.master ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))
+            .filter(u => !(this.exemptMembers(this.manager.master ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))))
+            .filter(u => !this.exemptPermissions.some(p => (this.manager.master ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id)).hasPermission(p)))
             .random(winnerCount || this.winnerCount)
             .filter(u => u);
         return users;
