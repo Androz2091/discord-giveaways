@@ -220,7 +220,7 @@ class Giveaway extends EventEmitter {
      */
     async roll(winnerCount) {
         // Pick the winner
-        let reaction = (this.manager.master ? this.message.reactions :  this.message.reactions.cache).find(r => r.emoji.name === this.reaction);
+        let reaction = (this.manager.master ? this.message.reactions.cache :  this.message.reactions).find(r => r.emoji.name === this.reaction);
         if (!reaction) return new Collection();
         let users = (this.manager.master ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
