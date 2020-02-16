@@ -23,11 +23,12 @@ const Discord = require('discord.js');
 const GiveawaysMessages = {
     giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
     giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
-    timeRemaining: 'Time remaining: **{duration}**!',
+    timeRemaining: 'Time remaining: **{duration}**',
     inviteToParticipate: 'React with 🎉 to participate!',
     winMessage: 'Congratulations, {winners}! You won **{prize}**!',
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
+    hostedBy: 'Hosted by: {user}',
     winners: 'winner(s)',
     endedAt: 'End at',
     units: {
@@ -74,6 +75,7 @@ const GiveawaysManagerOptions = {
  * @property {string} time The giveaway duration
  * @property {string} winnerCount The number of winners for the giveaway
  * @property {string} prize The giveaway prize
+ * @property {User} [hostedBy] The user who hosts the giveaway
  * @property {Boolean} [botsCanWin] Whether the bots are able to win a giveaway.
  * @property {Array<PermissionsResolvable>} [exemptPermissions] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.

@@ -57,6 +57,11 @@ class Giveaway extends EventEmitter {
          */
         this.winnerCount = parseInt(options.winnerCount);
         /**
+         * The mention of the user who hosts this giveaway
+         * @type {?string}
+         */
+        this.hostedBy = options.hostedBy;
+        /**
          * The giveaway messages
          * @type {GiveawaysMessages}
          */

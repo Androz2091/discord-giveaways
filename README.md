@@ -20,6 +20,12 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 npm install --save discord-giveaways
 ```
 
+## Changelog
+
+* Add `exemptMembers()` option to Manager#start()
+* Support for Discord.js master branch
+* Add `hostedBy` option to Manager#start()
+
 ## Examples
 
 You can read this example bot on Github: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
@@ -96,6 +102,7 @@ client.on("message", (message) => {
 
 *   **options.time**: the giveaway duration.  
 *   **options.prize**: the giveaway prize.  
+*   **options.hostedBy**: the user who hosts the giveaway.
 *   **options.winnerCount**: the number of giveaway winners.  
 *   **options.botsCanWin**: whether the bots can win a giveaway.  
 *   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.  
@@ -236,6 +243,7 @@ client.giveawaysManager.start(message.channel, {
         winMessage: "Congratulations, {winners}! You won **{prize}**!",
         embedFooter: "Giveaways",
         noWinner: "Giveaway cancelled, no valid participations.",
+        hostedBy: "Hosted by: {user}",
         winners: "winner(s)",
         endedAt: "Ended at",
         units: {

@@ -87,7 +87,7 @@ class GiveawaysManager extends EventEmitter {
                     .setAuthor(giveaway.prize)
                     .setColor(giveaway.embedColorEnd)
                     .setFooter(giveaway.messages.endedAt)
-                    .setDescription(str)
+                    .setDescription(`${str}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
                     .setTimestamp(new Date(giveaway.endAt).toISOString());
                 giveaway.message.edit(giveaway.messages.giveawayEnded, { embed });
                 giveaway.message.channel.send(
@@ -103,7 +103,7 @@ class GiveawaysManager extends EventEmitter {
                     .setAuthor(giveaway.prize)
                     .setColor(giveaway.embedColorEnd)
                     .setFooter(giveaway.messages.endedAt)
-                    .setDescription(giveaway.messages.noWinner)
+                    .setDescription(`${giveaway.messages.noWinner}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
                     .setTimestamp(new Date(giveaway.endAt).toISOString());
                 giveaway.message.edit(giveaway.messages.giveawayEnded, { embed });
                 this._markAsEnded(giveaway.messageID);
@@ -158,6 +158,7 @@ class GiveawaysManager extends EventEmitter {
                 channelID: channel.id,
                 ended: false,
                 prize: options.prize,
+                hostedBy: (options.hostedBy ? options.hostedBy.toString() : null),
                 messages: options.messages,
                 reaction: options.reaction,
                 botsCanWin: options.botsCanWin,
@@ -172,7 +173,7 @@ class GiveawaysManager extends EventEmitter {
                 .setAuthor(giveaway.prize)
                 .setColor(giveaway.embedColor)
                 .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(`${options.messages.inviteToParticipate}\n${giveaway.content}`)
+                .setDescription(`${options.messages.inviteToParticipate}\n${giveaway.content}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
                 .setTimestamp(new Date(giveaway.endAt).toISOString());
             let message = await channel.send(options.messages.giveaway, { embed });
             message.react(giveaway.reaction);
@@ -346,6 +347,7 @@ class GiveawaysManager extends EventEmitter {
             prize: giveaway.prize,
             messages: giveaway.messages
         };
+        if (giveaway.options.hostedBy) giveawayData.hostedBy = giveaway.options.hostedBy;
         if (giveaway.options.embedColor) giveawayData.embedColor = giveaway.options.embedColor;
         if (giveaway.options.embedColorEnd) giveawayData.embedColorEnd = giveaway.options.embedColorEnd;
         if (giveaway.options.botsCanWin) giveawayData.botsCanWin = giveaway.options.botsCanWin;
@@ -394,7 +396,7 @@ class GiveawaysManager extends EventEmitter {
                 .setAuthor(giveaway.prize)
                 .setColor(giveaway.embedColor)
                 .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(`${giveaway.messages.inviteToParticipate}\n${giveaway.content}`)
+                .setDescription(`${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
                 .setTimestamp(new Date(giveaway.endAt).toISOString());
             giveaway.message.edit(giveaway.messages.giveaway, { embed });
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {

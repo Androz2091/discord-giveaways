@@ -64,6 +64,12 @@
 <h2>Installation</h2>
 <pre class="prettyprint source lang-js"><code>npm install --save discord-giveaways
 </code></pre>
+<h2>Changelog</h2>
+<ul>
+<li>Add <code>exemptMembers()</code> option to Manager#start()</li>
+<li>Support for Discord.js master branch</li>
+<li>Add <code>hostedBy</code> option to Manager#start()</li>
+</ul>
 <h2>Examples</h2>
 <p>You can read this example bot on Github: <a href="https://github.com/Androz2091/giveaways-bot">giveaways-bot</a></p>
 <h3>Launch of the module</h3>
@@ -133,6 +139,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 <ul>
 <li><strong>options.time</strong>: the giveaway duration.</li>
 <li><strong>options.prize</strong>: the giveaway prize.</li>
+<li><strong>options.hostedBy</strong>: the user who hosts the giveaway.</li>
 <li><strong>options.winnerCount</strong>: the number of giveaway winners.</li>
 <li><strong>options.botsCanWin</strong>: whether the bots can win a giveaway.</li>
 <li><strong>options.exemptPermissions</strong>: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.</li>
@@ -251,6 +258,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
         winMessage: &quot;Congratulations, {winners}! You won **{prize}**!&quot;,
         embedFooter: &quot;Giveaways&quot;,
         noWinner: &quot;Giveaway cancelled, no valid participations.&quot;,
+        hostedBy: &quot;Hosted by: {user}&quot;,
         winners: &quot;winner(s)&quot;,
         endedAt: &quot;Ended at&quot;,
         units: {
