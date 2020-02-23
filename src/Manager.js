@@ -156,6 +156,7 @@ class GiveawaysManager extends EventEmitter {
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
                 channelID: channel.id,
+                guildID: channel.guild.id,
                 ended: false,
                 prize: options.prize,
                 hostedBy: (options.hostedBy ? options.hostedBy.toString() : null),
@@ -340,6 +341,7 @@ class GiveawaysManager extends EventEmitter {
         let giveawayData = {
             messageID: giveaway.messageID,
             channelID: giveaway.channelID,
+            guildID: giveaway.guildID,
             startAt: giveaway.startAt,
             endAt: giveaway.endAt,
             ended: giveaway.ended,

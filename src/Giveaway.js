@@ -52,6 +52,11 @@ class Giveaway extends EventEmitter {
          */
         this.messageID = options.messageID;
         /**
+         * The guild ID of the giveaway
+         * @type {Snowflake}
+         */
+        this.guildID = options.guildID;
+        /**
          * The number of winners for this giveaway
          * @type {number}
          */
