@@ -58,7 +58,7 @@ const GiveawaysMessages = {
 const GiveawaysManagerOptions = {
     storage: './giveaways.json',
     updateCountdownEvery: 5000,
-    DJSlib: Discord.version.split('.')[0] === '12' ? 'master' : 'stable',
+    DJSlib: Discord.version.split('.')[0] === '12' ? 'v12' : 'v11',
     default: {
         botsCanWin: false,
         exemptPermissions: [],

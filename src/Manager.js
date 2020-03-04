@@ -41,10 +41,10 @@ class GiveawaysManager extends EventEmitter {
          */
         this.options = mergeOptions(defaultGiveawaysManagerOptions, options);
         /**
-         * Whether the Discord.js library version is the master one
+         * Whether the Discord.js library version is the v12 one
          * @type {boolean}
          */
-        this.master = this.options.DJSlib === 'master';
+        this.v12 = this.options.DJSlib === 'v12';
         this._init();
     }
 
@@ -82,7 +82,7 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
                     ': ' +
                     formattedWinners;
-                let embed = this.master ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+                let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
                 embed
                     .setAuthor(giveaway.prize)
                     .setColor(giveaway.embedColorEnd)
@@ -98,7 +98,7 @@ class GiveawaysManager extends EventEmitter {
                 this._markAsEnded(giveaway.messageID);
                 resolve(winners);
             } else {
-                let embed = this.master ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+                let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
                 embed
                     .setAuthor(giveaway.prize)
                     .setColor(giveaway.embedColorEnd)
@@ -169,7 +169,7 @@ class GiveawaysManager extends EventEmitter {
                 embedColorEnd: options.embedColorEnd,
                 reaction: options.reaction
             });
-            let embed = this.master ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+            let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
             embed
                 .setAuthor(giveaway.prize)
                 .setColor(giveaway.embedColor)
@@ -393,7 +393,7 @@ class GiveawaysManager extends EventEmitter {
                 await this._markAsEnded(giveaway.messageID);
                 return;
             }
-            let embed = this.master ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+            let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
             embed
                 .setAuthor(giveaway.prize)
                 .setColor(giveaway.embedColor)

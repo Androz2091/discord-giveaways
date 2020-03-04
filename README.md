@@ -23,7 +23,7 @@ npm install --save discord-giveaways
 ## Changelog
 
 * Add `exemptMembers()` option to Manager#start()
-* Support for Discord.js master branch
+* Support for Discord.js v12
 * Add `hostedBy` option to Manager#start()
 
 ## Examples

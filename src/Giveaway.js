@@ -150,7 +150,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get channel() {
-        return this.manager.master ? this.client.channels.cache.get(this.channelID) : this.client.channels.get(this.channelID);
+        return this.manager.v12 ? this.client.channels.cache.get(this.channelID) : this.client.channels.get(this.channelID);
     }
 
     /**
@@ -210,7 +210,7 @@ class Giveaway extends EventEmitter {
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
             let message = null;
-            if (this.manager.master) {
+            if (this.manager.v12) {
                 message = await this.channel.messages.fetch(this.messageID).catch(() => {});
             } else {
                 message = await this.channel.fetchMessage(this.messageID).catch(() => {});
@@ -230,14 +230,14 @@ class Giveaway extends EventEmitter {
      */
     async roll(winnerCount) {
         // Pick the winner
-        let reaction = (this.manager.master ? this.message.reactions.cache :  this.message.reactions).find(r => r.emoji.name === this.reaction);
+        let reaction = (this.manager.v12 ? this.message.reactions.cache :  this.message.reactions).find(r => r.emoji.name === this.reaction);
         if (!reaction) return new Collection();
-        let users = (this.manager.master ? await reaction.users.fetch() : await reaction.fetchUsers())
+        let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
             .filter(u => u.id !== this.message.client.id)
-            .filter(u => this.manager.master ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))
-            .filter(u => !(this.exemptMembers(this.manager.master ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))))
-            .filter(u => !this.exemptPermissions.some(p => (this.manager.master ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id)).hasPermission(p)))
+            .filter(u => this.manager.v12 ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))
+            .filter(u => !(this.exemptMembers(this.manager.v12 ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))))
+            .filter(u => !this.exemptPermissions.some(p => (this.manager.v12 ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id)).hasPermission(p)))
             .random(winnerCount || this.winnerCount)
             .filter(u => u);
         return users;
