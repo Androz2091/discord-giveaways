@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "jsdoc": "^3.6.3",
-    "minami": "^1.2.3",
+    "minami": "github:Androz2091/minami",
     "prettier": "^1.19.1"
   }
 }
