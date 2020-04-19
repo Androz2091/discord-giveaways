@@ -288,7 +288,7 @@ class Giveaway extends EventEmitter {
             if (options.addTime) this.endAt = giveawayData.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
             // Update manager cache
-            this.manager.giveaways = this.giveaways.filter(g => g.messageID !== giveaway.messageID);
+            this.manager.giveaways = this.manager.giveaways.filter(g => g.messageID !== this.messageID);
             this.manager.giveaways.push(this.data);
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
