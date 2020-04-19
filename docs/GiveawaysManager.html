@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Giveaway.html">Giveaway</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#fetchMessage">fetchMessage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#roll">roll</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="GiveawaysManager.html">GiveawaysManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#start">start</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="GiveawaysManager.html#event:end">end</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Giveaway.html">Giveaway</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#fetchMessage">fetchMessage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#roll">roll</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="GiveawaysManager.html">GiveawaysManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#start">start</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="GiveawaysManager.html#event:giveawayEnded">giveawayEnded</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
 </nav>
 
 <div id="main">
@@ -60,7 +60,9 @@
     <h2>Constructor</h2>
     
 
+    
     <h4 class="name" id="GiveawaysManager"><span class="type-signature"></span>new GiveawaysManager<span class="signature">(client, options)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -189,6 +191,10 @@
     
     </tbody>
 </table>
+
+
+
+
 
 
 
@@ -579,7 +585,9 @@
 
     
 
+    
     <h4 class="name" id="delete"><span class="type-signature"></span>delete<span class="signature">(messageID, doNotDeleteMessage)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    
 
     
 
@@ -726,6 +734,8 @@
 
 
 
+
+
 <div class="section-returns">
 <h5>Returns:</h5>
 
@@ -749,6 +759,8 @@
 
 
 
+
+
 </div>
         
             
@@ -756,7 +768,9 @@
 
     
 
+    
     <h4 class="name" id="edit"><span class="type-signature"></span>edit<span class="signature">(messageID, options)</span><span class="type-signature"> &rarr; {<a href="Giveaway.html">Giveaway</a>}</span></h4>
+    
 
     
 
@@ -903,6 +917,8 @@
 
 
 
+
+
 <div class="section-returns">
 <h5>Returns:</h5>
 
@@ -930,6 +946,8 @@
 
 
 
+
+
 <div class="section-examples">
 <h5>Example</h5>
 
@@ -948,7 +966,9 @@
 
     
 
+    
     <h4 class="name" id="end"><span class="type-signature"></span>end<span class="signature">(messageID)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;GuildMember>>}</span></h4>
+    
 
     
 
@@ -1069,6 +1089,8 @@
 
 
 
+
+
 <div class="section-returns">
 <h5>Returns:</h5>
 
@@ -1096,6 +1118,8 @@
 
 
 
+
+
 <div class="section-examples">
 <h5>Example</h5>
 
@@ -1110,7 +1134,9 @@
 
     
 
+    
     <h4 class="name" id="reroll"><span class="type-signature"></span>reroll<span class="signature">(messageID, options)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;GuildMember>>}</span></h4>
+    
 
     
 
@@ -1257,6 +1283,8 @@
 
 
 
+
+
 <div class="section-returns">
 <h5>Returns:</h5>
 
@@ -1284,6 +1312,8 @@
 
 
 
+
+
 <div class="section-examples">
 <h5>Example</h5>
 
@@ -1298,7 +1328,9 @@
 
     
 
+    
     <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">(channel, options)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Giveaway.html">Giveaway</a>>}</span></h4>
+    
 
     
 
@@ -1445,6 +1477,8 @@
 
 
 
+
+
 <div class="section-returns">
 <h5>Returns:</h5>
 
@@ -1465,6 +1499,8 @@
 
     
 </div>
+
+
 
 
 
@@ -1498,7 +1534,9 @@
 
     
 
-    <h4 class="name" id="event:end">end</h4>
+    
+    <h4 class="name" id="event:giveawayEnded">giveawayEnded</h4>
+    
 
     
 
@@ -1647,11 +1685,15 @@
 
 
 
+
+
+
+
 <div class="section-examples">
 <h5>Example</h5>
 
     <pre class="prettyprint"><code>// This can be used to add features such as a congratulatory message in DM
-manager.on('end', (giveaway, winners) => {
+manager.on('giveawayEnded', (giveaway, winners) => {
      winners.forEach((member) => {
          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
      });

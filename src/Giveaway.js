@@ -203,6 +203,27 @@ class Giveaway extends EventEmitter {
         return content;
     }
 
+    get data(){
+        return {
+            messageID: giveaway.messageID,
+            channelID: giveaway.channelID,
+            guildID: giveaway.guildID,
+            startAt: giveaway.startAt,
+            endAt: giveaway.endAt,
+            ended: giveaway.ended,
+            winnerCount: giveaway.winnerCount,
+            prize: giveaway.prize,
+            messages: giveaway.messages,
+            hostedBy: this.options.hostedBy,
+            embedColor: this.options.embedColor,
+            embedColorEnd: this.options.embedColorEnd,
+            botsCanWin: this.options.botsCanWin,
+            exemptPermissions: this.options.exemptPermissions,
+            exemptMembers: this.options.exemptMembers,
+            reaction: this.options.reaction
+        };
+    }
+
     /**
      * Fetches the giveaway message in its channel
      * @returns {Promise<Message>} The Discord message
@@ -241,6 +262,37 @@ class Giveaway extends EventEmitter {
             .random(winnerCount || this.winnerCount)
             .filter(u => u);
         return users;
+    }
+
+    /**
+     * Edits the giveaway
+     * @param {GiveawayEditOptions} options The edit options
+     * @returns {Giveaway} The edited giveaway
+     */
+    edit(options = {}) {
+        return new Promise(async (resolve, reject) => {
+            if (this.ended) {
+                return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
+            }
+            if (!this.channel) {
+                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+            }
+            await this.fetchMessage().catch(() => {});
+            if (!this.message) {
+                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            }
+            // Update data
+            if (options.newWinnerCount) this.winnerCount = options.newWinnerCount;
+            if (options.newPrize) this.prize = options.newPrize;
+            if (options.addTime) this.endAt = giveawayData.endAt + options.addTime;
+            if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
+            // Update manager cache
+            this.manager.giveaways = this.giveaways.filter(g => g.messageID !== giveaway.messageID);
+            this.manager.giveaways.push(this.data);
+            // Call the db method
+            await this.manager.editGiveaway(this.messageID, this.data);
+            resolve(this);
+        });
     }
 
     /**
@@ -294,6 +346,35 @@ class Giveaway extends EventEmitter {
                     this.message.edit(this.messages.giveawayEnded, { embed });
                 this.manager._markAsEnded(this.messageID);
                 resolve();
+            }
+        });
+    }
+    
+    /**
+     * Rerolls the giveaway
+     * @param {GiveawayRerollOptions} options
+     * @returns {Promise<GuildMember[]>}
+     */
+    reroll(options){
+        return new Promise(async (resolve, reject) => {
+            if (!this.ended) {
+                return reject('Giveaway with message ID ' + this.messageID + ' is not ended.');
+            }
+            if (!this.channel) {
+                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+            }
+            await this.fetchMessage().catch(() => {});
+            if (!this.message) {
+                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            }
+            let winners = await this.roll();
+            if (winners.length > 0) {
+                let formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
+                this.channel.send(options.messages.congrat.replace('{winners}', formattedWinners));
+                resolve(winners);
+            } else {
+                this.channel.send(options.messages.error);
+                resolve(new Array());
             }
         });
     }

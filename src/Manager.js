@@ -133,7 +133,7 @@ class GiveawaysManager extends EventEmitter {
             message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
-            await this._saveGiveaway(giveaway);
+            await this.saveGiveaway(giveaway.messageID, giveaway.data);
             resolve(giveaway);
         });
     }
@@ -148,33 +148,13 @@ class GiveawaysManager extends EventEmitter {
      * manager.reroll("664900661003157510");
      */
     reroll(messageID, options = {}) {
-        return new Promise(async (resolve, reject) => {
-            options = mergeOptions(defaultGiveawayRerollOptions, options);
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-            if (!giveawayData) {
-                return reject('No giveaway found with ID ' + messageID + '.');
-            }
-            let giveaway = new Giveaway(this, giveawayData);
-            if (!giveaway.ended) {
-                return reject('Giveaway with message ID ' + giveaway.messageID + ' is not ended.');
-            }
-            if (!giveaway.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
-            }
-            await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) {
-                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
-            }
-            let winners = await giveaway.roll();
-            if (winners.length > 0) {
-                let formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
-                giveaway.channel.send(options.messages.congrat.replace('{winners}', formattedWinners));
-                resolve(winners);
-            } else {
-                giveaway.channel.send(options.messages.error);
-                resolve(new Array());
-            }
-        });
+        options = mergeOptions(defaultGiveawayRerollOptions, options);
+        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+        if (!giveawayData) {
+            return reject('No giveaway found with ID ' + messageID + '.');
+        }
+        let giveaway = new Giveaway(this, giveawayData);
+        return giveaway.reroll(options);
     }
 
     /**
@@ -191,33 +171,12 @@ class GiveawaysManager extends EventEmitter {
      * });
      */
     edit(messageID, options = {}) {
-        return new Promise(async (resolve, reject) => {
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-            if (!giveawayData) {
-                return reject('No giveaway found with ID ' + messageID + '.');
-            }
-            let giveaway = new Giveaway(this, giveawayData);
-            if (giveaway.ended) {
-                return reject('Giveaway with message ID ' + giveaway.messageID + ' is already ended.');
-            }
-            if (!giveaway.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
-            }
-            await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) {
-                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
-            }
-            // Update data
-            let modifiedGiveawayData = giveawayData;
-            if (options.newWinnerCount) modifiedGiveawayData.winnerCount = options.newWinnerCount;
-            if (options.newPrize) modifiedGiveawayData.prize = options.newPrize;
-            if (options.addTime) modifiedGiveawayData.endAt = giveawayData.endAt + options.addTime;
-            if (options.setEndTimestamp) modifiedGiveawayData.endAt = options.setEndTimestamp;
-            // Save the giveaway
-            let newGiveaway = new Giveaway(this, modifiedGiveawayData);
-            this._saveGiveaway(newGiveaway);
-            resolve(newGiveaway);
-        });
+        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+        if (!giveawayData) {
+            return reject('No giveaway found with ID ' + messageID + '.');
+        }
+        let giveaway = new Giveaway(this, giveawayData);
+        return giveaway.edit(options);
     }
 
     /**
@@ -243,10 +202,15 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.message.delete();
                 }
             }
-            this.giveaways = this.giveaways.filter(g => g.messageID !== giveawayData.messageID);
-            await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+            await this.deleteGiveaway(messageID);
             resolve();
         });
+    }
+
+    async deleteGiveaway(messageID){
+        this.giveaways = this.giveaways.filter(g => g.messageID !== messageID);
+        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        return;
     }
 
     /**
@@ -255,7 +219,7 @@ class GiveawaysManager extends EventEmitter {
      * @private
      * @returns {Array<Giveaways>}
      */
-    async _initStorage() {
+    async getAllGiveaways() {
         // Whether the storage file exists, or not
         let storageExists = await existsAsync(this.options.storage);
         // If it doesn't exists
@@ -284,32 +248,25 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
-     * Save the giveaway to the storage file
+     * Edit the giveaway in the database
      * @ignore
      * @private
-     * @param {Giveaway} giveaway The giveaway to save
+     * @param {Snowflake} messageID The message ID identifying the giveaway
+     * @param {Object} giveawayData The giveaway data to save
      */
-    async _saveGiveaway(giveaway) {
-        this.giveaways = this.giveaways.filter(g => g.messageID !== giveaway.messageID);
-        let giveawayData = {
-            messageID: giveaway.messageID,
-            channelID: giveaway.channelID,
-            guildID: giveaway.guildID,
-            startAt: giveaway.startAt,
-            endAt: giveaway.endAt,
-            ended: giveaway.ended,
-            winnerCount: giveaway.winnerCount,
-            prize: giveaway.prize,
-            messages: giveaway.messages
-        };
-        if (giveaway.options.hostedBy) giveawayData.hostedBy = giveaway.options.hostedBy;
-        if (giveaway.options.embedColor) giveawayData.embedColor = giveaway.options.embedColor;
-        if (giveaway.options.embedColorEnd) giveawayData.embedColorEnd = giveaway.options.embedColorEnd;
-        if (giveaway.options.botsCanWin) giveawayData.botsCanWin = giveaway.options.botsCanWin;
-        if (giveaway.options.exemptPermissions) giveawayData.exemptPermissions = giveaway.options.exemptPermissions;
-        if (giveaway.options.exemptMembers) giveawayData.exemptMembers = giveaway.options.exemptMembers;
-        if (giveaway.options.reaction) giveawayData.reaction = giveaway.options.reaction;
-        this.giveaways.push(giveawayData);
+    async editGiveaway(_messageID, _giveawayData) {
+        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        return;
+    }
+
+    /**
+     * Save the giveaway in the database
+     * @ignore
+     * @private
+     * @param {Snowflake} messageID The message ID identifying the giveaway
+     * @param {Object} giveawayData The giveaway data to save
+     */
+    async saveGiveaway(_messageID, _giveawayData) {
         await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
         return;
     }
@@ -321,8 +278,9 @@ class GiveawaysManager extends EventEmitter {
      * @param {string} messageID The message ID of the giveaway
      */
     async _markAsEnded(messageID) {
-        this.giveaways.find(g => g.messageID === messageID).ended = true;
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+        giveawayData.ended = true;
+        this.editGiveaway(messageID, giveawayData);
         return;
     }
 
@@ -366,7 +324,7 @@ class GiveawaysManager extends EventEmitter {
      * @private
      */
     async _init() {
-        this.giveaways = await this._initStorage();
+        this.giveaways = await this.getAllGiveaways();
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
@@ -376,13 +334,13 @@ class GiveawaysManager extends EventEmitter {
 
 /**
  * Emitted when a giveaway ends.
- * @event GiveawaysManager#end
+ * @event GiveawaysManager#giveawayEnded
  * @param {Giveaway} giveaway The giveaway instance
  * @param {GuildMember[]} winners The giveaway winners
  * 
  * @example
  * // This can be used to add features such as a congratulatory message in DM
- * manager.on('end', (giveaway, winners) => {
+ * manager.on('giveawayEnded', (giveaway, winners) => {
  *      winners.forEach((member) => {
  *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
  *      });

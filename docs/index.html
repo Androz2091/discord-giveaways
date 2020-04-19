@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Giveaway.html">Giveaway</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#fetchMessage">fetchMessage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#roll">roll</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="GiveawaysManager.html">GiveawaysManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#start">start</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="GiveawaysManager.html#event:end">end</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Giveaway.html">Giveaway</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#fetchMessage">fetchMessage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Giveaway.html#roll">roll</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="GiveawaysManager.html">GiveawaysManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#edit">edit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#reroll">reroll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="GiveawaysManager.html#start">start</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="GiveawaysManager.html#event:giveawayEnded">giveawayEnded</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
 </nav>
 
 <div id="main">
@@ -69,6 +69,7 @@
 <li>Add <code>exemptMembers()</code> option to Manager#start()</li>
 <li>Support for Discord.js v12</li>
 <li>Add <code>hostedBy</code> option to Manager#start()</li>
+<li>You can now use your own database!</li>
 </ul>
 <h2>Examples</h2>
 <p>You can read this example bot on Github: <a href="https://github.com/Androz2091/giveaways-bot">giveaways-bot</a></p>
@@ -85,7 +86,7 @@ const { GiveawaysManager } = require(&quot;discord-giveaways&quot;);
 // Starts updating currents giveaways
 const manager = new GiveawaysManager(client, {
     storage: &quot;./giveaways.json&quot;,
-    updateCountdownEvery: 5000,
+    updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
         exemptPermissions: [ &quot;MANAGE_MESSAGES&quot;, &quot;ADMINISTRATOR&quot; ],
@@ -282,7 +283,87 @@ You can pass an options object to customize the giveaways. Here is a list of the
 });
 </code></pre>
 <p><strong>options.messages.congrat</strong>: the congratulatory message.<br>
-<strong>options.messages.error</strong>: the error message if there is no valid participations.</p></article>
+<strong>options.messages.error</strong>: the error message if there is no valid participations.</p>
+<h2>Own database</h2>
+<p>You can use your own database to save giveaways, instead of the json files. For this, you will need to extend the <code>GiveawaysManager</code> class, and replace some methods with your own ones. There are 4 methods you will need to replace:</p>
+<ul>
+<li><code>getAllGiveaways</code>: this method returns an array of stored giveaways.</li>
+<li><code>saveGiveaway</code>: this method stores a new giveaway in the database.</li>
+<li><code>editGiveaway</code>: this method edits a giveaway already stored in the database.</li>
+<li><code>deleteGiveaway</code>: this method deletes a giveaway from the database (permanently).</li>
+</ul>
+<p><strong>All the methods should be asynchronous, to return a promise.</strong></p>
+<pre class="prettyprint source lang-js"><code>const Discord = require(&quot;discord.js&quot;),
+client = new Discord.Client(),
+settings = {
+    prefix: &quot;g!&quot;,
+    token: &quot;Your Discord Token&quot;
+};
+
+const { GiveawaysManager } = require(&quot;discord-giveaways&quot;);
+const db = require(&quot;quick.db&quot;);
+
+const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
+
+    // This function is called when the manager needs to get all the giveaway stored in the database.
+    async getAllGiveaways(){
+        // Get all the giveaway in the database
+        return db.get(&quot;giveaways&quot;);
+    }
+
+    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
+    async saveGiveaway(messageID, giveawayData){
+        // Get all the giveaways already stored   
+        const currentGiveaways = db.get(&quot;giveaways&quot;);
+        // Add the new one
+        db.push(&quot;giveaways&quot;, giveawayData);
+        // Don't forget to return something!
+        return true;
+    }
+
+    async editGiveaway(messageID){
+        // Remove the old giveaway from the current giveaways ID
+        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
+        // Push the new giveaway to the array
+        newGiveawaysArray.push(giveawayData);
+        // Save the updated array
+        db.set(&quot;giveaways&quot;, giveawayData);
+        // Don't forget to return something!
+        return true;
+    }
+
+    // This function is called when a giveaway needs to be deleted from the database.
+    async deleteGiveaway(messageID){
+        // Remove the giveaway from the array
+        const newGiveawaysArray = db.get(&quot;giveaways&quot;).filter((giveaway) => giveaway.messageID !== messageID);
+        // Save the updated array
+        db.set(&quot;giveaways&quot;, newGiveawaysArray);
+        // Don't forget to return something!
+        return true;
+    }
+
+};
+
+// Create a new instance of your new class
+const manager = new GiveawayManagerWithOwnDatabase(client, {
+    storage: false, // Important - use false instead of a storage path
+    updateCountdownEvery: 10000,
+    default: {
+        botsCanWin: false,
+        exemptPermissions: [ &quot;MANAGE_MESSAGES&quot;, &quot;ADMINISTRATOR&quot; ],
+        embedColor: &quot;#FF0000&quot;,
+        reaction: &quot;🎉&quot;
+    }
+});
+// We now have a giveawaysManager property to access the manager everywhere!
+client.giveawaysManager = manager;
+
+client.on(&quot;ready&quot;, () => {
+    console.log(&quot;I'm ready !&quot;);
+});
+
+client.login(settings.token);
+</code></pre></article>
     </section>
 
 
