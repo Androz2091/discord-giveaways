@@ -61,7 +61,7 @@ class GiveawaysManager extends EventEmitter {
                 const message = (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) || await channel.messages.fetch(packet.d.message_id);
                 if(!message) return;
                 if(packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
-                const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(packet.d.emoji.name);
+                const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(giveaway.reaction || this.options.default.reaction);
                 if(!reaction) return;
                 if(packet.t === "MESSAGE_REACTION_ADD"){
                     this.emit('giveawayReactionAdded', giveaway, member, reaction);
@@ -394,9 +394,10 @@ class GiveawaysManager extends EventEmitter {
  * @event GiveawayManager#giveawayReactionRemoved
  * @param {Giveaway} giveaway The giveaway instance
  * @param {GuildMember} member The member who remove their reaction giveaway
+ * @param {MessageReaction} reaction The reaction to enter the giveaway
  * 
  * @example
- * manager.on('giveawayReactionRemoved', (giveaway, member) => {
+ * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
  *      return member.send('That's sad, you won\'t be able to win the super cookie!');
  * });
  */
