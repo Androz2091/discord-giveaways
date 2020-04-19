@@ -204,7 +204,7 @@ class Giveaway extends EventEmitter {
     }
 
     get data(){
-        return {
+        const baseData = {
             messageID: giveaway.messageID,
             channelID: giveaway.channelID,
             guildID: giveaway.guildID,
@@ -213,15 +213,16 @@ class Giveaway extends EventEmitter {
             ended: giveaway.ended,
             winnerCount: giveaway.winnerCount,
             prize: giveaway.prize,
-            messages: giveaway.messages,
-            hostedBy: this.options.hostedBy,
-            embedColor: this.options.embedColor,
-            embedColorEnd: this.options.embedColorEnd,
-            botsCanWin: this.options.botsCanWin,
-            exemptPermissions: this.options.exemptPermissions,
-            exemptMembers: this.options.exemptMembers,
-            reaction: this.options.reaction
+            messages: giveaway.messages
         };
+        if (this.options.hostedBy) baseData.hostedBy = this.options.hostedBy;
+        if (this.options.embedColor) baseData.embedColor = this.options.embedColor;
+        if (this.options.embedColorEnd) baseData.embedColorEnd = this.options.embedColorEnd;
+        if (this.options.botsCanWin) baseData.botsCanWin = this.options.botsCanWin;
+        if (this.options.exemptPermissions) baseData.exemptPermissions = this.options.exemptPermissions;
+        if (this.options.exemptMembers) baseData.exemptMembers = this.options.exemptMembers;
+        if (this.options.reaction) baseData.reaction = this.options.reaction;
+        return baseData;
     }
 
     /**
