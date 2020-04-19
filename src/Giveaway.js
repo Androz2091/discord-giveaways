@@ -205,15 +205,15 @@ class Giveaway extends EventEmitter {
 
     get data(){
         const baseData = {
-            messageID: giveaway.messageID,
-            channelID: giveaway.channelID,
-            guildID: giveaway.guildID,
-            startAt: giveaway.startAt,
-            endAt: giveaway.endAt,
-            ended: giveaway.ended,
-            winnerCount: giveaway.winnerCount,
-            prize: giveaway.prize,
-            messages: giveaway.messages
+            messageID: this.messageID,
+            channelID: this.channelID,
+            guildID: this.guildID,
+            startAt: this.startAt,
+            endAt: this.endAt,
+            ended: this.ended,
+            winnerCount: this.winnerCount,
+            prize: this.prize,
+            messages: this.messages
         };
         if (this.options.hostedBy) baseData.hostedBy = this.options.hostedBy;
         if (this.options.embedColor) baseData.embedColor = this.options.embedColor;
