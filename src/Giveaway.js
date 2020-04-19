@@ -1,4 +1,4 @@
-const { Collection, Message, version } = require('discord.js');
+const Discord = require('discord.js');
 const { EventEmitter } = require('events');
 
 /**
@@ -231,7 +231,7 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount) {
         // Pick the winner
         let reaction = (this.manager.v12 ? this.message.reactions.cache :  this.message.reactions).find(r => r.emoji.name === this.reaction);
-        if (!reaction) return new Collection();
+        if (!reaction) return new Discord.Collection();
         let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
             .filter(u => u.id !== this.message.client.id)
@@ -242,6 +242,62 @@ class Giveaway extends EventEmitter {
             .filter(u => u);
         return users;
     }
+
+    /**
+     * Ends the giveaway
+     * @returns {Array<GuildMember>} The winner(s)
+     */
+    end(){
+        return new Promise(async (resolve, reject) => {
+            if (this.ended) {
+                return reject('Giveaway with message ID ' + this.messageID + ' is already ended');
+            }
+            if (!this.channel) {
+                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+            }
+            await this.fetchMessage().catch(() => {});
+            if (!this.message) {
+                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            }
+            let winners = await this.roll();
+            this.manager.emit('giveawayEnded', this, winners);
+            if (winners.length > 0) {
+                let formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
+                let str =
+                    this.messages.winners.substr(0, 1).toUpperCase() +
+                    this.messages.winners.substr(1, this.messages.winners.length) +
+                    ': ' +
+                    formattedWinners;
+                let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+                embed
+                    .setAuthor(this.prize)
+                    .setColor(this.embedColorEnd)
+                    .setFooter(this.messages.endedAt)
+                    .setDescription(`${str}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
+                    .setTimestamp(new Date(this.endAt).toISOString());
+                this.message.edit(this.messages.giveawayEnded, { embed });
+                this.message.channel.send(
+                    this.messages.winMessage
+                        .replace('{winners}', formattedWinners)
+                        .replace('{prize}', this.prize)
+                );
+                this._markAsEnded(this.messageID);
+                resolve(winners);
+            } else {
+                let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+                embed
+                    .setAuthor(this.prize)
+                    .setColor(this.embedColorEnd)
+                    .setFooter(this.messages.endedAt)
+                    .setDescription(`${this.messages.noWinner}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
+                    .setTimestamp(new Date(this.endAt).toISOString());
+                    this.message.edit(this.messages.giveawayEnded, { embed });
+                this.manager._markAsEnded(this.messageID);
+                resolve();
+            }
+        });
+    }
+
 }
 
 module.exports = Giveaway;

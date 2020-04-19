@@ -57,59 +57,12 @@ class GiveawaysManager extends EventEmitter {
      * manager.end("664900661003157510");
      */
     end(messageID) {
-        return new Promise(async (resolve, reject) => {
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-            if (!giveawayData) {
-                return reject('No giveaway found with ID ' + messageID + '.');
-            }
-            let giveaway = new Giveaway(this, giveawayData);
-            if (giveaway.ended) {
-                return reject('Giveaway with message ID ' + giveaway.messageID + ' is already ended');
-            }
-            if (!giveaway.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
-            }
-            await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) {
-                return reject('Unable to fetch message with ID ' + giveaway.messageID + '.');
-            }
-            let winners = await giveaway.roll();
-            this.emit('end', giveaway, winners);
-            if (winners.length > 0) {
-                let formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
-                let str =
-                    giveaway.messages.winners.substr(0, 1).toUpperCase() +
-                    giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
-                    ': ' +
-                    formattedWinners;
-                let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-                embed
-                    .setAuthor(giveaway.prize)
-                    .setColor(giveaway.embedColorEnd)
-                    .setFooter(giveaway.messages.endedAt)
-                    .setDescription(`${str}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
-                    .setTimestamp(new Date(giveaway.endAt).toISOString());
-                giveaway.message.edit(giveaway.messages.giveawayEnded, { embed });
-                giveaway.message.channel.send(
-                    giveaway.messages.winMessage
-                        .replace('{winners}', formattedWinners)
-                        .replace('{prize}', giveaway.prize)
-                );
-                this._markAsEnded(giveaway.messageID);
-                resolve(winners);
-            } else {
-                let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-                embed
-                    .setAuthor(giveaway.prize)
-                    .setColor(giveaway.embedColorEnd)
-                    .setFooter(giveaway.messages.endedAt)
-                    .setDescription(`${giveaway.messages.noWinner}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
-                    .setTimestamp(new Date(giveaway.endAt).toISOString());
-                giveaway.message.edit(giveaway.messages.giveawayEnded, { embed });
-                this._markAsEnded(giveaway.messageID);
-                resolve();
-            }
-        });
+        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+        if (!giveawayData) {
+            return reject('No giveaway found with ID ' + messageID + '.');
+        }
+        let giveaway = new Giveaway(this, giveawayData);
+        return giveaway.end();
     }
 
     /**
