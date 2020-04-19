@@ -274,16 +274,18 @@ client.giveawaysManager.reroll(messageID, {
 **options.messages.congrat**: the congratulatory message.  
 **options.messages.error**: the error message if there is no valid participations.
 
-## Own database
+## Custom database
 
-You can use your own database to save giveaways, instead of the json files. For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your own ones. There are 4 methods you will need to replace:
+You can use your custom database to save giveaways, instead of the json files (the "database" by default for discord-giveaways). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
 
 * `getAllGiveaways`: this method returns an array of stored giveaways.
 * `saveGiveaway`: this method stores a new giveaway in the database.
 * `editGiveaway`: this method edits a giveaway already stored in the database.
 * `deleteGiveaway`: this method deletes a giveaway from the database (permanently).
 
-**All the methods should be asynchronous, to return a promise.**
+**All the methods should be asynchronous to return a promise.**
+
+Here is an example, using Quick.db, a Sqlite database. The comments in the code below are very important to understand how it works!
 
 ```js
 const Discord = require("discord.js"),
@@ -293,9 +295,11 @@ settings = {
     token: "Your Discord Token"
 };
 
-const { GiveawaysManager } = require("discord-giveaways");
+// Load quickdb - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
 const db = require("quick.db");
+if(!db.get("giveaways")) db.set("giveaways", []);
 
+const { GiveawaysManager } = require("discord-giveaways");
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when the manager needs to get all the giveaway stored in the database.
@@ -306,21 +310,21 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
     async saveGiveaway(messageID, giveawayData){
-        // Get all the giveaways already stored   
-        const currentGiveaways = db.get("giveaways");
         // Add the new one
         db.push("giveaways", giveawayData);
         // Don't forget to return something!
         return true;
     }
 
-    async editGiveaway(messageID){
+    async editGiveaway(messageID, giveawayData){
+        // Gets all the current giveaways
+        const giveaways = db.get("giveaways");
         // Remove the old giveaway from the current giveaways ID
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
         // Push the new giveaway to the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
-        db.set("giveaways", giveawayData);
+        db.set("giveaways", newGiveawaysArray);
         // Don't forget to return something!
         return true;
     }
