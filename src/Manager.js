@@ -46,6 +46,28 @@ class GiveawaysManager extends EventEmitter {
          */
         this.v12 = this.options.DJSlib === 'v12';
         this._init();
+
+        this.client.on("raw", async (packet) => {
+            if(![ "MESSAGE_REACTION_ADD", "MESSAGE_REACTION_REMOVE" ].includes(packet.t)) return;
+            if(this.giveaways.some((g) => g.messageID === packet.d.message_id)){
+                const giveawayData = this.giveaways.find((g) => g.messageID === packet.d.message_id);
+                const giveaway = new Giveaway(this, giveawayData);
+                const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
+                if(!guild) return;
+                const member = (this.v12 ? guild.members.cache : guild.members).get(packet.d.user_id) || await guild.members.fetch(packet.d.user_id).catch(() => {});
+                if(!member) return;
+                const channel = (this.v12 ? guild.channels.cache : guild.channels).get(packet.d.channel_id);
+                if(!channel) return;
+                const message = (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) || await channel.messages.fetch(packet.d.message_id);
+                if(!message) return;
+                if(packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
+                if(packet.t === "MESSAGE_REACTION_ADD"){
+                    this.emit('giveawayReactionAdded', giveaway, member, reaction);
+                } else {
+                    this.emit('giveawayReactionRemoved', giveaway, member);
+                }
+            }
+        });
     }
 
     /**
@@ -344,6 +366,36 @@ class GiveawaysManager extends EventEmitter {
  *      winners.forEach((member) => {
  *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
  *      });
+ * });
+ */
+
+/**
+ * Emitted when someone entered a giveaway.
+ * @event GiveawayManager#giveawayReactionAdded
+ * @param {Giveaway} giveaway The giveaway instance
+ * @param {GuildMember} member The member who entered the giveaway
+ * @param {MessageReaction} reaction The reaction to enter the giveaway
+ * 
+ * @example
+ * // This can be used to add features like removing the user reaction
+ * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
+ *     const hasJoinedAnotherServer = client.guilds.cache.get('39803980830938').members.has(member.id);
+ *     if(!hasJoinedAnotherServer){
+ *          reaction.users.remove(member.user);
+ *          member.send('You must join this server to participate to the giveaway: https://discord.gg/discord-api');
+ *     }
+ * });
+ */
+
+/**
+ * Emitted when someone remove their reaction to a giveaway.
+ * @event GiveawayManager#giveawayReactionRemoved
+ * @param {Giveaway} giveaway The giveaway instance
+ * @param {GuildMember} member The member who remove their reaction giveaway
+ * 
+ * @example
+ * manager.on('giveawayReactionRemoved', (giveaway, member) => {
+ *      return member.send('That's sad, you won\'t be able to win the super cookie!');
  * });
  */
 
