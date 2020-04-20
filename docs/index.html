@@ -284,15 +284,16 @@ You can pass an options object to customize the giveaways. Here is a list of the
 </code></pre>
 <p><strong>options.messages.congrat</strong>: the congratulatory message.<br>
 <strong>options.messages.error</strong>: the error message if there is no valid participations.</p>
-<h2>Own database</h2>
-<p>You can use your own database to save giveaways, instead of the json files. For this, you will need to extend the <code>GiveawaysManager</code> class, and replace some methods with your own ones. There are 4 methods you will need to replace:</p>
+<h2>Custom database</h2>
+<p>You can use your custom database to save giveaways, instead of the json files (the &quot;database&quot; by default for discord-giveaways). For this, you will need to extend the <code>GiveawaysManager</code> class, and replace some methods with your custom ones. There are 4 methods you will need to replace:</p>
 <ul>
 <li><code>getAllGiveaways</code>: this method returns an array of stored giveaways.</li>
 <li><code>saveGiveaway</code>: this method stores a new giveaway in the database.</li>
 <li><code>editGiveaway</code>: this method edits a giveaway already stored in the database.</li>
 <li><code>deleteGiveaway</code>: this method deletes a giveaway from the database (permanently).</li>
 </ul>
-<p><strong>All the methods should be asynchronous, to return a promise.</strong></p>
+<p><strong>All the methods should be asynchronous to return a promise.</strong></p>
+<p>Here is an example, using Quick.db, a Sqlite database. The comments in the code below are very important to understand how it works!</p>
 <pre class="prettyprint source lang-js"><code>const Discord = require(&quot;discord.js&quot;),
 client = new Discord.Client(),
 settings = {
@@ -300,9 +301,11 @@ settings = {
     token: &quot;Your Discord Token&quot;
 };
 
-const { GiveawaysManager } = require(&quot;discord-giveaways&quot;);
+// Load quickdb - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
 const db = require(&quot;quick.db&quot;);
+if(!db.get(&quot;giveaways&quot;)) db.set(&quot;giveaways&quot;, []);
 
+const { GiveawaysManager } = require(&quot;discord-giveaways&quot;);
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when the manager needs to get all the giveaway stored in the database.
@@ -313,21 +316,21 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
     async saveGiveaway(messageID, giveawayData){
-        // Get all the giveaways already stored   
-        const currentGiveaways = db.get(&quot;giveaways&quot;);
         // Add the new one
         db.push(&quot;giveaways&quot;, giveawayData);
         // Don't forget to return something!
         return true;
     }
 
-    async editGiveaway(messageID){
+    async editGiveaway(messageID, giveawayData){
+        // Gets all the current giveaways
+        const giveaways = db.get(&quot;giveaways&quot;);
         // Remove the old giveaway from the current giveaways ID
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
         // Push the new giveaway to the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
-        db.set(&quot;giveaways&quot;, giveawayData);
+        db.set(&quot;giveaways&quot;, newGiveawaysArray);
         // Don't forget to return something!
         return true;
     }
