@@ -373,7 +373,7 @@ class GiveawaysManager extends EventEmitter {
 
 /**
  * Emitted when someone entered a giveaway.
- * @event GiveawayManager#giveawayReactionAdded
+ * @event GiveawaysManager#giveawayReactionAdded
  * @param {Giveaway} giveaway The giveaway instance
  * @param {GuildMember} member The member who entered the giveaway
  * @param {MessageReaction} reaction The reaction to enter the giveaway
@@ -391,7 +391,7 @@ class GiveawaysManager extends EventEmitter {
 
 /**
  * Emitted when someone remove their reaction to a giveaway.
- * @event GiveawayManager#giveawayReactionRemoved
+ * @event GiveawaysManager#giveawayReactionRemoved
  * @param {Giveaway} giveaway The giveaway instance
  * @param {GuildMember} member The member who remove their reaction giveaway
  * @param {MessageReaction} reaction The reaction to enter the giveaway
