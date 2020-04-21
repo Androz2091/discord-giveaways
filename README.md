@@ -5,27 +5,23 @@
 [![doc](https://img.shields.io/badge/Documentation-Click%20here-blue?style=for-the-badge)](https://discord-giveaways.js.org)
 [![patreonBadge](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2FAndroz2091%2Fpledges&style=for-the-badge)](https://patreon.com/Androz2091)
 
-
 Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows you to easily create giveaways!
 
-*   The duration of the Giveaway is customizable!
-*   Automatic restart after bot crash!
-*   Update of the timer every X seconds!
-*   The strings are fully customizable so you can adapt them to your language!
-*   And customizable prize, customizable number of winners, customizable ignored members, and more!
+## Features
+
+* ⏱️ Easy to use!
+* 🔄 Automatic restart after bot crash!
+* 🇫🇷 Support for translations: adapt the strings for your own language!
+* 📁 Support for all databases! (default is json)
+* ⚙️ Very customizable! (prize, duration, winners, ignored permissions, etc...)
+* 🚀 Super-powerful: start, edit, reroll, stop giveaways!
+* and much more!
 
 ## Installation
 
 ```js
 npm install --save discord-giveaways
 ```
-
-## Changelog
-
-* Add `exemptMembers()` option to Manager#start()
-* Support for Discord.js v12
-* Add `hostedBy` option to Manager#start()
-* You can now use your own database!
 
 ## Examples
 
@@ -67,14 +63,14 @@ client.login(settings.token);
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
 You can pass an options object to customize the giveaways. Here is a list of them:
 
-*   **client**: the discord client (your discord bot instance)
-*   **options.storage**: the json file that will be used to store giveaways
-*   **options.updateCountdownEvery**: the number of seconds it will take to update the timers
-*   **options.default.botsCanWin**: whether the bots can win a giveaway
-*   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
-*   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
-*   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
-*   **options.default.reaction**: the reaction that users will have to react to in order to participate!
+* **client**: the discord client (your discord bot instance)
+* **options.storage**: the json file that will be used to store giveaways
+* **options.updateCountdownEvery**: the number of seconds it will take to update the timers
+* **options.default.botsCanWin**: whether the bots can win a giveaway
+* **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+* **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
+* **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
+* **options.default.reaction**: the reaction that users will have to react to in order to participate!
 
 ### Start a giveaway
 
@@ -101,15 +97,15 @@ client.on("message", (message) => {
 });
 ```
 
-*   **options.time**: the giveaway duration.  
-*   **options.prize**: the giveaway prize.  
-*   **options.hostedBy**: the user who hosts the giveaway.
-*   **options.winnerCount**: the number of giveaway winners.  
-*   **options.botsCanWin**: whether the bots can win a giveaway.  
-*   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.  
-*   **options.embedColor**: a hexadecimal color for the embeds of giveaways.  
-*   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
-*   **options.reaction**: the reaction that users will have to react to in order to participate.  
+* **options.time**: the giveaway duration.  
+* **options.prize**: the giveaway prize.  
+* **options.hostedBy**: the user who hosts the giveaway.
+* **options.winnerCount**: the number of giveaway winners.  
+* **options.botsCanWin**: whether the bots can win a giveaway.  
+* **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.  
+* **options.embedColor**: a hexadecimal color for the embeds of giveaways.  
+* **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
+* **options.reaction**: the reaction that users will have to react to in order to participate.  
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the package does the rest!
 
@@ -129,6 +125,7 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
     // The list of the current giveaways (not ended)
     let notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 ```
+
 ### Reroll a giveaway
 
 ```js
