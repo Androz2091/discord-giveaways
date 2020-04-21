@@ -372,6 +372,7 @@ settings = {
     token: "Your Discord Token"
 };
 
+// Extends the GiveawaysManager class and update the refreshStorage method
 const { GiveawaysManager } = require("discord-giveaways");
 const GiveawayManagerWithShardSupport = class extends GiveawaysManager {
 
