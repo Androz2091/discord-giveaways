@@ -15,6 +15,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 * 📁 Support for all databases! (default is json)
 * ⚙️ Very customizable! (prize, duration, winners, ignored permissions, etc...)
 * 🚀 Super-powerful: start, edit, reroll, stop giveaways!
+* 🕸️ Support for shards!
 * and much more!
 
 ## Installation
@@ -341,6 +342,50 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
     storage: false, // Important - use false instead of a storage path
+    updateCountdownEvery: 10000,
+    default: {
+        botsCanWin: false,
+        exemptPermissions: [ "MANAGE_MESSAGES", "ADMINISTRATOR" ],
+        embedColor: "#FF0000",
+        reaction: "🎉"
+    }
+});
+// We now have a giveawaysManager property to access the manager everywhere!
+client.giveawaysManager = manager;
+
+client.on("ready", () => {
+    console.log("I'm ready !");
+});
+
+client.login(settings.token);
+```
+
+## Support shards
+
+To make `discord-giveaways` working with shards, you will need to extend the GiveawaysManager class and to update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all the GiveawaysManager synchronize their cache with the updated database.
+
+```js
+const Discord = require("discord.js"),
+client = new Discord.Client(),
+settings = {
+    prefix: "g!",
+    token: "Your Discord Token"
+};
+
+const { GiveawaysManager } = require("discord-giveaways");
+const GiveawayManagerWithShardSupport = class extends GiveawaysManager {
+
+    // Refresh storage method is called when the database is updated on one of the shards
+    async refreshStorage(){
+        // This should make all shard refreshing their cache with the updated database
+        return client.shard.broadcastEval(() => this.giveawaysManager.getAllGiveaways());
+    }
+
+};
+
+// Create a new instance of your new class
+const manager = new GiveawayManagerWithShardSupport(client, {
+    storage: "./storage.json",
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,

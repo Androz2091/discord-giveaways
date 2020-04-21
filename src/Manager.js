@@ -234,7 +234,17 @@ class GiveawaysManager extends EventEmitter {
     async deleteGiveaway(messageID){
         this.giveaways = this.giveaways.filter(g => g.messageID !== messageID);
         await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        this.refreshStorage();
         return;
+    }
+
+    /**
+     * Refresh the cache to support shards.
+     * @ignore
+     * @private
+     */
+    async refreshStorage(){
+        return true;
     }
 
     /**
@@ -280,6 +290,7 @@ class GiveawaysManager extends EventEmitter {
      */
     async editGiveaway(_messageID, _giveawayData) {
         await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        this.refreshStorage();
         return;
     }
 
@@ -292,6 +303,7 @@ class GiveawaysManager extends EventEmitter {
      */
     async saveGiveaway(_messageID, _giveawayData) {
         await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        this.refreshStorage();
         return;
     }
 

@@ -62,6 +62,7 @@
 <li>📁 Support for all databases! (default is json)</li>
 <li>⚙️ Very customizable! (prize, duration, winners, ignored permissions, etc...)</li>
 <li>🚀 Super-powerful: start, edit, reroll, stop giveaways!</li>
+<li>🕸️ Support for shards!</li>
 <li>and much more!</li>
 </ul>
 <h2>Installation</h2>
@@ -346,6 +347,46 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
     storage: false, // Important - use false instead of a storage path
+    updateCountdownEvery: 10000,
+    default: {
+        botsCanWin: false,
+        exemptPermissions: [ &quot;MANAGE_MESSAGES&quot;, &quot;ADMINISTRATOR&quot; ],
+        embedColor: &quot;#FF0000&quot;,
+        reaction: &quot;🎉&quot;
+    }
+});
+// We now have a giveawaysManager property to access the manager everywhere!
+client.giveawaysManager = manager;
+
+client.on(&quot;ready&quot;, () => {
+    console.log(&quot;I'm ready !&quot;);
+});
+
+client.login(settings.token);
+</code></pre>
+<h2>Support shards</h2>
+<p>To make <code>discord-giveaways</code> working with shards, you will need to extend the GiveawaysManager class and to update the <code>refreshStorage()</code> method. This method should call the <code>getAllGiveaways()</code> method for <strong>every</strong> shard, so all the GiveawaysManager synchronize their cache with the updated database.</p>
+<pre class="prettyprint source lang-js"><code>const Discord = require(&quot;discord.js&quot;),
+client = new Discord.Client(),
+settings = {
+    prefix: &quot;g!&quot;,
+    token: &quot;Your Discord Token&quot;
+};
+
+const { GiveawaysManager } = require(&quot;discord-giveaways&quot;);
+const GiveawayManagerWithShardSupport = class extends GiveawaysManager {
+
+    // Refresh storage method is called when the database is updated on one of the shards
+    async refreshStorage(){
+        // This should make all shard refreshing their cache with the updated database
+        return client.shard.broadcastEval(() => this.giveawaysManager.getAllGiveaways());
+    }
+
+};
+
+// Create a new instance of your new class
+const manager = new GiveawayManagerWithShardSupport(client, {
+    storage: &quot;./storage.json&quot;,
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
