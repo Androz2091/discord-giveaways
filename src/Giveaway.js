@@ -334,7 +334,7 @@ class Giveaway extends EventEmitter {
                         .replace('{winners}', formattedWinners)
                         .replace('{prize}', this.prize)
                 );
-                this._markAsEnded(this.messageID);
+                this.manager._markAsEnded(this.messageID);
                 resolve(winners);
             } else {
                 let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
