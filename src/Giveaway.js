@@ -285,7 +285,7 @@ class Giveaway extends EventEmitter {
             // Update data
             if (options.newWinnerCount) this.winnerCount = options.newWinnerCount;
             if (options.newPrize) this.prize = options.newPrize;
-            if (options.addTime) this.endAt = giveawayData.endAt + options.addTime;
+            if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
             // Update manager cache
             this.manager.giveaways = this.manager.giveaways.filter(g => g.messageID !== this.messageID);
