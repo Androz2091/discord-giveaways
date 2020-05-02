@@ -65,6 +65,12 @@ const GiveawaysManagerOptions = {
         exemptMembers: () => false,
         embedColor: '#FF0000',
         reaction: '🎉'
+    } ,
+    lastChance : false,
+    lastChanceOptions: {
+        title: "Last Chance to enter!",
+        secondsBeforeLastChance: 5000,
+        embedColor: #FF0000
     }
 };
 
