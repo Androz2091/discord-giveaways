@@ -404,6 +404,19 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
+            if(lastChance){
+            let lastChanceEmbed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed()
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.lastChanceOptions.embedColor)
+            .setTitle(giveaway.lastChanceOptions.title)
+            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
+            .setDescription(`${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+
+            if(giveaway.remainingTime < giveaway.lastChanceOptions. secondsBeforeLastChance){
+               giveaway.message.edit(giveaway.messages.giveaway, { lastChanceEmbed });
+            }
+            }
         });
     }
 
