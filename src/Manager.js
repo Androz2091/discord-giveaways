@@ -269,6 +269,7 @@ class GiveawaysManager extends EventEmitter {
                 if (Array.isArray(giveaways)) {
                     return giveaways;
                 } else {
+                    console.log(storageContent, giveaways);
                     throw new SyntaxError('The storage file is not properly formatted.');
                 }
             } catch (e) {
