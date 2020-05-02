@@ -67,8 +67,8 @@ const GiveawaysManagerOptions = {
         reaction: '🎉',
         lastChance: {
         enabled: false,
-        title: "Last Chance to enter!",
-        secondsBeforeLastChance: 5000,
+        title: "⚠️ **LAST CHANCE TO ENTER !** ⚠️",
+        secondsBeforeLastChance : 5000,
         embedColor: '#FF0000'
       }
     }    
