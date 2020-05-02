@@ -407,7 +407,7 @@ class GiveawaysManager extends EventEmitter {
             if (this.options.default.lastChance.enabled) {
                 if (giveaway.remainingTime < this.options.default.lastChance.secondsBeforeLastChance) {
                   embed.setColor(this.options.default.lastChance.embedColor)
-                    giveaway.message.edit(this.options.default.lastChance.title, { embed });
+                    giveaway.message.edit(this.options.default.lastChance.message, { embed });
                 }
             }
         });
