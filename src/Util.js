@@ -70,7 +70,7 @@ const GiveawaysManagerOptions = {
     lastChanceOptions: {
         title: "Last Chance to enter!",
         secondsBeforeLastChance: 5000,
-        embedColor: #FF0000
+        embedColor: '#FF0000'
     }
 };
 
