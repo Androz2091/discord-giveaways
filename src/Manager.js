@@ -413,7 +413,7 @@ class GiveawaysManager extends EventEmitter {
             .setDescription(`${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
             .setTimestamp(new Date(giveaway.endAt).toISOString());
 
-            if(giveaway.remainingTime < giveaway.lastChanceOptions. secondsBeforeLastChance){
+            if(giveaway.remainingTime < giveaway.lastChanceOptions.secondsBeforeLastChance){
                giveaway.message.edit(giveaway.messages.giveaway, { lastChanceEmbed });
             }
             }
