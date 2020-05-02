@@ -404,7 +404,7 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
-            if(lastChance){
+            if(giveaway.lastChance){
             let lastChanceEmbed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed()
             .setAuthor(giveaway.prize)
             .setColor(giveaway.lastChanceOptions.embedColor)
