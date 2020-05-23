@@ -81,12 +81,14 @@ class GiveawaysManager extends EventEmitter {
      * manager.end("664900661003157510");
      */
     end(messageID) {
-        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-        if (!giveawayData) {
-            return reject('No giveaway found with ID ' + messageID + '.');
-        }
-        let giveaway = new Giveaway(this, giveawayData);
-        return giveaway.end();
+        return new Promise(async (resolve, reject) => {
+            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+            if (!giveawayData) {
+                return reject('No giveaway found with ID ' + messageID + '.');
+            }
+            let giveaway = new Giveaway(this, giveawayData);
+            resolve(await giveaway.end());
+        });
     }
 
     /**
@@ -172,13 +174,15 @@ class GiveawaysManager extends EventEmitter {
      * manager.reroll("664900661003157510");
      */
     reroll(messageID, options = {}) {
-        options = mergeOptions(defaultGiveawayRerollOptions, options);
-        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-        if (!giveawayData) {
-            return reject('No giveaway found with ID ' + messageID + '.');
-        }
-        let giveaway = new Giveaway(this, giveawayData);
-        return giveaway.reroll(options);
+        return new Promise(async (resolve, reject) => {
+            options = mergeOptions(defaultGiveawayRerollOptions, options);
+            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+            if (!giveawayData) {
+                return reject('No giveaway found with ID ' + messageID + '.');
+            }
+            let giveaway = new Giveaway(this, giveawayData);
+            resolve(await giveaway.reroll(options));
+        });
     }
 
     /**
@@ -195,12 +199,14 @@ class GiveawaysManager extends EventEmitter {
      * });
      */
     edit(messageID, options = {}) {
-        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-        if (!giveawayData) {
-            return reject('No giveaway found with ID ' + messageID + '.');
-        }
-        let giveaway = new Giveaway(this, giveawayData);
-        return giveaway.edit(options);
+        return new Promise(async (resolve, reject) => {
+            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+            if (!giveawayData) {
+                return reject('No giveaway found with ID ' + messageID + '.');
+            }
+            let giveaway = new Giveaway(this, giveawayData);
+            resolve(await giveaway.edit(options));
+        });
     }
 
     /**
