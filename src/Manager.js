@@ -1,20 +1,29 @@
 const { EventEmitter } = require('events');
-const mergeOptions = require('merge-options');
+const merge = require('deepmerge');
 const { writeFile, readFile, exists } = require('fs');
 const { promisify } = require('util');
 const writeFileAsync = promisify(writeFile);
 const existsAsync = promisify(exists);
 const readFileAsync = promisify(readFile);
 const Discord = require('discord.js');
-const { defaultGiveawaysManagerOptions, defaultGiveawaysMessages, defaultGiveawayRerollOptions } = require('./Util');
-const Giveaway = require('./Giveaway');
+const {
+    defaultGiveawayMessages,
+    defaultManagerOptions,
+    defaultRerollOptions,
+    GiveawayEditOptions,
+    GiveawayData,
+    GiveawayRerollOptions,
+    GiveawaysManagerOptions,
+    GiveawayStartOptions
+} = require('./Constants.js');
+const Giveaway = require('./Giveaway.js');
 
 /**
  * Giveaways Manager
  */
 class GiveawaysManager extends EventEmitter {
     /**
-     * @param {Client} client The Discord Client
+     * @param {Discord.Client} client The Discord Client
      * @param {GiveawaysManagerOptions} options The manager options
      */
     constructor(client, options) {
@@ -22,7 +31,7 @@ class GiveawaysManager extends EventEmitter {
         if (!client) throw new Error('Client is a required option.');
         /**
          * The Discord Client
-         * @type {Client}
+         * @type {Discord.Client}
          */
         this.client = client;
         /**
@@ -39,7 +48,7 @@ class GiveawaysManager extends EventEmitter {
          * The manager options
          * @type {GiveawaysManagerOptions}
          */
-        this.options = mergeOptions(defaultGiveawaysManagerOptions, options);
+        this.options = merge(defaultManagerOptions, options);
         /**
          * Whether the Discord.js library version is the v12 one
          * @type {boolean}
@@ -49,44 +58,42 @@ class GiveawaysManager extends EventEmitter {
 
         this.client.on("raw", async (packet) => {
             if(![ "MESSAGE_REACTION_ADD", "MESSAGE_REACTION_REMOVE" ].includes(packet.t)) return;
-            if(this.giveaways.some((g) => g.messageID === packet.d.message_id && !g.ended)){
-                const giveawayData = this.giveaways.find((g) => g.messageID === packet.d.message_id);
-                const giveaway = new Giveaway(this, giveawayData);
-                const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
-                if(!guild) return;
-                const member = (this.v12 ? guild.members.cache : guild.members).get(packet.d.user_id) || await guild.members.fetch(packet.d.user_id).catch(() => {});
-                if(!member) return;
-                const channel = (this.v12 ? guild.channels.cache : guild.channels).get(packet.d.channel_id);
-                if(!channel) return;
-                const message = (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) || await channel.messages.fetch(packet.d.message_id);
-                if(!message) return;
-                if(packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
-                const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(giveaway.reaction || this.options.default.reaction);
-                if(!reaction) return;
-                if(packet.t === "MESSAGE_REACTION_ADD"){
-                    this.emit('giveawayReactionAdded', giveaway, member, reaction);
-                } else {
-                    this.emit('giveawayReactionRemoved', giveaway, member);
-                }
+            const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
+            if(!giveaway) return;
+            if(!giveaway.ended) return;
+            const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
+            if(!guild) return;
+            const member = (this.v12 ? guild.members.cache : guild.members).get(packet.d.user_id) || await guild.members.fetch(packet.d.user_id).catch(() => {});
+            if(!member) return;
+            const channel = (this.v12 ? guild.channels.cache : guild.channels).get(packet.d.channel_id);
+            if(!channel) return;
+            const message = (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) || await channel.messages.fetch(packet.d.message_id);
+            if(!message) return;
+            if(packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
+            const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(giveaway.reaction || this.options.default.reaction);
+            if(!reaction) return;
+            if(packet.t === "MESSAGE_REACTION_ADD"){
+                this.emit('giveawayReactionAdded', giveaway, member, reaction);
+            } else {
+                this.emit('giveawayReactionRemoved', giveaway, member);
             }
         });
     }
 
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
-     * @param {string} messageID The message ID of the giveaway
-     * @returns {Promise<GuildMember[]>} The winners
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway
+     * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
      * manager.end("664900661003157510");
      */
     end(messageID) {
         return new Promise(async (resolve, reject) => {
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-            if (!giveawayData) {
+            const giveaway = this.giveaways.find(g => g.messageID === messageID);
+            if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            let giveaway = new Giveaway(this, giveawayData);
             resolve(await giveaway.end());
         });
     }
@@ -94,7 +101,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Starts a new giveaway
      *
-     * @param {Channel} channel The channel in which the giveaway will be created
+     * @param {Discord.TextChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      *
      * @returns {Promise<Giveaway>}
@@ -110,13 +117,13 @@ class GiveawaysManager extends EventEmitter {
      *      exemptMembers: (member) => !member.roles.some((r) => r.name === "Nitro Boost")
      * });
      */
-    start(channel, options = {}) {
+    start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) {
                 return reject('The manager is not ready yet.');
             }
             if (!options.messages) {
-                options.messages = defaultGiveawaysMessages;
+                options.messages = defaultGiveawayMessages;
             }
             if (!channel || !channel.id) {
                 return reject(`channel is not a valid guildchannel. (val=${channel})`);
@@ -145,8 +152,7 @@ class GiveawaysManager extends EventEmitter {
                 exemptPermissions: options.exemptPermissions,
                 exemptMembers: options.exemptMembers,
                 embedColor: options.embedColor,
-                embedColorEnd: options.embedColorEnd,
-                reaction: options.reaction
+                embedColorEnd: options.embedColorEnd
             });
             let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
             embed
@@ -158,7 +164,7 @@ class GiveawaysManager extends EventEmitter {
             let message = await channel.send(options.messages.giveaway, { embed });
             message.react(giveaway.reaction);
             giveaway.messageID = message.id;
-            this.giveaways.push(giveaway.data);
+            this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
             resolve(giveaway);
         });
@@ -166,16 +172,16 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Choose new winner(s) for the giveaway
-     * @param {string} messageID The message ID of the giveaway to reroll
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to reroll
      * @param {GiveawayRerollOptions} options The reroll options
-     * @returns {Promise<GuildMember[]>} The new winners
+     * @returns {Promise<Discord.GuildMember[]>} The new winners
      *
      * @example
      * manager.reroll("664900661003157510");
      */
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
-            options = mergeOptions(defaultGiveawayRerollOptions, options);
+            options = merge(defaultRerollOptions, options);
             let giveawayData = this.giveaways.find(g => g.messageID === messageID);
             if (!giveawayData) {
                 return reject('No giveaway found with ID ' + messageID + '.');
@@ -187,9 +193,9 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Edits a giveaway. The modifications will be applicated when the giveaway will be updated.
-     * @param {string} messageID The message ID of the giveaway to edit
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to edit
      * @param {GiveawayEditOptions} options The edit options
-     * @returns {Giveaway} The edited giveaway
+     * @returns {Promise<Giveaway>} The edited giveaway
      *
      * @example
      * manager.edit("664900661003157510", {
@@ -200,28 +206,26 @@ class GiveawaysManager extends EventEmitter {
      */
     edit(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-            if (!giveawayData) {
+            const giveaway = this.giveaways.find(g => g.messageID === messageID);
+            if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            let giveaway = new Giveaway(this, giveawayData);
             resolve(await giveaway.edit(options));
         });
     }
 
     /**
      * Deletes a giveaway. It will delete the message and all the giveaway data.
-     * @param {string} messageID  The message ID of the giveaway
-     * @param {Boolean} doNotDeleteMessage Whether the giveaway message shouldn't be deleted
+     * @param {Discord.Snowflake} messageID  The message ID of the giveaway
+     * @param {boolean} doNotDeleteMessage Whether the giveaway message shouldn't be deleted
      * @returns {Promise<void>}
      */
     delete(messageID, doNotDeleteMessage) {
         return new Promise(async (resolve, reject) => {
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-            if (!giveawayData) {
+            const giveaway = this.giveaways.find(g => g.messageID === messageID);
+            if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            let giveaway = new Giveaway(this, giveawayData);
             if (!giveaway.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
@@ -237,9 +241,14 @@ class GiveawaysManager extends EventEmitter {
         });
     }
 
+    /**
+     * Delete a giveaway from the database
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to delete
+     * @returns {Promise<void>}
+     */
     async deleteGiveaway(messageID){
         this.giveaways = this.giveaways.filter(g => g.messageID !== messageID);
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)), 'utf-8');
         this.refreshStorage();
         return;
     }
@@ -247,7 +256,6 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Refresh the cache to support shards.
      * @ignore
-     * @private
      */
     async refreshStorage(){
         return true;
@@ -256,8 +264,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Gets the giveaways from the storage file, or create it
      * @ignore
-     * @private
-     * @returns {Array<Giveaways>}
+     * @returns {Promise<GiveawayData[]>}
      */
     async getAllGiveaways() {
         // Whether the storage file exists, or not
@@ -271,16 +278,16 @@ class GiveawaysManager extends EventEmitter {
             // If the file exists, read it
             let storageContent = await readFileAsync(this.options.storage);
             try {
-                let giveaways = await JSON.parse(storageContent);
+                let giveaways = await JSON.parse(storageContent.toString());
                 if (Array.isArray(giveaways)) {
                     return giveaways;
                 } else {
                     console.log(storageContent, giveaways);
-                    throw new SyntaxError('The storage file is not properly formatted.');
+                    throw new SyntaxError('The storage file is not properly formatted (giveaways is not an array).');
                 }
             } catch (e) {
                 if (e.message === 'Unexpected end of JSON input') {
-                    throw new SyntaxError('The storage file is not properly formatted.', e);
+                    throw new SyntaxError('The storage file is not properly formatted (Unexpected end of JSON input).');
                 } else {
                     throw e;
                 }
@@ -291,12 +298,11 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Edit the giveaway in the database
      * @ignore
-     * @private
-     * @param {Snowflake} messageID The message ID identifying the giveaway
-     * @param {Object} giveawayData The giveaway data to save
+     * @param {Discord.Snowflake} messageID The message ID identifying the giveaway
+     * @param {GiveawayData} giveawayData The giveaway data to save
      */
-    async editGiveaway(_messageID, _giveawayData) {
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+    async editGiveaway(messageID, giveawayData) {
+        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)), 'utf-8');
         this.refreshStorage();
         return;
     }
@@ -304,26 +310,12 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Save the giveaway in the database
      * @ignore
-     * @private
-     * @param {Snowflake} messageID The message ID identifying the giveaway
-     * @param {Object} giveawayData The giveaway data to save
+     * @param {Discord.Snowflake} messageID The message ID identifying the giveaway
+     * @param {GiveawayData} giveawayData The giveaway data to save
      */
-    async saveGiveaway(_messageID, _giveawayData) {
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways), 'utf-8');
+    async saveGiveaway(messageID, giveawayData) {
+        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)), 'utf-8');
         this.refreshStorage();
-        return;
-    }
-
-    /**
-     * Mark a giveaway as ended
-     * @private
-     * @ignore
-     * @param {string} messageID The message ID of the giveaway
-     */
-    async _markAsEnded(messageID) {
-        let giveawayData = this.giveaways.find(g => g.messageID === messageID);
-        giveawayData.ended = true;
-        this.editGiveaway(messageID, giveawayData);
         return;
     }
 
@@ -334,8 +326,7 @@ class GiveawaysManager extends EventEmitter {
      */
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
-        this.giveaways.forEach(async giveawayData => {
-            let giveaway = new Giveaway(this, giveawayData);
+        this.giveaways.forEach(async giveaway => {
             if (giveaway.ended) return;
             if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) {
@@ -344,7 +335,7 @@ class GiveawaysManager extends EventEmitter {
             await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) {
                 giveaway.ended = true;
-                await this._markAsEnded(giveaway.messageID);
+                await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
             let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
@@ -367,7 +358,10 @@ class GiveawaysManager extends EventEmitter {
      * @private
      */
     async _init() {
-        this.giveaways = await this.getAllGiveaways();
+        const rawGiveaways = await this.getAllGiveaways();
+        rawGiveaways.forEach((giveaway) => {
+            this.giveaways.push(new Giveaway(this, giveaway));
+        });
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
@@ -379,7 +373,7 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when a giveaway ends.
  * @event GiveawaysManager#giveawayEnded
  * @param {Giveaway} giveaway The giveaway instance
- * @param {GuildMember[]} winners The giveaway winners
+ * @param {Discord.GuildMember[]} winners The giveaway winners
  * 
  * @example
  * // This can be used to add features such as a congratulatory message in DM
@@ -394,8 +388,8 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when someone entered a giveaway.
  * @event GiveawaysManager#giveawayReactionAdded
  * @param {Giveaway} giveaway The giveaway instance
- * @param {GuildMember} member The member who entered the giveaway
- * @param {MessageReaction} reaction The reaction to enter the giveaway
+ * @param {Discord.GuildMember} member The member who entered the giveaway
+ * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  * 
  * @example
  * // This can be used to add features like removing the user reaction
@@ -412,8 +406,8 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when someone remove their reaction to a giveaway.
  * @event GiveawaysManager#giveawayReactionRemoved
  * @param {Giveaway} giveaway The giveaway instance
- * @param {GuildMember} member The member who remove their reaction giveaway
- * @param {MessageReaction} reaction The reaction to enter the giveaway
+ * @param {Discord.GuildMember} member The member who remove their reaction giveaway
+ * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  * 
  * @example
  * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {

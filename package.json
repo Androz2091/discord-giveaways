@@ -30,7 +30,7 @@
   },
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
-    "merge-options": "^2.0.0"
+    "deepmerge": "^4.2.2"
   },
   "devDependencies": {
     "discord.js": "^12.2.0",
