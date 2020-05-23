@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 /**
  * The Giveaway messages that are used to display the giveaway content
- * @typedef {Object} GiveawayMessages
+ * @typedef GiveawayMessages
  *
  * @property {string} [giveaway='@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
  * @property {string} [giveawayEnded='@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway is ended.
@@ -101,7 +101,7 @@ exports.defaultManagerOptions = {
 
 /**
  * The reroll method options
- * @typedef {Object} GiveawayRerollOptions
+ * @typedef GiveawayRerollOptions
  *
  * @property {number?} [winnerCount=this.winnerCount] The number of winners to pick
  * @property {Object} [messages] The messages used in this method
