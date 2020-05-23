@@ -33,6 +33,7 @@
     "merge-options": "^2.0.0"
   },
   "devDependencies": {
+    "discord.js": "^12.2.0",
     "jsdoc": "^3.6.3",
     "minami": "github:Androz2091/minami",
     "prettier": "^2.0.5"
