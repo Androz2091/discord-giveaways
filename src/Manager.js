@@ -49,7 +49,7 @@ class GiveawaysManager extends EventEmitter {
 
         this.client.on("raw", async (packet) => {
             if(![ "MESSAGE_REACTION_ADD", "MESSAGE_REACTION_REMOVE" ].includes(packet.t)) return;
-            if(this.giveaways.some((g) => g.messageID === packet.d.message_id)){
+            if(this.giveaways.some((g) => g.messageID === packet.d.message_id && !g.ended)){
                 const giveawayData = this.giveaways.find((g) => g.messageID === packet.d.message_id);
                 const giveaway = new Giveaway(this, giveawayData);
                 const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
