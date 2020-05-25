@@ -4,7 +4,8 @@
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
   "files": [
-    "src/"
+    "src/",
+    "giveaways.json"
   ],
   "scripts": {
     "test": "node index.js",
