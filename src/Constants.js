@@ -136,7 +136,7 @@ exports.GiveawayEditOptions = {};
 /**
  * Raw giveaway object (used to store giveaways in the database).
  * @typedef GiveawayData
- * 
+ *
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway

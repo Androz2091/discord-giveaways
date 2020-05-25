@@ -56,23 +56,29 @@ class GiveawaysManager extends EventEmitter {
         this.v12 = this.options.DJSlib === 'v12';
         this._init();
 
-        this.client.on("raw", async (packet) => {
-            if(![ "MESSAGE_REACTION_ADD", "MESSAGE_REACTION_REMOVE" ].includes(packet.t)) return;
+        this.client.on('raw', async (packet) => {
+            if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
             const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
-            if(!giveaway) return;
-            if(!giveaway.ended) return;
+            if (!giveaway) return;
+            if (!giveaway.ended) return;
             const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
-            if(!guild) return;
-            const member = (this.v12 ? guild.members.cache : guild.members).get(packet.d.user_id) || await guild.members.fetch(packet.d.user_id).catch(() => {});
-            if(!member) return;
+            if (!guild) return;
+            const member =
+                (this.v12 ? guild.members.cache : guild.members).get(packet.d.user_id) ||
+                (await guild.members.fetch(packet.d.user_id).catch(() => {}));
+            if (!member) return;
             const channel = (this.v12 ? guild.channels.cache : guild.channels).get(packet.d.channel_id);
-            if(!channel) return;
-            const message = (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) || await channel.messages.fetch(packet.d.message_id);
-            if(!message) return;
-            if(packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
-            const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(giveaway.reaction || this.options.default.reaction);
-            if(!reaction) return;
-            if(packet.t === "MESSAGE_REACTION_ADD"){
+            if (!channel) return;
+            const message =
+                (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) ||
+                (await channel.messages.fetch(packet.d.message_id));
+            if (!message) return;
+            if (packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
+            const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(
+                giveaway.reaction || this.options.default.reaction
+            );
+            if (!reaction) return;
+            if (packet.t === 'MESSAGE_REACTION_ADD') {
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
                 this.emit('giveawayReactionRemoved', giveaway, member);
@@ -90,7 +96,7 @@ class GiveawaysManager extends EventEmitter {
      */
     end(messageID) {
         return new Promise(async (resolve, reject) => {
-            const giveaway = this.giveaways.find(g => g.messageID === messageID);
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
@@ -145,7 +151,7 @@ class GiveawaysManager extends EventEmitter {
                 guildID: channel.guild.id,
                 ended: false,
                 prize: options.prize,
-                hostedBy: (options.hostedBy ? options.hostedBy.toString() : null),
+                hostedBy: options.hostedBy ? options.hostedBy.toString() : null,
                 messages: options.messages,
                 reaction: options.reaction,
                 botsCanWin: options.botsCanWin,
@@ -159,7 +165,11 @@ class GiveawaysManager extends EventEmitter {
                 .setAuthor(giveaway.prize)
                 .setColor(giveaway.embedColor)
                 .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(`${options.messages.inviteToParticipate}\n${giveaway.content}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
+                .setDescription(
+                    `${options.messages.inviteToParticipate}\n${giveaway.content}\n${
+                        giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
+                    }`
+                )
                 .setTimestamp(new Date(giveaway.endAt).toISOString());
             let message = await channel.send(options.messages.giveaway, { embed });
             message.react(giveaway.reaction);
@@ -182,7 +192,7 @@ class GiveawaysManager extends EventEmitter {
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(defaultRerollOptions, options);
-            let giveawayData = this.giveaways.find(g => g.messageID === messageID);
+            let giveawayData = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveawayData) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
@@ -206,7 +216,7 @@ class GiveawaysManager extends EventEmitter {
      */
     edit(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
-            const giveaway = this.giveaways.find(g => g.messageID === messageID);
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
@@ -222,14 +232,14 @@ class GiveawaysManager extends EventEmitter {
      */
     delete(messageID, doNotDeleteMessage) {
         return new Promise(async (resolve, reject) => {
-            const giveaway = this.giveaways.find(g => g.messageID === messageID);
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
             if (!giveaway.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
-            if(!doNotDeleteMessage){
+            if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
                 if (giveaway.message) {
                     // Delete the giveaway message
@@ -246,9 +256,13 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to delete
      * @returns {Promise<void>}
      */
-    async deleteGiveaway(messageID){
-        this.giveaways = this.giveaways.filter(g => g.messageID !== messageID);
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)), 'utf-8');
+    async deleteGiveaway(messageID) {
+        this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
+        await writeFileAsync(
+            this.options.storage,
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            'utf-8'
+        );
         this.refreshStorage();
         return;
     }
@@ -257,7 +271,7 @@ class GiveawaysManager extends EventEmitter {
      * Refresh the cache to support shards.
      * @ignore
      */
-    async refreshStorage(){
+    async refreshStorage() {
         return true;
     }
 
@@ -302,7 +316,11 @@ class GiveawaysManager extends EventEmitter {
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async editGiveaway(messageID, giveawayData) {
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)), 'utf-8');
+        await writeFileAsync(
+            this.options.storage,
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            'utf-8'
+        );
         this.refreshStorage();
         return;
     }
@@ -314,7 +332,11 @@ class GiveawaysManager extends EventEmitter {
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async saveGiveaway(messageID, giveawayData) {
-        await writeFileAsync(this.options.storage, JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)), 'utf-8');
+        await writeFileAsync(
+            this.options.storage,
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            'utf-8'
+        );
         this.refreshStorage();
         return;
     }
@@ -326,7 +348,7 @@ class GiveawaysManager extends EventEmitter {
      */
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
-        this.giveaways.forEach(async giveaway => {
+        this.giveaways.forEach(async (giveaway) => {
             if (giveaway.ended) return;
             if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) {
@@ -343,7 +365,11 @@ class GiveawaysManager extends EventEmitter {
                 .setAuthor(giveaway.prize)
                 .setColor(giveaway.embedColor)
                 .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(`${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${giveaway.hostedBy ? giveaway.messages.hostedBy.replace("{user}", giveaway.hostedBy) : ""}`)
+                .setDescription(
+                    `${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${
+                        giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
+                    }`
+                )
                 .setTimestamp(new Date(giveaway.endAt).toISOString());
             giveaway.message.edit(giveaway.messages.giveaway, { embed });
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
@@ -374,7 +400,7 @@ class GiveawaysManager extends EventEmitter {
  * @event GiveawaysManager#giveawayEnded
  * @param {Giveaway} giveaway The giveaway instance
  * @param {Discord.GuildMember[]} winners The giveaway winners
- * 
+ *
  * @example
  * // This can be used to add features such as a congratulatory message in DM
  * manager.on('giveawayEnded', (giveaway, winners) => {
@@ -390,7 +416,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Giveaway} giveaway The giveaway instance
  * @param {Discord.GuildMember} member The member who entered the giveaway
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
- * 
+ *
  * @example
  * // This can be used to add features like removing the user reaction
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
@@ -408,7 +434,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Giveaway} giveaway The giveaway instance
  * @param {Discord.GuildMember} member The member who remove their reaction giveaway
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
- * 
+ *
  * @example
  * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
  *      return member.send('That's sad, you won\'t be able to win the super cookie!');
