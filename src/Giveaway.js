@@ -330,6 +330,8 @@ class Giveaway extends EventEmitter {
             }
             let winners = await this.roll();
             this.manager.emit('giveawayEnded', this, winners);
+            this.ended = true;
+            this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 let formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
                 let str =
@@ -350,7 +352,6 @@ class Giveaway extends EventEmitter {
                         .replace('{winners}', formattedWinners)
                         .replace('{prize}', this.prize)
                 );
-                this.manager.editGiveaway(this.messageID, this.data);
                 resolve(winners);
             } else {
                 let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
@@ -361,8 +362,6 @@ class Giveaway extends EventEmitter {
                     .setDescription(`${this.messages.noWinner}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
                     .setTimestamp(new Date(this.endAt).toISOString());
                     this.message.edit(this.messages.giveawayEnded, { embed });
-                this.ended = true;
-                this.manager.editGiveaway(this.messageID, this.data);
                 resolve();
             }
         });
