@@ -31,12 +31,6 @@ declare module "discord-giveaways" {
         updateCountdownEvery?: number ;
         DJSlib?: "v12" | "v11";
         default?: GiveawayStartOptions;
-        botsCanWin?: boolean;
-        exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: (member: GuildMember) => boolean;
-        embedColor?: ColorResolvable;
-        embedColorEnd?: ColorResolvable;
-        reaction?: string;
     }
     interface GiveawayStartOptions {
         time?: number;

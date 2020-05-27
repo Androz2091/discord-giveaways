@@ -73,12 +73,12 @@ exports.defaultGiveawayMessages = {
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
  * @property {string} [DJSlib] The Discord.js library version you want to use
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
- * @property {Boolean} [botsCanWin=false] Whether the bots are able to win a giveaway.
- * @property {Discord.PermissionResolvable[]} [exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
- * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
- * @property {Discord.ColorResolvable} [embedColor='#FF0000'] The giveaway embeds color when they are running
- * @property {Discord.ColorResolvable} [embedColorEnd='#000000'] The giveaway embeds color when they are ended
- * @property {string} [reaction='🎉'] The reaction to participate to the giveaways
+ * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
+ * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
+ * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
+ * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The giveaway embeds color when they are running
+ * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The giveaway embeds color when they are ended
+ * @property {string} [default.reaction='🎉'] The reaction to participate to the giveaways
  */
 exports.GiveawaysManagerOptions = {};
 
