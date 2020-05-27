@@ -106,7 +106,7 @@ declare module "discord-giveaways" {
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>
         // @ts-ignore-next-line
-        public async fetchMessages(): Promise<Message>
+        public async fetchMessage(): Promise<Message>
         public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>
         // @ts-ignore-next-line
         public async roll(winnerCount?: number): Promise<GuildMember | GuildMember[]>;
