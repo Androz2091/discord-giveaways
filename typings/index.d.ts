@@ -33,7 +33,7 @@ declare module "discord-giveaways" {
         default?: GiveawayStartOptions;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: () => boolean;
+        exemptMembers?: (member: GuildMember) => boolean;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: string;
