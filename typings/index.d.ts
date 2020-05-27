@@ -109,7 +109,7 @@ declare module "discord-giveaways" {
         public async fetchMessage(): Promise<Message>
         public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>
         // @ts-ignore-next-line
-        public async roll(winnerCount?: number): Promise<GuildMember | GuildMember[]>;
+        public async roll(winnerCount?: number): Promise<GuildMember[]>;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
