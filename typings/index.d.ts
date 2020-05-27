@@ -39,9 +39,9 @@ declare module "discord-giveaways" {
         reaction?: string;
     }
     interface GiveawayStartOptions {
-        time: number;
-        winnerCount: number;
-        prize: string;
+        time?: number;
+        winnerCount?: number;
+        prize?: string;
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
