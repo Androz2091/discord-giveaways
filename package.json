@@ -33,13 +33,16 @@
     "url": "https://github.com/Androz2091/discord-giveaways/issues"
   },
   "homepage": "https://discord-giveaways.js.org",
+  "typings": "typings/index.d.ts",
   "dependencies": {
     "deepmerge": "^4.2.2"
   },
   "devDependencies": {
+    "@types/node": "^14.0.5",
     "discord.js": "^12.2.0",
     "jsdoc": "^3.6.4",
     "minami": "github:Androz2091/minami",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.3"
   }
 }
