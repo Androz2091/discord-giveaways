@@ -136,7 +136,7 @@ declare module "discord-giveaways" {
         messageID?: Snowflake | null;
         reaction?: string;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: () => boolean;
+        exemptMembers?: (member: GuildMember) => boolean;
         embedColor?: string;
         embedColorEnd?: string;
         hostedBy?: string | null;
