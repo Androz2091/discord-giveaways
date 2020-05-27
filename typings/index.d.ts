@@ -17,7 +17,7 @@ declare module "discord-giveaways" {
         public async deleteGiveaway(messageID: Snowflake): Promise<void>
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageID: Snowflake): Promise<GuildMember[]>
-        public reroll(messageID: Snowflake, options: GiveawayRerollOptions): Promise<GuildMember[]>
+        public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>
         public start(channel: TextChannel, options: GiveawayStartOptions): Promise<Giveaway>;
 
         public on<K extends keyof GiveawaysManagerEvents>(event: K, listener: (...args: GiveawaysManagerEvents[K]) => void): this;
