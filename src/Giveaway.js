@@ -273,14 +273,16 @@ class Giveaway extends EventEmitter {
         const reactions = (this.manager.v12 ? this.message.reactions.cache :  this.message.reactions);
         const reaction = reactions.get(this.reaction) || reactions.find(r => r.emoji.name === this.reaction);
         if (!reaction) return new Discord.Collection().array();
+        const guild = this.manager.v12 ? await this.channel.guild.fetch() : await this.channel.guild.fetchMembers();
         let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
             .filter(u => u.id !== this.message.client.user.id)
-            .filter(u => this.manager.v12 ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))
-            .filter(u => !(this.exemptMembers(this.manager.v12 ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id))))
-            .filter(u => !this.exemptPermissions.some(p => (this.manager.v12 ? this.channel.guild.members.cache.get(u.id) : this.channel.guild.members.get(u.id)).hasPermission(p)))
+            .filter(u => this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id))
+            .filter(u => !(this.exemptMembers(this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id))))
+            .filter(u => !this.exemptPermissions.some(p => (this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id)).hasPermission(p)))
             .random(winnerCount || this.winnerCount)
-            .filter(u => u);
+            .filter(u => u)
+            .map(u => guild.member(u));
         return users;
     }
 
