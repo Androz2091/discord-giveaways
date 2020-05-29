@@ -60,7 +60,7 @@ class GiveawaysManager extends EventEmitter {
             if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
             const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
             if (!giveaway) return;
-            if (!giveaway.ended) return;
+            if (giveaway.ended) return;
             const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
             if (!guild) return;
             const member =
