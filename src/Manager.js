@@ -100,7 +100,7 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            resolve(await giveaway.end());
+            giveaway.end().then(resolve).catch(reject);
         });
     }
 
@@ -197,7 +197,7 @@ class GiveawaysManager extends EventEmitter {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
-            resolve(await giveaway.reroll(options));
+            giveaway.reroll(options).then(resolve).catch(reject);
         });
     }
 
@@ -220,7 +220,7 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            resolve(await giveaway.edit(options));
+            giveaway.edit(options).then(resolve).catch(reject);
         });
     }
 
