@@ -197,7 +197,10 @@ class GiveawaysManager extends EventEmitter {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
-            giveaway.reroll(options).then(resolve).catch(reject);
+            giveaway.reroll(options).then((winners) => {
+                this.emit('giveawayRerolled', giveaway, winners)
+                resolve();
+            }).catch(reject);
         });
     }
 
