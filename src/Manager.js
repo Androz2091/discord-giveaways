@@ -444,4 +444,19 @@ class GiveawaysManager extends EventEmitter {
  * });
  */
 
+/**
+ * Emitted when a giveaway is rerolled.
+ * @event GiveawaysManager#giveawayRerolled
+ * @param {Giveaway} giveaway The giveaway instance
+ * @param {Discord.GuildMember[]} winners The winners of the giveaway
+ * 
+ * @example
+ * // This can be used to add features such as a congratulatory message in DM
+ * manager.on('giveawayRerolled', (giveaway, winners) => {
+ *      winners.forEach((member) => {
+ *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
+ *      });
+ * });
+ */
+
 module.exports = GiveawaysManager;
