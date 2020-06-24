@@ -73,11 +73,12 @@ class GiveawaysManager extends EventEmitter {
                 (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) ||
                 (await channel.messages.fetch(packet.d.message_id));
             if (!message) return;
-            if (packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
             const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(
                 giveaway.reaction || this.options.default.reaction
             );
             if (!reaction) return;
+            if(reaction.emoji.name !== packet.d.emoji.name) return;
+            if(reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
             if (packet.t === 'MESSAGE_REACTION_ADD') {
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
