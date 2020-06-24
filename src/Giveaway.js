@@ -152,8 +152,8 @@ class Giveaway extends EventEmitter {
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @type {Function}
      */
-    get exemptMembers() {
-        return this.options.exemptMembers || this.manager.options.default.exemptMembers;
+    exemptMembers(member) {
+        return this.options.exemptMembers(member) || this.manager.options.default.exemptMembers(member);
     }
 
     /**
