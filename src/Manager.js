@@ -81,7 +81,7 @@ class GiveawaysManager extends EventEmitter {
             if (packet.t === 'MESSAGE_REACTION_ADD') {
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
-                this.emit('giveawayReactionRemoved', giveaway, member);
+                this.emit('giveawayReactionRemoved', giveaway, member, reaction);
             }
         });
     }
