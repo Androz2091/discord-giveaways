@@ -152,8 +152,25 @@ class Giveaway extends EventEmitter {
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @type {Function}
      */
-    get exemptMembers() {
-        return this.options.exemptMembers || this.manager.options.default.exemptMembers;
+    async exemptMembers(member) {
+        if(this.options.exemptMembers && typeof this.options.exemptMembers === 'function') {
+            try {
+            return this.options.exemptMembers(member)
+            }catch(error){
+            console.log(error)
+                return false    //in case there is some sort of error in function they created then giveaway will never end and spam error in console. so using this will solve that issue.
+            }
+        }
+        if(this.manager.options.default.exemptMembers && typeof this.manager.options.default.exemptMembers === 'function') {
+            try {
+            return this.manager.options.default.exemptMembers(member)
+            }catch(error){
+            console.log(error)
+            return false
+            }
+        }
+        return false
+        
     }
 
     /**
