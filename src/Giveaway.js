@@ -155,22 +155,17 @@ class Giveaway extends EventEmitter {
     async exemptMembers(member) {
         if(this.options.exemptMembers && typeof this.options.exemptMembers === 'function') {
             try {
-            return this.options.exemptMembers(member)
-            }catch(error){
-            console.log(error)
-                return false    //in case there is some sort of error in function they created then giveaway will never end and spam error in console. so using this will solve that issue.
+                const result = this.options.exemptMembers(member);
+                return result;
+            } catch(error) {
+                console.error(error);
+                return false;
             }
         }
         if(this.manager.options.default.exemptMembers && typeof this.manager.options.default.exemptMembers === 'function') {
-            try {
-            return this.manager.options.default.exemptMembers(member)
-            }catch(error){
-            console.log(error)
-            return false
-            }
+            return this.manager.options.default.exemptMembers(member);
         }
-        return false
-        
+        return false;
     }
 
     /**
