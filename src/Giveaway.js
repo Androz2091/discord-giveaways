@@ -255,7 +255,7 @@ class Giveaway extends EventEmitter {
                 message = await this.channel.fetchMessage(this.messageID).catch(() => {});
             }
             if (!message) {
-                this.manager.deleteGiveaway(this.messageID)
+                this.manager.deleteGiveaway(this.messageID);
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             this.message = message;
