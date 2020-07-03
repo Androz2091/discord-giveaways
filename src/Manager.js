@@ -250,6 +250,7 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.message.delete();
                 }
             }
+            this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
             resolve();
         });
@@ -261,7 +262,6 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<void>}
      */
     async deleteGiveaway(messageID) {
-        this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
         await writeFileAsync(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
