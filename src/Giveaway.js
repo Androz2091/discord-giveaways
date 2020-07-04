@@ -155,7 +155,7 @@ class Giveaway extends EventEmitter {
     async exemptMembers(member) {
         if(this.options.exemptMembers && typeof this.options.exemptMembers === 'function') {
             try {
-                const result = this.options.exemptMembers(member);
+                const result = await this.options.exemptMembers(member);
                 return result;
             } catch(error) {
                 console.error(error);
@@ -163,7 +163,7 @@ class Giveaway extends EventEmitter {
             }
         }
         if(this.manager.options.default.exemptMembers && typeof this.manager.options.default.exemptMembers === 'function') {
-            return this.manager.options.default.exemptMembers(member);
+            return await this.manager.options.default.exemptMembers(member);
         }
         return false;
     }
@@ -291,9 +291,16 @@ class Giveaway extends EventEmitter {
         let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
             .filter(u => u.id !== this.message.client.user.id)
-            .filter(u => this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id))
-            .filter(u => !(this.exemptMembers(this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id))))
-            .filter(u => !this.exemptPermissions.some(p => (this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id)).hasPermission(p)))
+            .filter(u => guild.member(u.id));
+        
+        for(let u of users.array()){
+            const exemptMember = await this.exemptMembers(guild.member(u.id));
+            if(exemptMember){
+                users.delete(u.id);
+            }
+        }
+
+        users = users.filter(u => !this.exemptPermissions.some(p => guild.member(u.id).hasPermission(p)))
             .random(winnerCount || this.winnerCount)
             .filter(u => u)
             .map(u => guild.member(u));
