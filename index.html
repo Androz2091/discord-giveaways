@@ -194,7 +194,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
             newPrize: &quot;New Prize!&quot;,
             addTime: 5000
         }).then(() => {
-            message.channel.send(&quot;Success! Giveaway will updated in less than &quot;+(manager.updateCountdownEvery/1000)+&quot; seconds.&quot;);
+            message.channel.send(&quot;Success! Giveaway will updated in less than &quot;+(client.giveawaysManager.options.updateCountdownEvery/1000)+&quot; seconds.&quot;);
         }).catch((err) => {
             message.channel.send(&quot;No giveaway found for &quot;+messageID+&quot;, please check and try again&quot;);
         });
