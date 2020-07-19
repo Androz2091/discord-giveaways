@@ -10,7 +10,7 @@
     "giveaways.json"
   ],
   "scripts": {
-   "start": "echo \"Error: no test specified\" && exit 1",
+   "test": "echo \"Error: no test specified\" && exit 1",
     "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
   },
