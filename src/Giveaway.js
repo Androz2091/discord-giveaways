@@ -79,6 +79,11 @@ class Giveaway extends EventEmitter {
          */
         this.messages = options.messages;
         /**
+         * Requirements section for extra data
+         * @type {Requirements}
+         */
+        this.requirements = options.requirements;
+        /**
          * The giveaway data
          * @type {GiveawayData}
          */
@@ -248,7 +253,8 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            reaction: this.options.reaction
+            reaction: this.options.reaction,
+            requirements: this.requirements
         };
         return baseData;
     }
