@@ -169,7 +169,7 @@ client.on("message", (message) => {
             newPrize: "New Prize!",
             addTime: 5000
         }).then(() => {
-            message.channel.send("Success! Giveaway will updated in less than "+(manager.updateCountdownEvery/1000)+" seconds.");
+            message.channel.send("Success! Giveaway will updated in less than "+(client.giveawaysManager.options.updateCountdownEvery/1000)+" seconds.");
         }).catch((err) => {
             message.channel.send("No giveaway found for "+messageID+", please check and try again");
         });

@@ -73,15 +73,16 @@ class GiveawaysManager extends EventEmitter {
                 (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) ||
                 (await channel.messages.fetch(packet.d.message_id));
             if (!message) return;
-            if (packet.d.emoji.name !== (giveaway.reaction || this.options.default.reaction)) return;
             const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(
                 giveaway.reaction || this.options.default.reaction
             );
             if (!reaction) return;
+            if(reaction.emoji.name !== packet.d.emoji.name) return;
+            if(reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
             if (packet.t === 'MESSAGE_REACTION_ADD') {
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
-                this.emit('giveawayReactionRemoved', giveaway, member);
+                this.emit('giveawayReactionRemoved', giveaway, member, reaction);
             }
         });
     }
@@ -197,7 +198,10 @@ class GiveawaysManager extends EventEmitter {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
             let giveaway = new Giveaway(this, giveawayData);
-            giveaway.reroll(options).then(resolve).catch(reject);
+            giveaway.reroll(options).then((winners) => {
+                this.emit('giveawayRerolled', giveaway, winners)
+                resolve();
+            }).catch(reject);
         });
     }
 
@@ -246,6 +250,7 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.message.delete();
                 }
             }
+            this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
             resolve();
         });
@@ -257,7 +262,6 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<void>}
      */
     async deleteGiveaway(messageID) {
-        this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
         await writeFileAsync(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
@@ -438,6 +442,21 @@ class GiveawaysManager extends EventEmitter {
  * @example
  * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
  *      return member.send('That's sad, you won\'t be able to win the super cookie!');
+ * });
+ */
+
+/**
+ * Emitted when a giveaway is rerolled.
+ * @event GiveawaysManager#giveawayRerolled
+ * @param {Giveaway} giveaway The giveaway instance
+ * @param {Discord.GuildMember[]} winners The winners of the giveaway
+ * 
+ * @example
+ * // This can be used to add features such as a congratulatory message in DM
+ * manager.on('giveawayRerolled', (giveaway, winners) => {
+ *      winners.forEach((member) => {
+ *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
+ *      });
  * });
  */
 

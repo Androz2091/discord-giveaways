@@ -152,8 +152,20 @@ class Giveaway extends EventEmitter {
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @type {Function}
      */
-    get exemptMembers() {
-        return this.options.exemptMembers || this.manager.options.default.exemptMembers;
+    async exemptMembers(member) {
+        if(this.options.exemptMembers && typeof this.options.exemptMembers === 'function') {
+            try {
+                const result = await this.options.exemptMembers(member);
+                return result;
+            } catch(error) {
+                console.error(error);
+                return false;
+            }
+        }
+        if(this.manager.options.default.exemptMembers && typeof this.manager.options.default.exemptMembers === 'function') {
+            return await this.manager.options.default.exemptMembers(member);
+        }
+        return false;
     }
 
     /**
@@ -255,6 +267,8 @@ class Giveaway extends EventEmitter {
                 message = await this.channel.fetchMessage(this.messageID).catch(() => {});
             }
             if (!message) {
+                this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
+                this.manager.deleteGiveaway(this.messageID);
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             this.message = message;
@@ -277,9 +291,16 @@ class Giveaway extends EventEmitter {
         let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
             .filter(u => u.bot === this.botsCanWin)
             .filter(u => u.id !== this.message.client.user.id)
-            .filter(u => this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id))
-            .filter(u => !(this.exemptMembers(this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id))))
-            .filter(u => !this.exemptPermissions.some(p => (this.manager.v12 ? guild.members.cache.get(u.id) : guild.members.get(u.id)).hasPermission(p)))
+            .filter(u => guild.member(u.id));
+        
+        for(let u of users.array()){
+            const exemptMember = await this.exemptMembers(guild.member(u.id));
+            if(exemptMember){
+                users.delete(u.id);
+            }
+        }
+
+        users = users.filter(u => !this.exemptPermissions.some(p => guild.member(u.id).hasPermission(p)))
             .random(winnerCount || this.winnerCount)
             .filter(u => u)
             .map(u => guild.member(u));
