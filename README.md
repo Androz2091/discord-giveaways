@@ -21,7 +21,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 ## Installation
 
 ```js
-npm install --save discord-giveaways
+npm install --save ShreyashKira/discord-giveaways#Custom
 ```
 
 ## Examples
@@ -107,6 +107,7 @@ client.on("message", (message) => {
 * **options.embedColor**: a hexadecimal color for the embeds of giveaways.  
 * **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
 * **options.reaction**: the reaction that users will have to react to in order to participate.  
+* **options.requirements**: Requirements for your giveaway. e.g Must have role, must join this server, must send 100 messages.
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the package does the rest!
 
