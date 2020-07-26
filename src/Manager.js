@@ -253,6 +253,7 @@ class GiveawaysManager extends EventEmitter {
             }
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
+            this.emit('giveawayDeleted', giveaway)
             resolve();
         });
     }
