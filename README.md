@@ -21,7 +21,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 ## Installation
 
 ```js
-npm install --save ShreyashKira/discord-giveaways#Custom
+npm install --save discord-giveaways
 ```
 
 ## Examples
