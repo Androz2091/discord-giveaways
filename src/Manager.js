@@ -199,7 +199,7 @@ class GiveawaysManager extends EventEmitter {
             }
             let giveaway = new Giveaway(this, giveawayData);
             giveaway.reroll(options).then((winners) => {
-                this.emit('giveawayRerolled', giveaway, winners)
+                this.emit('giveawayRerolled', giveaway, winners);
                 resolve();
             }).catch(reject);
         });

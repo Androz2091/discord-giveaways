@@ -124,7 +124,7 @@ exports.defaultRerollOptions = {
 
 /**
  * The edit method options
- * @typedef GiveawayEditOptions
+ * @typedef GiveawayEditOptions
  *
  * @property {number} [newWinnerCount] The new number of winners
  * @property {string} [newPrize] The new giveaway prize

@@ -41,6 +41,7 @@
   "devDependencies": {
     "@types/node": "^14.0.5",
     "discord.js": "^12.2.0",
+    "eslint": "^7.6.0",
     "jsdoc": "^3.6.4",
     "minami": "github:Androz2091/minami",
     "prettier": "^2.0.5",
