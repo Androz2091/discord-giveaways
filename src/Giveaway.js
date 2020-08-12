@@ -341,6 +341,7 @@ class Giveaway extends EventEmitter {
      */
     end(){
         return new Promise(async (resolve, reject) => {
+            this.ended = true;
             if (this.ended) {
                 return reject('Giveaway with message ID ' + this.messageID + ' is already ended');
             }
@@ -353,7 +354,6 @@ class Giveaway extends EventEmitter {
             }
             let winners = await this.roll();
             this.manager.emit('giveawayEnded', this, winners);
-            this.ended = true;
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 let formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
