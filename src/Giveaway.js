@@ -353,13 +353,13 @@ class Giveaway extends EventEmitter {
             if (!this.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             }
+            this.ended = true;
             await this.fetchMessage().catch(() => {});
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             let winners = await this.roll();
             this.manager.emit('giveawayEnded', this, winners);
-            this.ended = true;
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 let formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
@@ -373,7 +373,7 @@ class Giveaway extends EventEmitter {
                     .setAuthor(this.prize)
                     .setColor(this.embedColorEnd)
                     .setFooter(this.messages.endedAt)
-                    .setDescription(`${str}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
+                    .setDescription(`${str}\n${this.hostedBy ? this.messages.hostedBy.replace('{user}', this.hostedBy) : ''}`)
                     .setTimestamp(new Date(this.endAt).toISOString());
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 this.message.channel.send(
@@ -388,9 +388,9 @@ class Giveaway extends EventEmitter {
                     .setAuthor(this.prize)
                     .setColor(this.embedColorEnd)
                     .setFooter(this.messages.endedAt)
-                    .setDescription(`${this.messages.noWinner}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
+                    .setDescription(`${this.messages.noWinner}\n${this.hostedBy ? this.messages.hostedBy.replace('{user}', this.hostedBy) : ''}`)
                     .setTimestamp(new Date(this.endAt).toISOString());
-                    this.message.edit(this.messages.giveawayEnded, { embed });
+                this.message.edit(this.messages.giveawayEnded, { embed });
                 resolve();
             }
         });
