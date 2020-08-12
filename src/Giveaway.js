@@ -341,13 +341,13 @@ class Giveaway extends EventEmitter {
      */
     end(){
         return new Promise(async (resolve, reject) => {
-            this.ended = true;
             if (this.ended) {
                 return reject('Giveaway with message ID ' + this.messageID + ' is already ended');
             }
             if (!this.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             }
+            this.ended = true;
             await this.fetchMessage().catch(() => {});
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
