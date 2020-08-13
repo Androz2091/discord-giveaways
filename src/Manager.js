@@ -160,7 +160,7 @@ class GiveawaysManager extends EventEmitter {
                 exemptMembers: options.exemptMembers,
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
-                requirements: options.requirements
+                extraData: options.extraData
             });
             let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
             embed
