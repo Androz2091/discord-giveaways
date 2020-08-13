@@ -79,6 +79,11 @@ class Giveaway extends EventEmitter {
          */
         this.messages = options.messages;
         /**
+         * Extra data concerning this giveaway
+         * @type {any}
+         */
+        this.extraData = options.extraData;
+        /**
          * The giveaway data
          * @type {GiveawayData}
          */
@@ -248,7 +253,8 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            reaction: this.options.reaction
+            reaction: this.options.reaction,
+            requirements: this.requirements
         };
         return baseData;
     }
@@ -410,6 +416,14 @@ class Giveaway extends EventEmitter {
             let winners = await this.roll();
             if (winners.length > 0) {
                 let formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
+                let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+                embed
+                    .setAuthor(this.prize)
+                    .setColor(this.embedColorEnd)
+                    .setFooter(this.messages.endedAt)
+                    .setDescription(`${str}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
+                    .setTimestamp(new Date(this.endAt).toISOString());
+                this.message.edit(this.messages.giveawayEnded, { embed });
                 this.channel.send(options.messages.congrat.replace('{winners}', formattedWinners));
                 resolve(winners);
             } else {
