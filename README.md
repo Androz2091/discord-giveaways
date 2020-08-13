@@ -107,7 +107,7 @@ client.on("message", (message) => {
 * **options.embedColor**: a hexadecimal color for the embeds of giveaways.  
 * **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.  
 * **options.reaction**: the reaction that users will have to react to in order to participate.  
-* **options.requirements**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object of the giveaway created by giveaway.requirements.
+* **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the package does the rest!
 
