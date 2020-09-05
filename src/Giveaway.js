@@ -421,7 +421,7 @@ class Giveaway extends EventEmitter {
                     .setAuthor(this.prize)
                     .setColor(this.embedColorEnd)
                     .setFooter(this.messages.endedAt)
-                    .setDescription(`${str}\n${this.hostedBy ? this.messages.hostedBy.replace("{user}", this.hostedBy) : ""}`)
+                    .setDescription(`${formattedWinners}\n${this.hostedBy ? this.messages.hostedBy.replace('{user}', this.hostedBy) : ''}`)
                     .setTimestamp(new Date(this.endAt).toISOString());
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 this.channel.send(options.messages.congrat.replace('{winners}', formattedWinners));
