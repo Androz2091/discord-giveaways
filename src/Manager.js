@@ -129,9 +129,7 @@ class GiveawaysManager extends EventEmitter {
             if (!this.ready) {
                 return reject('The manager is not ready yet.');
             }
-            if (!options.messages) {
-                options.messages = defaultGiveawayMessages;
-            }
+            options.messages = options.messages ? merge(defaultGiveawayMessages, options.messages) : defaultGiveawayMessages;
             if (!channel || !channel.id) {
                 return reject(`channel is not a valid guildchannel. (val=${channel})`);
             }
