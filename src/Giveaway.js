@@ -187,7 +187,7 @@ class Giveaway extends EventEmitter {
      * @type {string}
      * @readonly
      */
-    get content() {
+    get remainingTimeText() {
         let roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
         // Gets days, hours, minutes and seconds
         let days = roundTowardsZero(this.remainingTime / 86400000),

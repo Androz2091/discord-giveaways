@@ -166,7 +166,7 @@ class GiveawaysManager extends EventEmitter {
                 .setColor(giveaway.embedColor)
                 .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
                 .setDescription(
-                    `${options.messages.inviteToParticipate}\n${giveaway.content}\n${
+                    `${options.messages.inviteToParticipate}\n${giveaway.remainingTimeText}\n${
                         giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
                     }`
                 )
@@ -370,7 +370,7 @@ class GiveawaysManager extends EventEmitter {
                 .setColor(giveaway.embedColor)
                 .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
                 .setDescription(
-                    `${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${
+                    `${giveaway.messages.inviteToParticipate}\n${giveaway.remainingTimeText}\n${
                         giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
                     }`
                 )
