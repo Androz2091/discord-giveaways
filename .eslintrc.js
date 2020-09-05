@@ -25,12 +25,10 @@ module.exports = {
             'error',
             'always'
         ],
-        'no-async-promise-executor': [
-            'warn'
-        ],
         'prefer-const': [
             'warn'
         ],
+        'no-async-promise-executor': 0,
         'no-unused-vars': 0
     }
 };

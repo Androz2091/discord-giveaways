@@ -190,10 +190,10 @@ class Giveaway extends EventEmitter {
     get remainingTimeText() {
         const roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
         // Gets days, hours, minutes and seconds
-        let days = roundTowardsZero(this.remainingTime / 86400000),
+        const days = roundTowardsZero(this.remainingTime / 86400000),
             hours = roundTowardsZero(this.remainingTime / 3600000) % 24,
-            minutes = roundTowardsZero(this.remainingTime / 60000) % 60,
-            seconds = roundTowardsZero(this.remainingTime / 1000) % 60;
+            minutes = roundTowardsZero(this.remainingTime / 60000) % 60;
+        let seconds = roundTowardsZero(this.remainingTime / 1000) % 60;
         // Increment seconds if equal to zero
         if (seconds === 0) seconds++;
         // Whether values are inferior to zero
