@@ -88,6 +88,71 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
+     * Generate an embed displayed when a giveaway is running (with the remaining time)
+     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @returns {Discord.MessageEmbed} The generated embed
+     */
+    generateMainEmbed (giveaway) {
+        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        embed
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.embedColor)
+            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
+            .setDescription(
+                giveaway.messages.inviteToParticipate + '\n' +
+                giveaway.remainingTimeText + '\n' +
+                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+        return embed;
+    }
+
+    /**
+     * Generate an embed displayed when a giveaway is ended (with the winners list)
+     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @param {Discord.GuildMember[]} winners The giveaway winners
+     * @returns {Discord.MessageEmbed} The generated embed
+     */
+    generateEndEmbed (giveaway, winners) {
+        const formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
+        const winnersString =
+            giveaway.messages.winners.substr(0, 1).toUpperCase() +
+            giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
+            ': ' +
+            formattedWinners;
+        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        embed
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.embedColorEnd)
+            .setFooter(giveaway.messages.endedAt)
+            .setDescription(
+                winnersString + '\n' +
+                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+        return embed;
+    }
+
+    /**
+     * Generate an embed displayed when a giveaway is ended and when there is no valid participations
+     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @returns {Discord.MessageEmbed} The generated embed
+     */
+    generateNoValidParticipantsEndEmbed (giveaway) {
+        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        embed
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.embedColorEnd)
+            .setFooter(giveaway.messages.endedAt)
+            .setDescription(
+                giveaway.messages.noWinner + '\n' +
+                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+        return embed;
+    }
+
+    /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway
      * @returns {Promise<Discord.GuildMember[]>} The winners
@@ -142,7 +207,7 @@ class GiveawaysManager extends EventEmitter {
             if (!options.winnerCount || isNaN(options.winnerCount)) {
                 return reject(`options.winnerCount is not a number. (val=${options.winnerCount})`);
             }
-            let giveaway = new Giveaway(this, {
+            const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
@@ -160,18 +225,8 @@ class GiveawaysManager extends EventEmitter {
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData
             });
-            let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-            embed
-                .setAuthor(giveaway.prize)
-                .setColor(giveaway.embedColor)
-                .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(
-                    `${options.messages.inviteToParticipate}\n${giveaway.remainingTimeText}\n${
-                        giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
-                    }`
-                )
-                .setTimestamp(new Date(giveaway.endAt).toISOString());
-            let message = await channel.send(options.messages.giveaway, { embed });
+            const embed = this.generateMainEmbed(giveaway);
+            const message = await channel.send(giveaway.messages.giveaway, { embed });
             message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
@@ -192,11 +247,11 @@ class GiveawaysManager extends EventEmitter {
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(defaultRerollOptions, options);
-            let giveawayData = this.giveaways.find((g) => g.messageID === messageID);
+            const giveawayData = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveawayData) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            let giveaway = new Giveaway(this, giveawayData);
+            const giveaway = new Giveaway(this, giveawayData);
             giveaway.reroll(options).then((winners) => {
                 this.emit('giveawayRerolled', giveaway, winners);
                 resolve();
@@ -286,7 +341,7 @@ class GiveawaysManager extends EventEmitter {
      */
     async getAllGiveaways() {
         // Whether the storage file exists, or not
-        let storageExists = await existsAsync(this.options.storage);
+        const storageExists = await existsAsync(this.options.storage);
         // If it doesn't exists
         if (!storageExists) {
             // Create the file with an empty array
@@ -294,9 +349,9 @@ class GiveawaysManager extends EventEmitter {
             return [];
         } else {
             // If the file exists, read it
-            let storageContent = await readFileAsync(this.options.storage);
+            const storageContent = await readFileAsync(this.options.storage);
             try {
-                let giveaways = await JSON.parse(storageContent.toString());
+                const giveaways = await JSON.parse(storageContent.toString());
                 if (Array.isArray(giveaways)) {
                     return giveaways;
                 } else {
@@ -364,17 +419,7 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-            embed
-                .setAuthor(giveaway.prize)
-                .setColor(giveaway.embedColor)
-                .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(
-                    `${giveaway.messages.inviteToParticipate}\n${giveaway.remainingTimeText}\n${
-                        giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
-                    }`
-                )
-                .setTimestamp(new Date(giveaway.endAt).toISOString());
+            const embed = this.generateMainEmbed(giveaway);
             giveaway.message.edit(giveaway.messages.giveaway, { embed });
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);

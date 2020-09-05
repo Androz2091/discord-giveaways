@@ -188,7 +188,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get remainingTimeText() {
-        let roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
+        const roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
         // Gets days, hours, minutes and seconds
         let days = roundTowardsZero(this.remainingTime / 86400000),
             hours = roundTowardsZero(this.remainingTime / 3600000) % 24,
@@ -197,10 +197,10 @@ class Giveaway extends EventEmitter {
         // Increment seconds if equal to zero
         if (seconds === 0) seconds++;
         // Whether values are inferior to zero
-        let isDay = days > 0,
+        const isDay = days > 0,
             isHour = hours > 0,
             isMinute = minutes > 0;
-        let dayUnit =
+        const dayUnit =
                 days < 2 && (this.messages.units.pluralS || this.messages.units.days.endsWith('s'))
                     ? this.messages.units.days.substr(0, this.messages.units.days.length - 1)
                     : this.messages.units.days,
@@ -217,13 +217,13 @@ class Giveaway extends EventEmitter {
                     ? this.messages.units.seconds.substr(0, this.messages.units.seconds.length - 1)
                     : this.messages.units.seconds;
         // Generates a first pattern
-        let pattern =
+        const pattern =
             (!isDay ? '' : `{days} ${dayUnit}, `) +
             (!isHour ? '' : `{hours} ${hourUnit}, `) +
             (!isMinute ? '' : `{minutes} ${minuteUnit}, `) +
             `{seconds} ${secondUnit}`;
         // Format the pattern with the right values
-        let content = this.messages.timeRemaining
+        const content = this.messages.timeRemaining
             .replace('{duration}', pattern)
             .replace('{days}', days.toString())
             .replace('{hours}', hours.toString())
@@ -237,7 +237,7 @@ class Giveaway extends EventEmitter {
      * @type {GiveawayData}
      */
     get data(){
-        let baseData = {
+        const baseData = {
             messageID: this.messageID,
             channelID: this.channelID,
             guildID: this.guildID,
@@ -299,7 +299,7 @@ class Giveaway extends EventEmitter {
             .filter(u => u.id !== this.message.client.user.id)
             .filter(u => guild.member(u.id));
         
-        for(let u of users.array()){
+        for(const u of users.array()){
             const exemptMember = await this.exemptMembers(guild.member(u.id));
             if(exemptMember){
                 users.delete(u.id);
@@ -358,24 +358,13 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            let winners = await this.roll();
+            const winners = await this.roll();
             this.manager.emit('giveawayEnded', this, winners);
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
-                let formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
-                let str =
-                    this.messages.winners.substr(0, 1).toUpperCase() +
-                    this.messages.winners.substr(1, this.messages.winners.length) +
-                    ': ' +
-                    formattedWinners;
-                let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-                embed
-                    .setAuthor(this.prize)
-                    .setColor(this.embedColorEnd)
-                    .setFooter(this.messages.endedAt)
-                    .setDescription(`${str}\n${this.hostedBy ? this.messages.hostedBy.replace('{user}', this.hostedBy) : ''}`)
-                    .setTimestamp(new Date(this.endAt).toISOString());
+                const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
+                const formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
                 this.message.channel.send(
                     this.messages.winMessage
                         .replace('{winners}', formattedWinners)
@@ -383,19 +372,13 @@ class Giveaway extends EventEmitter {
                 );
                 resolve(winners);
             } else {
-                let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-                embed
-                    .setAuthor(this.prize)
-                    .setColor(this.embedColorEnd)
-                    .setFooter(this.messages.endedAt)
-                    .setDescription(`${this.messages.noWinner}\n${this.hostedBy ? this.messages.hostedBy.replace('{user}', this.hostedBy) : ''}`)
-                    .setTimestamp(new Date(this.endAt).toISOString());
+                const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 resolve();
             }
         });
     }
-    
+
     /**
      * Rerolls the giveaway
      * @param {GiveawayRerollOptions} options
@@ -413,17 +396,11 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            let winners = await this.roll();
+            const winners = await this.roll();
             if (winners.length > 0) {
-                let formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
-                let embed = this.manager.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-                embed
-                    .setAuthor(this.prize)
-                    .setColor(this.embedColorEnd)
-                    .setFooter(this.messages.endedAt)
-                    .setDescription(`${formattedWinners}\n${this.hostedBy ? this.messages.hostedBy.replace('{user}', this.hostedBy) : ''}`)
-                    .setTimestamp(new Date(this.endAt).toISOString());
+                const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
+                const formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
                 this.channel.send(options.messages.congrat.replace('{winners}', formattedWinners));
                 resolve(winners);
             } else {

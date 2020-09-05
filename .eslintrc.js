@@ -28,6 +28,9 @@ module.exports = {
         'no-async-promise-executor': [
             'warn'
         ],
+        'prefer-const': [
+            'warn'
+        ],
         'no-unused-vars': 0
     }
 };
