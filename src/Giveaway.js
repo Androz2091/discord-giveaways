@@ -396,7 +396,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            const winners = await this.roll();
+            const winners = await this.roll(options.winnerCount);
             if (winners.length > 0) {
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
