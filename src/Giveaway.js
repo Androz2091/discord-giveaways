@@ -295,7 +295,7 @@ class Giveaway extends EventEmitter {
         if (!reaction) return new Discord.Collection().array();
         const guild = this.manager.v12 ? await this.channel.guild.fetch() : await this.channel.guild.fetchMembers();
         let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
-            .filter(u => u.bot === this.botsCanWin)
+            .filter(u => !u.bot || (u.bot === this.botsCanWin))
             .filter(u => u.id !== this.message.client.user.id)
             .filter(u => guild.member(u.id));
         
