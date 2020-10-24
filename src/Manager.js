@@ -433,7 +433,8 @@ class GiveawaysManager extends EventEmitter {
  */
 
 /**
- * Emitted when someone remove their reaction to a giveaway.
+ * Emitted wh
+en someone remove their reaction to a giveaway.
  * @event GiveawaysManager#giveawayReactionRemoved
  * @param {Giveaway} giveaway The giveaway instance
  * @param {Discord.GuildMember} member The member who remove their reaction giveaway
