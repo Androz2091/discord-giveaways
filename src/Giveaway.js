@@ -67,7 +67,7 @@ class Giveaway extends EventEmitter {
          * An array with the IDs of winners
          * @type {Array<string>}
          */
-        this.winnerIDs = options.winners;
+        this.winnerIDs = options.winnerIDs;
         /**
          * The mention of the user who hosts this giveaway
          * @type {?string}
