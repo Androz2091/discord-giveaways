@@ -451,6 +451,15 @@ class GiveawaysManager extends EventEmitter {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
+        if (!isNaN(this.options.deleteEndedGiveawaysFromDBOlderThan) && this.options.deleteEndedGiveawaysFromDBOlderThan) {
+            this.giveaways
+                .filter((g) => g.ended)
+                .forEach(async (giveaway) => {
+                    if (giveaway.endAt + this.options.deleteEndedGiveawaysFromDBOlderThan <= Date.now()) {
+                        await this.deleteGiveaway(giveaway.messageID);
+                    }
+                });
+        }
     }
 }
 
