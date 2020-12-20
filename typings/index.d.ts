@@ -1,10 +1,20 @@
-declare module "discord-giveaways" {
-    import { EventEmitter } from "events";
-    import { Client, PermissionResolvable, ColorResolvable, User, Snowflake, GuildMember, TextChannel, MessageReaction, Message } from "discord.js";
+declare module 'discord-giveaways' {
+    import { EventEmitter } from 'events';
+    import {
+        Client,
+        PermissionResolvable,
+        ColorResolvable,
+        User,
+        Snowflake,
+        GuildMember,
+        TextChannel,
+        MessageReaction,
+        Message
+    } from 'discord.js';
 
     export const version: string;
     export class GiveawaysManager extends EventEmitter {
-        constructor(client: Client, options?: GiveawaysManagerOptions)
+        constructor(client: Client, options?: GiveawaysManagerOptions);
 
         public client: Client;
         public giveaways: Giveaway[];
@@ -12,24 +22,30 @@ declare module "discord-giveaways" {
         public ready: boolean;
         public v12: boolean;
 
-        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>
+        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>;
         // @ts-ignore-next-line
-        public async deleteGiveaway(messageID: Snowflake): Promise<void>
+        public async deleteGiveaway(messageID: Snowflake): Promise<void>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageID: Snowflake): Promise<GuildMember[]>
-        public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>
+        public end(messageID: Snowflake): Promise<GuildMember[]>;
+        public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel, options: GiveawayStartOptions): Promise<Giveaway>;
 
-        public on<K extends keyof GiveawaysManagerEvents>(event: K, listener: (...args: GiveawaysManagerEvents[K]) => void): this;
+        public on<K extends keyof GiveawaysManagerEvents>(
+            event: K,
+            listener: (...args: GiveawaysManagerEvents[K]) => void
+        ): this;
 
-        public once<K extends keyof GiveawaysManagerEvents>(event: K, listener: (...args: GiveawaysManagerEvents[K]) => void): this;
+        public once<K extends keyof GiveawaysManagerEvents>(
+            event: K,
+            listener: (...args: GiveawaysManagerEvents[K]) => void
+        ): this;
 
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
-        updateCountdownEvery?: number ;
-        DJSlib?: "v12" | "v11";
+        updateCountdownEvery?: number;
+        DJSlib?: 'v12' | 'v11';
         default?: GiveawayStartOptions;
     }
     interface GiveawayStartOptions {
@@ -70,7 +86,7 @@ declare module "discord-giveaways" {
         giveawayReactionRemoved: [Giveaway, GuildMember, MessageReaction];
     }
     class Giveaway extends EventEmitter {
-        constructor(manager: GiveawaysManager, options: GiveawayData)
+        constructor(manager: GiveawaysManager, options: GiveawayData);
 
         public botsCanWin: boolean;
         readonly channel: TextChannel;
@@ -98,10 +114,10 @@ declare module "discord-giveaways" {
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(): Promise<GuildMember[]>
+        public end(): Promise<GuildMember[]>;
         // @ts-ignore-next-line
-        public async fetchMessage(): Promise<Message>
-        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>
+        public async fetchMessage(): Promise<Message>;
+        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
         // @ts-ignore-next-line
         public async roll(winnerCount?: number): Promise<GuildMember[]>;
     }
