@@ -64,6 +64,11 @@ class Giveaway extends EventEmitter {
          */
         this.winnerCount = options.winnerCount;
         /**
+         * An array with the IDs of winners
+         * @type {Array<string>}
+         */
+        this.winnerIDs = options.winners;
+        /**
          * The mention of the user who hosts this giveaway
          * @type {?string}
          */
@@ -245,6 +250,7 @@ class Giveaway extends EventEmitter {
             endAt: this.endAt,
             ended: this.ended,
             winnerCount: this.winnerCount,
+            winners: this.winnerIDs,
             prize: this.prize,
             messages: this.messages,
             hostedBy: this.options.hostedBy,
@@ -363,6 +369,7 @@ class Giveaway extends EventEmitter {
             this.manager.emit('giveawayEnded', this, winners);
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
+                this.winnerIDs = winners.map((w) => w.id);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
@@ -397,6 +404,7 @@ class Giveaway extends EventEmitter {
             }
             const winners = await this.roll(options.winnerCount);
             if (winners.length > 0) {
+                this.winnerIDs = winners.map((w) => w.id);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');

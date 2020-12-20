@@ -111,6 +111,7 @@ declare module 'discord-giveaways' {
         readonly remainingTime: number;
         public startAt: number;
         public winnerCount: number;
+        public winnerIDs: Array<string>;
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -138,6 +139,7 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
+        winnerIDs: Array<string>;
         messages: GiveawaysMessages;
         ended: boolean;
         prize: string;
