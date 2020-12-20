@@ -45,6 +45,7 @@ declare module 'discord-giveaways' {
     interface GiveawaysManagerOptions {
         storage?: string;
         updateCountdownEvery?: number;
+        deleteEndedGiveawaysFromDBOlderThan?: number,
         DJSlib?: 'v12' | 'v11';
         default?: GiveawayStartOptions;
     }
