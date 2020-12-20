@@ -60,7 +60,7 @@ class GiveawaysManager extends EventEmitter {
             if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
             const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
             if (!giveaway) return;
-            if (giveaway.ended) return;
+            if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
             const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
             if (!guild) return;
             const member =
@@ -80,6 +80,7 @@ class GiveawaysManager extends EventEmitter {
             if (reaction.emoji.name !== packet.d.emoji.name) return;
             if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
             if (packet.t === 'MESSAGE_REACTION_ADD') {
+                if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
                 this.emit('giveawayReactionRemoved', giveaway, member, reaction);
@@ -451,7 +452,10 @@ class GiveawaysManager extends EventEmitter {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
-        if (!isNaN(this.options.deleteEndedGiveawaysFromDBOlderThan) && this.options.deleteEndedGiveawaysFromDBOlderThan) {
+        if (
+            !isNaN(this.options.deleteEndedGiveawaysFromDBOlderThan) &&
+            this.options.deleteEndedGiveawaysFromDBOlderThan
+        ) {
             this.giveaways
                 .filter((g) => g.ended)
                 .forEach(async (giveaway) => {
