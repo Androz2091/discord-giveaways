@@ -60,7 +60,7 @@ class GiveawaysManager extends EventEmitter {
             if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
             const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
             if (!giveaway) return;
-            if (giveaway.ended) return;
+            if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
             const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
             if (!guild) return;
             const member =
@@ -77,14 +77,84 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.reaction || this.options.default.reaction
             );
             if (!reaction) return;
-            if(reaction.emoji.name !== packet.d.emoji.name) return;
-            if(reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
+            if (reaction.emoji.name !== packet.d.emoji.name) return;
+            if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
             if (packet.t === 'MESSAGE_REACTION_ADD') {
+                if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
                 this.emit('giveawayReactionRemoved', giveaway, member, reaction);
             }
         });
+    }
+
+    /**
+     * Generate an embed displayed when a giveaway is running (with the remaining time)
+     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @returns {Discord.MessageEmbed} The generated embed
+     */
+    generateMainEmbed(giveaway) {
+        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        embed
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.embedColor)
+            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
+            .setDescription(
+                giveaway.messages.inviteToParticipate +
+                    '\n' +
+                    giveaway.remainingTimeText +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+        return embed;
+    }
+
+    /**
+     * Generate an embed displayed when a giveaway is ended (with the winners list)
+     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @param {Discord.GuildMember[]} winners The giveaway winners
+     * @returns {Discord.MessageEmbed} The generated embed
+     */
+    generateEndEmbed(giveaway, winners) {
+        const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+        const winnersString =
+            giveaway.messages.winners.substr(0, 1).toUpperCase() +
+            giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
+            ': ' +
+            formattedWinners;
+        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        embed
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.embedColorEnd)
+            .setFooter(giveaway.messages.endedAt)
+            .setDescription(
+                winnersString +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+        return embed;
+    }
+
+    /**
+     * Generate an embed displayed when a giveaway is ended and when there is no valid participations
+     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @returns {Discord.MessageEmbed} The generated embed
+     */
+    generateNoValidParticipantsEndEmbed(giveaway) {
+        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        embed
+            .setAuthor(giveaway.prize)
+            .setColor(giveaway.embedColorEnd)
+            .setFooter(giveaway.messages.endedAt)
+            .setDescription(
+                giveaway.messages.noWinner +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString());
+        return embed;
     }
 
     /**
@@ -129,9 +199,9 @@ class GiveawaysManager extends EventEmitter {
             if (!this.ready) {
                 return reject('The manager is not ready yet.');
             }
-            if (!options.messages) {
-                options.messages = defaultGiveawayMessages;
-            }
+            options.messages = options.messages
+                ? merge(defaultGiveawayMessages, options.messages)
+                : defaultGiveawayMessages;
             if (!channel || !channel.id) {
                 return reject(`channel is not a valid guildchannel. (val=${channel})`);
             }
@@ -144,10 +214,11 @@ class GiveawaysManager extends EventEmitter {
             if (!options.winnerCount || isNaN(options.winnerCount)) {
                 return reject(`options.winnerCount is not a number. (val=${options.winnerCount})`);
             }
-            let giveaway = new Giveaway(this, {
+            const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
+                winnerIDs: [],
                 channelID: channel.id,
                 guildID: channel.guild.id,
                 ended: false,
@@ -159,20 +230,11 @@ class GiveawaysManager extends EventEmitter {
                 exemptPermissions: options.exemptPermissions,
                 exemptMembers: options.exemptMembers,
                 embedColor: options.embedColor,
-                embedColorEnd: options.embedColorEnd
+                embedColorEnd: options.embedColorEnd,
+                extraData: options.extraData
             });
-            let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-            embed
-                .setAuthor(giveaway.prize)
-                .setColor(giveaway.embedColor)
-                .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(
-                    `${options.messages.inviteToParticipate}\n${giveaway.content}\n${
-                        giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
-                    }`
-                )
-                .setTimestamp(new Date(giveaway.endAt).toISOString());
-            let message = await channel.send(options.messages.giveaway, { embed });
+            const embed = this.generateMainEmbed(giveaway);
+            const message = await channel.send(giveaway.messages.giveaway, { embed });
             message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
@@ -193,15 +255,18 @@ class GiveawaysManager extends EventEmitter {
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(defaultRerollOptions, options);
-            let giveawayData = this.giveaways.find((g) => g.messageID === messageID);
+            const giveawayData = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveawayData) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            let giveaway = new Giveaway(this, giveawayData);
-            giveaway.reroll(options).then((winners) => {
-                this.emit('giveawayRerolled', giveaway, winners)
-                resolve();
-            }).catch(reject);
+            const giveaway = new Giveaway(this, giveawayData);
+            giveaway
+                .reroll(options)
+                .then((winners) => {
+                    this.emit('giveawayRerolled', giveaway, winners);
+                    resolve();
+                })
+                .catch(reject);
         });
     }
 
@@ -252,6 +317,7 @@ class GiveawaysManager extends EventEmitter {
             }
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
+            this.emit('giveawayDeleted', giveaway);
             resolve();
         });
     }
@@ -286,7 +352,7 @@ class GiveawaysManager extends EventEmitter {
      */
     async getAllGiveaways() {
         // Whether the storage file exists, or not
-        let storageExists = await existsAsync(this.options.storage);
+        const storageExists = await existsAsync(this.options.storage);
         // If it doesn't exists
         if (!storageExists) {
             // Create the file with an empty array
@@ -294,9 +360,9 @@ class GiveawaysManager extends EventEmitter {
             return [];
         } else {
             // If the file exists, read it
-            let storageContent = await readFileAsync(this.options.storage);
+            const storageContent = await readFileAsync(this.options.storage);
             try {
-                let giveaways = await JSON.parse(storageContent.toString());
+                const giveaways = await JSON.parse(storageContent.toString());
                 if (Array.isArray(giveaways)) {
                     return giveaways;
                 } else {
@@ -364,17 +430,7 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            let embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
-            embed
-                .setAuthor(giveaway.prize)
-                .setColor(giveaway.embedColor)
-                .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
-                .setDescription(
-                    `${giveaway.messages.inviteToParticipate}\n${giveaway.content}\n${
-                        giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : ''
-                    }`
-                )
-                .setTimestamp(new Date(giveaway.endAt).toISOString());
+            const embed = this.generateMainEmbed(giveaway);
             giveaway.message.edit(giveaway.messages.giveaway, { embed });
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
@@ -396,6 +452,18 @@ class GiveawaysManager extends EventEmitter {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
+        if (
+            !isNaN(this.options.deleteEndedGiveawaysFromDBOlderThan) &&
+            this.options.deleteEndedGiveawaysFromDBOlderThan
+        ) {
+            this.giveaways
+                .filter((g) => g.ended)
+                .forEach(async (giveaway) => {
+                    if (giveaway.endAt + this.options.deleteEndedGiveawaysFromDBOlderThan <= Date.now()) {
+                        await this.deleteGiveaway(giveaway.messageID);
+                    }
+                });
+        }
     }
 }
 
@@ -450,7 +518,7 @@ class GiveawaysManager extends EventEmitter {
  * @event GiveawaysManager#giveawayRerolled
  * @param {Giveaway} giveaway The giveaway instance
  * @param {Discord.GuildMember[]} winners The winners of the giveaway
- * 
+ *
  * @example
  * // This can be used to add features such as a congratulatory message in DM
  * manager.on('giveawayRerolled', (giveaway, winners) => {

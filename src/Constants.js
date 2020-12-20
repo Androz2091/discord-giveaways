@@ -71,6 +71,7 @@ exports.defaultGiveawayMessages = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
+ * @property {number} [deleteEndedGiveawaysFromDBOlderThan=0] The time (in ms) after which a ended giveaway should get deleted from the DB. (Default is never)
  * @property {string} [DJSlib] The Discord.js library version you want to use
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
@@ -89,6 +90,7 @@ exports.GiveawaysManagerOptions = {};
 exports.defaultManagerOptions = {
     storage: './giveaways.json',
     updateCountdownEvery: 5000,
+    deleteEndedGiveawaysFromDBOlderThan: 0,
     DJSlib: Discord.version.split('.')[0] === '12' ? 'v12' : 'v11',
     default: {
         botsCanWin: false,
@@ -124,7 +126,7 @@ exports.defaultRerollOptions = {
 
 /**
  * The edit method options
- * @typedef GiveawayEditOptions
+ * @typedef GiveawayEditOptions
  *
  * @property {number} [newWinnerCount] The new number of winners
  * @property {string} [newPrize] The new giveaway prize
@@ -140,6 +142,7 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway
+ * @property {Array<string>} winnerIds The IDs of the giveaway winners
  * @property {GiveawayMessages} messages The giveaway messages
  * @property {boolean} ended Whether the giveaway is ended
  * @property {string} prize The prize of the giveaway
