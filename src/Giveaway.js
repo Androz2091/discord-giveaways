@@ -312,7 +312,7 @@ class Giveaway extends EventEmitter {
         const guild = this.channel.guild;
         // Fetch guild members
         if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
-        let users = (await reaction.users.fetch())
+        const users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
 
@@ -337,12 +337,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        users = users
-            .filter((u) => !this.exemptPermissions.some((p) => guild.member(u.id).hasPermission(p)))
-            .random(winnerCount || this.winnerCount)
-            .filter((u) => u)
-            .map((u) => guild.member(u));
-        return users;
+        return winners;
     }
 
     /**
