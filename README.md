@@ -412,10 +412,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
                     console.error(err)
                     reject(err);
                 }
-                var all = []
-                res.forEach(r=>{
-                    all.push(r.data)
-                })
+                return res.map((row) => row.data);
                 resolve(all);
             })
         });
