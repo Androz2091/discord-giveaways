@@ -1,23 +1,23 @@
 module.exports = {
-    'env': {
-        'commonjs': true,
-        'es2020': true,
-        'node': true
+    env: {
+        commonjs: true,
+        es2020: true,
+        node: true
     },
-    'extends': 'eslint:recommended',
-    'parserOptions': {
-        'ecmaVersion': 11
+    extends: 'eslint:recommended',
+    parserOptions: {
+        ecmaVersion: 11
     },
-    'rules': {
-        'indent': [
+    rules: {
+        indent: [
             'error',
             4
         ],
-        'quotes': [
+        quotes: [
             'error',
             'single'
         ],
-        'semi': [
+        semi: [
             'error',
             'always'
         ],
@@ -28,6 +28,7 @@ module.exports = {
         'prefer-const': [
             'warn'
         ],
+        'quote-props': ['error', 'as-needed'],
         'no-async-promise-executor': 0,
         'no-unused-vars': 0
     }
