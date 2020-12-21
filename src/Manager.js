@@ -60,7 +60,7 @@ class GiveawaysManager extends EventEmitter {
             if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
             const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
             if (!giveaway) return;
-            if (giveaway.ended) return;
+            if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
             const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
             if (!guild) return;
             const member =
@@ -77,9 +77,10 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.reaction || this.options.default.reaction
             );
             if (!reaction) return;
-            if(reaction.emoji.name !== packet.d.emoji.name) return;
-            if(reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
+            if (reaction.emoji.name !== packet.d.emoji.name) return;
+            if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
             if (packet.t === 'MESSAGE_REACTION_ADD') {
+                if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
                 this.emit('giveawayReactionAdded', giveaway, member, reaction);
             } else {
                 this.emit('giveawayReactionRemoved', giveaway, member, reaction);
@@ -92,16 +93,18 @@ class GiveawaysManager extends EventEmitter {
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateMainEmbed (giveaway) {
+    generateMainEmbed(giveaway) {
         const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColor)
-            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners}`)
+            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
-                giveaway.messages.inviteToParticipate + '\n' +
-                giveaway.remainingTimeText + '\n' +
-                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+                giveaway.messages.inviteToParticipate +
+                    '\n' +
+                    giveaway.remainingTimeText +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
@@ -113,8 +116,8 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.GuildMember[]} winners The giveaway winners
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateEndEmbed (giveaway, winners) {
-        const formattedWinners = winners.map(w => `<@${w.id}>`).join(', ');
+    generateEndEmbed(giveaway, winners) {
+        const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
         const winnersString =
             giveaway.messages.winners.substr(0, 1).toUpperCase() +
             giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
@@ -126,8 +129,9 @@ class GiveawaysManager extends EventEmitter {
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt)
             .setDescription(
-                winnersString + '\n' +
-                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+                winnersString +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
@@ -138,15 +142,16 @@ class GiveawaysManager extends EventEmitter {
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateNoValidParticipantsEndEmbed (giveaway) {
+    generateNoValidParticipantsEndEmbed(giveaway) {
         const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt)
             .setDescription(
-                giveaway.messages.noWinner + '\n' +
-                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+                giveaway.messages.noWinner +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
@@ -194,7 +199,9 @@ class GiveawaysManager extends EventEmitter {
             if (!this.ready) {
                 return reject('The manager is not ready yet.');
             }
-            options.messages = options.messages ? merge(defaultGiveawayMessages, options.messages) : defaultGiveawayMessages;
+            options.messages = options.messages
+                ? merge(defaultGiveawayMessages, options.messages)
+                : defaultGiveawayMessages;
             if (!channel || !channel.id) {
                 return reject(`channel is not a valid guildchannel. (val=${channel})`);
             }
@@ -211,6 +218,7 @@ class GiveawaysManager extends EventEmitter {
                 startAt: Date.now(),
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
+                winnerIDs: [],
                 channelID: channel.id,
                 guildID: channel.guild.id,
                 ended: false,
@@ -252,10 +260,13 @@ class GiveawaysManager extends EventEmitter {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
             const giveaway = new Giveaway(this, giveawayData);
-            giveaway.reroll(options).then((winners) => {
-                this.emit('giveawayRerolled', giveaway, winners);
-                resolve();
-            }).catch(reject);
+            giveaway
+                .reroll(options)
+                .then((winners) => {
+                    this.emit('giveawayRerolled', giveaway, winners);
+                    resolve();
+                })
+                .catch(reject);
         });
     }
 
@@ -441,6 +452,18 @@ class GiveawaysManager extends EventEmitter {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
+        if (
+            !isNaN(this.options.deleteEndedGiveawaysFromDBOlderThan) &&
+            this.options.deleteEndedGiveawaysFromDBOlderThan
+        ) {
+            this.giveaways
+                .filter((g) => g.ended)
+                .forEach(async (giveaway) => {
+                    if (giveaway.endAt + this.options.deleteEndedGiveawaysFromDBOlderThan <= Date.now()) {
+                        await this.deleteGiveaway(giveaway.messageID);
+                    }
+                });
+        }
     }
 }
 
@@ -469,10 +492,9 @@ class GiveawaysManager extends EventEmitter {
  * @example
  * // This can be used to add features like removing the user reaction
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
- *     const hasJoinedAnotherServer = client.guilds.cache.get('39803980830938').members.has(member.id);
- *     if(!hasJoinedAnotherServer){
+ *     if (!member.roles.cache.get('123456789'){
  *          reaction.users.remove(member.user);
- *          member.send('You must join this server to participate to the giveaway: https://discord.gg/discord-api');
+ *          member.send('You must have this role to participate in the giveaway: Staff');
  *     }
  * });
  */
@@ -491,11 +513,24 @@ class GiveawaysManager extends EventEmitter {
  */
 
 /**
+ * Emitted when someone reacts to a ended giveaway.
+ * @event GiveawaysManager#endedGiveawayReactionAdded
+ * @param {Giveaway} giveaway The giveaway instance
+ * @param {Discord.GuildMember} member The member who reacted to the ended giveaway
+ * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
+ *
+ * @example
+ * manager.on('endedGiveawayReactionAdded', (giveaway, member, reaction) => {
+ *      return reaction.users.remove(member.user);
+ * });
+ */
+
+/**
  * Emitted when a giveaway is rerolled.
  * @event GiveawaysManager#giveawayRerolled
  * @param {Giveaway} giveaway The giveaway instance
  * @param {Discord.GuildMember[]} winners The winners of the giveaway
- * 
+ *
  * @example
  * // This can be used to add features such as a congratulatory message in DM
  * manager.on('giveawayRerolled', (giveaway, winners) => {
