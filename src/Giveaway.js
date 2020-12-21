@@ -259,7 +259,8 @@ class Giveaway extends EventEmitter {
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
             reaction: this.options.reaction,
-            requirements: this.requirements
+            requirements: this.requirements,
+            winnerIDs: this.winnerIDs
         };
         return baseData;
     }
@@ -391,6 +392,7 @@ class Giveaway extends EventEmitter {
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
+                this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
@@ -426,6 +428,7 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll(options.winnerCount);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
+                this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
