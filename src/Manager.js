@@ -380,7 +380,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.Snowflake} messageID The message ID identifying the giveaway
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
-    async editGiveaway(messageID, giveawayData) {
+    async editGiveaway(_messageID, _giveawayData) {
         await writeFileAsync(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
