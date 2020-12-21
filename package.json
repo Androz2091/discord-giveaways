@@ -11,8 +11,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
+    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
     "type": "git",
@@ -40,11 +39,10 @@
   },
   "devDependencies": {
     "@types/node": "^14.0.5",
+    "typescript": "^4.0.2",
     "discord.js": "^12.2.0",
     "eslint": "^7.6.0",
     "jsdoc": "^3.6.4",
-    "minami": "github:Androz2091/minami",
-    "prettier": "^2.0.5",
-    "typescript": "^4.0.2"
+    "jsdoc-skyceil": "Androz2091/jsdoc-skyceil"
   }
 }
