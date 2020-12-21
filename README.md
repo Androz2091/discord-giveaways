@@ -86,15 +86,13 @@ client.on('message', (message) => {
         // g!start-giveaway 2d 1 Awesome prize!
         // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
-        client.giveawaysManager
-            .start(message.channel, {
-                time: ms(args[0]),
-                prize: args.slice(2).join(' '),
-                winnerCount: parseInt(args[1])
-            })
-            .then((gData) => {
-                console.log(gData); // {...} (messageid, end date and more)
-            });
+        client.giveawaysManager.start(message.channel, {
+            time: ms(args[0]),
+            prize: args.slice(2).join(' '),
+            winnerCount: parseInt(args[1])
+        }).then((gData) => {
+            console.log(gData); // {...} (messageid, end date and more)
+        });
         // And the giveaway has started!
     }
 });
@@ -141,14 +139,11 @@ client.on('message', (message) => {
 
     if (command === 'reroll') {
         let messageID = args[0];
-        client.giveawaysManager
-            .reroll(messageID)
-            .then(() => {
-                message.channel.send('Success! Giveaway rerolled!');
-            })
-            .catch((err) => {
-                message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
-            });
+        client.giveawaysManager.reroll(messageID).then(() => {
+            message.channel.send('Success! Giveaway rerolled!');
+        }).catch((err) => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
     }
 });
 ```
@@ -168,22 +163,17 @@ client.on('message', (message) => {
 
     if (command === 'edit') {
         let messageID = args[0];
-        client.giveawaysManager
-            .edit(messageID, {
-                newWinnerCount: 3,
-                newPrize: 'New Prize!',
-                addTime: 5000
-            })
-            .then(() => {
-                message.channel.send(
-                    'Success! Giveaway will updated in less than ' +
-                        client.giveawaysManager.options.updateCountdownEvery / 1000 +
-                        ' seconds.'
-                );
-            })
-            .catch((err) => {
-                message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
-            });
+        client.giveawaysManager.edit(messageID, {
+            newWinnerCount: 3,
+            newPrize: 'New Prize!',
+            addTime: 5000
+        }).then(() => {
+            // here, we can calculate the time after which we are sure that the lib will update the giveaway
+            const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
+            message.channel.send('Success! Giveaway will updated in less than ' + numberOfSecondsMax + ' seconds.');
+        }).catch((err) => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
     }
 });
 ```
@@ -204,14 +194,12 @@ client.on('message', (message) => {
 
     if (command === 'delete') {
         let messageID = args[0];
-        client.giveawaysManager
-            .delete(messageID)
-            .then(() => {
-                message.channel.send('Success! Giveaway deleted!');
-            })
-            .catch((err) => {
-                message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
-            });
+        client.giveawaysManager.delete(messageID).then(() => {
+            message.channel.send('Success! Giveaway deleted!');
+        })
+        .catch((err) => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
     }
 });
 ```
@@ -298,6 +286,11 @@ You can use your custom database to save giveaways, instead of the json files (t
 
 Here is an example, using quick.db, a Sqlite database. The comments in the code below are very important to understand how it works!
 
+Other examples:
+
+- [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+- [MongoDB example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+
 ```js
 const Discord = require('discord.js'),
     client = new Discord.Client(),
@@ -365,306 +358,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready !");
-});
-
-client.login(settings.token);
-```
-
-Another example with quickmongo, a MongoDB wrapper, which is very similar to quick.db:
-
-```js
-const Discord = require('discord.js'),
-    client = new Discord.Client(),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Token'
-    };
-
-// Load quickmongo
-const { Database } = require('quickmongo');
-const db = new Database('mongodb://localhost/giveaways');
-db.once('ready', async () => {
-    if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
-});
-
-const { GiveawaysManager } = require('discord-giveaways');
-class GiveawayManager extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
-    async getAllGiveaways() {
-        // Get all the giveaway in the database
-        return await db.get('giveaways');
-    }
-
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
-    async saveGiveaway(messageID, giveawayData) {
-        // Add the new one
-        await db.push('giveaways', giveawayData);
-        // Don't forget to return something!
-        return true;
-    }
-
-    async editGiveaway(messageID, giveawayData) {
-        // Gets all the current giveaways
-        const giveaways = await db.get('giveaways');
-        // Remove the old giveaway from the current giveaways ID
-        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Push the new giveaway to the array
-        newGiveawaysArray.push(giveawayData);
-        // Save the updated array
-        await db.set('giveaways', newGiveawaysArray);
-        // Don't forget to return something!
-        return true;
-    }
-
-    async deleteGiveaway(messageID) {
-        // Gets all the current giveaways
-        const data = await db.get('giveaways');
-        // Remove the giveaway from the array
-        const newGiveawaysArray = data.filter((giveaway) => giveaway.messageID !== messageID);
-        // Save the updated array
-        await db.set('giveaways', newGiveawaysArray);
-        // Don't forget to return something!
-        return true;
-    }
-}
-```
-
-Another example with MySQL:
-
-```js
-const Discord = require('discord.js'),
-    client = new Discord.Client(),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Token'
-    };
-
-// Load mysql
-const MySQL = require('mysql');
-const sql = MySQL.createConnection({
-    host: 'localhost',
-    user: 'Your MySQL user',
-    password: 'Your MySQL password',
-    database: 'Your MySQL database name'
-});
-sql.connect((err) => {
-    if (err) {
-        console.error('Impossible to connect to MySQL server. Code: ' + err.code);
-        process.exit(99); // stop the process if we can't connect to MySQL server
-    } else {
-        console.log('[SQL] Connected to the MySQL server! Connexion ID: ' + sql.threadId);
-    }
-});
-
-// Create giveaways table
-sql.query(
-    'CREATE TABLE IF NOT EXISTS `giveaways` (`id` INT(1) NOT NULL AUTO_INCREMENT, `message_id` VARCHAR(64) NOT NULL, `data` JSON NOT NULL, PRIMARY KEY (`id`));',
-    (err, res) => {
-        if (err) console.error(err);
-        console.log('[SQL] Created table `giveaways`');
-    }
-);
-
-const { GiveawaysManager } = require('discord-giveaways');
-const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
-    async getAllGiveaways() {
-        return new Promise(function (resolve, reject) {
-            sql.query('SELECT `data` FROM `giveaways`', (err, res) => {
-                if (err) {
-                    console.error(err);
-                    reject(err);
-                }
-                var all = [];
-                res.forEach((r) => {
-                    all.push(r.data);
-                });
-                resolve(all);
-            });
-        });
-    }
-
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
-    async saveGiveaway(messageID, giveawayData) {
-        return new Promise(function (resolve, reject) {
-            sql.query(
-                'INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)',
-                [messageID, JSON.stringify(giveawayData)],
-                (err, res) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                    }
-                    resolve(true);
-                }
-            );
-        });
-    }
-
-    async editGiveaway(messageID, giveawayData) {
-        return new Promise(function (resolve, reject) {
-            sql.query(
-                'UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?',
-                [JSON.stringify(giveawayData), messageID],
-                (err, res) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                    }
-                    resolve(true);
-                }
-            );
-        });
-    }
-
-    // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
-        return new Promise(function (resolve, reject) {
-            sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageID, (err, res) => {
-                if (err) {
-                    console.error(err);
-                    reject(err);
-                }
-                resolve(true);
-            });
-        });
-    }
-};
-
-// Create a new instance of your new class
-const manager = new GiveawayManagerWithOwnDatabase(client, {
-    storage: false, // Important - use false instead of a storage path
-    updateCountdownEvery: 10000,
-    default: {
-        botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
-        embedColor: '#FF0000',
-        reaction: '🎉'
-    }
-});
-// We now have a giveawaysManager property to access the manager everywhere!
-client.giveawaysManager = manager;
-
-client.on('ready', () => {
-    console.log("I'm ready !");
-});
-
-client.login(settings.token);
-```
-
-Another example with MySQL:
-
-```js
-const Discord = require("discord.js"),
-client = new Discord.Client(),
-settings = {
-    prefix: "g!",
-    token: "Your Discord Token"
-};
-
-// Load mysql
-const MySQL = require('mysql')
-const sql = MySQL.createConnection({
-    host     : "localhost",
-    user     : "Your MySQL user",
-    password : "Your MySQL password",
-    database : "Your MySQL database name"
-})
-sql.connect( (err) => {
-    if (err){
-        console.error('Impossible to connect to MySQL server. Code: ' + err.code)
-        process.exit(99) // stop the process if we can't connect to MySQL server
-    } else {
-        console.log('[SQL] Connected to the MySQL server! Connexion ID: ' + sql.threadId)
-    }
-})
-
-// Create giveaways table
-sql.query(`
-	CREATE TABLE IF NOT EXISTS \`giveaways\`
-	(
-		\`id\` INT(1) NOT NULL AUTO_INCREMENT,
-		\`message_id\` VARCHAR(64) NOT NULL,
-		\`data\` JSON NOT NULL,
-		PRIMARY KEY (\`id\`)
-	);
-`, (err, res) => {
-    if (err) console.error(err)
-    console.log('[SQL] Created table `giveaways`')
-})
-
-const { GiveawaysManager } = require("discord-giveaways");
-const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-
-    // This function is called when the manager needs to get all the giveaway stored in the database.
-    async getAllGiveaways(){
-        return new Promise(function (resolve, reject) {
-            sql.query('SELECT `data` FROM `giveaways`', (err, res) => {
-                if (err) {
-                    console.error(err)
-                    reject(err);
-                }
-                return res.map((row) => row.data);
-                resolve(all);
-            })
-        });
-    }
-
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
-    async saveGiveaway(messageID, giveawayData){
-        return new Promise(function (resolve, reject) {
-            sql.query("INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)", [messageID, JSON.stringify(giveawayData)], (err, res) => {
-                if (err) {
-                    console.error(err)
-                    reject(err);
-                }
-                resolve(true);
-            })
-        })
-    }
-
-    async editGiveaway(messageID, giveawayData){
-        return new Promise(function (resolve, reject) {
-            sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
-                if (err) {
-                    console.error(err)
-                    reject(err);
-                }
-                resolve(true);
-            })
-        })
-    }
-
-    // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID){
-        return new Promise(function (resolve, reject) {
-            sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageID, (err, res) => {
-                if (err) {
-                    console.error(err)
-                    reject(err);
-                }
-                resolve(true);
-            })
-        })
-    }
-};
-
-// Create a new instance of your new class
-const manager = new GiveawayManagerWithOwnDatabase(client, {
-    storage: false, // Important - use false instead of a storage path
-    updateCountdownEvery: 10000,
-    default: {
-        botsCanWin: false,
-        exemptPermissions: [ "MANAGE_MESSAGES", "ADMINISTRATOR" ],
-        embedColor: "#FF0000",
-        reaction: "🎉"
-    }
-});
-// We now have a giveawaysManager property to access the manager everywhere!
-client.giveawaysManager = manager;
-
-client.on("ready", () => {
     console.log("I'm ready !");
 });
 
