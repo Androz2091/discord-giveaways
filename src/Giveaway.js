@@ -296,7 +296,7 @@ class Giveaway extends EventEmitter {
         const guild = this.channel.guild;
         // Fetch guild members
         await guild.members.fetch();
-        let users = await reaction.users.fetch()
+        let users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id)
             .filter((u) => guild.member(u.id));
