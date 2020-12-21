@@ -91,7 +91,6 @@ exports.defaultManagerOptions = {
     storage: './giveaways.json',
     updateCountdownEvery: 5000,
     deleteEndedGiveawaysFromDBOlderThan: 0,
-    DJSlib: Discord.version.split('.')[0] === '12' ? 'v12' : 'v11',
     default: {
         botsCanWin: false,
         exemptPermissions: [],

@@ -182,9 +182,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get channel() {
-        return this.manager.v12
-            ? this.client.channels.cache.get(this.channelID)
-            : this.client.channels.get(this.channelID);
+        return this.client.channels.cache.get(this.channelID);
     }
 
     /**
@@ -272,12 +270,7 @@ class Giveaway extends EventEmitter {
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
             if (!this.messageID) return;
-            let message = null;
-            if (this.manager.v12) {
-                message = await this.channel.messages.fetch(this.messageID).catch(() => {});
-            } else {
-                message = await this.channel.fetchMessage(this.messageID).catch(() => {});
-            }
+            const message = await this.channel.messages.fetch(this.messageID).catch(() => {});
             if (!message) {
                 this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
                 this.manager.deleteGiveaway(this.messageID);
@@ -296,11 +289,13 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount) {
         if (!this.message) return [];
         // Pick the winner
-        const reactions = this.manager.v12 ? this.message.reactions.cache : this.message.reactions;
+        const reactions = this.message.reactions.cache;
         const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
         if (!reaction) return [];
-        const guild = this.manager.v12 ? await this.channel.guild.fetch() : await this.channel.guild.fetchMembers();
-        let users = (this.manager.v12 ? await reaction.users.fetch() : await reaction.fetchUsers())
+        const guild = this.channel.guild;
+        // Fetch guild members
+        await guild.members.fetch();
+        let users = await reaction.users.fetch()
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id)
             .filter((u) => guild.member(u.id));

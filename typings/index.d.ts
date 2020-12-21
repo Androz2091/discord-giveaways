@@ -20,7 +20,6 @@ declare module 'discord-giveaways' {
         public giveaways: Giveaway[];
         public options: GiveawaysManagerOptions;
         public ready: boolean;
-        public v12: boolean;
 
         public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>;
         // @ts-ignore-next-line
@@ -46,7 +45,6 @@ declare module 'discord-giveaways' {
         storage?: string;
         updateCountdownEvery?: number;
         deleteEndedGiveawaysFromDBOlderThan?: number,
-        DJSlib?: 'v12' | 'v11';
         default?: GiveawayStartOptions;
     }
     interface GiveawayStartOptions {

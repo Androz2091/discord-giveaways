@@ -49,11 +49,6 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(defaultManagerOptions, options);
-        /**
-         * Whether the Discord.js library version is the v12 one
-         * @type {boolean}
-         */
-        this.v12 = this.options.DJSlib === 'v12';
         this._init();
 
         this.client.on('raw', async (packet) => {
@@ -61,19 +56,19 @@ class GiveawaysManager extends EventEmitter {
             const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
             if (!giveaway) return;
             if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-            const guild = (this.v12 ? this.client.guilds.cache : this.client.guilds).get(packet.d.guild_id);
+            const guild = this.client.guilds.cache.get(packet.d.guild_id);
             if (!guild) return;
             const member =
-                (this.v12 ? guild.members.cache : guild.members).get(packet.d.user_id) ||
+                guild.members.cache.get(packet.d.user_id) ||
                 (await guild.members.fetch(packet.d.user_id).catch(() => {}));
             if (!member) return;
-            const channel = (this.v12 ? guild.channels.cache : guild.channels).get(packet.d.channel_id);
+            const channel = guild.channels.cache.get(packet.d.channel_id);
             if (!channel) return;
             const message =
-                (this.v12 ? channel.messages.cache : channel.messages).get(packet.d.message_id) ||
+                channel.messages.cache.get(packet.d.message_id) ||
                 (await channel.messages.fetch(packet.d.message_id));
             if (!message) return;
-            const reaction = (this.v12 ? message.reactions.cache : message.reactions).get(
+            const reaction = message.reactions.cache.get(
                 giveaway.reaction || this.options.default.reaction
             );
             if (!reaction) return;
@@ -94,7 +89,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateMainEmbed(giveaway) {
-        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColor)
@@ -123,7 +118,7 @@ class GiveawaysManager extends EventEmitter {
             giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
             ': ' +
             formattedWinners;
-        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
@@ -143,7 +138,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateNoValidParticipantsEndEmbed(giveaway) {
-        const embed = this.v12 ? new Discord.MessageEmbed() : new Discord.RichEmbed();
+        const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
