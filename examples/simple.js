@@ -39,7 +39,7 @@ client.on('message', (message) => {
             time: ms(args[0]),
             prize: args.slice(2).join(' '),
             winnerCount: parseInt(args[1])
-        }).then((gData) => {
+        }).then(() => {
             message.channel.send('Giveaway started in the current channel!');
         });
         // And the giveaway has started!
