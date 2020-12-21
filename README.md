@@ -389,12 +389,12 @@ sql.connect( (err) => {
 
 // Create giveaways table
 sql.query(`
-	CREATE TABLE IF NOT EXISTS `giveaways`
+	CREATE TABLE IF NOT EXISTS \`giveaways\`
 	(
-		`id` INT(1) NOT NULL AUTO_INCREMENT,
-		`message_id` VARCHAR(64) NOT NULL,
-		`data` JSON NOT NULL,
-		PRIMARY KEY (`id`)
+		\`id\` INT(1) NOT NULL AUTO_INCREMENT,
+		\`message_id\` VARCHAR(64) NOT NULL,
+		\`data\` JSON NOT NULL,
+		PRIMARY KEY (\`id\`)
 	);
 `, (err, res) => {
     if (err) console.error(err)
