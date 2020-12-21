@@ -283,6 +283,22 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * @param {Discord.User} user The user to check
+     * @param {boolean} [fetched=false] Whether the guild members have already been fetched
+     * @returns {Promise<boolean>} Whether it is a valid entry
+     */
+    async checkWinnerEntry (user, fetched = false) {
+        const guild = this.channel.guild;
+        const member = (this.manager.options.hasGuildMembersIntent && fetched) ? guild.member(user.id) : await guild.members.fetch(user.id).catch(() => {});
+        if (!member) return false;
+        const exemptMember = await this.exemptMembers(member);
+        if (exemptMember) return false;
+        const hasPermission = this.exemptPermissions.some((permission) => member.hasPermission(permission));
+        if (hasPermission) return false;
+        return true;
+    }
+
+    /**
      * Gets the giveaway winner(s)
      * @param {number} [winnerCount=this.winnerCount] The number of winners to pick
      * @returns {Promise<Discord.GuildMember[]>} The winner(s)
@@ -295,16 +311,29 @@ class Giveaway extends EventEmitter {
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
-        await guild.members.fetch();
+        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
         let users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id)
-            .filter((u) => guild.member(u.id));
+            .filter((u) => u.id !== this.message.client.user.id);
 
-        for (const u of users.array()) {
-            const exemptMember = await this.exemptMembers(guild.member(u.id));
-            if (exemptMember) {
-                users.delete(u.id);
+        const rolledWinners = users.random(winnerCount || this.winnerCount).array();
+        const winners = [];
+
+        for (const u of rolledWinners) {
+            const isValidEntry = await this.checkWinnerEntry(u, this.manager.options.hasGuildMembersIntent, true);
+            if (isValidEntry) winners.push(u);
+            else {
+                // find a new winner
+                for (const user in users) {
+                    const alreadyRolled = rolledWinners.some((rolledUser) => rolledUser.id === user.id);
+                    if (alreadyRolled) continue;
+                    const isUserValidEntry = await this.checkWinnerEntry(user, this.manager.hasGuildMembersIntent);
+                    if (!isUserValidEntry) continue;
+                    else {
+                        rolledWinners.push(user);
+                        winners.push(u);
+                    }
+                }
             }
         }
 
