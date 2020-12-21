@@ -378,7 +378,7 @@ const sql = MySQL.createConnection({
     password : "Your MySQL password",
     database : "Your MySQL database name"
 })
-sql.connect((err)=>{
+sql.connect( (err) => {
     if (err){
         console.error('Impossible to connect to MySQL server. Code: ' + err.code)
         process.exit(99) // stop the process if we can't connect to MySQL server
