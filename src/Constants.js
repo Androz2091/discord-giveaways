@@ -71,7 +71,7 @@ exports.defaultGiveawayMessages = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
- * @property {number} [deleteEndedGiveawaysFromDBOlderThan=0] The time (in ms) after which a ended giveaway should get deleted from the DB. (Default is never)
+ * @property {number} [endedGiveawaysLifetime=0] The time (in ms) after which a ended giveaway should get deleted from the DB. (0 for never)
  * @property {string} [DJSlib] The Discord.js library version you want to use
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
@@ -90,7 +90,7 @@ exports.GiveawaysManagerOptions = {};
 exports.defaultManagerOptions = {
     storage: './giveaways.json',
     updateCountdownEvery: 5000,
-    deleteEndedGiveawaysFromDBOlderThan: 0,
+    endedGiveawaysLifetime: 0,
     default: {
         botsCanWin: false,
         exemptPermissions: [],
