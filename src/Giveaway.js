@@ -316,7 +316,7 @@ class Giveaway extends EventEmitter {
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
 
-        const rolledWinners = users.random(winnerCount || this.winnerCount).array();
+        const rolledWinners = users.random(winnerCount || this.winnerCount);
         const winners = [];
 
         for (const u of rolledWinners) {
