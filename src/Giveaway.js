@@ -1,3 +1,4 @@
+const merge = require('deepmerge');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
 const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions } = require('./Constants.js');
@@ -337,6 +338,7 @@ class Giveaway extends EventEmitter {
             if (options.newPrize) this.prize = options.newPrize;
             if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
+            if (options.newMessages) this.messages = merge(this.messages, options.newMessages);
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
             resolve(this);

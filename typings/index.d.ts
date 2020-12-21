@@ -126,6 +126,7 @@ declare module 'discord-giveaways' {
         newPrize?: string;
         addTime?: number;
         setEndTimestamp?: number;
+        newMessages?: GiveawaysMessages;
     }
     interface GiveawayRerollOptions {
         winnerCount?: number | null;

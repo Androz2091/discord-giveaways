@@ -131,6 +131,7 @@ exports.defaultRerollOptions = {
  * @property {string} [newPrize] The new giveaway prize
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration
  * @property {number} [setEndTimestamp] The timestamp of the new end date
+ * @property {GiveawayMessages} [newMessages] The new giveaway messages
  */
 exports.GiveawayEditOptions = {};
 
