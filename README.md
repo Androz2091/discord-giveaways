@@ -240,7 +240,7 @@ client.giveawaysManager.start(message.channel, {
         giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         timeRemaining: 'Time remaining: **{duration}**!',
         inviteToParticipate: 'React with 🎉 to participate!',
-        winMessage: 'Congratulations, {winners}! You won **{prize}**!',
+        winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
         embedFooter: 'Giveaways',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {user}',
@@ -263,7 +263,7 @@ And for the `reroll()` function:
 client.giveawaysManager
     .reroll(messageID, {
         messages: {
-            congrat: ':tada: New winner(s) : {winners}! Congratulations!',
+            congrat: ':tada: New winner(s) : {winners}! Congratulations!\n{messageURL}',
             error: 'No valid participations, no winners can be chosen!'
         }
     })

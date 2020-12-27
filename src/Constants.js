@@ -51,7 +51,7 @@ exports.defaultGiveawayMessages = {
     giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
     inviteToParticipate: 'React with 🎉 to participate!',
     timeRemaining: 'Time remaining: **{duration}**',
-    winMessage: 'Congratulations, {winners}! You won **{prize}**!',
+    winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'winner(s)',
@@ -121,7 +121,7 @@ exports.GiveawayRerollOptions = {};
 exports.defaultRerollOptions = {
     winnerCount: null,
     messages: {
-        congrat: ':tada: New winner(s) : {winners}! Congratulations!',
+        congrat: ':tada: New winner(s) : {winners}! Congratulations!\n{messageURL}',
         error: 'No valid participations, no winners can be chosen!'
     }
 };

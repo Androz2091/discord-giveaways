@@ -398,7 +398,11 @@ class Giveaway extends EventEmitter {
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 this.message.channel.send(
-                    this.messages.winMessage.replace('{winners}', formattedWinners).replace('{prize}', this.prize)
+                    this.messages.winMessage
+                        .replace('{winners}', formattedWinners)
+                        .replace('{prize}', this.prize)
+                        .replace('{messageURL}', `https://discord.com/channels/${this.guildID}/${this.channelID}/${this.messageID}`)
+                        
                 );
                 resolve(winners);
             } else {
@@ -433,7 +437,10 @@ class Giveaway extends EventEmitter {
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
-                this.channel.send(options.messages.congrat.replace('{winners}', formattedWinners));
+                this.channel.send(options.messages.congrat
+                    .replace('{winners}', formattedWinners)
+                    .replace('{messageURL}', `https://discord.com/channels/${this.guildID}/${this.channelID}/${this.messageID}`)
+                );
                 resolve(winners);
             } else {
                 this.channel.send(options.messages.error);
