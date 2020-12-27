@@ -259,7 +259,8 @@ class Giveaway extends EventEmitter {
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
             reaction: this.options.reaction,
-            requirements: this.requirements
+            requirements: this.requirements,
+            extraData: this.extraData
         };
         return baseData;
     }
@@ -339,6 +340,7 @@ class Giveaway extends EventEmitter {
             if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
             if (options.newMessages) this.messages = merge(this.messages, options.newMessages);
+            if (options.newExtraData) this.extraData = options.newExtraData;
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
             resolve(this);

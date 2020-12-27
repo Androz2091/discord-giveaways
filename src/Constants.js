@@ -38,6 +38,7 @@ exports.GiveawayMessages = {};
  * @property {Discord.ColorResolvable} [embedColorEnd] The giveaway embeds color when they are ended
  * @property {string} [reaction] The reaction to participate to the giveaways
  * @property {GiveawayMessages} [messages] The giveaway messages
+ * @property {any} [extraData] The extra data value for this giveaway
  */
 exports.GiveawayStartOptions = {};
 
@@ -132,6 +133,7 @@ exports.defaultRerollOptions = {
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration
  * @property {number} [setEndTimestamp] The timestamp of the new end date
  * @property {GiveawayMessages} [newMessages] The new giveaway messages
+ * @property {any} [extraData] The new extra data value for this giveaway
  */
 exports.GiveawayEditOptions = {};
 
@@ -156,5 +158,6 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
  * @property {string?} [hostedBy] Mention of user who hosts the giveaway
+ * @property {any} [extraData] The extra data value for this giveaway
  */
 exports.GiveawayData = {};
