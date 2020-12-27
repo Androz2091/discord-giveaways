@@ -110,6 +110,7 @@ declare module 'discord-giveaways' {
         public options: GiveawayData;
         public prize: string;
         readonly remainingTime: number;
+        readonly messageLink: string;
         public startAt: number;
         public winnerCount: number;
         public winnerIDs: Array<string>;

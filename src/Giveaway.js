@@ -97,6 +97,15 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * The link to the giveaway message
+     * @type {string}
+     * @readonly
+     */
+    get messageLink () {
+        return `https://discord.com/channels/${this.guildID}/${this.channelID}/${this.messageID}`;
+    }
+
+    /**
      * The remaining time before the end of the giveaway
      * @type {Number}
      * @readonly
@@ -401,7 +410,7 @@ class Giveaway extends EventEmitter {
                     this.messages.winMessage
                         .replace('{winners}', formattedWinners)
                         .replace('{prize}', this.prize)
-                        .replace('{messageURL}', `https://discord.com/channels/${this.guildID}/${this.channelID}/${this.messageID}`)
+                        .replace('{messageURL}', this.messageLink)
                         
                 );
                 resolve(winners);
@@ -439,7 +448,7 @@ class Giveaway extends EventEmitter {
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
                 this.channel.send(options.messages.congrat
                     .replace('{winners}', formattedWinners)
-                    .replace('{messageURL}', `https://discord.com/channels/${this.guildID}/${this.channelID}/${this.messageID}`)
+                    .replace('{messageURL}', this.messageLink)
                 );
                 resolve(winners);
             } else {
