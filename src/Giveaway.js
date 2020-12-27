@@ -285,12 +285,11 @@ class Giveaway extends EventEmitter {
 
     /**
      * @param {Discord.User} user The user to check
-     * @param {boolean} [fetched=false] Whether the guild members have already been fetched
      * @returns {Promise<boolean>} Whether it is a valid entry
      */
-    async checkWinnerEntry (user, fetched = false) {
+    async checkWinnerEntry (user) {
         const guild = this.channel.guild;
-        const member = (this.manager.options.hasGuildMembersIntent && fetched) ? guild.member(user.id) : await guild.members.fetch(user.id).catch(() => {});
+        const member = guild.member(user.id) || await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
@@ -321,14 +320,14 @@ class Giveaway extends EventEmitter {
         const winners = [];
 
         for (const u of rolledWinners) {
-            const isValidEntry = await this.checkWinnerEntry(u, true);
+            const isValidEntry = await this.checkWinnerEntry(u);
             if (isValidEntry) winners.push(u);
             else {
                 // find a new winner
                 for (const user of users) {
                     const alreadyRolled = rolledWinners.some((rolledUser) => rolledUser.id === user.id);
                     if (alreadyRolled) continue;
-                    const isUserValidEntry = await this.checkWinnerEntry(user, true);
+                    const isUserValidEntry = await this.checkWinnerEntry(user);
                     if (!isUserValidEntry) continue;
                     else {
                         rolledWinners.push(user);
