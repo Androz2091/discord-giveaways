@@ -413,6 +413,7 @@ class GiveawaysManager extends EventEmitter {
         if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
         const guild = this.client.guilds.cache.get(packet.d.guild_id);
         if (!guild) return;
+        if (packet.d.user_id === this.client.user.id) return;
         const member =
             guild.members.cache.get(packet.d.user_id) ||
             (await guild.members.fetch(packet.d.user_id).catch(() => {}));
