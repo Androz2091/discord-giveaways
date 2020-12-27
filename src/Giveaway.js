@@ -260,6 +260,7 @@ class Giveaway extends EventEmitter {
             exemptMembers: this.options.exemptMembers,
             reaction: this.options.reaction,
             requirements: this.requirements,
+            winnerIDs: this.winnerIDs,
             extraData: this.extraData
         };
         return baseData;
@@ -284,6 +285,21 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * @param {Discord.User} user The user to check
+     * @returns {Promise<boolean>} Whether it is a valid entry
+     */
+    async checkWinnerEntry (user) {
+        const guild = this.channel.guild;
+        const member = guild.member(user.id) || await guild.members.fetch(user.id).catch(() => {});
+        if (!member) return false;
+        const exemptMember = await this.exemptMembers(member);
+        if (exemptMember) return false;
+        const hasPermission = this.exemptPermissions.some((permission) => member.hasPermission(permission));
+        if (hasPermission) return false;
+        return true;
+    }
+
+    /**
      * Gets the giveaway winner(s)
      * @param {number} [winnerCount=this.winnerCount] The number of winners to pick
      * @returns {Promise<Discord.GuildMember[]>} The winner(s)
@@ -296,25 +312,33 @@ class Giveaway extends EventEmitter {
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
-        await guild.members.fetch();
-        let users = (await reaction.users.fetch())
+        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+        const users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id)
-            .filter((u) => guild.member(u.id));
+            .filter((u) => u.id !== this.message.client.user.id);
 
-        for (const u of users.array()) {
-            const exemptMember = await this.exemptMembers(guild.member(u.id));
-            if (exemptMember) {
-                users.delete(u.id);
+        const rolledWinners = users.random(winnerCount || this.winnerCount);
+        const winners = [];
+
+        for (const u of rolledWinners) {
+            const isValidEntry = await this.checkWinnerEntry(u);
+            if (isValidEntry) winners.push(u);
+            else {
+                // find a new winner
+                for (const user of users) {
+                    const alreadyRolled = rolledWinners.some((rolledUser) => rolledUser.id === user.id);
+                    if (alreadyRolled) continue;
+                    const isUserValidEntry = await this.checkWinnerEntry(user);
+                    if (!isUserValidEntry) continue;
+                    else {
+                        rolledWinners.push(user);
+                        winners.push(u);
+                    }
+                }
             }
         }
 
-        users = users
-            .filter((u) => !this.exemptPermissions.some((p) => guild.member(u.id).hasPermission(p)))
-            .random(winnerCount || this.winnerCount)
-            .filter((u) => u)
-            .map((u) => guild.member(u));
-        return users;
+        return winners;
     }
 
     /**
@@ -369,6 +393,7 @@ class Giveaway extends EventEmitter {
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
+                this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
@@ -404,6 +429,7 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll(options.winnerCount);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
+                this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed });
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');

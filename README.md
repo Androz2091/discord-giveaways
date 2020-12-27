@@ -44,6 +44,7 @@ const { GiveawaysManager } = require('discord-giveaways');
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     updateCountdownEvery: 10000,
+    hasGuildMembersIntent: false,
     default: {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
@@ -68,6 +69,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.storage**: the json file that will be used to store giveaways
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers
 -   **options.endedGiveawaysLifetime**: the number of milliseconds that a giveaway has been ended after which it can get delted from the DB
+-   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with
 -   **options.default.botsCanWin**: whether the bots can win a giveaway
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.

@@ -45,6 +45,7 @@ declare module 'discord-giveaways' {
         storage?: string;
         updateCountdownEvery?: number;
         endedGiveawaysLifetime?: number;
+        hasGuildMembersIntent?: boolean;
         default?: GiveawayStartOptions;
     }
     interface GiveawayStartOptions {
