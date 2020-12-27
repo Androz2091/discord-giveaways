@@ -347,7 +347,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners;
+        return winners.map((user) => guild.member(user));
     }
 
     /**
