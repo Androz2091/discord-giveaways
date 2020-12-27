@@ -26,7 +26,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.Client} client The Discord Client
      * @param {GiveawaysManagerOptions} options The manager options
      */
-    constructor(client, options) {
+    constructor(client, options, init = true) {
         super();
         if (!client) throw new Error('Client is a required option.');
         /**
@@ -49,38 +49,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(defaultManagerOptions, options);
-        this._init();
-
-        this.client.on('raw', async (packet) => {
-            if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
-            const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
-            if (!giveaway) return;
-            if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-            const guild = this.client.guilds.cache.get(packet.d.guild_id);
-            if (!guild) return;
-            const member =
-                guild.members.cache.get(packet.d.user_id) ||
-                (await guild.members.fetch(packet.d.user_id).catch(() => {}));
-            if (!member) return;
-            const channel = guild.channels.cache.get(packet.d.channel_id);
-            if (!channel) return;
-            const message =
-                channel.messages.cache.get(packet.d.message_id) ||
-                (await channel.messages.fetch(packet.d.message_id));
-            if (!message) return;
-            const reaction = message.reactions.cache.get(
-                giveaway.reaction || this.options.default.reaction
-            );
-            if (!reaction) return;
-            if (reaction.emoji.name !== packet.d.emoji.name) return;
-            if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
-            if (packet.t === 'MESSAGE_REACTION_ADD') {
-                if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
-                this.emit('giveawayReactionAdded', giveaway, member, reaction);
-            } else {
-                this.emit('giveawayReactionRemoved', giveaway, member, reaction);
-            }
-        });
+        if (init) this._init();
     }
 
     /**
@@ -434,6 +403,41 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
+     * @ignore
+     * @param {any} packet 
+     */
+    async _handleRawPacket (packet) {
+        if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
+        const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
+        if (!giveaway) return;
+        if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
+        const guild = this.client.guilds.cache.get(packet.d.guild_id);
+        if (!guild) return;
+        const member =
+            guild.members.cache.get(packet.d.user_id) ||
+            (await guild.members.fetch(packet.d.user_id).catch(() => {}));
+        if (!member) return;
+        const channel = guild.channels.cache.get(packet.d.channel_id);
+        if (!channel) return;
+        const message =
+            channel.messages.cache.get(packet.d.message_id) ||
+            (await channel.messages.fetch(packet.d.message_id));
+        if (!message) return;
+        const reaction = message.reactions.cache.get(
+            giveaway.reaction || this.options.default.reaction
+        );
+        if (!reaction) return;
+        if (reaction.emoji.name !== packet.d.emoji.name) return;
+        if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
+        if (packet.t === 'MESSAGE_REACTION_ADD') {
+            if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
+            this.emit('giveawayReactionAdded', giveaway, member, reaction);
+        } else {
+            this.emit('giveawayReactionRemoved', giveaway, member, reaction);
+        }
+    }
+
+    /**
      * Inits the manager
      * @ignore
      * @private
@@ -455,6 +459,8 @@ class GiveawaysManager extends EventEmitter {
                 .filter((g) => g.ended && ((g.endAt + this.options.endedGiveawaysLifetime) <= Date.now()))
                 .forEach((giveaway) => this.deleteGiveaway(giveaway.messageID));
         }
+
+        this.client.on('raw', (packet) => this._handleRawPacket(packet));
     }
 }
 
