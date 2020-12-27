@@ -60,7 +60,7 @@ declare module 'discord-giveaways' {
         embedColorEnd?: ColorResolvable;
         reaction?: string;
         messages?: Partial<GiveawaysMessages>;
-        extraData: any;
+        extraData?: any;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -130,7 +130,7 @@ declare module 'discord-giveaways' {
         addTime?: number;
         setEndTimestamp?: number;
         newMessages?: Partial<GiveawaysMessages>;
-        newExtraData: any;
+        newExtraData?: any;
     }
     interface GiveawayRerollOptions {
         winnerCount?: number | null;
@@ -156,6 +156,6 @@ declare module 'discord-giveaways' {
         embedColor?: string;
         embedColorEnd?: string;
         hostedBy?: string | null;
-        extraData: any;
+        extraData?: any;
     }
 }
