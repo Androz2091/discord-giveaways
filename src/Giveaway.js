@@ -334,7 +334,7 @@ class Giveaway extends EventEmitter {
             if (isValidEntry) winners.push(u);
             else {
                 // find a new winner
-                for (const user of users) {
+                for (const user of users.array()) {
                     const alreadyRolled = rolledWinners.some((rolledUser) => rolledUser.id === user.id);
                     if (alreadyRolled) continue;
                     const isUserValidEntry = await this.checkWinnerEntry(user);
