@@ -45,9 +45,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
             sql.query('SELECT `data` FROM `giveaways`', (err, res) => {
                 if (err) {
                     console.error(err);
-                    reject(err);
+                    return reject(err);
                 }
-                const giveaways = res.map((row) => row.data);
+                const giveaways = res.map((row) => JSON.parse(row.data));
                 resolve(giveaways);
             });
         });
@@ -59,7 +59,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
             sql.query('INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)', [messageID, JSON.stringify(giveawayData)], (err, res) => {
                 if (err) {
                     console.error(err);
-                    reject(err);
+                    return reject(err);
                 }
                 resolve(true);
             });
@@ -71,7 +71,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
             sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
                 if (err) {
                     console.error(err);
-                    reject(err);
+                    return reject(err);
                 }
                 resolve(true);
             });
@@ -84,7 +84,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
             sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageID, (err, res) => {
                 if (err) {
                     console.error(err);
-                    reject(err);
+                    return reject(err);
                 }
                 resolve(true);
             });
