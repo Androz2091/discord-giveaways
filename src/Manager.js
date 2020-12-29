@@ -490,7 +490,7 @@ class GiveawaysManager extends EventEmitter {
  * @example
  * // This can be used to add features like removing the user reaction
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
- *     if (!member.roles.cache.get('123456789'){
+ *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
  *          member.send('You must have this role to participate in the giveaway: Staff');
  *     }
@@ -506,7 +506,7 @@ class GiveawaysManager extends EventEmitter {
  *
  * @example
  * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
- *      return member.send('That's sad, you won\'t be able to win the super cookie!');
+ *      return member.send('That\'s sad, you won\'t be able to win the super cookie!');
  * });
  */
 
