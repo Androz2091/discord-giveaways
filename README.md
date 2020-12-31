@@ -208,6 +208,25 @@ client.on('message', (message) => {
 
 When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it.
 
+### end a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'end') {
+        let messageID = args[0];
+        client.giveawaysManager.end(messageID).then(() => {
+            message.channel.send('Success! Giveaway ended!');
+        })
+        .catch((err) => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
+    }
+});
+```
+
 ## 🇫🇷 Translation
 
 You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
