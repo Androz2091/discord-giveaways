@@ -263,7 +263,7 @@ And for the `reroll()` function:
 client.giveawaysManager
     .reroll(messageID, {
         messages: {
-            congrat: ':tada: New winner(s) : {winners}! Congratulations!\n{messageURL}',
+            congrat: ':tada: New winner(s) : {winners}! Congratulations! You won **{prize}**.\n{messageURL}',
             error: 'No valid participations, no winners can be chosen!'
         }
     })
