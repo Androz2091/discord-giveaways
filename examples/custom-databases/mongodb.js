@@ -14,7 +14,7 @@ db.once('ready', async () => {
 
 const { GiveawaysManager } = require('discord-giveaways');
 class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+    // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
         // Get all the giveaway in the database
         return await db.get('giveaways');
@@ -28,7 +28,7 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
         return true;
     }
 
-    // This function is called when a giveaway needs to get edited in the database.
+    // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Gets all the current giveaways
         const giveaways = await db.get('giveaways');
