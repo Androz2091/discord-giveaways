@@ -2,7 +2,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load mysql
@@ -16,7 +16,7 @@ const sql = MySQL.createConnection({
 sql.connect( (err) => {
     if (err){
         console.error('Impossible to connect to MySQL server. Code: ' + err.code);
-        process.exit(99); // stop the process if we can't connect to MySQL server
+        process.exit(99); // Stop the process if we can't connect to MySQL server
     } else {
         console.log('[SQL] Connected to the MySQL server! Connexion ID: ' + sql.threadId);
     }
@@ -66,6 +66,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         });
     }
 
+    // This function is called when a giveaway needs to get edited in the database.
     async editGiveaway(messageID, giveawayData){
         return new Promise(function (resolve, reject) {
             sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
