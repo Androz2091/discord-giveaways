@@ -39,7 +39,7 @@ sql.query(`
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+    // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways(){
         return new Promise(function (resolve, reject) {
             sql.query('SELECT `data` FROM `giveaways`', (err, res) => {
@@ -66,7 +66,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         });
     }
 
-    // This function is called when a giveaway needs to get edited in the database.
+    // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData){
         return new Promise(function (resolve, reject) {
             sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
