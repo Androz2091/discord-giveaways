@@ -208,7 +208,7 @@ client.on('message', (message) => {
 
 When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it.
 
-### end a giveaway
+### End a giveaway
 
 ```js
 client.on('message', (message) => {
