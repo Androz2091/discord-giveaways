@@ -321,6 +321,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Gets all the current giveaways
         const giveaways = db.get('giveaways');
