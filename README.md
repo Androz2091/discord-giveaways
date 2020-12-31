@@ -68,7 +68,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **client**: the discord client (your discord bot instance).
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
--   **options.endedGiveawaysLifetime**: the number of milliseconds that giveaways have been ended after which they can get deleted from the DB.
+-   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended.
 -   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
 -   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
