@@ -183,7 +183,7 @@ client.on('message', (message) => {
 **options.newWinnerCount**: the new number of winners.  
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.  
-**options.setEndTimestamp**: the timestamp of the new end date. `Date.now() + 1000`.
+**options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
