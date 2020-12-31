@@ -77,6 +77,14 @@ client.on('message', (message) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
+    if (command === 'end') {
+        const messageID = args[0];
+        client.giveawaysManager.end(messageID).then(() => {
+            message.channel.send('Success! Giveaway ended!');
+        }).catch(() => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
+    }
 
 });
 
