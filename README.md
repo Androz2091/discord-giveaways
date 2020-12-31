@@ -35,7 +35,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Requires Manager from discord-giveaways
@@ -68,13 +68,13 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **client**: the discord client (your discord bot instance).
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
--   **options.endedGiveawaysLifetime**: the number of milliseconds that a giveaway has been ended after which it can get delted from the DB.
+-   **options.endedGiveawaysLifetime**: the number of milliseconds that giveaways have been ended after which they can get deleted from the DB.
 -   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
--   **options.default.botsCanWin**: whether the bots can win a giveaway.
+-   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
--   **options.default.reaction**: the reaction that users will have to react to in order to participate!
+-   **options.default.reaction**: the reaction that users will have to react to in order to participate.
 
 ### Start a giveaway
 
@@ -104,9 +104,9 @@ client.on('message', (message) => {
 -   **options.prize**: the giveaway prize.
 -   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerCount**: the number of giveaway winners.
--   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when the giveaway ends or is rerolled!
--   **options.botsCanWin**: whether the bots can win a giveaway.
--   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
+-   **options.botsCanWin**: whether bots can win the giveaway.
+-   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
@@ -183,7 +183,7 @@ client.on('message', (message) => {
 **options.newWinnerCount**: the new number of winners.  
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.  
-**options.setEndTimestamp**: the timestamp of the new end date. `Date.now()+1000`.
+**options.setEndTimestamp**: the timestamp of the new end date. `Date.now() + 1000`.
 
 ⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
@@ -206,11 +206,11 @@ client.on('message', (message) => {
 });
 ```
 
-When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it.
+When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
 
 ## 🇫🇷 Translation
 
-You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
+You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text:
 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
@@ -228,7 +228,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 
 **Note**: units should be in the plural.
 
-For example :
+For example:
 
 ```js
 client.giveawaysManager.start(message.channel, {
@@ -273,7 +273,7 @@ client.giveawaysManager
 ```
 
 **options.messages.congrat**: the congratulatory message.  
-**options.messages.error**: the error message if there is no valid participations.
+**options.messages.error**: the error message if there is no valid participant.
 
 ## Custom database
 
@@ -298,7 +298,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load quick.db - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
@@ -307,9 +307,9 @@ if (!db.get('giveaways')) db.set('giveaways', []);
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+    // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaway in the database
+        // Get all the giveaways in the database
         return db.get('giveaways');
     }
 
@@ -375,7 +375,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Extends the GiveawaysManager class and update the refreshStorage method
