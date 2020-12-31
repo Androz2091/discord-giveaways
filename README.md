@@ -216,7 +216,7 @@ client.on('message', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'end') {
-        let messageID = args[0];
+        const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
         })
