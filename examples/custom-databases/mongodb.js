@@ -2,7 +2,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load quickmongo
@@ -28,6 +28,7 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to get edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Gets all the current giveaways
         const giveaways = await db.get('giveaways');
@@ -41,6 +42,7 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
         // Gets all the current giveaways
         const data = await db.get('giveaways');
