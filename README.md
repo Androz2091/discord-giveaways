@@ -65,12 +65,12 @@ client.login(settings.token);
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
 You can pass an options object to customize the giveaways. Here is a list of them:
 
--   **client**: the discord client (your discord bot instance)
--   **options.storage**: the json file that will be used to store giveaways
--   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers
--   **options.endedGiveawaysLifetime**: the number of milliseconds that a giveaway has been ended after which it can get delted from the DB
--   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with
--   **options.default.botsCanWin**: whether the bots can win a giveaway
+-   **client**: the discord client (your discord bot instance).
+-   **options.storage**: the json file that will be used to store giveaways.
+-   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
+-   **options.endedGiveawaysLifetime**: the number of milliseconds that a giveaway has been ended after which it can get delted from the DB.
+-   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
+-   **options.default.botsCanWin**: whether the bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
@@ -118,16 +118,16 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
 
-### Fetch the giveaways
+### Fetch giveaways
 
 ```js
-// The list of all the giveaways
+// A list of all the giveaways
 let allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
-// The list of all the giveaways on the server with ID "1909282092"
+// A list of all the giveaways on the server with ID "1909282092"
 let onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === '1909282092');
 
-// The list of the current giveaways (not ended)
+// A list of the current active giveaways (not ended)
 let notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 ```
 
