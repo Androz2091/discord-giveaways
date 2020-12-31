@@ -449,7 +449,7 @@ class Giveaway extends EventEmitter {
                 this.channel.send(options.messages.congrat
                     .replace('{winners}', formattedWinners)
                     .replace('{messageURL}', this.messageURL)
-                    .replace('{prize}', this.prize)
+                    .replace('{prize}', this.prize);
                 );
                 resolve(winners);
             } else {
