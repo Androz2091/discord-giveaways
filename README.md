@@ -277,7 +277,7 @@ client.giveawaysManager
 
 ## Custom database
 
-You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`) For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
+You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
 
 -   `getAllGiveaways`: this method returns an array of stored giveaways.
 -   `saveGiveaway`: this method stores a new giveaway in the database.
