@@ -13,7 +13,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
 -   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, etc...)
--   🚀 Super-powerful: start, edit, reroll, end, delete giveaways!
+-   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
 -   and much more!
@@ -26,7 +26,7 @@ npm install --save discord-giveaways
 
 ## Examples
 
-You can read this example bot on Github: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
+You can read this example bot on GitHub: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
 
 ### Launch of the module
 
@@ -112,7 +112,7 @@ client.on('message', (message) => {
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 
-This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the package does the rest!
+This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
@@ -185,7 +185,7 @@ client.on('message', (message) => {
 **options.addTime**: the number of milliseconds to add to the giveaway duration.  
 **options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 
-⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
+⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
 ### Delete a giveaway
 
@@ -277,7 +277,7 @@ client.giveawaysManager
 
 ## Custom database
 
-You can use your custom database to save giveaways, instead of the json files (the "database" by default for discord-giveaways). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
+You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`) For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
 
 -   `getAllGiveaways`: this method returns an array of stored giveaways.
 -   `saveGiveaway`: this method stores a new giveaway in the database.
@@ -286,7 +286,7 @@ You can use your custom database to save giveaways, instead of the json files (t
 
 **All the methods should be asynchronous to return a promise.**
 
-Here is an example, using quick.db, a Sqlite database. The comments in the code below are very important to understand how it works!
+Here is an example, using `quick.db`, a SQLite database. The comments in the code below are very important to understand how it works!
 
 Other examples:
 
@@ -369,7 +369,7 @@ client.login(settings.token);
 
 ## Support shards
 
-To make `discord-giveaways` working with shards, you will need to extend the GiveawaysManager class and to update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all the GiveawaysManager synchronize their cache with the updated database.
+To make `discord-giveaways` working with shards, you will need to extend the `GiveawaysManager` class and update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all `GiveawaysManager` synchronize their cache with the updated database.
 
 ```js
 const Discord = require('discord.js'),
