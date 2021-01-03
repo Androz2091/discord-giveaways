@@ -65,7 +65,7 @@ class Giveaway extends EventEmitter {
          */
         this.winnerCount = options.winnerCount;
         /**
-         * The winner IDs of the giveaway
+         * The winner IDs for this giveaway after it ended
          * @type {Array<string>}
          */
         this.winnerIDs = options.winnerIDs;
