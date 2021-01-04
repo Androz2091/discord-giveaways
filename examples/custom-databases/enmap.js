@@ -2,7 +2,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load Enmap
