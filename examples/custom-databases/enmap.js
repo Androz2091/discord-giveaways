@@ -13,7 +13,6 @@ const giveawayDB = new Enmap({name: "giveaways"})
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-
     // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways(){
         return giveawayDB.fetchEverything().array();
