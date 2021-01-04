@@ -85,7 +85,7 @@ class GiveawayManagerWithMongoose extends GiveawaysManager {
         await giveawayModel
             .findOneAndDelete({ messageID: messageID }, messageID)
             .exec();
-
+        // Don't forget to return something!
         return true;
     }
 }
