@@ -19,7 +19,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
-    async saveGiveaway(messageID, giveawayData){
+    async saveGiveaway(messageID, giveawayData) {
         giveawayDB.set(messageID, giveawayData);
         // Don't forget to return something!
         return true;
