@@ -292,6 +292,7 @@ Other examples:
 
 - [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
 - [MongoDB example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongodb.js)
+- [Enmap example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 
 ```js
 const Discord = require('discord.js'),
