@@ -146,7 +146,7 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway
- * @property {Array<string>} winnerIds The IDs of the giveaway winners
+ * @property {Array<string>} winnerIDs The winner IDs of the giveaway after it ended
  * @property {GiveawayMessages} messages The giveaway messages
  * @property {boolean} ended Whether the giveaway is ended
  * @property {string} prize The prize of the giveaway
