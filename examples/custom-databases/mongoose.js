@@ -25,7 +25,6 @@ const giveawaySchema = new mongoose.Schema({
     endAt: Number,
     ended: Boolean,
     winnerCount: Number,
-    winners: [],
     prize: String,
     messages: {
         giveaway: String,
