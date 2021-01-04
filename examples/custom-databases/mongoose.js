@@ -96,7 +96,7 @@ const manager = new GiveawayManagerWithMongoose(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: [ 'MANAGE_MESSAGES', 'ADMINISTRATOR' ],
+        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         reaction: '🎉'
     }
