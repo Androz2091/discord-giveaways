@@ -62,8 +62,8 @@ const { GiveawaysManager } = require('discord-giveaways');
 class GiveawayManagerWithMongoose extends GiveawaysManager {
     // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaways in the database. We can use the messageID field to fetch all documents by passing an empty condition.
-        return await giveawayModel.find({}, 'messageID');
+        // Get all the giveaways in the database. We fetch all documents by passing an empty condition.
+        return await giveawayModel.find({});
     }
 
     // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
