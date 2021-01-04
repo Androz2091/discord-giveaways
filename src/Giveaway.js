@@ -297,7 +297,7 @@ class Giveaway extends EventEmitter {
      * @param {Discord.User} user The user to check
      * @returns {Promise<boolean>} Whether it is a valid entry
      */
-    async checkWinnerEntry (user) {
+    async checkWinnerEntry(user) {
         const guild = this.channel.guild;
         const member = guild.member(user.id) || await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
