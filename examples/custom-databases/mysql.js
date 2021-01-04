@@ -108,7 +108,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready !');
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
