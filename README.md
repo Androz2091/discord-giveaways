@@ -291,7 +291,8 @@ Here is an example, using quick.db, a Sqlite database. The comments in the code 
 Other examples:
 
 - [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- [MongoDB example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongodb.js)
+- [MongoDB (quickmongo) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js)
+- [MongoDB (Mongoose) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
 
 ```js
 const Discord = require('discord.js'),
