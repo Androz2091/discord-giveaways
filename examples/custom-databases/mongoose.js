@@ -5,9 +5,8 @@ const Discord = require('discord.js'),
         token: 'Your Discord Bot Token',
     };
 
-const mongoose = require('mongoose');
-
 // Connect to database
+const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/giveaways', { useFindAndModify: false });
 const db = mongoose.connection;
 
