@@ -9,7 +9,7 @@ const Discord = require('discord.js'),
 const Enmap = require('enmap');
 
 // Create giveaways table
-const giveawayDB = new Enmap({name: "giveaways"})
+const giveawayDB = new Enmap({ name: 'giveaways' })
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
