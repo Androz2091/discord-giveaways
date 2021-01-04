@@ -80,6 +80,7 @@ class GiveawayManagerWithMongoose extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
         // Find by messageID and delete it
         await giveawayModel
