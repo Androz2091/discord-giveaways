@@ -101,7 +101,6 @@ const manager = new GiveawayManagerWithMongoose(client, {
         reaction: '🎉'
     }
 });
-
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
