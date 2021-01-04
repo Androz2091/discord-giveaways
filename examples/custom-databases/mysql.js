@@ -41,7 +41,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             sql.query('SELECT `data` FROM `giveaways`', (err, res) => {
                 if (err) {
                     console.error(err);
@@ -55,7 +55,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
     async saveGiveaway(messageID, giveawayData) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             sql.query('INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)', [messageID, JSON.stringify(giveawayData)], (err, res) => {
                 if (err) {
                     console.error(err);
@@ -68,7 +68,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
                 if (err) {
                     console.error(err);
@@ -81,7 +81,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageID, (err, res) => {
                 if (err) {
                     console.error(err);
