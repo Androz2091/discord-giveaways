@@ -96,6 +96,10 @@ class Giveaway extends EventEmitter {
         this.message = null;
     }
 
+    get exemptMembersFunction () {
+        return (this.options.exemptMembers && (typeof this.options.exemptMembers === 'function')) ? new Function(`return ${this.options.exemptMembers}`) : null;
+    }
+
     /**
      * The link to the giveaway message
      * @type {string}
@@ -168,9 +172,9 @@ class Giveaway extends EventEmitter {
      * @type {Function}
      */
     async exemptMembers(member) {
-        if (this.options.exemptMembers && typeof this.options.exemptMembers === 'function') {
+        if (this.exemptMembersFunction) {
             try {
-                const result = await this.options.exemptMembers(member);
+                const result = await this.exemptMembersFunction(member);
                 return result;
             } catch (error) {
                 console.error(error);
@@ -266,7 +270,7 @@ class Giveaway extends EventEmitter {
             embedColorEnd: this.options.embedColorEnd,
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
-            exemptMembers: this.options.exemptMembers,
+            exemptMembers: this.options.exemptMembers ? this.options.exemptMembers.toString() : undefined,
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
