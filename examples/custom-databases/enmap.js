@@ -33,7 +33,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID){
+    async deleteGiveaway(messageID) {
         giveawayDB.delete(messageID);
         // Don't forget to return something!
         return true;
