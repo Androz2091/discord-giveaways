@@ -48,6 +48,7 @@ const giveawaySchema = new mongoose.Schema({
     hostedBy: String,
     winnerIDs: [],
     reaction: String,
+    botsCanWin: Boolean,
     embedColor: String,
     embedColorEnd: String,
     exemptPermissions: [],
