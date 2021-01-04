@@ -56,7 +56,7 @@ const giveawayModel = mongoose.model('giveaways', giveawaySchema);
 
 const { GiveawaysManager } = require('discord-giveaways');
 class GiveawayManagerWithMongoose extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+    // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
         // Get all the giveaway in the database. We can use messageID field to fetch all documents by passing empty condition.
         return await giveawayModel.find({}, 'messageID');
