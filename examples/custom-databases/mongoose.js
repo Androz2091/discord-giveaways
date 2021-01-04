@@ -76,7 +76,7 @@ class GiveawayManagerWithMongoose extends GiveawaysManager {
         await giveawayModel
             .findOneAndUpdate({ messageID: messageID }, giveawayData)
             .exec();
-
+        // Don't forget to return something!
         return true;
     }
 
