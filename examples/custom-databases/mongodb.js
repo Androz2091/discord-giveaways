@@ -8,7 +8,7 @@ const Discord = require('discord.js'),
 // Load quickmongo
 const { Database } = require('quickmongo');
 const db = new Database('mongodb://localhost/giveaways');
-db.once('ready', async () => {
+db.on('ready', async () => {
     if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
 });
 
