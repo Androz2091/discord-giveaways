@@ -447,6 +447,7 @@ class Giveaway extends EventEmitter {
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
                 this.channel.send(options.messages.congrat
                     .replace('{winners}', formattedWinners)
+                    .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL)
                 );
                 resolve(winners);
