@@ -411,12 +411,8 @@ class Giveaway extends EventEmitter {
                     this.messages.winMessage
                         .replace('{winners}', formattedWinners)
                         .replace('{prize}', this.prize)
-                        .replace('{messageURL}', this.messageURL),
-                    {
-                        split: {
-                            char: ',',
-                        }
-                    }
+                        .replace('{messageURL}', this.messageURL)
+                        
                 );
                 resolve(winners);
             } else {
