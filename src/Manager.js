@@ -494,7 +494,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
- * // This can be used to add features like removing reactions of members when they do not have a specific role (aka giveaway requirements). Best used with the `exemptMembers` property of the giveaways. 
+ * // This can be used to add features like removing reactions of members when they do not have a specific role (such as giveaway requirements). Best used with the `exemptMembers` property of the giveaways. 
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
