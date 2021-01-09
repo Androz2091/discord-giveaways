@@ -2,19 +2,19 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load quickmongo
 const { Database } = require('quickmongo');
 const db = new Database('mongodb://localhost/giveaways');
-db.once('ready', async () => {
+db.on('ready', async () => {
     if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
 });
 
 const { GiveawaysManager } = require('discord-giveaways');
 class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+    // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
         // Get all the giveaway in the database
         return await db.get('giveaways');
@@ -28,6 +28,7 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Gets all the current giveaways
         const giveaways = await db.get('giveaways');
@@ -41,6 +42,7 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
         // Gets all the current giveaways
         const data = await db.get('giveaways');
@@ -59,7 +61,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: [ 'MANAGE_MESSAGES', 'ADMINISTRATOR' ],
+        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         reaction: '🎉'
     }
@@ -68,7 +70,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready !');
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);

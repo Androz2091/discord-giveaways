@@ -13,7 +13,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
 -   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, etc...)
--   🚀 Super-powerful: start, edit, reroll, end, delete giveaways!
+-   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
 -   and much more!
@@ -26,7 +26,7 @@ npm install --save discord-giveaways
 
 ## Examples
 
-You can read this example bot on Github: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
+You can read this example bot on GitHub: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
 
 ### Launch of the module
 
@@ -35,7 +35,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Requires Manager from discord-giveaways
@@ -56,7 +56,7 @@ const manager = new GiveawaysManager(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready !");
+    console.log("I\'m ready!");
 });
 
 client.login(settings.token);
@@ -65,16 +65,16 @@ client.login(settings.token);
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
 You can pass an options object to customize the giveaways. Here is a list of them:
 
--   **client**: the discord client (your discord bot instance)
--   **options.storage**: the json file that will be used to store giveaways
--   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers
--   **options.endedGiveawaysLifetime**: the number of milliseconds that a giveaway has been ended after which it can get delted from the DB
--   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with
--   **options.default.botsCanWin**: whether the bots can win a giveaway
+-   **client**: the discord client (your discord bot instance).
+-   **options.storage**: the json file that will be used to store giveaways.
+-   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
+-   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended.
+-   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
+-   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
--   **options.default.reaction**: the reaction that users will have to react to in order to participate!
+-   **options.default.reaction**: the reaction that users will have to react to in order to participate.
 
 ### Start a giveaway
 
@@ -104,30 +104,30 @@ client.on('message', (message) => {
 -   **options.prize**: the giveaway prize.
 -   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerCount**: the number of giveaway winners.
--   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when the giveaway ends or is rerolled!
--   **options.botsCanWin**: whether the bots can win a giveaway.
--   **options.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
+-   **options.botsCanWin**: whether bots can win the giveaway.
+-   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 
-This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts and you only have to observe the result, the package does the rest!
+This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
 
-### Fetch the giveaways
+### Fetch giveaways
 
 ```js
-// The list of all the giveaways
+// A list of all the giveaways
 let allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
-// The list of all the giveaways on the server with ID "1909282092"
+// A list of all the giveaways on the server with ID "1909282092"
 let onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === '1909282092');
 
-// The list of the current giveaways (not ended)
+// A list of the current active giveaways (not ended)
 let notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 ```
 
@@ -183,9 +183,9 @@ client.on('message', (message) => {
 **options.newWinnerCount**: the new number of winners.  
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.  
-**options.setEndTimestamp**: the timestamp of the new end date. `Date.now()+1000`.
+**options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 
-⚠️ Tips: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
+⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
 ### Delete a giveaway
 
@@ -206,11 +206,30 @@ client.on('message', (message) => {
 });
 ```
 
-When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it.
+When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
+
+### End a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'end') {
+        const messageID = args[0];
+        client.giveawaysManager.end(messageID).then(() => {
+            message.channel.send('Success! Giveaway ended!');
+        })
+        .catch((err) => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
+    }
+});
+```
 
 ## 🇫🇷 Translation
 
-You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text :
+You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text:
 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
@@ -228,7 +247,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 
 **Note**: units should be in the plural.
 
-For example :
+For example:
 
 ```js
 client.giveawaysManager.start(message.channel, {
@@ -263,7 +282,7 @@ And for the `reroll()` function:
 client.giveawaysManager
     .reroll(messageID, {
         messages: {
-            congrat: ':tada: New winner(s) : {winners}! Congratulations!\n{messageURL}',
+            congrat: ':tada: New winner(s) : {winners}! Congratulations! You won **{prize}**.\n{messageURL}',
             error: 'No valid participations, no winners can be chosen!'
         }
     })
@@ -273,11 +292,11 @@ client.giveawaysManager
 ```
 
 **options.messages.congrat**: the congratulatory message.  
-**options.messages.error**: the error message if there is no valid participations.
+**options.messages.error**: the error message if there is no valid participant.
 
 ## Custom database
 
-You can use your custom database to save giveaways, instead of the json files (the "database" by default for discord-giveaways). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
+You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
 
 -   `getAllGiveaways`: this method returns an array of stored giveaways.
 -   `saveGiveaway`: this method stores a new giveaway in the database.
@@ -286,12 +305,13 @@ You can use your custom database to save giveaways, instead of the json files (t
 
 **All the methods should be asynchronous to return a promise.**
 
-Here is an example, using quick.db, a Sqlite database. The comments in the code below are very important to understand how it works!
+Here is an example, using `quick.db`, a SQLite database. The comments in the code below are very important to understand how it works!
 
 Other examples:
 
 - [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- [MongoDB example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongodb.js)
+- [MongoDB (Mongoose) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongodb.js)
+- [MongoDB (QuickMongo) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js)
 - [Enmap example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 
 ```js
@@ -299,7 +319,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load quick.db - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
@@ -308,9 +328,9 @@ if (!db.get('giveaways')) db.set('giveaways', []);
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+    // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaway in the database
+        // Get all the giveaways in the database
         return db.get('giveaways');
     }
 
@@ -322,6 +342,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Gets all the current giveaways
         const giveaways = db.get('giveaways');
@@ -369,14 +390,14 @@ client.login(settings.token);
 
 ## Support shards
 
-To make `discord-giveaways` working with shards, you will need to extend the GiveawaysManager class and to update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all the GiveawaysManager synchronize their cache with the updated database.
+To make `discord-giveaways` working with shards, you will need to extend the `GiveawaysManager` class and update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all `GiveawaysManager` synchronize their cache with the updated database.
 
 ```js
 const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Extends the GiveawaysManager class and update the refreshStorage method

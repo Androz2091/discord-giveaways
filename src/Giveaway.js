@@ -65,7 +65,7 @@ class Giveaway extends EventEmitter {
          */
         this.winnerCount = options.winnerCount;
         /**
-         * An array with the IDs of winners
+         * The winner IDs for this giveaway after it ended
          * @type {Array<string>}
          */
         this.winnerIDs = options.winnerIDs;
@@ -297,7 +297,7 @@ class Giveaway extends EventEmitter {
      * @param {Discord.User} user The user to check
      * @returns {Promise<boolean>} Whether it is a valid entry
      */
-    async checkWinnerEntry (user) {
+    async checkWinnerEntry(user) {
         const guild = this.channel.guild;
         const member = guild.member(user.id) || await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
@@ -330,18 +330,18 @@ class Giveaway extends EventEmitter {
         const winners = [];
 
         for (const u of rolledWinners) {
-            const isValidEntry = await this.checkWinnerEntry(u);
+            const isValidEntry = await this.checkWinnerEntry(u) && !winners.some((winner) => winner.id === u.id);
             if (isValidEntry) winners.push(u);
             else {
                 // find a new winner
                 for (const user of users.array()) {
-                    const alreadyRolled = rolledWinners.some((rolledUser) => rolledUser.id === user.id);
+                    const alreadyRolled = winners.some((winner) => winner.id === user.id);
                     if (alreadyRolled) continue;
                     const isUserValidEntry = await this.checkWinnerEntry(user);
                     if (!isUserValidEntry) continue;
                     else {
-                        rolledWinners.push(user);
-                        winners.push(u);
+                        winners.push(user);
+                        break;
                     }
                 }
             }
@@ -398,13 +398,12 @@ class Giveaway extends EventEmitter {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             const winners = await this.roll();
-            this.manager.emit('giveawayEnded', this, winners);
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
                 this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message.edit(this.messages.giveawayEnded, { embed });
+                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 this.message.channel.send(
                     this.messages.winMessage
@@ -416,8 +415,8 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit(this.messages.giveawayEnded, { embed });
-                resolve();
+                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                resolve([]);
             }
         });
     }
@@ -444,16 +443,17 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message.edit(this.messages.giveawayEnded, { embed });
+                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
                 this.channel.send(options.messages.congrat
                     .replace('{winners}', formattedWinners)
+                    .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL)
                 );
                 resolve(winners);
             } else {
                 this.channel.send(options.messages.error);
-                resolve(new Array());
+                resolve([]);
             }
         });
     }
