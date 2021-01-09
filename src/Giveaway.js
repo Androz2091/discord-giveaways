@@ -65,7 +65,7 @@ class Giveaway extends EventEmitter {
          */
         this.winnerCount = options.winnerCount;
         /**
-         * An array with the IDs of winners
+         * The winner IDs for this giveaway after it ended
          * @type {Array<string>}
          */
         this.winnerIDs = options.winnerIDs;
@@ -297,7 +297,7 @@ class Giveaway extends EventEmitter {
      * @param {Discord.User} user The user to check
      * @returns {Promise<boolean>} Whether it is a valid entry
      */
-    async checkWinnerEntry (user) {
+    async checkWinnerEntry(user) {
         const guild = this.channel.guild;
         const member = guild.member(user.id) || await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
@@ -398,7 +398,6 @@ class Giveaway extends EventEmitter {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             const winners = await this.roll();
-            this.manager.emit('giveawayEnded', this, winners);
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
@@ -417,7 +416,7 @@ class Giveaway extends EventEmitter {
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
                 this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
-                resolve();
+                resolve([]);
             }
         });
     }
@@ -453,7 +452,7 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 this.channel.send(options.messages.error);
-                resolve(new Array());
+                resolve([]);
             }
         });
     }
