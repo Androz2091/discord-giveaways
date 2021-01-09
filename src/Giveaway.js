@@ -340,7 +340,6 @@ class Giveaway extends EventEmitter {
                     const isUserValidEntry = await this.checkWinnerEntry(user);
                     if (!isUserValidEntry) continue;
                     else {
-                        rolledWinners.push(user);
                         winners.push(user);
                         break;
                     }
