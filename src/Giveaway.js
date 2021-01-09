@@ -330,7 +330,7 @@ class Giveaway extends EventEmitter {
         const winners = [];
 
         for (const u of rolledWinners) {
-            const isValidEntry = await this.checkWinnerEntry(u) && winners.some((winner) => winner.id === u.id);
+            const isValidEntry = await this.checkWinnerEntry(u) && !winners.some((winner) => winner.id === u.id);
             if (isValidEntry) winners.push(u);
             else {
                 // find a new winner
