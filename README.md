@@ -310,7 +310,7 @@ Here is an example, using `quick.db`, a SQLite database. The comments in the cod
 Other examples:
 
 - [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- [MongoDB (Mongoose) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongodb.js)
+- [MongoDB (Mongoose) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
 - [MongoDB (QuickMongo) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js)
 - [Enmap example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 
