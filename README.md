@@ -122,13 +122,13 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 
 ```js
 // A list of all the giveaways
-let allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
+const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
 // A list of all the giveaways on the server with ID "1909282092"
-let onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === '1909282092');
+const onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === '1909282092');
 
 // A list of the current active giveaways (not ended)
-let notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
+const notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 ```
 
 ### Reroll a giveaway
@@ -140,7 +140,7 @@ client.on('message', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'reroll') {
-        let messageID = args[0];
+        const messageID = args[0];
         client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
@@ -164,7 +164,7 @@ client.on('message', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'edit') {
-        let messageID = args[0];
+        const messageID = args[0];
         client.giveawaysManager.edit(messageID, {
             newWinnerCount: 3,
             newPrize: 'New Prize!',
@@ -195,7 +195,7 @@ client.on('message', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'delete') {
-        let messageID = args[0];
+        const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         })
