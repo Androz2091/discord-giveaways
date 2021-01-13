@@ -138,7 +138,7 @@ class GiveawaysManager extends EventEmitter {
             giveaway
                 .end()
                 .then((winners) => {
-                    this.manager.emit('giveawayEnded', giveaway, winners);
+                    this.emit('giveawayEnded', giveaway, winners);
                     resolve();
                 })
                 .catch(reject);
