@@ -2,7 +2,7 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Requires Manager from discord-giveaways
@@ -22,18 +22,17 @@ const manager = new GiveawaysManager(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready !');
+    console.log('I\'m ready!');
 });
 
 client.on('message', (message) => {
-
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
     if (command === 'start-giveaway') {
         // g!start-giveaway 2d 1 Awesome prize!
-        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
+        // This will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
         client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
@@ -61,7 +60,7 @@ client.on('message', (message) => {
             newPrize: 'New Prize!',
             addTime: 5000
         }).then(() => {
-            // here, we can calculate the time after which we are sure that the lib will update the giveaway
+            // Here, we can calculate the time after which we are sure that the lib will update the giveaway
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
             message.channel.send('Success! Giveaway will updated in less than ' + numberOfSecondsMax + ' seconds.');
         }).catch(() => {
@@ -73,6 +72,15 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
+        }).catch(() => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
+    }
+    
+    if (command === 'end') {
+        const messageID = args[0];
+        client.giveawaysManager.end(messageID).then(() => {
+            message.channel.send('Success! Giveaway ended!');
         }).catch(() => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
