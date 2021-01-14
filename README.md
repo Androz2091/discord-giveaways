@@ -219,6 +219,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
+-   **options.messages.noDeterminedWinner:** the message that will be sent when a giveaway ended with no winner.
 -   **options.messages.winners**: simply the word "winner" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
 -   **options.messages.units.seconds**: simply the word "seconds" in your language.
@@ -243,6 +244,7 @@ client.giveawaysManager.start(message.channel, {
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
         embedFooter: 'Giveaways',
         noWinner: 'Giveaway cancelled, no valid participations.',
+        noDeterminedWinner: 'Could not determine a winner!\n{messageURL}',
         hostedBy: 'Hosted by: {user}',
         winners: 'winner(s)',
         endedAt: 'Ended at',
