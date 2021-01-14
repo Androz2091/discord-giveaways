@@ -417,6 +417,11 @@ class Giveaway extends EventEmitter {
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
                 this.message.edit(this.messages.giveawayEnded, { embed });
+                this.message.channel.send(this.messages.noDeterminedWinner
+                  .replace('{prize}', this.prize)
+                  .replace('{hoster}', this.hostedBy)
+                  .replace('{messageURL}', this.messageURL)
+                )
                 resolve();
             }
         });
