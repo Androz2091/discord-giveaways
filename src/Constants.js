@@ -54,6 +54,7 @@ exports.defaultGiveawayMessages = {
     winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
+    noDeterminedWinner: 'No winner has been determined! {messageURL}',
     winners: 'winner(s)',
     endedAt: 'End at',
     hostedBy: 'Hosted by: {user}',
