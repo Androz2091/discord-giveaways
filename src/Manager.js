@@ -199,6 +199,7 @@ class GiveawaysManager extends EventEmitter {
                 botsCanWin: options.botsCanWin,
                 exemptPermissions: options.exemptPermissions,
                 exemptMembers: options.exemptMembers,
+                bonusEntryFunctions: options.bonusEntryFunctions,
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData
@@ -412,7 +413,7 @@ class GiveawaysManager extends EventEmitter {
      * @ignore
      * @param {any} packet 
      */
-    async _handleRawPacket (packet) {
+    async _handleRawPacket(packet) {
         if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
         const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
         if (!giveaway) return;

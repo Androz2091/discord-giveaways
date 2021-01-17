@@ -56,6 +56,7 @@ declare module 'discord-giveaways' {
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: () => boolean;
+        bonusEntryFunctions?: Array<{ function(): boolean; bonusEntries: number }>;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: string;
@@ -100,6 +101,7 @@ declare module 'discord-giveaways' {
         public endAt: number;
         public ended: boolean;
         public exemptPermissions: PermissionResolvable[];
+        public bonusEntryFunctions: Array<{ function(): boolean; bonusEntries: number }>;
         readonly giveawayDuration: number;
         public guildID: Snowflake;
         public hostedBy: string | null;
@@ -130,6 +132,7 @@ declare module 'discord-giveaways' {
         addTime?: number;
         setEndTimestamp?: number;
         newMessages?: Partial<GiveawaysMessages>;
+        newBonusEntryFunctions?: Array<{ function(): boolean; bonusEntries: number }>;
         newExtraData?: any;
     }
     interface GiveawayRerollOptions {
@@ -153,6 +156,7 @@ declare module 'discord-giveaways' {
         reaction?: string;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember) => boolean;
+        bonusEntryFunctions?: Array<{ function(): boolean; bonusEntries: number }>;
         embedColor?: string;
         embedColorEnd?: string;
         hostedBy?: string | null;
