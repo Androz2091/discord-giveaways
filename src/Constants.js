@@ -34,7 +34,7 @@ exports.GiveawayMessages = {};
  * @property {Boolean} [botsCanWin] Whether the bots are able to win a giveaway.
  * @property {Array<Discord.PermissionResolvable>} [exemptPermissions] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
- * @property {Array<{ function(): boolean; bonusEntries: number }>} [bonusEntryFunctions] An array of objects. The first value of an object is a function, if it returns true for a member then he will get additional entries which are specified in the second value of an object.
+ * @property {BonusEntry[]} [bonusEntries] An array of BonusEntry objects. A filter property, a function, if it returns true for a member then he will get additional entries which are specified in the "bonus" value of the object.
  * @property {Discord.ColorResolvable} [embedColor] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [embedColorEnd] The giveaway embeds color when they are ended
  * @property {string} [reaction] The reaction to participate to the giveaways

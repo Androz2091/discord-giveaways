@@ -267,7 +267,7 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            bonusEntryFunctions: this.options.bonusEntryFunctions,
+            bonusEntries: this.options.bonusEntries,
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
@@ -378,7 +378,7 @@ class Giveaway extends EventEmitter {
         // Bonus Entries
         let userArray;
         if (
-            (Array.isArray(this.options.bonusEntryFunctions) &&
+            (Array.isArray(this.options.bonusEntries) &&
                 this.options.bonusEntryFunctions.length &&
                 this.options.bonusEntryFunctions.every((bef) => typeof bef === 'object')) ||
             (this.manager.options.default.bonusEntryFunctions.length > 1 &&
@@ -392,7 +392,7 @@ class Giveaway extends EventEmitter {
                 const highestBonusEntries = await this.checkBonusEntries(user);
                 if (!highestBonusEntries) continue;
 
-                for (var i = 0; i < highestBonusEntries; i++) userArray.push(user);
+                for (let i = 0; i < highestBonusEntries; i++) userArray.push(user);
             }
         }
 
@@ -406,7 +406,9 @@ class Giveaway extends EventEmitter {
              */
             const amount = winnerCount || this.winnerCount;
             if (!amount) rolledWinners = userArray[Math.floor(Math.random() * userArray.length)];
-            else rolledWinners = Array.from({ length: Math.min(amount, users.size) }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
+            else rolledWinners = Array.from({
+                length: Math.min(amount, users.size)
+            }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
         }
 
         const winners = [];

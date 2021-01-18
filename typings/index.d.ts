@@ -41,6 +41,10 @@ declare module 'discord-giveaways' {
 
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
+    interface BonusEntry {
+        bonus: number;
+        filter (member: GuildMember): boolean|Promise<boolean>;
+    }
     interface GiveawaysManagerOptions {
         storage?: string;
         updateCountdownEvery?: number;
@@ -55,8 +59,8 @@ declare module 'discord-giveaways' {
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: () => boolean;
-        bonusEntryFunctions?: Array<{ function(): boolean; bonusEntries: number }>;
+        exemptMembers?: () => boolean|Promise<boolean>;
+        bonusEntries?: BonusEntry[];
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: string;
