@@ -66,8 +66,10 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
+// DB is ready
 db.on('ready', async () => {
     if (!(await db.get('giveaways'))) await db.set('giveaways', []);
+    // Start the giveawaysMmanager only after the DB got checked to prevent an error
     client.giveawaysManager._init();
 });
 
