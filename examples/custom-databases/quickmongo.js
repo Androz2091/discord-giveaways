@@ -8,9 +8,6 @@ const Discord = require('discord.js'),
 // Load quickmongo
 const { Database } = require('quickmongo');
 const db = new Database('mongodb://localhost/giveaways');
-db.on('ready', async () => {
-    if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
-});
 
 const { GiveawaysManager } = require('discord-giveaways');
 class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
@@ -65,9 +62,14 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
         embedColor: '#FF0000',
         reaction: '🎉'
     }
-});
+}, false);
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
+
+db.on('ready', async () => {
+    if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
+    client.giveawaysManager._init();
+});
 
 client.on('ready', () => {
     console.log('I\'m ready!');
