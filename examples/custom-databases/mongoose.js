@@ -97,7 +97,6 @@ class GiveawayManagerWithMongoose extends GiveawaysManager {
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithMongoose(client, {
-    storage: false, // Important - use false instead of a storage path
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
