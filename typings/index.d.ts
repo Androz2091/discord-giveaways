@@ -42,7 +42,7 @@ declare module 'discord-giveaways' {
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
     interface GiveawaysManagerOptions {
-        storage?: string;
+        storage?: string | boolean;
         updateCountdownEvery?: number;
         endedGiveawaysLifetime?: number;
         hasGuildMembersIntent?: boolean;
