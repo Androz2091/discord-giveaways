@@ -67,7 +67,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 db.on('ready', async () => {
-    if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
+    if (!(await db.get('giveaways'))) await db.set('giveaways', []);
     client.giveawaysManager._init();
 });
 
