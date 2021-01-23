@@ -42,8 +42,8 @@ declare module 'discord-giveaways' {
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
     interface BonusEntry {
-        bonus: number;
         filter (member: GuildMember): boolean|Promise<boolean>;
+        bonus: number;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
