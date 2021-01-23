@@ -174,8 +174,8 @@ class Giveaway extends EventEmitter {
         const validDefaultBonusEntries = (Array.isArray(this.manager.options.default.bonusEntries) && this.manager.options.default.bonusEntries.length && this.manager.options.default.bonusEntries.every((v) => typeof v === 'object'))
             ? this.manager.options.default.bonusEntries
             : [];
-        const filters = validBonusEntries.map(obj => serialize(obj[Object.keys(obj)[0]]).replace(/\s+/g, ''));
-        return validBonusEntries.concat(validDefaultBonusEntries.filter(obj => !filters.includes(serialize(obj[Object.keys(obj)[0]]).replace(/\s+/g, ''))));
+        const filters = validBonusEntries.map((obj) => serialize(obj[Object.keys(obj)[0]]).replace(/\s+/g, ''));
+        return validBonusEntries.concat(validDefaultBonusEntries.filter((obj) => !filters.includes(serialize(obj[Object.keys(obj)[0]]).replace(/\s+/g, ''))));
     }
 
     /**
