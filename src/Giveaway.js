@@ -343,21 +343,8 @@ class Giveaway extends EventEmitter {
 
         const entries = [];
 
-        if (
-            Array.isArray(this.options.bonusEntryFunctions) &&
-            this.options.bonusEntryFunctions.length &&
-            this.options.bonusEntryFunctions.every((bef) => typeof bef === 'object')
-        ) {
-            for (const obj of this.options.bonusEntryFunctions) {
-                const result = await check(obj, member);
-                if (result) entries.push(result);
-            }
-        }
-        if (
-            this.manager.options.default.bonusEntryFunctions.length > 1 &&
-            this.manager.options.default.bonusEntryFunctions.every((bef) => typeof bef === 'object')
-        ) {
-            for (const obj of this.manager.options.default.bonusEntryFunctions) {
+        if (this.bonusEntries) {
+            for (const obj of this.options.bonusEntries) {
                 const result = await check(obj, member);
                 if (result) entries.push(result);
             }
@@ -387,13 +374,7 @@ class Giveaway extends EventEmitter {
 
         // Bonus Entries
         let userArray;
-        if (
-            (Array.isArray(this.options.bonusEntries) &&
-                this.options.bonusEntryFunctions.length &&
-                this.options.bonusEntryFunctions.every((bef) => typeof bef === 'object')) ||
-            (this.manager.options.default.bonusEntryFunctions.length > 1 &&
-                this.manager.options.default.bonusEntryFunctions.every((bef) => typeof bef === 'object'))
-        ) {
+        if (this.bonusEntries) {
             userArray = users.array(); // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);
