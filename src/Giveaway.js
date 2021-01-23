@@ -159,13 +159,13 @@ class Giveaway extends EventEmitter {
      * Members with any of these permissions won't be able to win a giveaway.
      * @type {Discord.PermissionResolvable[]}
      */
-    get exemptPermissions() {
+    get exemptPermissions () {
         return this.options.exemptPermissions || this.manager.options.default.exemptPermissions;
     }
 
     /**
      * The bonus entries for this giveaway
-     * @type {BonusEntry?}
+     * @type {BonusEntry[]?}
      */
     get bonusEntries () {
         const validBonusEntries = this.options.bonusEntries && this.options.bonusEntries.length && this.options.bonusEntries.every((v) => typeof v === 'object');
@@ -326,12 +326,12 @@ class Giveaway extends EventEmitter {
     async checkBonusEntries(user) {
         const member = this.channel.guild.member(user.id);
 
-        const check = async (obj) => {
-            const funct = obj[Object.keys(obj)[0]];
-            const entries = obj[Object.keys(obj)[1]];
-            if (typeof funct === 'function' && Number.isInteger(entries) && entries >= 1) {
+        const checkBonusEntry = async (obj) => {
+            const filter = obj[Object.keys(obj)[0]];
+            const bonus = obj[Object.keys(obj)[1]];
+            if (typeof filter === 'function' && Number.isInteger(bonus) && bonus >= 1) {
                 try {
-                    const result = await funct(member);
+                    const result = await filter(member);
                     if (result) return entries;
                 } catch (error) {
                     console.error(error);
@@ -344,8 +344,8 @@ class Giveaway extends EventEmitter {
         const entries = [];
 
         if (this.bonusEntries) {
-            for (const obj of this.options.bonusEntries) {
-                const result = await check(obj, member);
+            for (const obj of this.bonusEntries) {
+                const result = await checkBonusEntry(obj, member);
                 if (result) entries.push(result);
             }
         }
@@ -448,7 +448,7 @@ class Giveaway extends EventEmitter {
             if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
             if (options.newMessages) this.messages = merge(this.messages, options.newMessages);
-            if (options.newBonusEntryFunctions) this.bonusEntryFunctions = options.newBonusEntryFunctions;
+            if (options.newBonusEntries) this.options.bonusEntries = options.newBonusEntries;
             if (options.newExtraData) this.extraData = options.newExtraData;
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
