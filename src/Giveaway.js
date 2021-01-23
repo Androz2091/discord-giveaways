@@ -1,7 +1,7 @@
 const merge = require('deepmerge');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
-const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions } = require('./Constants.js');
+const { BonusEntry, GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 
 /**
@@ -161,6 +161,16 @@ class Giveaway extends EventEmitter {
      */
     get exemptPermissions() {
         return this.options.exemptPermissions || this.manager.options.default.exemptPermissions;
+    }
+
+    /**
+     * The bonus entries for this giveaway
+     * @type {BonusEntry?}
+     */
+    get bonusEntries () {
+        const validBonusEntries = this.options.bonusEntries && this.options.bonusEntries.length && this.options.bonusEntries.every((v) => typeof v === 'object');
+        const validDefaultBonusEntries = this.manager.options.default.bonusEntries && this.manager.options.default.bonusEntries.length && this.manager.options.default.bonusEntries.every((v) => typeof v === 'object');
+        return validBonusEntries ? validBonusEntries : validDefaultBonusEntries;
     }
 
     /**
