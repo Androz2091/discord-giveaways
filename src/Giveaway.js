@@ -1,4 +1,5 @@
 const merge = require('deepmerge');
+const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
 const { BonusEntry, GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions } = require('./Constants.js');
@@ -168,9 +169,12 @@ class Giveaway extends EventEmitter {
      * @type {BonusEntry[]?}
      */
     get bonusEntries () {
-        const validBonusEntries = this.options.bonusEntries && this.options.bonusEntries.length && this.options.bonusEntries.every((v) => typeof v === 'object');
-        const validDefaultBonusEntries = this.manager.options.default.bonusEntries && this.manager.options.default.bonusEntries.length && this.manager.options.default.bonusEntries.every((v) => typeof v === 'object');
-        return validBonusEntries ? validBonusEntries : validDefaultBonusEntries;
+        const bonusEntries = eval(this.options.bonusEntries) ;
+        const defaultBonusEntries = eval(this.manager.options.default.bonusEntries);
+        const validBonusEntries = (Array.isArray(bonusEntries) && bonusEntries.length && bonusEntries.every((v) => typeof v === 'object')) ? bonusEntries : [];
+        const validDefaultBonusEntries = (Array.isArray(defaultBonusEntries) && defaultBonusEntries.length && defaultBonusEntries.every((v) => typeof v === 'object'))? defaultBonusEntries : [];
+        const filters = validBonusEntries.map(obj => serialize(obj[Object.keys(obj)[0]]).replace(/\s+/g, ''))
+        return validBonusEntries.concat(validDefaultBonusEntries.filter(obj => !filters.includes(serialize(obj[Object.keys(obj)[0]]).replace(/\s+/g, ''))));
     }
 
     /**
@@ -277,7 +281,7 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            bonusEntries: this.options.bonusEntries,
+            bonusEntries: this.options.bonusEntries ? serialize(this.options.bonusEntries) : undefined,
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
@@ -325,28 +329,20 @@ class Giveaway extends EventEmitter {
      */
     async checkBonusEntries(user) {
         const member = this.channel.guild.member(user.id);
-
-        const checkBonusEntry = async (obj) => {
-            const filter = obj[Object.keys(obj)[0]];
-            const bonus = obj[Object.keys(obj)[1]];
-            if (typeof filter === 'function' && Number.isInteger(bonus) && bonus >= 1) {
-                try {
-                    const result = await filter(member);
-                    if (result) return entries;
-                } catch (error) {
-                    console.error(error);
-                    return false;
-                }
-            }
-            return false;
-        };
-
         const entries = [];
 
-        if (this.bonusEntries) {
+        if (this.bonusEntries.length) {
             for (const obj of this.bonusEntries) {
-                const result = await checkBonusEntry(obj, member);
-                if (result) entries.push(result);
+                const filter = obj[Object.keys(obj)[0]];
+                const bonus = obj[Object.keys(obj)[1]];
+                if (typeof filter === 'function' && Number.isInteger(bonus) && bonus >= 1) {
+                    try {
+                        const result = await filter(member);
+                        if (result) entries.push(bonus)
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
             }
         }
 
@@ -374,7 +370,7 @@ class Giveaway extends EventEmitter {
 
         // Bonus Entries
         let userArray;
-        if (this.bonusEntries) {
+        if (this.bonusEntries.length) {
             userArray = users.array(); // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);

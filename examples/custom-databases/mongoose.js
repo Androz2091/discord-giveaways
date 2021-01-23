@@ -52,6 +52,7 @@ const giveawaySchema = new mongoose.Schema({
     embedColor: String,
     embedColorEnd: String,
     exemptPermissions: [],
+    bonusEntries: String,
     extraData: {}
 });
 
