@@ -72,7 +72,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
 -   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.default.bonusEntries**: an array of objects. The first value of an object is a function, if it returns true for a member then he will get additional entries which are specified in the second value of an object.
+-   **options.default.bonusEntries**: An array of BonusEntry objects. A filter property, a function, if it returns true for a member then he will get additional entries which are specified in the "bonus" value of the object.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
@@ -108,7 +108,7 @@ client.on('message', (message) => {
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.bonusEntries**: an array of objects. The first value of an object is a function, if it returns true for a member then he will get additional entries which are specified in the second value of an object.
+-   **options.bonusEntries**: An array of BonusEntry objects. A filter property, a function, if it returns true for a member then he will get additional entries which are specified in the "bonus" value of the object.
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
@@ -185,7 +185,7 @@ client.on('message', (message) => {
 **options.newWinnerCount**: the new number of winners.  
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.
-**options.newBonusEntries**: the new bonus entry functions if (for example, if the amount of entries should change)
+**options.newBonusEntries**: the new bonus entry objects (for example, if the amount of entries should change)
 **options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
