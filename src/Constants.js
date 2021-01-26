@@ -98,7 +98,7 @@ exports.defaultManagerOptions = {
         botsCanWin: false,
         exemptPermissions: [],
         exemptMembers: () => false,
-        embedColor: '#FF0000',
+        embedColor: '#00FF00',
         reaction: '🎉'
     }
 };
