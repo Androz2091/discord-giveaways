@@ -99,6 +99,7 @@ exports.defaultManagerOptions = {
         exemptPermissions: [],
         exemptMembers: () => false,
         embedColor: '#00FF00',
+        embedColorEnd: '#FF0000',
         reaction: '🎉'
     }
 };
