@@ -48,7 +48,7 @@ const manager = new GiveawaysManager(client, {
     default: {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
-        embedColor: '#FF0000',
+        embedColor: '#00FF00',
         embedColorEnd: '#FF0000',
         reaction: '🎉'
     }
@@ -353,7 +353,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     default: {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
-        embedColor: '#FF0000',
+        embedColor: '#00FF00',
         embedColorEnd: '#FF0000',
         reaction: '🎉'
     }
@@ -397,7 +397,7 @@ const manager = new GiveawayManagerWithShardSupport(client, {
     default: {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
-        embedColor: '#FF0000',
+        embedColor: '#00FF00',
         embedColorEnd: '#FF0000',
         reaction: '🎉'
     }
