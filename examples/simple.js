@@ -15,6 +15,7 @@ const manager = new GiveawaysManager(client, {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
+        embedColorEnd: '#FF0000',
         reaction: '🎉'
     }
 });
