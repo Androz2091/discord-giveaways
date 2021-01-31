@@ -127,7 +127,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
-     * manager.end("664900661003157510");
+     * manager.end('664900661003157510');
      */
     end(messageID) {
         return new Promise(async (resolve, reject) => {
@@ -155,13 +155,13 @@ class GiveawaysManager extends EventEmitter {
      *
      * @example
      * manager.start(message.channel, {
-     *      prize: "Free Steam Key",
+     *      prize: 'Free Steam Key',
      *      // Giveaway will last 10 seconds
      *      time: 10000,
      *      // One winner
      *      winnerCount: 1,
-     *      // Limit the giveaway to members who have the Nitro Boost role
-     *      exemptMembers: (member) => !member.roles.some((r) => r.name === "Nitro Boost")
+     *      // Limit the giveaway to members who have the "Nitro Boost" role
+     *      exemptMembers: (member) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
      * });
      */
     start(channel, options) {
@@ -221,7 +221,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<Discord.GuildMember[]>} The new winners
      *
      * @example
-     * manager.reroll("664900661003157510");
+     * manager.reroll('664900661003157510');
      */
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
@@ -248,9 +248,9 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<Giveaway>} The edited giveaway
      *
      * @example
-     * manager.edit("664900661003157510", {
+     * manager.edit('664900661003157510', {
      *      newWinnerCount: 2,
-     *      newPrize: "Something new!",
+     *      newPrize: 'Something new!',
      *      addTime: -10000 // The giveaway will end 10 seconds earlier
      * });
      */

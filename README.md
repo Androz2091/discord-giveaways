@@ -56,7 +56,7 @@ const manager = new GiveawaysManager(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I\'m ready!");
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
@@ -87,7 +87,7 @@ client.on('message', (message) => {
 
     if (command === 'start-giveaway') {
         // g!start-giveaway 2d 1 Awesome prize!
-        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
+        // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
         client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
@@ -119,19 +119,6 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
-
-### Fetch giveaways
-
-```js
-// A list of all the giveaways
-const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
-
-// A list of all the giveaways on the server with ID "1909282092"
-const onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === '1909282092');
-
-// A list of the current active giveaways (not ended)
-const notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
-```
 
 ### Reroll a giveaway
 
@@ -201,8 +188,7 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
-        })
-        .catch((err) => {
+        }).catch((err) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
@@ -222,12 +208,54 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
-        })
-        .catch((err) => {
+        }).catch((err) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
 });
+```
+
+### Fetch giveaways
+
+```js
+// A list of all the giveaways
+const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
+
+// A list of all the giveaways on the server with ID "1909282092"
+const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '1909282092');
+
+// A list of the current active giveaways (not ended)
+const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
+```
+
+### Bonus Entries
+
+```js
+client.giveawaysManager.start(message.channel, {
+    prize: 'Free Steam Key',
+    // Giveaway will last 10 seconds
+    time: 10000,
+    // One winner
+    winnerCount: 1,
+    // Members who have the "Nitro Boost" role get 2 bonus entries
+    bonusEntries: [{ filter: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost'), bonus: 2}]
+})
+```
+
+⚠️ **Note**: If it should be customizable
+```js
+const roleName = 'Nitro Boost'
+const roleEntries = 2
+
+client.giveawaysManager.start(message.channel, {
+    prize: 'Free Steam Key',
+    // Giveaway will last 10 seconds
+    time: 10000,
+    // One winner
+    winnerCount: 1,
+    // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleEntries"
+    bonusEntries: [{ filter: new Function('member', `return (member) => member.roles.cache.some((r) => r.name === \'${roleName}\')`), bonus: roleEntries}]
+})
 ```
 
 ## 🇫🇷 Translation
@@ -282,14 +310,12 @@ client.giveawaysManager.start(message.channel, {
 And for the `reroll()` function:
 
 ```js
-client.giveawaysManager
-    .reroll(messageID, {
+client.giveawaysManager.reroll(messageID, {
         messages: {
             congrat: ':tada: New winner(s) : {winners}! Congratulations! You won **{prize}**.\n{messageURL}',
             error: 'No valid participations, no winners can be chosen!'
         }
-    })
-    .catch((err) => {
+    }).catch((err) => {
         message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
     });
 ```
@@ -385,7 +411,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready !");
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
@@ -428,7 +454,7 @@ const manager = new GiveawayManagerWithShardSupport(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready !");
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
