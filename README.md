@@ -244,8 +244,8 @@ client.giveawaysManager.start(message.channel, {
 
 ⚠️ **Note**: If it should be customizable
 ```js
-const roleName = 'Nitro Boost'
-const roleEntries = 2
+const roleName = 'Nitro Boost';
+const roleEntries = 2;
 
 client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
