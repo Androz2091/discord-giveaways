@@ -464,7 +464,7 @@ class GiveawaysManager extends EventEmitter {
         ) {
             this.giveaways
                 .filter((g) => g.ended && ((g.endAt + this.options.endedGiveawaysLifetime) <= Date.now()))
-                .forEach((giveaway) => this.deleteGiveaway(giveaway.messageID));
+                .forEach(async (giveaway) => await this.deleteGiveaway(giveaway.messageID));
         }
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));
