@@ -331,12 +331,12 @@ class Giveaway extends EventEmitter {
         const winners = [];
 
         for (const u of rolledWinners) {
-            const isValidEntry = !winners.some(winner => winner.id === u.id) && (await this.checkWinnerEntry(u));
+            const isValidEntry = !winners.some((winner) => winner.id === u.id) && (await this.checkWinnerEntry(u));
             if (isValidEntry) winners.push(u);
             else {
                 // find a new winner
                 for (const user of users.array()) {
-                    const isUserValidEntry = !winners.some(winner => winner.id === user.id) && (await this.checkWinnerEntry(user));
+                    const isUserValidEntry = !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (!isUserValidEntry) continue;
                     else {
                         winners.push(user);
