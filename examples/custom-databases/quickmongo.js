@@ -69,7 +69,7 @@ client.giveawaysManager = manager;
 // DB is ready
 db.on('ready', async () => {
     if (!(await db.get('giveaways'))) await db.set('giveaways', []);
-    // Start the giveawaysMmanager only after the DB got checked to prevent an error
+    // Start the "giveawaysManager" only after the DB got checked to prevent an error
     client.giveawaysManager._init();
 });
 
