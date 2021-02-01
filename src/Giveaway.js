@@ -298,6 +298,7 @@ class Giveaway extends EventEmitter {
      * @returns {Promise<boolean>} Whether it is a valid entry
      */
     async checkWinnerEntry(user) {
+        if (this.winnerIDs.includes(user.id)) return false;
         const guild = this.channel.guild;
         const member = guild.member(user.id) || await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
@@ -326,7 +327,7 @@ class Giveaway extends EventEmitter {
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
 
-        const rolledWinners = users.random(winnerCount || this.winnerCount);
+        const rolledWinners = users.random(Math.min(winnerCount || this.winnerCount, users.size));
         const winners = [];
 
         for (const u of rolledWinners) {
