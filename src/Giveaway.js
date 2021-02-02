@@ -325,6 +325,7 @@ class Giveaway extends EventEmitter {
         const users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
+        if (!users.size) return [];
 
         const rolledWinners = users.random(Math.min(winnerCount || this.winnerCount, users.size));
         const winners = [];
