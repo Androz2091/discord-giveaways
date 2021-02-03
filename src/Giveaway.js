@@ -325,9 +325,11 @@ class Giveaway extends EventEmitter {
         const users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
-
+        //if not enough members reacted then return error msg
+        if(users.array.length< (winnerCount ||this.winnerCount)) return this.message.reply("SORRY, but not enough members reacted!")
         const rolledWinners = users.random(winnerCount || this.winnerCount);
         const winners = [];
+        
 
         for (const u of rolledWinners) {
             const isValidEntry = await this.checkWinnerEntry(u) && !winners.some((winner) => winner.id === u.id);
