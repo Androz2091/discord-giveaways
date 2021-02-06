@@ -4,6 +4,7 @@ declare module 'discord-giveaways' {
         Client,
         PermissionResolvable,
         ColorResolvable,
+        EmojiIdentifierResolvable,
         User,
         Snowflake,
         GuildMember,
@@ -58,7 +59,7 @@ declare module 'discord-giveaways' {
         exemptMembers?: () => boolean;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
-        reaction?: string;
+        reaction?: EmojiIdentifierResolvable;
         messages?: Partial<GiveawaysMessages>;
         extraData?: any;
     }
@@ -83,8 +84,10 @@ declare module 'discord-giveaways' {
     }
     interface GiveawaysManagerEvents {
         giveawayEnded: [Giveaway, GuildMember[]];
+        giveawayRerolled: [Giveaway, GuildMember[]];
         giveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
         giveawayReactionRemoved: [Giveaway, GuildMember, MessageReaction];
+        endedGiveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
     }
     class Giveaway extends EventEmitter {
         constructor(manager: GiveawaysManager, options: GiveawayData);
@@ -102,7 +105,7 @@ declare module 'discord-giveaways' {
         public exemptPermissions: PermissionResolvable[];
         readonly giveawayDuration: number;
         public guildID: Snowflake;
-        public hostedBy: string | null;
+        public hostedBy: User | null;
         public manager: GiveawaysManager;
         public message: Message | null;
         public messageID: Snowflake | null;
@@ -113,7 +116,7 @@ declare module 'discord-giveaways' {
         readonly messageURL: string;
         public startAt: number;
         public winnerCount: number;
-        public winnerIDs: Array<string>;
+        public winnerIDs: Snowflake[];
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -143,18 +146,18 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
-        winnerIDs: Array<string>;
+        winnerIDs: Snowflake[];
         messages: GiveawaysMessages;
         ended: boolean;
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
         messageID?: Snowflake | null;
-        reaction?: string;
+        reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember) => boolean;
-        embedColor?: string;
-        embedColorEnd?: string;
+        embedColor?: ColorResolvable;
+        embedColorEnd?: ColorResolvable;
         hostedBy?: string | null;
         extraData?: any;
     }

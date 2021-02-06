@@ -32,11 +32,11 @@ exports.GiveawayMessages = {};
  * @property {string} prize The giveaway prize
  * @property {Discord.User} [hostedBy] The user who hosts the giveaway
  * @property {Boolean} [botsCanWin] Whether the bots are able to win a giveaway.
- * @property {Array<Discord.PermissionResolvable>} [exemptPermissions] Members with any of these permissions won't be able to win a giveaway.
+ * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
  * @property {Discord.ColorResolvable} [embedColor] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [embedColorEnd] The giveaway embeds color when they are ended
- * @property {string} [reaction] The reaction to participate to the giveaways
+ * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate to the giveaways
  * @property {GiveawayMessages} [messages] The giveaway messages
  * @property {any} [extraData] The extra data value for this giveaway
  */
@@ -81,7 +81,7 @@ exports.defaultGiveawayMessages = {
  * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
  * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The giveaway embeds color when they are ended
- * @property {string} [default.reaction='🎉'] The reaction to participate to the giveaways
+ * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate to the giveaways
  */
 exports.GiveawaysManagerOptions = {};
 
@@ -147,14 +147,14 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway
- * @property {Array<string>} winnerIDs The winner IDs of the giveaway after it ended
+ * @property {Discord.Snowflake[]} winnerIDs winnerIDs The winner IDs of the giveaway after it ended
  * @property {GiveawayMessages} messages The giveaway messages
  * @property {boolean} ended Whether the giveaway is ended
  * @property {string} prize The prize of the giveaway
  * @property {Discord.Snowflake} channelID The ID of the channel
  * @property {Discord.Snowflake} guildID The ID of the guild
  * @property {Discord.Snowflake?} [messageID] The ID of the message
- * @property {string} [reaction] The reaction of the giveaway
+ * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction of the giveaway
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win the giveaway
  * @property {Function} [exemptMembers] Filter function to exempt members from winning the giveaway
