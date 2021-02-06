@@ -169,11 +169,11 @@ class Giveaway extends EventEmitter {
      * @type {BonusEntry[]?}
      */
     get bonusEntries () {
-        const bonusEntries = eval(this.options.bonusEntries);
-        const validBonusEntries = (Array.isArray(bonusEntries) && bonusEntries.length && bonusEntries.every((v) => typeof v === 'object')) ? bonusEntries : [];
-        const validDefaultBonusEntries = (Array.isArray(this.manager.options.default.bonusEntries) && this.manager.options.default.bonusEntries.length && this.manager.options.default.bonusEntries.every((v) => typeof v === 'object'))
-            ? this.manager.options.default.bonusEntries
-            : [];
+        const validBonusEntries = eval(this.options.bonusEntries);
+        const validDefaultBonusEntries =
+            (Array.isArray(this.manager.options.default.bonusEntries) && this.manager.options.default.bonusEntries.every((elem) => typeof elem === 'object'))
+                ? this.manager.options.default.bonusEntries
+                : [];
         return validBonusEntries.length ? validBonusEntries : validDefaultBonusEntries;
     }
 
@@ -281,11 +281,15 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            bonusEntries: this.options.bonusEntries ? serialize(this.options.bonusEntries) : undefined,
+            bonusEntries: serialize(
+                (Array.isArray(this.options.bonusEntries) && this.options.bonusEntries.every((elem) => typeof elem === 'object'))
+                    ? this.options.bonusEntries
+                    : []
+            ),
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
-            extraData: this.extraData
+            extraData: this.extraData,
         };
         return baseData;
     }
