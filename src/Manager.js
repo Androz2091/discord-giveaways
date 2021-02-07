@@ -199,7 +199,10 @@ class GiveawaysManager extends EventEmitter {
                 botsCanWin: options.botsCanWin,
                 exemptPermissions: options.exemptPermissions,
                 exemptMembers: options.exemptMembers,
-                bonusEntries: options.bonusEntries,
+                bonusEntries:
+                    (Array.isArray(options.bonusEntries) && options.bonusEntries.every((elem) => typeof elem === 'object'))
+                        ? options.bonusEntries
+                        : [],
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData

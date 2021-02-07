@@ -281,11 +281,7 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            bonusEntries: serialize(
-                (Array.isArray(this.options.bonusEntries) && this.options.bonusEntries.every((elem) => typeof elem === 'object'))
-                    ? this.options.bonusEntries
-                    : []
-            ),
+            bonusEntries: serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
@@ -449,7 +445,8 @@ class Giveaway extends EventEmitter {
             if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
             if (options.newMessages) this.messages = merge(this.messages, options.newMessages);
-            if (options.newBonusEntries) this.options.bonusEntries = options.newBonusEntries;
+            if (Array.isArray(options.newBonusEntries) && options.newBonusEntries.every((elem) => typeof elem === 'object'))
+                this.options.bonusEntries = options.newBonusEntries;
             if (options.newExtraData) this.extraData = options.newExtraData;
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
