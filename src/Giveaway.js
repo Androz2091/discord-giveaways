@@ -265,7 +265,7 @@ class Giveaway extends EventEmitter {
             embedColor: this.options.embedColor,
             embedColorEnd: this.options.embedColorEnd,
             botsCanWin: this.options.botsCanWin,
-            exemptPermissions: Array.isArray(this.options.exemptPermissions) ? this.options.exemptPermissions : [],
+            exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
             reaction: this.options.reaction,
             requirements: this.requirements,
