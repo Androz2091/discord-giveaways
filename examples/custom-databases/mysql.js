@@ -11,14 +11,15 @@ const sql = MySQL.createConnection({
     host     : 'localhost',
     user     : 'Your MySQL user',
     password : 'Your MySQL password',
-    database : 'Your MySQL database name'
+    database : 'Your MySQL database name',
+    charset : 'utf8mb4'
 });
 sql.connect((err) => {
-    if (err){
+    if (err) {
         console.error('Impossible to connect to MySQL server. Code: ' + err.code);
-        process.exit(99); // Stop the process if we can't connect to MySQL server
+        process.exit(99); // Stop the process if we can't connect to the MySQL server
     } else {
-        console.log('[SQL] Connected to the MySQL server! Connexion ID: ' + sql.threadId);
+        console.log('[SQL] Connected to the MySQL server! Connection ID: ' + sql.threadId);
     }
 });
 
