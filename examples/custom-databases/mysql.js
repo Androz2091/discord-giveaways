@@ -8,11 +8,11 @@ const Discord = require('discord.js'),
 // Load mysql
 const MySQL = require('mysql');
 const sql = MySQL.createConnection({
-    host     : 'localhost',
-    user     : 'Your MySQL user',
-    password : 'Your MySQL password',
-    database : 'Your MySQL database name',
-    charset : 'utf8mb4'
+    host: 'localhost',
+    user: 'Your MySQL user',
+    password: 'Your MySQL password',
+    database: 'Your MySQL database name',
+    charset: 'utf8mb4'
 });
 sql.connect((err) => {
     if (err) {
