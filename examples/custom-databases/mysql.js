@@ -12,7 +12,7 @@ const sql = MySQL.createConnection({
     user: 'Your MySQL user',
     password: 'Your MySQL password',
     database: 'Your MySQL database name',
-    charset: 'utf8mb4'
+    charset: 'utf8mb4' // In order to save emojis correctly
 });
 sql.connect((err) => {
     if (err) {
