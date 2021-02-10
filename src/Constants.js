@@ -92,7 +92,7 @@ exports.GiveawaysManagerOptions = {};
 exports.defaultManagerOptions = {
     storage: './giveaways.json',
     updateCountdownEvery: 5000,
-    endedGiveawaysLifetime: 0,
+    endedGiveawaysLifetime: null,
     hasGuildMemberIntent: false,
     default: {
         botsCanWin: false,
