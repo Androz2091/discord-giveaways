@@ -64,6 +64,10 @@ class Giveaway extends EventEmitter {
          * @type {number}
          */
         this.winnerCount = options.winnerCount;
+        /** The required number of winners for this giveaway
+         * @type {number}
+         */
+        this.requiredWinnerCount = options.requiredWinnerCount;
         /**
          * The winner IDs for this giveaway after it ended
          * @type {Array<string>}
@@ -164,6 +168,22 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * The number of required participations
+     * @type {Number}
+     */
+    get requiredParticipationCount() {
+        return this.options.requiredParticipationCount || this.manager.options.default.requiredParticipationCount;
+    }
+
+    /**
+     * The amount of time a giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
+     * @type {Number}
+     */
+    get noValidEndingInterval() {
+        return this.options.noValidEndingInterval || this.manager.options.default.noValidEndingInterval;
+    }
+
+    /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @type {Function}
      */
@@ -258,6 +278,7 @@ class Giveaway extends EventEmitter {
             endAt: this.endAt,
             ended: this.ended,
             winnerCount: this.winnerCount,
+            requiredWinnerCount: this.requiredWinnerCount,
             prize: this.prize,
             messages: this.messages,
             hostedBy: this.options.hostedBy,
@@ -266,12 +287,39 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
+            requiredParticipationCount: this.options.requiredParticipationCount,
+            noValidEndingInterval: this.options.noValidEndingInterval,
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
             extraData: this.extraData
         };
         return baseData;
+    }
+
+    /**
+     * Fetches the giveaway reaction users
+     * @returns {Promise<Collection<Snowflake, User>>|Promise<Map<undefined, undefined>>} The reaction user collection or an empty map
+     */
+    get reactionUsers() {
+        return (async () => {
+            try {
+                if (!this.message) return new Map();
+                const reactions = this.message.reactions.cache;
+                const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
+                if (!reaction) return new Map()
+                const guild = this.channel.guild;
+                // Fetch guild members
+                if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+                const users = (await reaction.users.fetch())
+                    .filter((u) => !u.bot || u.bot === this.botsCanWin)
+                    .filter((u) => u.id !== this.message.client.user.id);
+                if (!users.size) return new Map()
+                return users;
+            } catch (err) {
+                return console.error(err);
+            }
+        })();
     }
 
     /**
@@ -314,17 +362,7 @@ class Giveaway extends EventEmitter {
      * @returns {Promise<Discord.GuildMember[]>} The winner(s)
      */
     async roll(winnerCount) {
-        if (!this.message) return [];
-        // Pick the winner
-        const reactions = this.message.reactions.cache;
-        const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
-        if (!reaction) return [];
-        const guild = this.channel.guild;
-        // Fetch guild members
-        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
-        const users = (await reaction.users.fetch())
-            .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id);
+        const users = await this.reactionUsers;
         if (!users.size) return [];
 
         const rolledWinners = users.random(Math.min(winnerCount || this.winnerCount, users.size));
@@ -345,7 +383,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners.map((user) => guild.member(user) || user);
+        return winners.map((user) => this.channel.guild.member(user) || user);
     }
 
     /**
@@ -367,9 +405,14 @@ class Giveaway extends EventEmitter {
             }
             // Update data
             if (options.newWinnerCount) this.winnerCount = options.newWinnerCount;
+            if (!isNaN(options.newRequiredWinnerCount)) this.requiredWinnerCount = options.newRequiredWinnerCount;
             if (options.newPrize) this.prize = options.newPrize;
             if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;
+            if (!isNaN(options.newRequiredParticipationCount))
+                this.options.requiredParticipationCount = options.newRequiredParticipationCount;
+            if (!isNaN(options.newNoValidEndingInterval))
+                this.options.noValidEndingInterval = options.newNoValidEndingInterval;
             if (options.newMessages) this.messages = merge(this.messages, options.newMessages);
             if (options.newExtraData) this.extraData = options.newExtraData;
             // Call the db method
@@ -396,6 +439,24 @@ class Giveaway extends EventEmitter {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             const winners = await this.roll();
+            if (this.requiredWinnerCount && this.requiredWinnerCount > winners.length) {
+                if (this.noValidEndingInterval) {
+                    this.endAt = this.endAt + this.noValidEndingInterval;
+                    this.channel.send(
+                        this.messages.requiredWinnerCount
+                        .replace('{prize}', this.prize)
+                        .replace('{messageURL}', this.messageURL)
+                        .replace('{requiredWinnerCount}', this.requiredWinnerCount)
+                    ).then((msg) => msg.delete({ timeout: this.noValidEndingInterval })).catch(() => {});
+                    reject('Giveaway with message ID ' + this.messageID + ' is has not reached its "requiredWinnerCount" yet');
+                } else {
+                    const embed = this.manager.generateNoValidParticipantsEndEmbed(giveaway);
+                    this.message.edit(giveaway.messages.giveawayEnded, { embed }).catch(() => {});
+                    resolve([])
+                }
+                await this.manager.editGiveaway(this.messageID, this.data);
+                return;
+            }
             this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
