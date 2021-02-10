@@ -450,8 +450,8 @@ class Giveaway extends EventEmitter {
                     ).then((msg) => msg.delete({ timeout: this.noValidEndingInterval })).catch(() => {});
                     reject('Giveaway with message ID ' + this.messageID + ' is has not reached its "requiredWinnerCount" yet');
                 } else {
-                    const embed = this.manager.generateNoValidParticipantsEndEmbed(giveaway);
-                    this.message.edit(giveaway.messages.giveawayEnded, { embed }).catch(() => {});
+                    const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
+                    this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
                     resolve([])
                 }
                 await this.manager.editGiveaway(this.messageID, this.data);
