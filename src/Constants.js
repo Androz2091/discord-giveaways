@@ -112,6 +112,7 @@ exports.defaultManagerOptions = {
         exemptMembers: () => false,
         bonusEntries: [],
         embedColor: '#FF0000',
+        embedColorEnd: '#000000',
         reaction: '🎉'
     }
 };
@@ -135,7 +136,7 @@ exports.defaultRerollOptions = {
     winnerCount: null,
     messages: {
         congrat: ':tada: New winner(s) : {winners}! Congratulations!\n{messageURL}',
-        error: 'No valid participations, no winners can be chosen!'
+        error: 'No valid participations, no new winner(s) can be chosen!'
     }
 };
 

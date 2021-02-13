@@ -229,11 +229,10 @@ class GiveawaysManager extends EventEmitter {
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(defaultRerollOptions, options);
-            const giveawayData = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveawayData) {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            const giveaway = new Giveaway(this, giveawayData);
             giveaway
                 .reroll(options)
                 .then((winners) => {

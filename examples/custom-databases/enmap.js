@@ -9,7 +9,7 @@ const Discord = require('discord.js'),
 const Enmap = require('enmap');
 
 // Create giveaways table
-const giveawayDB = new Enmap({ name: 'giveaways' })
+const giveawayDB = new Enmap({ name: 'giveaways' });
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
@@ -44,12 +44,12 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
-    storage: false, // Important - use false instead of a storage path
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
+        embedColorEnd: '#000000',
         reaction: '🎉'
     }
 });

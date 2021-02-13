@@ -8,17 +8,18 @@ const Discord = require('discord.js'),
 // Load mysql
 const MySQL = require('mysql');
 const sql = MySQL.createConnection({
-    host     : 'localhost',
-    user     : 'Your MySQL user',
-    password : 'Your MySQL password',
-    database : 'Your MySQL database name'
+    host: 'localhost',
+    user: 'Your MySQL user',
+    password: 'Your MySQL password',
+    database: 'Your MySQL database name',
+    charset: 'utf8mb4' // In order to save emojis correctly
 });
 sql.connect((err) => {
-    if (err){
+    if (err) {
         console.error('Impossible to connect to MySQL server. Code: ' + err.code);
-        process.exit(99); // Stop the process if we can't connect to MySQL server
+        process.exit(99); // Stop the process if we can't connect to the MySQL server
     } else {
-        console.log('[SQL] Connected to the MySQL server! Connexion ID: ' + sql.threadId);
+        console.log('[SQL] Connected to the MySQL server! Connection ID: ' + sql.threadId);
     }
 });
 
@@ -94,12 +95,12 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
-    storage: false, // Important - use false instead of a storage path
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
         exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
+        embedColorEnd: '#000000',
         reaction: '🎉'
     }
 });
