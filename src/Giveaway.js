@@ -441,7 +441,8 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll();
             if (this.requiredWinnerCount && this.requiredWinnerCount > winners.length) {
                 if (this.noValidEndingInterval) {
-                    this.endAt = this.endAt + this.noValidEndingInterval;
+                    if (this.remainingTime <= 60000) this.endAt = this.endAt + this.noValidEndingInterval;
+                    this.ended = false;
                     this.channel.send(
                         this.messages.requiredWinnerCount
                         .replace('{prize}', this.prize)
