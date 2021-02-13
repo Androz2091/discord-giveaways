@@ -188,6 +188,7 @@ class GiveawaysManager extends EventEmitter {
                 startAt: Date.now(),
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
+                requiredWinnerCount: !isNaN(options.requiredWinnerCount) ? options.requiredWinnerCount : null,
                 winnerIDs: [],
                 channelID: channel.id,
                 guildID: channel.guild.id,
@@ -199,6 +200,8 @@ class GiveawaysManager extends EventEmitter {
                 botsCanWin: options.botsCanWin,
                 exemptPermissions: options.exemptPermissions,
                 exemptMembers: options.exemptMembers,
+                requiredParticipationCount: !isNaN(options.requiredParticipationCount) ? options.requiredParticipationCount : null,
+                noValidEndingInterval: !isNaN(options.noValidEndingInterval) ? options.noValidEndingInterval : null,
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData
@@ -381,6 +384,34 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
+     * Checks if a giveaway needs a certain amount of participations in order to end
+     * @ignore
+     * @private
+     * @param {Giveaway} giveaway The giveaway object that  shoul get checked
+     */
+    async _checkRequiredParticipationCount(giveaway) {
+        const reactionUsers = await giveaway.reactionUsers;
+        if (giveaway.requiredParticipationCount && giveaway.requiredParticipationCount > reactionUsers.size) {
+            if (giveaway.noValidEndingInterval) {
+                giveaway.endAt = giveaway.endAt + giveaway.noValidEndingInterval;
+                giveaway.channel.send(
+                    giveaway.messages.requiredParticipationCount
+                    .replace('{prize}', giveaway.prize)
+                    .replace('{messageURL}', giveaway.messageURL)
+                    .replace('{requiredParticipationCount}', giveaway.requiredParticipationCount)
+                ).then((msg) => msg.delete({ timeout: giveaway.noValidEndingInterval })).catch(() => {});
+            } else {
+                giveaway.ended = true;
+                const embed = giveaway.manager.generateNoValidParticipantsEndEmbed(giveaway);
+                giveaway.message.edit(giveaway.messages.giveawayEnded, { embed }).catch(() => {});
+            }     
+            await this.editGiveaway(giveaway.messageID, giveaway.data);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Checks each giveaway and update it if needed
      * @ignore
      * @private
@@ -391,6 +422,7 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.ended) return;
             if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) {
+                if (!(await this._checkRequiredParticipationCount(giveaway))) return;
                 return this.end(giveaway.messageID).catch(() => {});
             }
             await giveaway.fetchMessage().catch(() => {});
@@ -402,6 +434,7 @@ class GiveawaysManager extends EventEmitter {
             const embed = this.generateMainEmbed(giveaway);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
+                if (!(await this._checkRequiredParticipationCount(giveaway))) return;
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
         });

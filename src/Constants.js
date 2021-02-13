@@ -14,6 +14,8 @@ const Discord = require('discord.js');
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='End at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {string} [hostedBy='Hosted by: {user}'] Below the inviteToParticipate message, in the description of the embed.
+ * @property {string} [requiredParticipationCount] Sent in the channel if the required paricipation count did not get reached
+ * @property {string} [requiredWinnerCount] Sent in the channel if the required winner count did not get reached
  * @property {Object} [units]
  * @property {string} [units.seconds='seconds'] The name of the 'seconds' units
  * @property {string} [units.minutes='minutes'] The name of the 'minutes' units
@@ -29,11 +31,14 @@ exports.GiveawayMessages = {};
  *
  * @property {number} time The giveaway duration
  * @property {number} winnerCount The number of winners for the giveaway
+ * @property {number} [requiredWinnerCount] The required number of winners for the giveaway
  * @property {string} prize The giveaway prize
  * @property {Discord.User} [hostedBy] The user who hosts the giveaway
  * @property {Boolean} [botsCanWin] Whether the bots are able to win a giveaway.
  * @property {Array<Discord.PermissionResolvable>} [exemptPermissions] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
+ * @property {number} [requiredParticipationCount] The required number of participations the giveaway needs to have before it's able to end
+ * @property {number} [noValidEndingInterval] The amount of time the giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
  * @property {Discord.ColorResolvable} [embedColor] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [embedColorEnd] The giveaway embeds color when they are ended
  * @property {string} [reaction] The reaction to participate to the giveaways
@@ -57,6 +62,8 @@ exports.defaultGiveawayMessages = {
     winners: 'winner(s)',
     endedAt: 'End at',
     hostedBy: 'Hosted by: {user}',
+    requiredParticipationCount: 'The **{prize}** giveaway needs **{requiredParticipationCount}** participation(s) before it can end!\n{messageURL}',
+    requiredWinnerCount: 'The **{prize}** giveaway needs at least **{requiredWinnerCount}** valid winner(s) before it can end!\n{messageURL}',
     units: {
         seconds: 'seconds',
         minutes: 'minutes',
@@ -79,6 +86,8 @@ exports.defaultGiveawayMessages = {
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
+ * @property {number} [default.requiredParticipationCount=null] The required number of participations a giveaway needs to have before it is able to end
+ * @property {number} [default.noValidEndingInterval=null] The amount of time a giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
  * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The giveaway embeds color when they are ended
  * @property {string} [default.reaction='🎉'] The reaction to participate to the giveaways
@@ -98,6 +107,8 @@ exports.defaultManagerOptions = {
         botsCanWin: false,
         exemptPermissions: [],
         exemptMembers: () => false,
+        requiredParticipationCount: null,
+        noValidEndingInterval: null,
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -132,9 +143,12 @@ exports.defaultRerollOptions = {
  * @typedef GiveawayEditOptions
  *
  * @property {number} [newWinnerCount] The new number of winners
+ * @property {number} [newRequiredWinnerCount] The new number of required winners
  * @property {string} [newPrize] The new giveaway prize
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration
  * @property {number} [setEndTimestamp] The timestamp of the new end date
+ * @property {number} [requiredParticipationCount] The new required number of participations thr giveaway needs to have before it is able to end
+ * @property {number} [noValidEndingInterval] The new amount of time the giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
  * @property {GiveawayMessages} [newMessages] The new giveaway messages
  * @property {any} [newExtraData] The new extra data value for this giveaway
  */
@@ -147,6 +161,7 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway
+ * @property {number} [requiredWinnerCount] The required number of winners of the giveaway
  * @property {Array<string>} winnerIDs The winner IDs of the giveaway after it ended
  * @property {GiveawayMessages} messages The giveaway messages
  * @property {boolean} ended Whether the giveaway is ended
@@ -158,6 +173,8 @@ exports.GiveawayEditOptions = {};
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win the giveaway
  * @property {Function} [exemptMembers] Filter function to exempt members from winning the giveaway
+ * @property {number} [requiredParticipationCount] The required number of participations the giveaway needs to have before it is able to end
+ * @property {number} [noValidEndingInterval] The amount of time the giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
  * @property {string?} [hostedBy] Mention of user who hosts the giveaway

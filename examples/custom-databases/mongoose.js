@@ -25,6 +25,7 @@ const giveawaySchema = new mongoose.Schema({
     endAt: Number,
     ended: Boolean,
     winnerCount: Number,
+    requiredWinnerCount: Number,
     prize: String,
     messages: {
         giveaway: String,
@@ -37,6 +38,8 @@ const giveawaySchema = new mongoose.Schema({
         winners: String,
         endedAt: String,
         hostedBy: String,
+        requiredParticipationCount: String,
+        requiredWinnerCount: String,
         units: {
             seconds: String,
             minutes: String,
@@ -49,6 +52,8 @@ const giveawaySchema = new mongoose.Schema({
     winnerIDs: [],
     reaction: String,
     botsCanWin: Boolean,
+    requiredParticipationCount: Number,
+    noValidEndingInterval: Number,
     embedColor: String,
     embedColorEnd: String,
     exemptPermissions: [],

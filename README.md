@@ -73,6 +73,8 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
 -   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **options.default.requiredParticipationCount**: the required number of participations a giveaway needs to have before it is able to end
+-   **options.default.noValidEndingInterval**: the amount of time a giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
@@ -105,9 +107,12 @@ client.on('message', (message) => {
 -   **options.prize**: the giveaway prize.
 -   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerCount**: the number of giveaway winners.
+-   **options.requiredWinnerCount**: the required number of giveaway winners.
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **options.default.requiredParticipationCount**: the required number of participations the giveaway needs to have before it is able to end
+-   **options.default.noValidEndingInterval**: the amount of time the giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
@@ -182,9 +187,12 @@ client.on('message', (message) => {
 ```
 
 **options.newWinnerCount**: the new number of winners.  
+**options.newRequiredWinnerCount**: the new required number of winners.  
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.  
 **options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
+**options.requiredParticipationCount**: the new required number of participations the giveaway needs to have before it is able to end
+**options.noValidEndingInterval**: the new amount of time the giveaway should get extended for if "requiredParticipationCount" or "requiredWinnerCount" get not reached
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 

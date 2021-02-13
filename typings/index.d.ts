@@ -9,7 +9,8 @@ declare module 'discord-giveaways' {
         GuildMember,
         TextChannel,
         MessageReaction,
-        Message
+        Message,
+        Collection
     } from 'discord.js';
 
     export const version: string;
@@ -51,11 +52,14 @@ declare module 'discord-giveaways' {
     interface GiveawayStartOptions {
         time?: number;
         winnerCount?: number;
+        requiredWinnerCount?: number;
         prize?: string;
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: () => boolean;
+        requiredParticipationCount?: number;
+        noValidEndingInterval?: number;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: string;
@@ -73,6 +77,8 @@ declare module 'discord-giveaways' {
         winners?: string;
         endedAt?: string;
         hostedBy?: string;
+        requiredParticipationCount?: string;
+        requiredWinnerCount?: string;
         units?: {
             seconds?: string;
             minutes?: string;
@@ -95,6 +101,8 @@ declare module 'discord-giveaways' {
         public client: Client;
         readonly content: string;
         public data: GiveawayData;
+        public requiredParticipationCount: number;
+        public noValidEndingInterval: number;
         public embedColor: ColorResolvable;
         public embedColorEnd: ColorResolvable;
         public endAt: number;
@@ -113,7 +121,9 @@ declare module 'discord-giveaways' {
         readonly messageURL: string;
         public startAt: number;
         public winnerCount: number;
+        public requiredWinnerCount: number;
         public winnerIDs: Array<string>;
+        public reactionUsers: Promise<Collection<Snowflake, User>>|Promise<Map<undefined, undefined>>
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -126,9 +136,12 @@ declare module 'discord-giveaways' {
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
+        newRequiredWinnerCount?: number;
         newPrize?: string;
         addTime?: number;
         setEndTimestamp?: number;
+        newRequiredParticipationCount?: number;
+        newNoValidEndingInterval?: number;
         newMessages?: Partial<GiveawaysMessages>;
         newExtraData?: any;
     }
@@ -143,6 +156,7 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
+        requiredWinnerCount?: number;
         winnerIDs: Array<string>;
         messages: GiveawaysMessages;
         ended: boolean;
@@ -153,6 +167,8 @@ declare module 'discord-giveaways' {
         reaction?: string;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember) => boolean;
+        requiredParticipationCount?: number;
+        noValidEndingInterval?: number;
         embedColor?: string;
         embedColorEnd?: string;
         hostedBy?: string | null;
