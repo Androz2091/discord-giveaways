@@ -6,10 +6,14 @@ assignees: ''
 
 ---
 
+<!--
+
 **Before reporting the bug**
 
 - Check if there is already an [open issue](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aopen+label%3Abug) reporting the same bug
 - If an issue is already opened, check if you can provide further information inside of the open issue instead of creating a new one
+
+-->
 
 **Describe the bug**  
 
