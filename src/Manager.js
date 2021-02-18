@@ -65,9 +65,9 @@ class GiveawaysManager extends EventEmitter {
             .setColor(lastChanceEnabled ? giveaway.embedColor : giveaway.lastChance.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
+                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
                 giveaway.messages.inviteToParticipate +
                     '\n' +
-                    (lastChanceEnabled ? giveaway.lastChance.content + '\n' : '') +
                     giveaway.remainingTimeText +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
@@ -402,15 +402,17 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            const lastChanceEnabled = giveaway.options.lastChance.enabled && giveaway.remainingTime < this.options.default.lastChance.threshold;
+            const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
             const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
-            if (lastChanceEnabled && (giveaway.remainingTime - this.options.default.lastChance.secondsBeforeLastChance) < this.options.updateCountdownEvery) {
-                const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
-                giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+            if (lastChanceEnabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
+                setTimeout(() => {
+                    const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+                    giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+                }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
     }
