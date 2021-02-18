@@ -72,14 +72,14 @@ exports.defaultGiveawayMessages = {
  * @typedef LastChanceOptions
  * 
  * @property {boolean} [enabled] Whether the last chance system is enabled
- * @property {string} [title] The text of the embed when last chance is enabled
- * @property {number} [lastChanceThresholdTime] The number of ms after which the last chance system will be enabled
+ * @property {string} [content] The text of the embed when last chance is enabled
+ * @property {number} [threshold] The number of ms after which the last chance system will be enabled
  * @property {string} [lastChance.embedColor] The color of the embed when last chance is enabled
  */
 exports.LastChanceOptions = {
     enabled: false,
     content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-    lastChanceThresholdTime: 5000,
+    threshold: 5000,
     embedColor: '#FF0000'
 };
 

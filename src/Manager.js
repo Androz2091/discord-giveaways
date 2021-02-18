@@ -67,7 +67,7 @@ class GiveawaysManager extends EventEmitter {
             .setDescription(
                 giveaway.messages.inviteToParticipate +
                     '\n' +
-                    (lastChanceEnabled ? giveaway.lastChance.title + '\n' : '') +
+                    (lastChanceEnabled ? giveaway.lastChance.content + '\n' : '') +
                     giveaway.remainingTimeText +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
@@ -402,7 +402,7 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            const lastChanceEnabled = giveaway.options.lastChance.enabled && giveaway.remainingTime < this.options.default.lastChance.lastChanceThresholdTime;
+            const lastChanceEnabled = giveaway.options.lastChance.enabled && giveaway.remainingTime < this.options.default.lastChance.threshold;
             const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
