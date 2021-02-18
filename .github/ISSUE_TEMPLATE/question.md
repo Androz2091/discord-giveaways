@@ -1,5 +1,5 @@
 ---
-name: Qustion
+name: Question
 about: Ask a question about this project or its usage
 title: ''
 labels: question
