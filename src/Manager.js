@@ -408,14 +408,9 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
-            if () {
-                if (lastChanceEnabled) {
-                    
-                } else if ((giveaway.remainingTime - this.options.default.lastChance.secondsBeforeLastChance) < this.options.updateCountdownEvery) {
-
-                }
-                embed.setColor(this.options.default.lastChance.embedColor);
-                giveaway.message.edit(this.options.default.lastChance.message, { embed });
+            if (lastChanceEnabled && (giveaway.remainingTime - this.options.default.lastChance.secondsBeforeLastChance) < this.options.updateCountdownEvery) {
+                const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+                giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             }
         });
     }
