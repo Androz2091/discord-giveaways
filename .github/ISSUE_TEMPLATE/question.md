@@ -1,13 +1,17 @@
 ---
 name: Question
-about: Ask a question about this project or its usage
+about: Ask a question about this project and/or how to use it
 title: ''
 labels: question
 assignees: ''
 
 ---
 
-**Before you ask your question**
-Have you checked the [documentation](https://discord-giveaways.js.org/) or [already answered questions](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aclosed) for an answer to your question?
+<!--
 
-**Ask your question**
+**Before asking your question!**
+
+- Please read the [documentation](https://discord-giveaways.js.org/), it contains a lot of information
+- Check the [answered questions on GitHub](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aclosed), your question may have already been asked
+
+-->
