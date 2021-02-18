@@ -42,6 +42,12 @@ declare module 'discord-giveaways' {
 
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
+    interface LastChanceOptions {
+        enabled: boolean;
+        embedColor: string;
+        content: string;
+        threshold: number;
+    }
     interface GiveawaysManagerOptions {
         storage?: string;
         updateCountdownEvery?: number;
@@ -62,6 +68,7 @@ declare module 'discord-giveaways' {
         reaction?: EmojiIdentifierResolvable;
         messages?: Partial<GiveawaysMessages>;
         extraData?: any;
+        lastChance?: LastChanceOptions;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -92,18 +99,11 @@ declare module 'discord-giveaways' {
     class Giveaway extends EventEmitter {
         constructor(manager: GiveawaysManager, options: GiveawayData);
 
-        public botsCanWin: boolean;
-        readonly channel: TextChannel;
         public channelID: Snowflake;
         public client: Client;
-        readonly content: string;
         public data: GiveawayData;
-        public embedColor: ColorResolvable;
-        public embedColorEnd: ColorResolvable;
         public endAt: number;
         public ended: boolean;
-        public exemptPermissions: PermissionResolvable[];
-        readonly giveawayDuration: number;
         public guildID: Snowflake;
         public hostedBy: User | null;
         public manager: GiveawaysManager;
@@ -112,11 +112,23 @@ declare module 'discord-giveaways' {
         public messages: GiveawaysMessages;
         public options: GiveawayData;
         public prize: string;
-        readonly remainingTime: number;
-        readonly messageURL: string;
         public startAt: number;
         public winnerCount: number;
         public winnerIDs: Snowflake[];
+
+        // getters calculated using default manager options
+        readonly exemptPermissions: PermissionResolvable[];
+        readonly giveawayDuration: number;
+        readonly embedColor: ColorResolvable;
+        readonly embedColorEnd: ColorResolvable;
+        readonly botsCanWin: boolean;
+        readonly reaction: string;
+
+        // getters calculated using other values
+        readonly remainingTime: number;
+        readonly messageURL: string;
+        readonly content: string;
+        readonly channel: TextChannel;
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;

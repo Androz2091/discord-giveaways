@@ -55,15 +55,17 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Generate an embed displayed when a giveaway is running (with the remaining time)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @param {boolean} lastChanceEnabled Whether or not to include the last chance text
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateMainEmbed(giveaway) {
+    generateMainEmbed(giveaway, lastChanceEnabled) {
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
-            .setColor(giveaway.embedColor)
+            .setColor(lastChanceEnabled ? giveaway.embedColor : giveaway.lastChance.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
+                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
                 giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
@@ -201,7 +203,8 @@ class GiveawaysManager extends EventEmitter {
                 exemptMembers: options.exemptMembers,
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
-                extraData: options.extraData
+                extraData: options.extraData,
+                lastChance: options.lastChance
             });
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send(giveaway.messages.giveaway, { embed });
@@ -225,11 +228,10 @@ class GiveawaysManager extends EventEmitter {
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(defaultRerollOptions, options);
-            const giveawayData = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveawayData) {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            const giveaway = new Giveaway(this, giveawayData);
             giveaway
                 .reroll(options)
                 .then((winners) => {
@@ -400,10 +402,17 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            const embed = this.generateMainEmbed(giveaway);
+            const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
+            const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
+            }
+            if (lastChanceEnabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
+                setTimeout(() => {
+                    const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+                    giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+                }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
     }
