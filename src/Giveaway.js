@@ -170,11 +170,7 @@ class Giveaway extends EventEmitter {
      */
     get bonusEntries () {
         const validBonusEntries = eval(this.options.bonusEntries);
-        const validDefaultBonusEntries =
-            (Array.isArray(this.manager.options.default.bonusEntries) && this.manager.options.default.bonusEntries.every((elem) => typeof elem === 'object'))
-                ? this.manager.options.default.bonusEntries
-                : [];
-        return validBonusEntries.length ? validBonusEntries : validDefaultBonusEntries;
+        return validBonusEntries.length ? validBonusEntries : [];
     }
 
     /**
