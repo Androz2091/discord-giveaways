@@ -399,6 +399,12 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
+            if (this.options.default.lastChance.enabled) {
+                if (giveaway.remainingTime < this.options.default.lastChance.secondsBeforeLastChance) {
+                  embed.setColor(this.options.default.lastChance.embedColor)
+                    giveaway.message.edit(this.options.default.lastChance.message, { embed });
+                }
+            }
         });
     }
 
