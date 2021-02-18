@@ -467,13 +467,16 @@ class GiveawaysManager extends EventEmitter {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
-        if (
-            !isNaN(this.options.endedGiveawaysLifetime) &&
-            this.options.endedGiveawaysLifetime
-        ) {
-            this.giveaways
-                .filter((g) => g.ended && ((g.endAt + this.options.endedGiveawaysLifetime) <= Date.now()))
-                .forEach((giveaway) => this.deleteGiveaway(giveaway.messageID));
+        if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {
+            const endedGiveaways = this.giveaways.filter(
+                (g) => g.ended && g.endAt + this.options.endedGiveawaysLifetime <= Date.now()
+            );
+            this.giveaways = this.giveaways.filter(
+                (g) => !endedGiveaways.map((giveaway) => giveaway.messageID).includes(g.messageID)
+            );
+            for (const giveaway of endedGiveaways) {
+                await this.deleteGiveaway(giveaway.messageID);
+            }
         }
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));

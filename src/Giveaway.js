@@ -293,7 +293,7 @@ class Giveaway extends EventEmitter {
             const message = await this.channel.messages.fetch(this.messageID).catch(() => {});
             if (!message) {
                 this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
-                this.manager.deleteGiveaway(this.messageID);
+                await this.manager.deleteGiveaway(this.messageID);
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             this.message = message;
@@ -405,10 +405,10 @@ class Giveaway extends EventEmitter {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             const winners = await this.roll();
-            this.manager.editGiveaway(this.messageID, this.data);
+            await this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
-                this.manager.editGiveaway(this.messageID, this.data);
+                await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
@@ -448,7 +448,7 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll(options.winnerCount);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
-                this.manager.editGiveaway(this.messageID, this.data);
+                await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
                 const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
