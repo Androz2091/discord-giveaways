@@ -97,7 +97,7 @@ class Giveaway extends EventEmitter {
     }
 
     get exemptMembersFunction () {
-        return (this.options.exemptMembers && (typeof this.options.exemptMembers === 'function')) ? new Function(`return ${this.options.exemptMembers}`) : null;
+        return (this.options.exemptMembers && (typeof this.options.exemptMembers === 'function')) ? (this.options.exemptMembers.toString().includes('function anonymous') ? this.options.exemptMembers : eval(this.options.exemptMembers)) : null;
     }
 
     /**
