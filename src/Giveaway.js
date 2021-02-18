@@ -1,7 +1,7 @@
 const merge = require('deepmerge');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
-const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions } = require('./Constants.js');
+const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions, LastChanceOptions } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 
 /**
@@ -164,6 +164,14 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Last chance options for this giveaway
+     * @type {LastChanceOptions}
+     */
+    get lastChance () {
+        return this.options.lastChance || this.manager.options.default.lastChance;
+    }
+
+    /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @type {Function}
      */
@@ -269,7 +277,8 @@ class Giveaway extends EventEmitter {
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
-            extraData: this.extraData
+            extraData: this.extraData,
+            lastChance: this.options.lastChance
         };
         return baseData;
     }

@@ -55,17 +55,19 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Generate an embed displayed when a giveaway is running (with the remaining time)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @param {boolean} lastChanceEnabled Whether or not to include the last chance text
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateMainEmbed(giveaway) {
+    generateMainEmbed(giveaway, lastChanceEnabled) {
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
-            .setColor(giveaway.embedColor)
+            .setColor(lastChanceEnabled ? giveaway.embedColor : giveaway.lastChance.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
                 giveaway.messages.inviteToParticipate +
                     '\n' +
+                    (lastChanceEnabled ? giveaway.lastChance.title + '\n' : '') +
                     giveaway.remainingTimeText +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
@@ -201,7 +203,8 @@ class GiveawaysManager extends EventEmitter {
                 exemptMembers: options.exemptMembers,
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
-                extraData: options.extraData
+                extraData: options.extraData,
+                lastChance: options.lastChance
             });
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send(giveaway.messages.giveaway, { embed });
@@ -399,10 +402,20 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            const embed = this.generateMainEmbed(giveaway);
+            const lastChanceEnabled = giveaway.options.lastChance.enabled && giveaway.remainingTime < this.options.default.lastChance.lastChanceThresholdTime;
+            const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
+            }
+            if () {
+                if (lastChanceEnabled) {
+                    
+                } else if ((giveaway.remainingTime - this.options.default.lastChance.secondsBeforeLastChance) < this.options.updateCountdownEvery) {
+
+                }
+                embed.setColor(this.options.default.lastChance.embedColor);
+                giveaway.message.edit(this.options.default.lastChance.message, { embed });
             }
         });
     }

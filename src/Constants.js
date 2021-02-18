@@ -39,6 +39,7 @@ exports.GiveawayMessages = {};
  * @property {string} [reaction] The reaction to participate to the giveaways
  * @property {GiveawayMessages} [messages] The giveaway messages
  * @property {any} [extraData] The extra data value for this giveaway
+ * @property {LastChanceOptions} [lastChance] The last chance system options
  */
 exports.GiveawayStartOptions = {};
 
@@ -67,6 +68,22 @@ exports.defaultGiveawayMessages = {
 };
 
 /**
+ * The last chance options
+ * @typedef LastChanceOptions
+ * 
+ * @property {boolean} [enabled] Whether the last chance system is enabled
+ * @property {string} [title] The text of the embed when last chance is enabled
+ * @property {number} [lastChanceThresholdTime] The number of ms after which the last chance system will be enabled
+ * @property {string} [lastChance.embedColor] The color of the embed when last chance is enabled
+ */
+exports.LastChanceOptions = {
+    enabled: false,
+    content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
+    lastChanceThresholdTime: 5000,
+    embedColor: '#FF0000'
+};
+
+/**
  * The giveaways manager options
  * @typedef GiveawaysManagerOptions
  *
@@ -82,6 +99,7 @@ exports.defaultGiveawayMessages = {
  * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The giveaway embeds color when they are ended
  * @property {string} [default.reaction='🎉'] The reaction to participate to the giveaways
+ * @property {LastChanceOptions} [default.lastChance] The last chance system parameters
  */
 exports.GiveawaysManagerOptions = {};
 
@@ -100,7 +118,13 @@ exports.defaultManagerOptions = {
         exemptMembers: () => false,
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
-        reaction: '🎉'
+        reaction: '🎉',
+        lastChance: {
+            enabled: false,
+            content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
+            secondsBeforeLastChance: 5000,
+            embedColor: '#FF0000'
+        }
     }
 };
 
@@ -162,5 +186,6 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
  * @property {string?} [hostedBy] Mention of user who hosts the giveaway
  * @property {any} [extraData] The extra data value for this giveaway
+ * @property {LastChanceOptions} [lastChance] The last chance system options
  */
 exports.GiveawayData = {};
