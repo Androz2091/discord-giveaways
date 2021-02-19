@@ -46,14 +46,14 @@ const giveawaySchema = new mongoose.Schema({
         },
     },
     hostedBy: String,
-    winnerIDs: [],
-    reaction: String,
+    winnerIDs: [String],
+    reaction: mongoose.Mixed,
     botsCanWin: Boolean,
-    embedColor: String,
-    embedColorEnd: String,
+    embedColor: mongoose.Mixed,
+    embedColorEnd: mongoose.Mixed,
     exemptPermissions: [],
     bonusEntries: String,
-    extraData: {}
+    extraData: mongoose.Mixed
 });
 
 // Create the model

@@ -55,15 +55,17 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Generate an embed displayed when a giveaway is running (with the remaining time)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
+     * @param {boolean} lastChanceEnabled Whether or not to include the last chance text
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateMainEmbed(giveaway) {
+    generateMainEmbed(giveaway, lastChanceEnabled) {
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
-            .setColor(giveaway.embedColor)
+            .setColor(lastChanceEnabled ? giveaway.embedColor : giveaway.lastChance.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
+                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
                 giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
@@ -197,7 +199,7 @@ class GiveawaysManager extends EventEmitter {
                 messages: options.messages,
                 reaction: options.reaction,
                 botsCanWin: options.botsCanWin,
-                exemptPermissions: options.exemptPermissions,
+                exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : [],
                 exemptMembers: options.exemptMembers,
                 bonusEntries:
                     (Array.isArray(options.bonusEntries) && options.bonusEntries.every((elem) => typeof elem === 'object'))
@@ -205,7 +207,8 @@ class GiveawaysManager extends EventEmitter {
                         : [],
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
-                extraData: options.extraData
+                extraData: options.extraData,
+                lastChance: options.lastChance
             });
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send(giveaway.messages.giveaway, { embed });
@@ -403,10 +406,17 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            const embed = this.generateMainEmbed(giveaway);
+            const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
+            const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
+            }
+            if (lastChanceEnabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
+                setTimeout(() => {
+                    const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+                    giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+                }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
     }
@@ -461,13 +471,16 @@ class GiveawaysManager extends EventEmitter {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
-        if (
-            !isNaN(this.options.endedGiveawaysLifetime) &&
-            this.options.endedGiveawaysLifetime
-        ) {
-            this.giveaways
-                .filter((g) => g.ended && ((g.endAt + this.options.endedGiveawaysLifetime) <= Date.now()))
-                .forEach((giveaway) => this.deleteGiveaway(giveaway.messageID));
+        if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {
+            const endedGiveaways = this.giveaways.filter(
+                (g) => g.ended && g.endAt + this.options.endedGiveawaysLifetime <= Date.now()
+            );
+            this.giveaways = this.giveaways.filter(
+                (g) => !endedGiveaways.map((giveaway) => giveaway.messageID).includes(g.messageID)
+            );
+            for (const giveaway of endedGiveaways) {
+                await this.deleteGiveaway(giveaway.messageID);
+            }
         }
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));
