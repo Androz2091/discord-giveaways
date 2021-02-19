@@ -3,6 +3,7 @@ const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
 const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions, LastChanceOptions, BonusEntry } = require('./Constants.js');
+const GiveawaysManager = require('./Manager.js');
 
 /**
  * Represents a Giveaway

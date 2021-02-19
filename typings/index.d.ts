@@ -109,9 +109,6 @@ declare module 'discord-giveaways' {
         public data: GiveawayData;
         public endAt: number;
         public ended: boolean;
-        public exemptPermissions: PermissionResolvable[];
-        public bonusEntries?: BonusEntry[];
-        readonly giveawayDuration: number;
         public guildID: Snowflake;
         public hostedBy: User | null;
         public manager: GiveawaysManager;
@@ -137,6 +134,7 @@ declare module 'discord-giveaways' {
         readonly messageURL: string;
         readonly content: string;
         readonly channel: TextChannel;
+        readonly bonusEntries: BonusEntry[];
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
