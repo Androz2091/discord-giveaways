@@ -326,15 +326,20 @@ class Giveaway extends EventEmitter {
     async checkBonusEntries(user) {
         const member = this.channel.guild.member(user.id);
         const entries = [];
+        const cumulativeEntries = [];
 
         if (this.bonusEntries.length) {
             for (const obj of this.bonusEntries) {
-                const filter = obj[Object.keys(obj)[0]];
-                const bonus = obj[Object.keys(obj)[1]];
-                if (typeof filter === 'function' && Number.isInteger(bonus) && bonus >= 1) {
+                if (typeof obj.bonus === 'function') {
                     try {
-                        const result = await filter(member);
-                        if (result) entries.push(bonus)
+                        const result = await obj.bonus(member);
+                        if (Number.isInteger(result) && result >= 1) {
+                            if (obj.cumulative) {
+                                cumulativeEntries.push(result);
+                            } else {
+                                entries.push(result);
+                            }  
+                        }
                     } catch (error) {
                         console.error(error);
                         return false;
@@ -343,6 +348,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
+        entries.push(cumulativeEntries.reduce((a, b) => a + b), 0);
         if (entries.length) return Math.max.apply(Math, entries);
         return false;
     }
@@ -403,7 +409,7 @@ class Giveaway extends EventEmitter {
             if (isValidEntry) winners.push(u);
             else {
                 // Find a new winner
-                for (const user of userArray || user.array()) {
+                for (const user of userArray || users.array()) {
                     const isUserValidEntry = !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
                         winners.push(user);
