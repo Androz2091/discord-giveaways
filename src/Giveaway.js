@@ -348,7 +348,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        entries.push(cumulativeEntries.reduce((a, b) => a + b), 0);
+        if (cumulativeEntries.length) entries.push(cumulativeEntries.reduce((a, b) => a + b));
         if (entries.length) return Math.max.apply(Math, entries);
         return false;
     }
