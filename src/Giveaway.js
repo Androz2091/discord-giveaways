@@ -284,7 +284,7 @@ class Giveaway extends EventEmitter {
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
             exemptMembers: this.options.exemptMembers,
-            bonusEntries: serialize(this.options.bonusEntries),
+            bonusEntries: typeof this.options.bonusEntries === 'string' ? this.options.bonusEntries : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
             requirements: this.requirements,
             winnerIDs: this.winnerIDs,
