@@ -34,6 +34,7 @@ exports.GiveawayMessages = {};
  * @property {Boolean} [botsCanWin] Whether the bots are able to win a giveaway.
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
+ * @property {BonusEntry[]} [bonusEntries] An array of BonusEntry objects.
  * @property {Discord.ColorResolvable} [embedColor] The giveaway embeds color when they are running
  * @property {Discord.ColorResolvable} [embedColorEnd] The giveaway embeds color when they are ended
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate to the giveaways
@@ -66,6 +67,16 @@ exports.defaultGiveawayMessages = {
         pluralS: false
     }
 };
+
+
+/**
+ * Bonus entry object.
+ * @typedef BonusEntry
+ * 
+ * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
+ * @property {boolean} cumulative Wheter the amount of entries from the function can can get added to other other cumulativable amount of entries.
+ */
+exports.BonusEntry = {};
 
 /**
  * The last chance options
@@ -161,6 +172,7 @@ exports.defaultRerollOptions = {
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration
  * @property {number} [setEndTimestamp] The timestamp of the new end date
  * @property {GiveawayMessages} [newMessages] The new giveaway messages
+ * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects
  * @property {any} [newExtraData] The new extra data value for this giveaway
  */
 exports.GiveawayEditOptions = {};
@@ -183,6 +195,7 @@ exports.GiveawayEditOptions = {};
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win the giveaway
  * @property {Function} [exemptMembers] Filter function to exempt members from winning the giveaway
+ * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
  * @property {string?} [hostedBy] Mention of user who hosts the giveaway

@@ -42,6 +42,10 @@ declare module 'discord-giveaways' {
 
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
+    interface BonusEntry {
+        bonus (member: GuildMember): number|Promise<number>;
+        cumulative: boolean;
+    }
     interface LastChanceOptions {
         enabled: boolean;
         embedColor: string;
@@ -62,7 +66,8 @@ declare module 'discord-giveaways' {
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: () => boolean;
+        exemptMembers?: () => boolean|Promise<boolean>;
+        bonusEntries?: BonusEntry[];
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: EmojiIdentifierResolvable;
@@ -129,6 +134,7 @@ declare module 'discord-giveaways' {
         readonly messageURL: string;
         readonly content: string;
         readonly channel: TextChannel;
+        readonly bonusEntries: BonusEntry[];
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -145,6 +151,7 @@ declare module 'discord-giveaways' {
         addTime?: number;
         setEndTimestamp?: number;
         newMessages?: Partial<GiveawaysMessages>;
+        newBonusEntries?: BonusEntry[];
         newExtraData?: any;
     }
     interface GiveawayRerollOptions {
@@ -168,6 +175,7 @@ declare module 'discord-giveaways' {
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember) => boolean;
+        bonusEntries?: string;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         hostedBy?: string | null;

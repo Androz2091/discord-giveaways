@@ -12,7 +12,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🔄 Automatic restart after bot crash!
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
--   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, etc...)
+-   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries etc...)
 -   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
@@ -57,7 +57,7 @@ const manager = new GiveawaysManager(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I\'m ready!");
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
@@ -87,7 +87,7 @@ client.on('message', (message) => {
 
     if (command === 'start-giveaway') {
         // g!start-giveaway 2d 1 Awesome prize!
-        // will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
+        // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
         client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
@@ -108,6 +108,7 @@ client.on('message', (message) => {
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **options.bonusEntries**: An array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
@@ -118,19 +119,6 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 <a href="http://zupimages.net/viewer.php?id=19/23/5h0s.png">
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
-
-### Fetch giveaways
-
-```js
-// A list of all the giveaways
-const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
-
-// A list of all the giveaways on the server with ID "1909282092"
-const onServer = client.giveawaysManager.giveaways.filter((g) => g.guildID === '1909282092');
-
-// A list of the current active giveaways (not ended)
-const notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
-```
 
 ### Reroll a giveaway
 
@@ -183,7 +171,8 @@ client.on('message', (message) => {
 
 **options.newWinnerCount**: the new number of winners.  
 **options.newPrize**: the new prize.  
-**options.addTime**: the number of milliseconds to add to the giveaway duration.  
+**options.addTime**: the number of milliseconds to add to the giveaway duration.
+**options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries)
 **options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
@@ -199,8 +188,7 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
-        })
-        .catch((err) => {
+        }).catch((err) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
@@ -220,12 +208,64 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
-        })
-        .catch((err) => {
+        }).catch((err) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
 });
+```
+
+### Fetch giveaways
+
+```js
+// A list of all the giveaways
+const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
+
+// A list of all the giveaways on the server with ID "1909282092"
+const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '1909282092');
+
+// A list of the current active giveaways (not ended)
+const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
+```
+
+### Bonus Entries
+
+```js
+client.giveawaysManager.start(message.channel, {
+    prize: 'Free Steam Key',
+    // Giveaway will last 10 seconds
+    time: 10000,
+    // One winner
+    winnerCount: 1,
+    // Members who have the "Nitro Boost" role get 2 bonus entries
+    bonusEntries: [
+        {
+            bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
+            cumulative: false
+        }
+    ]
+})
+```
+
+⚠️ **Note**: If it should be customizable
+```js
+const roleName = 'Nitro Boost';
+const roleEntries = 2;
+
+client.giveawaysManager.start(message.channel, {
+    prize: 'Free Steam Key',
+    // Giveaway will last 10 seconds
+    time: 10000,
+    // One winner
+    winnerCount: 1,
+    // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleEntries"
+    bonusEntries: [
+        {   
+            bonus: new Function('member', `return (member) => member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleEntries} : null`),
+            cumulative: false 
+        }
+    ]
+})
 ```
 
 ## 🇫🇷 Translation
@@ -280,14 +320,12 @@ client.giveawaysManager.start(message.channel, {
 And for the `reroll()` function:
 
 ```js
-client.giveawaysManager
-    .reroll(messageID, {
+client.giveawaysManager.reroll(messageID, {
         messages: {
             congrat: ':tada: New winner(s) : {winners}! Congratulations! You won **{prize}**.\n{messageURL}',
             error: 'No valid participations, no winners can be chosen!'
         }
-    })
-    .catch((err) => {
+    }).catch((err) => {
         message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
     });
 ```
@@ -384,7 +422,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready !");
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
@@ -428,7 +466,7 @@ const manager = new GiveawayManagerWithShardSupport(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready !");
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
