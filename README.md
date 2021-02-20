@@ -238,7 +238,12 @@ client.giveawaysManager.start(message.channel, {
     // One winner
     winnerCount: 1,
     // Members who have the "Nitro Boost" role get 2 bonus entries
-    bonusEntries: [{ bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null, cumulative: false }]
+    bonusEntries: [
+        {
+            bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
+            cumulative: false
+        }
+    ]
 })
 ```
 
