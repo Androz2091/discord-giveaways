@@ -10,7 +10,7 @@ const { Database } = require('quickmongo');
 const db = new Database('mongodb://localhost/giveaways');
 
 const { GiveawaysManager } = require('discord-giveaways');
-class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
+const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when the manager needs to get all the giveaways stored in the database.
     async getAllGiveaways() {
         // Get all the giveaway in the database
