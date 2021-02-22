@@ -159,7 +159,7 @@ client.on('message', (message) => {
             newPrize: 'New Prize!',
             addTime: 5000
         }).then(() => {
-            // here, we can calculate the time after which we are sure that the lib will update the giveaway
+            // Here, we can calculate the time after which we are sure that the lib will update the giveaway
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
             message.channel.send('Success! Giveaway will updated in less than ' + numberOfSecondsMax + ' seconds.');
         }).catch((err) => {
@@ -172,8 +172,8 @@ client.on('message', (message) => {
 **options.newWinnerCount**: the new number of winners.  
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.
-**options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries)
-**options.setEndTimestamp**: the timestamp of the new end date. (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
+**options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
+**options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
@@ -333,7 +333,7 @@ client.giveawaysManager.reroll(messageID, {
 **options.messages.congrat**: the congratulatory message.  
 **options.messages.error**: the error message if there is no valid participant.
 
-## Custom database
+## Custom Database
 
 You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
 
@@ -408,7 +408,6 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
-    storage: false, // Important - use false instead of a storage path
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,

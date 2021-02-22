@@ -8,10 +8,10 @@ assignees: ''
 
 <!--
 
-**Before reporting the bug**
+**Before reporting the bug!**
 
-- Check if there is already an [open issue](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aopen+label%3Abug) reporting the same bug
-- If an issue is already opened, check if you can provide further information inside of the open issue instead of creating a new one
+- Check if there is already an [open issue](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aopen+label%3Abug) reporting the same bug.
+- If an issue is already opened, check if you can provide further information inside of the open issue instead of creating a new one.
 
 -->
 
@@ -35,10 +35,10 @@ A clear and concise description of what you expected to happen.
 
 If applicable, add screenshots to help explain your problem.
 
-**Additional context**. 
+**Additional context**
 
-* Discord Giveaways version:
+* `discord-giveaways` version:
 * Discord.js version:
-* Custom database (if you use one):
+* Custom Database (if you use one):
 
 Add any other context about the problem here.
