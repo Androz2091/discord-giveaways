@@ -62,7 +62,7 @@ class GiveawaysManager extends EventEmitter {
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
-            .setColor(lastChanceEnabled ? giveaway.embedColor : giveaway.lastChance.embedColor)
+            .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
                 (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
@@ -406,15 +406,14 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
-            const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
-            if (lastChanceEnabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
+            if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(() => {
-                    const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+                    const embed = this.generateMainEmbed(giveaway, true);
                     giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }

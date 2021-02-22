@@ -53,7 +53,13 @@ const giveawaySchema = new mongoose.Schema({
     embedColorEnd: mongoose.Mixed,
     exemptPermissions: [],
     bonusEntries: String,
-    extraData: mongoose.Mixed
+    extraData: mongoose.Mixed,
+    lastChance: {
+        enabled: Boolean,
+        content: String,
+        threshold: Number,
+        embedColor: mongoose.Mixed
+    }
 });
 
 // Create the model
