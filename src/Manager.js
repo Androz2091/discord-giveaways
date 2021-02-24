@@ -171,7 +171,7 @@ class GiveawaysManager extends EventEmitter {
             if (!this.ready) {
                 return reject('The manager is not ready yet.');
             }
-            options.messages = options.messages
+            options.messages = (options.messages && typeof options.messages === 'object')
                 ? merge(defaultGiveawayMessages, options.messages)
                 : defaultGiveawayMessages;
             if (!channel || !channel.id) {
@@ -180,7 +180,7 @@ class GiveawaysManager extends EventEmitter {
             if (!options.time || isNaN(options.time)) {
                 return reject(`options.time is not a number. (val=${options.time})`);
             }
-            if (!options.prize) {
+            if (typeof options.prize !== 'string') {
                 return reject(`options.prize is not a string. (val=${options.prize})`);
             }
             if (!Number.isInteger(options.winnerCount) || !options.winnerCount > 0) {
