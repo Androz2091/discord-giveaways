@@ -342,7 +342,7 @@ class Giveaway extends EventEmitter {
                 if (typeof obj.bonus === 'function') {
                     try {
                         const result = await obj.bonus(member);
-                        if (Number.isInteger(result) && result >= 1) {
+                        if (Number.isInteger(result) && result > 0) {
                             if (obj.cumulative) {
                                 cumulativeEntries.push(result);
                             } else {
@@ -404,10 +404,8 @@ class Giveaway extends EventEmitter {
              * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts#L193
              * because collections/maps do not allow dublicates and so we cannot use their built in "random" function
              */
-            const amount = winnerCount || this.winnerCount;
-            if (!amount) rolledWinners = userArray[Math.floor(Math.random() * userArray.length)];
-            else rolledWinners = Array.from({
-                length: Math.min(amount, users.size)
+            rolledWinners = Array.from({
+                length: Math.min(winnerCount || this.winnerCount, users.size)
             }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
         }
 
@@ -449,7 +447,7 @@ class Giveaway extends EventEmitter {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             // Update data
-            if (options.newWinnerCount) this.winnerCount = options.newWinnerCount;
+            if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0) this.winnerCount = options.newWinnerCount;
             if (options.newPrize) this.prize = options.newPrize;
             if (options.addTime) this.endAt = this.endAt + options.addTime;
             if (options.setEndTimestamp) this.endAt = options.setEndTimestamp;

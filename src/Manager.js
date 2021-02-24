@@ -183,8 +183,8 @@ class GiveawaysManager extends EventEmitter {
             if (!options.prize) {
                 return reject(`options.prize is not a string. (val=${options.prize})`);
             }
-            if (!options.winnerCount || isNaN(options.winnerCount)) {
-                return reject(`options.winnerCount is not a number. (val=${options.winnerCount})`);
+            if (!Number.isInteger(options.winnerCount) || !options.winnerCount > 0) {
+                return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
