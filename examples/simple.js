@@ -37,8 +37,8 @@ client.on('message', (message) => {
 
         client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
-            prize: args.slice(2).join(' '),
-            winnerCount: parseInt(args[1])
+            winnerCount: parseInt(args[1]),
+            prize: args.slice(2).join(' ')
         }).then(() => {
             message.channel.send('Giveaway started in the current channel!');
         });

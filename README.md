@@ -91,10 +91,10 @@ client.on('message', (message) => {
 
         client.giveawaysManager.start(message.channel, {
             time: ms(args[0]),
-            prize: args.slice(2).join(' '),
-            winnerCount: parseInt(args[1])
+            winnerCount: parseInt(args[1]),
+            prize: args.slice(2).join(' ')
         }).then((gData) => {
-            console.log(gData); // {...} (messageid, end date and more)
+            console.log(gData); // {...} (messageID, end date and more)
         });
         // And the giveaway has started!
     }
@@ -138,7 +138,6 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 
 ```js
 client.on('message', (message) => {
-    const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -247,12 +246,10 @@ const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 ```js
 client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
-    // Giveaway will last 10 seconds
-    time: 10000,
-    // One winner
+    time: 60000,
     winnerCount: 1,
-    // Members who have the "Nitro Boost" role get 2 bonus entries
     bonusEntries: [
+        // Members who have the "Nitro Boost" role get 2 bonus entries
         {
             bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
             cumulative: false
@@ -268,12 +265,10 @@ const roleBonusEntries = 2;
 
 client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
-    // Giveaway will last 10 seconds
-    time: 10000,
-    // One winner
+    time: 60000,
     winnerCount: 1,
-    // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleEntries"
     bonusEntries: [
+        // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleBonusEntries"
         {   
             bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
             cumulative: false 
@@ -307,8 +302,8 @@ For example:
 ```js
 client.giveawaysManager.start(message.channel, {
     time: ms(args[0]),
-    prize: args.slice(2).join(' '),
     winnerCount: parseInt(args[1]),
+    prize: args.slice(2).join(' '),
     messages: {
         giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
