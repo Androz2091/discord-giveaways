@@ -2,7 +2,14 @@ const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
-const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions, LastChanceOptions, BonusEntry } = require('./Constants.js');
+const {
+    GiveawayEditOptions,
+    GiveawayData,
+    GiveawayMessages,
+    GiveawayRerollOptions,
+    LastChanceOptions,
+    BonusEntry
+} = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 
 /**
@@ -168,7 +175,7 @@ class Giveaway extends EventEmitter {
      * Last chance options for this giveaway
      * @type {LastChanceOptions}
      */
-    get lastChance () {
+    get lastChance() {
         return this.options.lastChance || this.manager.options.default.lastChance;
     }
 
@@ -176,7 +183,7 @@ class Giveaway extends EventEmitter {
      * The bonus entries for this giveaway
      * @type {BonusEntry[]?}
      */
-    get bonusEntries () {
+    get bonusEntries() {
         const validBonusEntries = eval(this.options.bonusEntries);
         return validBonusEntries.length ? validBonusEntries : [];
     }

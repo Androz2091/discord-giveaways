@@ -68,11 +68,10 @@ exports.defaultGiveawayMessages = {
     }
 };
 
-
 /**
  * Bonus entry object.
  * @typedef BonusEntry
- * 
+ *
  * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
  * @property {boolean} cumulative Wheter the amount of entries from the function can can get added to other other cumulativable amount of entries.
  */
@@ -81,7 +80,7 @@ exports.BonusEntry = {};
 /**
  * The last chance options
  * @typedef LastChanceOptions
- * 
+ *
  * @property {boolean} [enabled] Whether the last chance system is enabled
  * @property {string} [content] The text of the embed when last chance is enabled
  * @property {number} [threshold] The number of ms after which the last chance system will be enabled
