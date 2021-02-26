@@ -120,7 +120,7 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
 
-# ⚠ ATTENTION!
+#### ⚠ ATTENTION!
 The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageID`of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageID` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
 
 ```js
