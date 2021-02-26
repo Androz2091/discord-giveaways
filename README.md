@@ -261,7 +261,7 @@ client.giveawaysManager.start(message.channel, {
     // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleEntries"
     bonusEntries: [
         {   
-            bonus: new Function('member', `return (member) => member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleEntries} : null`),
+            bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleEntries} : null`),
             cumulative: false 
         }
     ]
