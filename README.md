@@ -264,7 +264,7 @@ client.giveawaysManager.start(message.channel, {
 ⚠️ **Note**: If it should be customizable
 ```js
 const roleName = 'Nitro Boost';
-const roleEntries = 2;
+const roleBonusEntries = 2;
 
 client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
@@ -275,7 +275,7 @@ client.giveawaysManager.start(message.channel, {
     // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleEntries"
     bonusEntries: [
         {   
-            bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleEntries} : null`),
+            bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
             cumulative: false 
         }
     ]
