@@ -174,7 +174,7 @@ exports.defaultRerollOptions = {
  * @property {GiveawayMessages} [newMessages] The new giveaway messages
  * @property {any} [newExtraData] The new extra data value for this giveaway
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects
- * @property {Boolean} [newIsDrop] Wheter to convert a drop to a normal giveaway or vice versa.
+ * @property {Boolean} [newIsDrop] Wheter to convert a drop to a normal giveaway or vice versa
  */
 exports.GiveawayEditOptions = {};
 

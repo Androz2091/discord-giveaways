@@ -156,6 +156,7 @@ client.on('message', (message) => {
 ```
 
 **options.winnerCount**: the number of winners to pick.
+**options.messages**: an object with the "congrat" and the "error" message.
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -171,7 +172,7 @@ client.on('message', (message) => {
     if (command === 'edit') {
         const messageID = args[0];
         client.giveawaysManager.edit(messageID, {
-            addTime: 5000
+            addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
@@ -189,6 +190,8 @@ client.on('message', (message) => {
 **options.newPrize**: the new prize.  
 **options.addTime**: the number of milliseconds to add to the giveaway duration.
 **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
+**options.newMessages**: the new giveaway messages
+**options.newExtraData**: the new extra data value for the giveaway
 **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 **options.newIsDrop**: wheter to convert a drop to a normal giveaway or vice versa.
 
