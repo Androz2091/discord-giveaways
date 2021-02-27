@@ -183,6 +183,6 @@ declare module 'discord-giveaways' {
         hostedBy?: string | null;
         extraData?: any;
         lastChance?: LastChanceOptions;
-        newisDrop?: boolean;
+        newIsDrop?: boolean;
     }
 }
