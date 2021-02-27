@@ -170,7 +170,7 @@ client.on('message', (message) => {
     if (command === 'edit') {
         const messageID = args[0];
         client.giveawaysManager.edit(messageID, {
-            addTime: 5000
+            addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
