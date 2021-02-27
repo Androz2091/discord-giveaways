@@ -446,9 +446,7 @@ class GiveawaysManager extends EventEmitter {
             channel.messages.cache.get(packet.d.message_id) ||
             (await channel.messages.fetch(packet.d.message_id));
         if (!message) return;
-        const reaction = message.reactions.cache.get(
-            giveaway.reaction || this.options.default.reaction
-        );
+        const reaction = message.reactions.cache.get(giveaway.reaction);
         if (!reaction) return;
         if (reaction.emoji.name !== packet.d.emoji.name) return;
         if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;

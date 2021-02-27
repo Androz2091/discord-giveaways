@@ -59,7 +59,8 @@ const giveawaySchema = new mongoose.Schema({
         content: String,
         threshold: Number,
         embedColor: mongoose.Mixed
-    }
+    },
+    isDrop: Boolean
 });
 
 // Create the model
