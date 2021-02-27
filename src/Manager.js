@@ -410,7 +410,7 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            if (giveaway.options.isDrop && giveaway.message.reactions.cache.get(giveaway.reaction).count - 1 >= giveaway.winnerCount) {
+            if (giveaway.options.isDrop == true && giveaway.message.reactions.cache.get(giveaway.reaction).count - 1 >= giveaway.winnerCount) {
                 return this.end(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
@@ -456,7 +456,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
-            if (giveaway.options.isDrop && reaction.count >= giveaway.winnerCount) this.end(giveaway.messageID).catch(() => {});
+            if (giveaway.options.isDrop == true && reaction.count >= giveaway.winnerCount) this.end(giveaway.messageID).catch(() => {});
         } else {
             this.emit('giveawayReactionRemoved', giveaway, member, reaction);
         }
