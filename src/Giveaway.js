@@ -189,6 +189,14 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Wheter the giveaway is a drop, or not. Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
+     * @type {Boolean}
+     */
+    get isDrop() {
+        return this.options.isDrop;
+    }
+
+    /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @type {Function}
      */
