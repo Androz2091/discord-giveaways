@@ -154,8 +154,8 @@ client.on('message', (message) => {
 });
 ```
 
-**options.winnerCount**: the number of winners to pick.
-**options.messages**: an object with the "congrat" and the "error" message.
+-   **options.winnerCount**: the number of winners to pick.
+-   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation)
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -185,13 +185,13 @@ client.on('message', (message) => {
 });
 ```
 
-**options.newWinnerCount**: the new number of winners.  
-**options.newPrize**: the new prize.  
-**options.addTime**: the number of milliseconds to add to the giveaway duration.
-**options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
-**options.newMessages**: the new giveaway messages
-**options.newExtraData**: the new extra data value for the giveaway
-**options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
+-   **options.newWinnerCount**: the new number of winners.  
+-   **options.newPrize**: the new prize.  
+-   **options.addTime**: the number of milliseconds to add to the giveaway duration.
+-   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
+-   **options.newMessages**: the new giveaway messages
+-   **options.newExtraData**: the new extra data value for the giveaway
+-   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
@@ -364,8 +364,8 @@ client.giveawaysManager.reroll(messageID, {
     });
 ```
 
-**options.messages.congrat**: the congratulatory message.  
-**options.messages.error**: the error message if there is no valid participant.
+-   **options.messages.congrat**: the congratulatory message.  
+-   **options.messages.error**: the error message if there is no valid participant.
 
 ## Custom Database
 
