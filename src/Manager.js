@@ -187,7 +187,7 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
             if (options.isDrop && typeof options.isDrop !== 'boolean') {
-                return reject(`options.isDrop is not boolean. (val=${options.isDrop})`);
+                return reject(`options.isDrop is not a boolean. (val=${options.isDrop})`);
             }
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
