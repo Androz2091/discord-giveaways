@@ -249,7 +249,7 @@ const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 client.giveawaysManager.start(message.channel, {
     time: 60000,
     winnerCount: 1,
-    prize: 'Free Steam Key',
+    prize: 'Discord Nitro!',
     lastChance: {
         enabled: true,
         content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
