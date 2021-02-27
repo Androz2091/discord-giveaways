@@ -462,6 +462,7 @@ class Giveaway extends EventEmitter {
             if (Array.isArray(options.newBonusEntries) && options.newBonusEntries.every((elem) => typeof elem === 'object'))
                 this.options.bonusEntries = options.newBonusEntries;
             if (options.newExtraData) this.extraData = options.newExtraData;
+            if(typeof options.newisDrop === 'boolean') this.isDrop = options.newisDrop;
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
             resolve(this);
