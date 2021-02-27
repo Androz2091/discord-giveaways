@@ -154,7 +154,7 @@ declare module 'discord-giveaways' {
         newMessages?: Partial<GiveawaysMessages>;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
-        newisDrop?: boolean;
+        newIsDrop?: boolean;
     }
     interface GiveawayRerollOptions {
         winnerCount?: number | null;
