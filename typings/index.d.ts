@@ -180,5 +180,6 @@ declare module 'discord-giveaways' {
         embedColorEnd?: ColorResolvable;
         hostedBy?: string | null;
         extraData?: any;
+        lastChance?: LastChanceOptions;
     }
 }
