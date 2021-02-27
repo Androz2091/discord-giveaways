@@ -193,7 +193,7 @@ client.on('message', (message) => {
 -   **options.newMessages**: the new giveaway messages.
 -   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
--   **options.newIsDrop**: wheter to convert a drop to a normal giveaway or vice versa.
+-   **options.newisDrop**: wheter to convert a drop to a normal giveaway or vice versa.
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
