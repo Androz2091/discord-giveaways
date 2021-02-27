@@ -456,7 +456,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
-            if (giveaway.options.isDrop == true && reaction.count >= giveaway.winnerCount) this.end(giveaway.messageID).catch(() => {});
+            if (giveaway.isDrop && reaction.count >= giveaway.winnerCount) this.end(giveaway.messageID).catch(() => {});
         } else {
             this.emit('giveawayReactionRemoved', giveaway, member, reaction);
         }
