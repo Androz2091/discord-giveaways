@@ -12,7 +12,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🔄 Automatic restart after bot crash!
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
--   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries etc...)
+-   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, drops etc...)
 -   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
