@@ -57,9 +57,9 @@ client.on('message', (message) => {
     if (command === 'edit') {
         const messageID = args[0];
         client.giveawaysManager.edit(messageID, {
+            addTime: 5000,
             newWinnerCount: 3,
-            newPrize: 'New Prize!',
-            addTime: 5000
+            newPrize: 'New Prize!'
         }).then(() => {
             // Here, we can calculate the time after which we are sure that the lib will update the giveaway
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;

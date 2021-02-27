@@ -76,6 +76,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
+-   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
 
 ### Start a giveaway
 
@@ -108,11 +109,12 @@ client.on('message', (message) => {
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.bonusEntries**: An array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
+-   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
+-   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
@@ -168,9 +170,9 @@ client.on('message', (message) => {
     if (command === 'edit') {
         const messageID = args[0];
         client.giveawaysManager.edit(messageID, {
-            newWinnerCount: 3,
-            newPrize: 'New Prize!',
             addTime: 5000
+            newWinnerCount: 3,
+            newPrize: 'New Prize!'
         }).then(() => {
             // Here, we can calculate the time after which we are sure that the lib will update the giveaway
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
@@ -241,13 +243,33 @@ const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '19
 const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 ```
 
+### Last Chance
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Free Steam Key',
+    lastChance: {
+        enabled: true,
+        content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
+        secondsBeforeLastChance: 5000,
+        embedColor: '#FF0000'
+    }
+})
+```
+
+<a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
+    <img src="https://zupimages.net/up/21/08/50mx.png"/>
+</a>
+
 ### Bonus Entries
 
 ```js
 client.giveawaysManager.start(message.channel, {
-    prize: 'Free Steam Key',
     time: 60000,
     winnerCount: 1,
+    prize: 'Free Steam Key',
     bonusEntries: [
         // Members who have the "Nitro Boost" role get 2 bonus entries
         {
@@ -264,9 +286,9 @@ const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
 
 client.giveawaysManager.start(message.channel, {
-    prize: 'Free Steam Key',
     time: 60000,
     winnerCount: 1,
+    prize: 'Free Steam Key',
     bonusEntries: [
         // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleBonusEntries"
         {   
