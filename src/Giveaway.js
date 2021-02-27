@@ -295,7 +295,8 @@ class Giveaway extends EventEmitter {
             reaction: this.options.reaction,
             winnerIDs: this.winnerIDs,
             extraData: this.extraData,
-            lastChance: this.options.lastChance
+            lastChance: this.options.lastChance,
+            isDrop: this.options.isDrop
         };
         return baseData;
     }
