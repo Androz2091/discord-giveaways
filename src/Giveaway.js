@@ -398,7 +398,7 @@ class Giveaway extends EventEmitter {
 
         // Bonus Entries
         let userArray;
-        if (!this.options.isDrop && this.bonusEntries.length) {
+        if (!this.isDrop && this.bonusEntries.length) {
             userArray = users.array(); // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);

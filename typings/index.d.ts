@@ -136,6 +136,7 @@ declare module 'discord-giveaways' {
         readonly content: string;
         readonly channel: TextChannel;
         readonly bonusEntries: BonusEntry[];
+        readonly isDrop: boolean;
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -183,6 +184,6 @@ declare module 'discord-giveaways' {
         hostedBy?: string | null;
         extraData?: any;
         lastChance?: LastChanceOptions;
-        newIsDrop?: boolean;
+        isDrop?: boolean;
     }
 }
