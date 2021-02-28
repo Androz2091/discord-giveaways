@@ -356,8 +356,8 @@ And for the `reroll()` function:
 ```js
 client.giveawaysManager.reroll(messageID, {
         messages: {
-            congrat: ':tada: New winner(s) : {winners}! Congratulations! You won **{prize}**.\n{messageURL}',
-            error: 'No valid participations, no winners can be chosen!'
+            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
+            error: 'No valid participations, no new winner(s) can be chosen!'
         }
     }).catch((err) => {
         message.channel.send('No giveaway found for ' + messageID + ', please check and try again');

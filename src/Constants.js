@@ -157,7 +157,7 @@ exports.GiveawayRerollOptions = {};
 exports.defaultRerollOptions = {
     winnerCount: null,
     messages: {
-        congrat: ':tada: New winner(s) : {winners}! Congratulations!\n{messageURL}',
+        congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
         error: 'No valid participations, no new winner(s) can be chosen!'
     }
 };
