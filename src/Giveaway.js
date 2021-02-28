@@ -494,21 +494,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            let winners;
-            if(this.options.isDrop) {
-            let reaction = this.message.reactions.cache.get(this.options.reaction);
-            const reactions = this.message.reactions.cache;
-            const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
-            if (!reaction) return [];
-            const guild = this.channel.guild;
-            if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
-            const users = (await reaction.users.fetch())
-            .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id);
-            if (!users.size) [];
-            winners = users
-            }
-            if(!this.options.isDrop) winners = await this.roll();
+            const winners = await this.roll();
             await this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
