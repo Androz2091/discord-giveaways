@@ -456,7 +456,7 @@ class Giveaway extends EventEmitter {
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0) this.winnerCount = options.newWinnerCount;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (options.addTime && !isNaN(options.addTime)) this.endAt = this.endAt + options.addTime;
-            if (options.options.setEndTimestamp && !isNaN(options.setEndTimestamp)) this.endAt = options.setEndTimestamp;
+            if (options.setEndTimestamp && !isNaN(options.setEndTimestamp)) this.endAt = options.setEndTimestamp;
             if (options.newMessages && typeof options.newMessages === 'object') this.messages = merge(this.messages, options.newMessages);
             if (Array.isArray(options.newBonusEntries) && options.newBonusEntries.every((elem) => typeof elem === 'object'))
                 this.options.bonusEntries = options.newBonusEntries;
