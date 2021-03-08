@@ -197,8 +197,8 @@ class Giveaway extends EventEmitter {
             try {
                 const result = await this.options.exemptMembers(member);
                 return result;
-            } catch (error) {
-                console.error(error);
+            } catch (err) {
+                console.error(`Giveaway message ID: ${this.messageID}\n${serialize(this.options.exemptMembers)}\n${err}`);
                 return false;
             }
         }
@@ -355,9 +355,8 @@ class Giveaway extends EventEmitter {
                                 entries.push(result);
                             }  
                         }
-                    } catch (error) {
-                        console.error(error);
-                        return false;
+                    } catch (err) {
+                        console.error(`Giveaway message ID: ${this.messageID}\n${serialize(obj.bonus)}\n${err}`);
                     }
                 }
             }
