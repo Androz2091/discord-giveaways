@@ -501,7 +501,7 @@ class GiveawaysManager extends EventEmitter {
             }
         }
 
-        this.client.on(this.libraryIsEris ? 'rawWS' : 'raw', packet => this._handleRawPacket(packet));
+        this.client.on(this.libraryIsEris ? 'rawWS' : 'raw', (packet) => this._handleRawPacket(packet));
     }
 }
 

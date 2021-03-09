@@ -386,9 +386,9 @@ class Giveaway extends EventEmitter {
         if (!this.message) return [];
         // Pick the winner
         if (!this.manager.libraryIsEris) {
-        const reactions = this.message.reactions.cache;
+            const reactions = this.message.reactions.cache;
             var reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
-        if (!reaction) return [];
+            if (!reaction) return [];
         } else {
             var reactionUsers = await this.message.getReaction(this.reaction);
             if (!reactionUsers.length) return [];
