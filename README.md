@@ -16,6 +16,7 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
+-   ✅ Support for [Eris](https://www.npmjs.com/package/eris)
 -   and much more!
 
 ## Installation

@@ -34,6 +34,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {Discord.Client}
          */
         this.client = client;
+        if (client.bot) this.libraryIsEris = true;
         /**
          * Whether the manager is ready
          * @type {Boolean}
@@ -211,8 +212,10 @@ class GiveawaysManager extends EventEmitter {
                 lastChance: options.lastChance
             });
             const embed = this.generateMainEmbed(giveaway);
-            const message = await channel.send(giveaway.messages.giveaway, { embed });
-            message.react(giveaway.reaction);
+            const message = this.libraryIsEris
+                ? await channel.createMessage({ content: giveaway.messages.giveaway, embed })
+                : await channel.send(giveaway.messages.giveaway, { embed });
+            this.libraryIsEris ? message.addReaction(giveaway.reaction) : message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
@@ -407,14 +410,18 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+            giveaway.message.edit(
+                this.libraryIsEris ? { content: giveaway.messages.giveaway, embed } : giveaway.messages.giveaway, { embed }
+            ).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(() => {
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+                    giveaway.message.edit(
+                        this.libraryIsEris ? { content: giveaway.messages.giveaway, embed } : giveaway.messages.giveaway, { embed }
+                    ).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
@@ -429,23 +436,35 @@ class GiveawaysManager extends EventEmitter {
         const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
         if (!giveaway) return;
         if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-        const guild = this.client.guilds.cache.get(packet.d.guild_id);
+        const guild = this.libraryIsEris ? this.client.guilds.find(g => g.id === packet.d.guild_id) : this.client.guilds.cache.get(packet.d.guild_id);
         if (!guild) return;
         if (packet.d.user_id === this.client.user.id) return;
-        const member =
-            guild.members.cache.get(packet.d.user_id) ||
+        const member = this.libraryIsEris
+            ? (await guild.fetchMembers({ userIDs: [packet.d.user_id] }).catch(() => {}))[0]
+            : guild.members.cache.get(packet.d.user_id) ||
             (await guild.members.fetch(packet.d.user_id).catch(() => {}));
         if (!member) return;
-        const channel = guild.channels.cache.get(packet.d.channel_id);
+        const channel = this.libraryIsEris ? this.client.getChannel(packet.d.channel_id) : guild.channels.cache.get(packet.d.channel_id);
         if (!channel) return;
-        const message =
-            channel.messages.cache.get(packet.d.message_id) ||
-            (await channel.messages.fetch(packet.d.message_id));
+        const message = this.libraryIsEris
+            ? await this.client.getMessage(channel.id, packet.d.message_id)
+            : channel.messages.cache.get(packet.d.message_id) || (await channel.messages.fetch(packet.d.message_id));
         if (!message) return;
-        const reaction = message.reactions.cache.get(
-            giveaway.reaction || this.options.default.reaction
-        );
+        const reaction = this.libraryIsEris ? message.reactions[giveaway.reaction] : message.reactions.cache.get(giveaway.reaction);
         if (!reaction) return;
+        if (this.libraryIsEris) {
+            const emoji = Object.keys(message.reactions).find(r => r === giveaway.reaction);
+            Object.defineProperties(reaction, {
+                emoji: {
+                    value: { name: emoji.split(':')[0], id: emoji.split(':')[1] },
+                    enumerable: true,
+                },
+                users: {
+                    value: await message.getReaction(giveaway.reaction),
+                    enumerable: true,
+                },
+            });
+        }
         if (reaction.emoji.name !== packet.d.emoji.name) return;
         if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
         if (packet.t === 'MESSAGE_REACTION_ADD') {
@@ -467,7 +486,7 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways.push(new Giveaway(this, giveaway));
         });
         setInterval(() => {
-            if (this.client.readyAt) this._checkGiveaway.call(this);
+            if (this.libraryIsEris ? this.client.startTime : this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
         if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {
@@ -482,7 +501,7 @@ class GiveawaysManager extends EventEmitter {
             }
         }
 
-        this.client.on('raw', (packet) => this._handleRawPacket(packet));
+        this.client.on(this.libraryIsEris ? 'rawWS' : 'raw', packet => this._handleRawPacket(packet));
     }
 }
 

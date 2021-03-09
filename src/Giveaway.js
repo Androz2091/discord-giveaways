@@ -217,7 +217,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get channel() {
-        return this.client.channels.cache.get(this.channelID);
+        return this.manager.libraryIsEris ? this.client.getChannel(this.channelID) : this.client.channels.cache.get(this.channelID);
     }
 
     /**
@@ -307,7 +307,10 @@ class Giveaway extends EventEmitter {
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
             if (!this.messageID) return;
-            const message = await this.channel.messages.fetch(this.messageID).catch(() => {});
+            const message = (this.manager.libraryIsEris
+                ? await this.channel.getMessage(this.messageID)
+                : await this.channel.messages.fetch(this.messageID)
+            ).catch(() => {});
             if (!message) {
                 this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
                 await this.manager.deleteGiveaway(this.messageID);
@@ -325,11 +328,15 @@ class Giveaway extends EventEmitter {
     async checkWinnerEntry(user) {
         if (this.winnerIDs.includes(user.id)) return false;
         const guild = this.channel.guild;
-        const member = guild.member(user.id) || (await guild.members.fetch(user.id).catch(() => {}));
+        const member = this.manager.libraryIsEris
+            ? (await guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
+            : guild.member(user.id) || (await guild.members.fetch(user.id).catch(() => {}));
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
-        const hasPermission = this.exemptPermissions.some((permission) => member.hasPermission(permission));
+        const hasPermission = this.exemptPermissions.some((permission) =>
+            this.manager.libraryIsEris ? member.permissions.has(permission) : member.hasPermission(permission)
+        );
         if (hasPermission) return false;
         return true;
     }
@@ -339,7 +346,9 @@ class Giveaway extends EventEmitter {
      * @returns {Promise<number|boolean>} The highest bonus entries the user should get or false
      */
     async checkBonusEntries(user) {
-        const member = this.channel.guild.member(user.id);
+        const member = this.manager.libraryIsEris
+            ? (await this.channel.guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
+            : this.channel.guild.member(user.id);
         const entries = [];
         const cumulativeEntries = [];
 
@@ -376,21 +385,27 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount) {
         if (!this.message) return [];
         // Pick the winner
+        if (!this.manager.libraryIsEris) {
         const reactions = this.message.reactions.cache;
-        const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
+            var reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
         if (!reaction) return [];
+        } else {
+            var reactionUsers = await this.message.getReaction(this.reaction);
+            if (!reactionUsers.length) return [];
+        }
         const guild = this.channel.guild;
         // Fetch guild members
-        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
-        const users = (await reaction.users.fetch())
+        if (this.manager.options.hasGuildMembersIntent)
+            this.manager.libraryIsEris ? await guild.fetchAllMembers() : guild.members.fetch();
+        const users = (this.manager.libraryIsEris ? reactionUsers : await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id);
-        if (!users.size) return [];
+            .filter((u) => u.id !== this.client.user.id);
+        if (this.manager.libraryIsEris ? !users.length : !users.size) return [];
 
         // Bonus Entries
         let userArray;
         if (this.bonusEntries.length) {
-            userArray = users.array(); // Copy all users once
+            userArray = this.manager.libraryIsEris ? users.slice() : users.array(); // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);
                 if (!isUserValidEntry) continue;
@@ -403,7 +418,7 @@ class Giveaway extends EventEmitter {
         }
 
         let rolledWinners;
-        if (!userArray || userArray.length <= (winnerCount || this.winnerCount))
+        if (!this.manager.libraryIsEris && (!userArray || userArray.length <= (winnerCount || this.winnerCount)))
             rolledWinners = users.random(Math.min(winnerCount || this.winnerCount, users.size));
         else {
             /** 
@@ -411,8 +426,8 @@ class Giveaway extends EventEmitter {
              * because collections/maps do not allow dublicates and so we cannot use their built in "random" function
              */
             rolledWinners = Array.from({
-                length: Math.min(winnerCount || this.winnerCount, users.size)
-            }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
+                length: Math.min(winnerCount || this.winnerCount, this.manager.libraryIsEris ? users.length : users.size),
+            }, () => (this.manager.libraryIsEris ? users : userArray).splice(Math.floor(Math.random() * (this.manager.libraryIsEris ? users : userArray).length), 1)[0]);
         }
 
         const winners = [];
@@ -422,7 +437,7 @@ class Giveaway extends EventEmitter {
             if (isValidEntry) winners.push(u);
             else {
                 // Find a new winner
-                for (const user of userArray || users.array()) {
+                for (const user of userArray || (this.manager.libraryIsEris ? users : users.array())) {
                     const isUserValidEntry = !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
                         winners.push(user);
@@ -430,6 +445,12 @@ class Giveaway extends EventEmitter {
                     }
                 }
             }
+        }
+
+        if (this.manager.libraryIsEris) {
+            const winnerArray = [];
+            for (const u of winners) winnerArray.push((await guild.fetchMembers({ userIDs: [u.id] }).catch(() => {}))[0] || u);
+            return winnerArray;
         }
 
         return winners.map((user) => guild.member(user) || user);
@@ -490,18 +511,29 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                this.message.edit(
+                    this.manager.libraryIsEris ? { content: this.messages.giveawayEnded, embed } : this.messages.giveawayEnded, { embed }
+                ).catch(() => {});
                 const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-                this.message.channel.send(
+                this.manager.libraryIsEris
+                    ? this.channel.createMessage(
                     this.messages.winMessage
                         .replace('{winners}', formattedWinners)
                         .replace('{prize}', this.prize)
                         .replace('{messageURL}', this.messageURL)
+                    )
+                    : this.channel.send(
+                        this.messages.winMessage
+                            .replace('{winners}', formattedWinners)
+                            .replace('{prize}', this.prize)
+                            .replace('{messageURL}', this.messageURL)
                 );
                 resolve(winners);
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                this.message.edit(
+                    this.manager.libraryIsEris ? { content: this.messages.giveawayEnded, embed } : this.messages.giveawayEnded, { embed }
+                ).catch(() => {});
                 resolve([]);
             }
         });
@@ -529,9 +561,18 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
-                const formattedWinners = winners.map((w) => '<@' + w.id + '>').join(', ');
-                this.channel.send(
+                this.message.edit(
+                    this.manager.libraryIsEris ? { content: this.messages.giveawayEnded, embed } : this.messages.giveawayEnded, { embed }
+                ).catch(() => {});
+                const formattedWinners = winners.map(w => '<@' + w.id + '>').join(', ');
+                this.manager.libraryIsEris
+                    ? this.channel.createMessage(
+                        options.messages.congrat
+                            .replace('{winners}', formattedWinners)
+                            .replace('{prize}', this.prize)
+                            .replace('{messageURL}', this.messageURL)
+                    )
+                    : this.channel.send(
                     options.messages.congrat
                         .replace('{winners}', formattedWinners)
                         .replace('{prize}', this.prize)
@@ -539,7 +580,7 @@ class Giveaway extends EventEmitter {
                 );
                 resolve(winners);
             } else {
-                this.channel.send(options.messages.error);
+                this.manager.libraryIsEris ? this.channel.createMessage(options.messages.error) : this.channel.send(options.messages.error);
                 resolve([]);
             }
         });
