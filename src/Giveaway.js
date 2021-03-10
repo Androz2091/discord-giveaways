@@ -307,10 +307,9 @@ class Giveaway extends EventEmitter {
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
             if (!this.messageID) return;
-            const message = (this.manager.libraryIsEris
-                ? await this.channel.getMessage(this.messageID)
-                : await this.channel.messages.fetch(this.messageID)
-            ).catch(() => {});
+            const message = this.manager.libraryIsEris
+                ? await this.channel.getMessage(this.messageID).catch(() => {})
+                : await this.channel.messages.fetch(this.messageID).catch(() => {});
             if (!message) {
                 this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
                 await this.manager.deleteGiveaway(this.messageID);
