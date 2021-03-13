@@ -19,9 +19,13 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
     async saveGiveaway(messageID, giveawayData) {
-        // Add the new one
+        // Get's the key from the db
         let giveawaysarray = await db.get('giveaways');
+        // Check if the key is an array
+        if(!Array.isArray(giveawaysarray)) await db.set('giveaways', []);
+        // Pushing the data into the array
         giveawaysarray.push(giveawayData)
+        // Adding the new data to the key
         await db.set('giveaways', giveawaysarray);
         // Don't forget to return something!
         return true;
