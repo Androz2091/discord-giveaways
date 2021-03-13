@@ -11,15 +11,15 @@ const db = new Database('mongodb://localhost/giveaways');
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaways stored in the database.
+    // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaway in the database
+        // Get all giveaways from the database
         return await db.get('giveaways');
     }
 
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
+    // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
-        // Add the new one
+        // Add the new giveaway to the database
         await db.push('giveaways', giveawayData);
         // Don't forget to return something!
         return true;
@@ -27,11 +27,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
-        // Gets all the current giveaways
+        // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
-        // Remove the old giveaway from the current giveaways ID
+        // Remove the unedited giveaway from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Push the new giveaway to the array
+        // Push the edited giveaway into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
@@ -41,10 +41,10 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
-        // Gets all the current giveaways
-        const data = await db.get('giveaways');
+        // Get all giveaways from the database
+        const giveaways = await db.get('giveaways');
         // Remove the giveaway from the array
-        const newGiveawaysArray = data.filter((giveaway) => giveaway.messageID !== messageID);
+        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
         // Don't forget to return something!

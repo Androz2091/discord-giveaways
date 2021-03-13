@@ -7,7 +7,7 @@ const Discord = require('discord.js'),
 
 // Requires Manager from discord-giveaways
 const { GiveawaysManager } = require('discord-giveaways');
-// Starts updating currents giveaways
+// Create a new instance of the manager class
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     updateCountdownEvery: 10000,

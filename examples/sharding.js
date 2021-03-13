@@ -8,7 +8,7 @@ const Discord = require('discord.js'),
 // Extends the GiveawaysManager class and update the refreshStorage method
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithShardSupport = class extends GiveawaysManager {
-    // Refresh storage method is called when the database is updated on one of the shards
+    // The refreshStorage method is called when the database is updated on one of the shards
     async refreshStorage() {
         // This should make all shards refresh their cache with the updated database
         return client.shard.broadcastEval(() => this.giveawaysManager.getAllGiveaways());
