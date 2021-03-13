@@ -397,7 +397,7 @@ const Discord = require('discord.js'),
 
 // Load quick.db - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
 const db = require('quick.db');
-if (!db.get('giveaways')) db.set('giveaways', []);
+if (!Array.isArray(db.get('giveaways'))) db.set('giveaways', []);
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
