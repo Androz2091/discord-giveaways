@@ -14,17 +14,17 @@ const db = new Database();
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaways stored in the database.
+    // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaways in the database
+        // Get all giveaways from the database
         return await db.get('giveaways');
     }
 
     // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
-        // Get all the giveaways in the database
+        // Get all giveaways from the database
         const giveawaysArray = await db.get('giveaways');
-        // Push the new giveaway to the array
+        // Push the new giveaway into the array
         giveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', giveawaysArray);
@@ -34,11 +34,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
-        // Get all the giveaways in the database
+        // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
         // Remove the unedited giveaway from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Push the edited giveaway to the array
+        // Push the edited giveaway into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
@@ -48,7 +48,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
-        // Get all the giveaways in the database
+        // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
         // Remove the giveaway from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
