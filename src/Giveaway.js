@@ -105,7 +105,11 @@ class Giveaway extends EventEmitter {
     }
 
     get exemptMembersFunction() {
-        return this.options.exemptMembers ? (this.options.exemptMembers.toString().includes('function anonymous') ? this.options.exemptMembers : eval(this.options.exemptMembers)) : null;
+        return this.options.exemptMembers
+            ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
+                ? eval(`(${this.options.exemptMembers})`)
+                : eval(this.options.exemptMembers) 
+            : null;
     }
 
     /**
@@ -202,7 +206,7 @@ class Giveaway extends EventEmitter {
                 const result = await this.exemptMembersFunction(member);
                 return result;
             } catch (err) {
-                console.error(`Giveaway message ID: ${this.messageID}\n${serialize(this.options.exemptMembers)}\n${err}`);
+                console.error(`Giveaway message ID: ${this.messageID}\n${serialize(this.exemptMembersFunction)}\n${err}`);
                 return false;
             }
         }
