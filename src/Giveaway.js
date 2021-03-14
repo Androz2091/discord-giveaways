@@ -104,8 +104,8 @@ class Giveaway extends EventEmitter {
         this.message = null;
     }
 
-    get exemptMembersFunction () {
-        return (this.options.exemptMembers && (typeof this.options.exemptMembers === 'function')) ? (this.options.exemptMembers.toString().includes('function anonymous') ? this.options.exemptMembers : eval(this.options.exemptMembers)) : null;
+    get exemptMembersFunction() {
+        return this.options.exemptMembers ? (this.options.exemptMembers.toString().includes('function anonymous') ? this.options.exemptMembers : eval(this.options.exemptMembers)) : null;
     }
 
     /**
@@ -294,7 +294,7 @@ class Giveaway extends EventEmitter {
             embedColorEnd: this.options.embedColorEnd,
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
-            exemptMembers: this.options.exemptMembers ? this.options.exemptMembers.toString() : undefined,
+            exemptMembers: (!this.options.exemptMembers || typeof this.options.exemptMembers === 'string') ? this.options.exemptMembers : serialize(this.options.exemptMembers),
             bonusEntries: typeof this.options.bonusEntries === 'string' ? this.options.bonusEntries : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
             winnerIDs: this.winnerIDs,

@@ -193,7 +193,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction of the giveaway
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win the giveaway
- * @property {Function} [exemptMembers] Filter function to exempt members from winning the giveaway
+ * @property {string?} [exemptMembers] Filter function to exempt members from winning the giveaway
  * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
