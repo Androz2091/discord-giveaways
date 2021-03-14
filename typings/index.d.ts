@@ -4,6 +4,7 @@ declare module 'discord-giveaways' {
         Client,
         PermissionResolvable,
         ColorResolvable,
+        EmojiIdentifierResolvable,
         User,
         Snowflake,
         GuildMember,
@@ -41,6 +42,16 @@ declare module 'discord-giveaways' {
 
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
+    interface BonusEntry {
+        bonus(member: GuildMember): number | Promise<number>;
+        cumulative: boolean;
+    }
+    interface LastChanceOptions {
+        enabled: boolean;
+        embedColor: string;
+        content: string;
+        threshold: number;
+    }
     interface GiveawaysManagerOptions {
         storage?: string;
         updateCountdownEvery?: number;
@@ -55,12 +66,14 @@ declare module 'discord-giveaways' {
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: () => boolean;
+        exemptMembers?: () => boolean | Promise<boolean>;
+        bonusEntries?: BonusEntry[];
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
-        reaction?: string;
+        reaction?: EmojiIdentifierResolvable;
         messages?: Partial<GiveawaysMessages>;
         extraData?: any;
+        lastChance?: LastChanceOptions;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -83,37 +96,45 @@ declare module 'discord-giveaways' {
     }
     interface GiveawaysManagerEvents {
         giveawayEnded: [Giveaway, GuildMember[]];
+        giveawayRerolled: [Giveaway, GuildMember[]];
         giveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
         giveawayReactionRemoved: [Giveaway, GuildMember, MessageReaction];
+        endedGiveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
     }
     class Giveaway extends EventEmitter {
         constructor(manager: GiveawaysManager, options: GiveawayData);
 
-        public botsCanWin: boolean;
-        readonly channel: TextChannel;
         public channelID: Snowflake;
         public client: Client;
-        readonly content: string;
         public data: GiveawayData;
-        public embedColor: ColorResolvable;
-        public embedColorEnd: ColorResolvable;
         public endAt: number;
         public ended: boolean;
-        public exemptPermissions: PermissionResolvable[];
-        readonly giveawayDuration: number;
         public guildID: Snowflake;
-        public hostedBy: string | null;
+        public hostedBy: User | null;
         public manager: GiveawaysManager;
         public message: Message | null;
         public messageID: Snowflake | null;
         public messages: GiveawaysMessages;
         public options: GiveawayData;
         public prize: string;
-        readonly remainingTime: number;
-        readonly messageURL: string;
         public startAt: number;
         public winnerCount: number;
-        public winnerIDs: Array<string>;
+        public winnerIDs: Snowflake[];
+
+        // getters calculated using default manager options
+        readonly exemptPermissions: PermissionResolvable[];
+        readonly giveawayDuration: number;
+        readonly embedColor: ColorResolvable;
+        readonly embedColorEnd: ColorResolvable;
+        readonly botsCanWin: boolean;
+        readonly reaction: string;
+
+        // getters calculated using other values
+        readonly remainingTime: number;
+        readonly messageURL: string;
+        readonly content: string;
+        readonly channel: TextChannel;
+        readonly bonusEntries: BonusEntry[];
 
         public exemptMembers(): boolean;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -130,6 +151,7 @@ declare module 'discord-giveaways' {
         addTime?: number;
         setEndTimestamp?: number;
         newMessages?: Partial<GiveawaysMessages>;
+        newBonusEntries?: BonusEntry[];
         newExtraData?: any;
     }
     interface GiveawayRerollOptions {
@@ -143,19 +165,21 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
-        winnerIDs: Array<string>;
+        winnerIDs: Snowflake[];
         messages: GiveawaysMessages;
         ended: boolean;
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
         messageID?: Snowflake | null;
-        reaction?: string;
+        reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember) => boolean;
-        embedColor?: string;
-        embedColorEnd?: string;
+        bonusEntries?: string;
+        embedColor?: ColorResolvable;
+        embedColorEnd?: ColorResolvable;
         hostedBy?: string | null;
         extraData?: any;
+        lastChance?: LastChanceOptions;
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "discord-giveaways",
-  "version": "4.4.2",
+  "version": "4.4.3",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
   "types": "typings/index.d.ts",
@@ -35,7 +35,8 @@
   },
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
-    "deepmerge": "^4.2.2"
+    "deepmerge": "^4.2.2",
+    "serialize-javascript": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^14.0.5",

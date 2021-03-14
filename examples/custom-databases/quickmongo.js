@@ -2,38 +2,36 @@ const Discord = require('discord.js'),
     client = new Discord.Client(),
     settings = {
         prefix: 'g!',
-        token: 'Your Discord Token'
+        token: 'Your Discord Bot Token'
     };
 
 // Load quickmongo
 const { Database } = require('quickmongo');
 const db = new Database('mongodb://localhost/giveaways');
-db.once('ready', async () => {
-    if ((await db.get('giveaways')) === null) await db.set('giveaways', []);
-});
 
 const { GiveawaysManager } = require('discord-giveaways');
-class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaway stored in the database.
+const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
+    // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaway in the database
+        // Get all giveaways from the database
         return await db.get('giveaways');
     }
 
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
+    // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
-        // Add the new one
+        // Add the new giveaway to the database
         await db.push('giveaways', giveawayData);
         // Don't forget to return something!
         return true;
     }
 
+    // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
-        // Gets all the current giveaways
+        // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
-        // Remove the old giveaway from the current giveaways ID
+        // Remove the unedited giveaway from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Push the new giveaway to the array
+        // Push the edited giveaway into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
@@ -41,11 +39,12 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
         return true;
     }
 
+    // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
-        // Gets all the current giveaways
-        const data = await db.get('giveaways');
+        // Get all giveaways from the database
+        const giveaways = await db.get('giveaways');
         // Remove the giveaway from the array
-        const newGiveawaysArray = data.filter((giveaway) => giveaway.messageID !== messageID);
+        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
         // Don't forget to return something!
@@ -55,20 +54,27 @@ class GiveawayManagerWithOwnDatabase extends GiveawaysManager {
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
-    storage: false, // Important - use false instead of a storage path
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: [ 'MANAGE_MESSAGES', 'ADMINISTRATOR' ],
+        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
+        embedColorEnd: '#000000',
         reaction: '🎉'
     }
-});
+}, false);
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
+// DB is ready
+db.on('ready', async () => {
+    if (!Array.isArray(await db.get('giveaways'))) await db.set('giveaways', []);
+    // Start the "giveawaysManager" only after the DB got checked to prevent an error
+    client.giveawaysManager._init();
+});
+
 client.on('ready', () => {
-    console.log('I\'m ready !');
+    console.log('I\'m ready!');
 });
 
 client.login(settings.token);
