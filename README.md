@@ -109,6 +109,7 @@ client.on('message', (message) => {
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
 -   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
@@ -244,6 +245,31 @@ const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '19
 
 // A list of the current active giveaways (not ended)
 const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
+```
+
+### Exempt Members
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Free Steam Key',
+    // Only members who have the "Nitro Boost" role are able to win
+    exemptMembers: (member) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
+})
+```
+
+⚠️ **Note**: If it should be customizable
+```js
+const roleName = 'Nitro Boost';
+
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Free Steam Key',
+    // Only members who have the the role which is assigned to "roleName" are able to win
+    exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
+})
 ```
 
 ### Last Chance
