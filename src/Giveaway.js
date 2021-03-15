@@ -168,7 +168,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.PermissionResolvable[]}
      */
     get exemptPermissions() {
-        return this.options.exemptPermissions.length ? this.options.exemptPermissions : this.manager.options.default.exemptPermissions;
+        return (Array.isArray(this.options.exemptPermissions) && this.options.exemptPermissions.length) ? this.options.exemptPermissions : this.manager.options.default.exemptPermissions;
     }
 
     /**
@@ -185,7 +185,7 @@ class Giveaway extends EventEmitter {
      */
     get bonusEntries() {
         const validBonusEntries = eval(this.options.bonusEntries);
-        return validBonusEntries.length ? validBonusEntries : [];
+        return (Array.isArray(validBonusEntries) && validBonusEntries.length) ? validBonusEntries : [];
     }
 
     /**
