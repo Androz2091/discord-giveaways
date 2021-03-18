@@ -62,14 +62,14 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
         embedColorEnd: '#000000',
         reaction: '🎉'
     }
-}, false);
+}, false); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
-// DB is ready
+// Check the DB when it is ready
 db.on('ready', async () => {
     if (!Array.isArray(await db.get('giveaways'))) await db.set('giveaways', []);
-    // Start the "giveawaysManager" only after the DB got checked to prevent an error
+    // Start the manager only after the DB got checked to prevent an error
     client.giveawaysManager._init();
 });
 
