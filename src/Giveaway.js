@@ -372,7 +372,7 @@ class Giveaway extends EventEmitter {
      * @param {number} [winnerCount=this.winnerCount] The number of winners to pick
      * @returns {Promise<Discord.GuildMember[]>} The winner(s)
      */
-    async roll(winnerCount) {
+    async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
         // Pick the winner
         const reactions = this.message.reactions.cache;
@@ -402,15 +402,15 @@ class Giveaway extends EventEmitter {
         }
 
         let rolledWinners;
-        if (!userArray || userArray.length <= (winnerCount || this.winnerCount))
-            rolledWinners = users.random(Math.min(winnerCount || this.winnerCount, users.size));
+        if (!userArray || userArray.length <= winnerCount)
+            rolledWinners = users.random(Math.min(winnerCount, users.size));
         else {
             /** 
              * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts#L193
              * because collections/maps do not allow dublicates and so we cannot use their built in "random" function
              */
             rolledWinners = Array.from({
-                length: Math.min(winnerCount || this.winnerCount, users.size)
+                length: Math.min(winnerCount, users.size)
             }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
         }
 

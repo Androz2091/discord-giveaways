@@ -213,7 +213,9 @@ client.on('message', (message) => {
 });
 ```
 
-When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
+-   **doNotDeleteMessage**: Whether the giveaway message shouldn't be deleted
+
+⚠️ **Note**: When you use the delete function, the giveaway data and per default the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
 
 ### End a giveaway
 
@@ -376,7 +378,7 @@ You can use your custom database to save giveaways, instead of the json files (t
 -   `editGiveaway`: this method edits a giveaway already stored in the database.
 -   `deleteGiveaway`: this method deletes a giveaway from the database (permanently).
 
-**All the methods should be asynchronous to return a promise.**
+**⚠️ All the methods should be asynchronous to return a promise!**
 
 Here is an example, using `quick.db`, a SQLite database. The comments in the code below are very important to understand how it works!
 

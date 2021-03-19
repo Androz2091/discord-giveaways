@@ -269,10 +269,10 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {Discord.Snowflake} messageID  The message ID of the giveaway
-     * @param {boolean} doNotDeleteMessage Whether the giveaway message shouldn't be deleted
+     * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
      * @returns {Promise<void>}
      */
-    delete(messageID, doNotDeleteMessage) {
+    delete(messageID, doNotDeleteMessage = false) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) {
