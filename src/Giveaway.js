@@ -104,6 +104,10 @@ class Giveaway extends EventEmitter {
         this.message = null;
     }
 
+    /**
+     * The exemptMembers function of the giveaway
+     * @type {Function}
+     */
     get exemptMembersFunction() {
         return this.options.exemptMembers
             ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
@@ -198,7 +202,8 @@ class Giveaway extends EventEmitter {
 
     /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
-     * @type {Function}
+     * @property {Discord.GuildMember} member The member to check
+     * @returns {Promise<boolean>} Whether the member should get exempted
      */
     async exemptMembers(member) {
         if (this.exemptMembersFunction) {
@@ -210,10 +215,7 @@ class Giveaway extends EventEmitter {
                 return false;
             }
         }
-        if (
-            this.manager.options.default.exemptMembers &&
-            typeof this.manager.options.default.exemptMembers === 'function'
-        ) {
+        if (typeof this.manager.options.default.exemptMembers === 'function') {
             return await this.manager.options.default.exemptMembers(member);
         }
         return false;

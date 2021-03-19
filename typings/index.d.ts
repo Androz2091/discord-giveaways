@@ -66,7 +66,7 @@ declare module 'discord-giveaways' {
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
+        exemptMembers?: (member?: GuildMember) => boolean | Promise<boolean>;
         bonusEntries?: BonusEntry[];
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
@@ -137,7 +137,7 @@ declare module 'discord-giveaways' {
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
 
-        public exemptMembers(): boolean;
+        public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
         // @ts-ignore-next-line
