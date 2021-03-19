@@ -43,7 +43,7 @@ declare module 'discord-giveaways' {
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
     interface BonusEntry {
-        bonus(member: GuildMember): number | Promise<number>;
+        bonus(member?: GuildMember): number | Promise<number>;
         cumulative: boolean;
     }
     interface LastChanceOptions {
