@@ -7,8 +7,8 @@ const Discord = require('discord.js');
  * @property {string} [giveaway='@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
  * @property {string} [giveawayEnded='@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway is ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Incite people to react to the giveaway.
- * @property {string} [timeRemaining='Time remaining: **{duration}**!'] Displayed below inviteToParticipate in the giveaway embed. {duration} will be replaced automatically with the time remaining.
- * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!'] Sent in the channel when the giveaway is ended.
+ * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below inviteToParticipate in the giveaway embed. {duration} will be replaced automatically with the time remaining.
+ * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
  * @property {string} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there's no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
@@ -99,9 +99,8 @@ exports.LastChanceOptions = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
- * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. (0 for never)
+ * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. (0 or null for never)
  * @property {boolean} [hasGuildMembersIntent=false] Whether the client instance has access to the GUILD_MEMBERS intent. If set to true, everything will be faster.
- * @property {string} [DJSlib] The Discord.js library version you want to use
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
@@ -145,8 +144,8 @@ exports.defaultManagerOptions = {
  *
  * @property {number?} [winnerCount=this.winnerCount] The number of winners to pick
  * @property {Object} [messages] The messages used in this method
- * @property {string} [messages.congrat=':tada: New winner(s) : {winners}! Congratulations!'] The message used if there are winners
- * @property {string} [messages.error='No valid participations, no winners can be chosen!'] The message used if no winner can be choosen
+ * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are winners
+ * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no winner can be choosen
  */
 exports.GiveawayRerollOptions = {};
 

@@ -213,9 +213,9 @@ client.on('message', (message) => {
 });
 ```
 
--   **doNotDeleteMessage**: Whether the giveaway message shouldn't be deleted
+-   **doNotDeleteMessage**: whether the giveaway message shouldn't be deleted.
 
-⚠️ **Note**: When you use the delete function, the giveaway data and per default the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
+⚠️ **Note**: when you use the delete function, the giveaway data and per default the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
 
 ### End a giveaway
 
