@@ -99,16 +99,15 @@ exports.LastChanceOptions = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
- * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. (0 or null for never)
+ * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB.
  * @property {boolean} [hasGuildMembersIntent=false] Whether the client instance has access to the GUILD_MEMBERS intent. If set to true, everything will be faster.
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
- * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win the giveaway.
- * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The giveaway embeds color when they are running
- * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The giveaway embeds color when they are ended
- * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate to the giveaways
- * @property {string} [default.reaction='🎉'] The reaction to participate to the giveaways
+ * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win a giveaway.
+ * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The giveaways embed color when they are running
+ * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The giveaways embed color when they are ended
+ * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in the giveaways
  * @property {LastChanceOptions} [default.lastChance] The last chance system parameters
  */
 exports.GiveawaysManagerOptions = {};

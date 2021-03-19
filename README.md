@@ -74,7 +74,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
--   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
+-   **options.default.embedColorEnd**: a hexadecimal color for the embeds of giveaways when they are ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
 
