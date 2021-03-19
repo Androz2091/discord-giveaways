@@ -105,18 +105,6 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * The exemptMembers function of the giveaway
-     * @type {Function}
-     */
-    get exemptMembersFunction() {
-        return this.options.exemptMembers
-            ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
-                ? eval(`(${this.options.exemptMembers})`)
-                : eval(this.options.exemptMembers) 
-            : null;
-    }
-
-    /**
      * The link to the giveaway message
      * @type {string}
      * @readonly
@@ -201,12 +189,24 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * The exemptMembers function of the giveaway
+     * @type {Function}
+     */
+     get exemptMembersFunction() {
+        return this.options.exemptMembers
+            ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
+                ? eval(`(${this.options.exemptMembers})`)
+                : eval(this.options.exemptMembers) 
+            : null;
+    }
+
+    /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @property {Discord.GuildMember} member The member to check
      * @returns {Promise<boolean>} Whether the member should get exempted
      */
     async exemptMembers(member) {
-        if (this.exemptMembersFunction) {
+        if (typeof this.exemptMembersFunction === 'function') {
             try {
                 const result = await this.exemptMembersFunction(member);
                 return result;
