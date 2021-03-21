@@ -12,7 +12,7 @@ const Discord = require('discord.js');
  * @property {string} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there's no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
- * @property {string} [endedAt='End at'] Displayed next to the embed footer, used to display the giveaway end date.
+ * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {string} [hostedBy='Hosted by: {user}'] Below the inviteToParticipate message, in the description of the embed.
  * @property {Object} [units]
  * @property {string} [units.seconds='seconds'] The name of the 'seconds' units
@@ -57,7 +57,7 @@ exports.defaultGiveawayMessages = {
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'winner(s)',
-    endedAt: 'End at',
+    endedAt: 'Ended at',
     hostedBy: 'Hosted by: {user}',
     units: {
         seconds: 'seconds',

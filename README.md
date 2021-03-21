@@ -334,10 +334,10 @@ client.giveawaysManager.start(message.channel, {
     messages: {
         giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
-        timeRemaining: 'Time remaining: **{duration}**!',
+        timeRemaining: 'Time remaining: **{duration}**',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
-        embedFooter: 'Giveaways',
+        embedFooter: 'Powered by the discord-giveaways package',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {user}',
         winners: 'winner(s)',
