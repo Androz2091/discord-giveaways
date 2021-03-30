@@ -473,15 +473,15 @@ class Giveaway extends EventEmitter {
     end() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) {
-                return reject('Giveaway with message ID ' + this.messageID + ' is already ended');
+                return reject('Розыгрыш с ID ' + this.messageID + ' уже закончен');
             }
             if (!this.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+                return reject('Не могу получить доступ к розыгрышу с ID' + this.messageID + '.');
             }
             this.ended = true;
             await this.fetchMessage().catch(() => {});
             if (!this.message) {
-                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+                return reject('Разрешите поиск сообщений, сообщение с ID ' + this.messageID + ' не найдено.');
             }
             const winners = await this.roll();
             await this.manager.editGiveaway(this.messageID, this.data);
@@ -505,7 +505,6 @@ class Giveaway extends EventEmitter {
             }
         });
     }
-
     /**
      * Rerolls the giveaway
      * @param {GiveawayRerollOptions} options
@@ -514,14 +513,14 @@ class Giveaway extends EventEmitter {
     reroll(options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ended) {
-                return reject('Giveaway with message ID ' + this.messageID + ' is not ended.');
+                return reject('Раздача с ID ' + this.messageID + ' не закончена.');
             }
             if (!this.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+                return reject('Невозможно получить розыгрыш с ID ' + this.messageID + '.');
             }
             await this.fetchMessage().catch(() => {});
             if (!this.message) {
-                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+                return reject('Разрешите поиск сообщений, сообщение с ID ' + this.messageID + ' .');
             }
             const winners = await this.roll(options.winnerCount);
             if (winners.length > 0) {
