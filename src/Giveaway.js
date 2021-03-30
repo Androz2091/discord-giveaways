@@ -400,6 +400,35 @@ class Giveaway extends EventEmitter {
                 for (let i = 0; i < highestBonusEntries; i++) userArray.push(user);
             }
         }
+        async rroll(winnerCount) {
+        if (!this.message) return [];
+        // Pick the winner
+        const reactions = this.message.reactions.cache;
+        const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
+        if (!reaction) return [];
+        const guild = this.channel.guild;
+        // Fetch guild members
+        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+        const users = (await reaction.users.fetch())
+            .filter((u) => !u.bot || u.bot === this.botsCanWin)
+            .filter((u) => u.id !== this.message.client.user.id);
+        if (!users.size) return [];
+
+        // Bonus Entries
+        let userArray;
+        if (this.bonusEntries.length) {
+            userArray = users.array(); // Copy all users once
+            for (const user of userArray.slice()) {
+                const isUserValidEntry = await this.checkWinnerEntry(user);
+                if (!isUserValidEntry) continue;
+
+                const highestBonusEntries = await this.checkBonusEntries(user);
+                if (!highestBonusEntries) continue;
+
+                for (let i = 0; i < highestBonusEntries; i++) userArray.push(user);
+            }
+        }
+
 
         let rolledWinners;
         if (!userArray || userArray.length <= winnerCount)
@@ -522,7 +551,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Разрешите поиск сообщений, сообщение с ID ' + this.messageID + ' .');
             }
-            const winners = await this.roll(options.winnerCount);
+            const winners = await this.rroll(options.winnerCount);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
