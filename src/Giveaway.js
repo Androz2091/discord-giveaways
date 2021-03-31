@@ -325,11 +325,11 @@ class Giveaway extends EventEmitter {
     async checkWinnerEntry(user) {
         if (this.winnerIDs.includes(user.id)) return false;
         const guild = this.channel.guild;
-        const member = guild.member(user.id) || (await guild.members.fetch(user.id).catch(() => {}));
+        const member = guild.members.cache.get(user.id) || (await guild.members.fetch(user.id).catch(() => {}));
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
-        const hasPermission = this.exemptPermissions.some((permission) => member.hasPermission(permission));
+        const hasPermission = this.exemptPermissions.some((permission) => member.permissions.has(permission));
         if (hasPermission) return false;
         return true;
     }
@@ -339,7 +339,7 @@ class Giveaway extends EventEmitter {
      * @returns {Promise<number|boolean>} The highest bonus entries the user should get or false
      */
     async checkBonusEntries(user) {
-        const member = this.channel.guild.member(user.id);
+        const member = this.channel.guild.members.cache.get(user.id);
         const entries = [];
         const cumulativeEntries = [];
 
@@ -431,7 +431,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners.map((user) => guild.member(user) || user);
+        return winners.map((user) => guild.members.cache.get(user.id) || user);
     }
 
     /**
