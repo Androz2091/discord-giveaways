@@ -288,7 +288,7 @@ client.giveawaysManager.start(message.channel, {
 ```
 
 The `{ usePercent: false }` object should be the last object in the array, if you want to use it.
-If `usePercent` is set to true then the returned number of the `bonus` function of each object will get counted as %, means that if the function returns true for you then your win chance is 2% higher than that of other users with no increased win chance. 100% increase would mean about 2 times more winnings depending on the amount of other users.
+If `usePercent` is set to true then the returned number of the `bonus` function of each object will get counted as %, means that if the function returns true for you then your win chance, with the function above, is 2% higher than that of other users with no increased win chance. 100% increase would mean about 2 times more winnings depending on the amount of other users.
 
 ⚠️ **Note**: If it should be customizable
 ```js
