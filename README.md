@@ -286,7 +286,8 @@ client.giveawaysManager.start(message.channel, {
 })
 ```
 
-⚠️ **Note**: If it should be customizable
+⚠️ **Note**: If the `bonus` function should be customizable
+
 ```js
 const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
