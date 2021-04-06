@@ -259,7 +259,8 @@ client.giveawaysManager.start(message.channel, {
 })
 ```
 
-⚠️ **Note**: If it should be customizable
+⚠️ **Note**: If the function should be customizable
+
 ```js
 const roleName = 'Nitro Boost';
 
