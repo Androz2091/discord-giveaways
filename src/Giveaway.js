@@ -403,7 +403,7 @@ class Giveaway extends EventEmitter {
                 const highestBonus = await this.checkBonusEntries(user);
                 if (!highestBonus) continue;
 
-                if (this.bonusEntries.at(-1).usePercent) {
+                if (this.bonusEntries[this.bonusEntries.length - 1].usePercent) {
                     userArray[userArray.indexOf(user)] = Object.defineProperty(user, 'bonusPercentage', {
                         value: highestBonus,
                     });
@@ -415,7 +415,7 @@ class Giveaway extends EventEmitter {
         if (!userArray || userArray.length <= winnerCount)
             rolledWinners = users.random(Math.min(winnerCount, users.size));
         else {
-            if (this.bonusEntries.at(-1).usePercent) {
+            if (this.bonusEntries[this.bonusEntries.length - 1].usePercent) {
                 const weightedRandom = (users) => {
                     let i;
                     const percentages = [];
