@@ -348,12 +348,18 @@ class Giveaway extends EventEmitter {
                 if (typeof obj.bonus === 'function') {
                     try {
                         const result = await obj.bonus(member);
-                        if (Number.isInteger(result) && result > 0) {
+                        if (
+                            (Number.isInteger(result) ||
+                                (this.bonusEntries[this.bonusEntries.length - 1].usePercent &&
+                                    !isNaN(result) &&
+                                    typeof result === 'number')) &&
+                            result > 0
+                        ) {
                             if (obj.cumulative) {
                                 cumulativeEntries.push(result);
                             } else {
                                 entries.push(result);
-                            }  
+                            }
                         }
                     } catch (err) {
                         console.error(`Giveaway message ID: ${this.messageID}\n${serialize(obj.bonus)}\n${err}`);
@@ -394,10 +400,14 @@ class Giveaway extends EventEmitter {
                 const isUserValidEntry = await this.checkWinnerEntry(user);
                 if (!isUserValidEntry) continue;
 
-                const highestBonusEntries = await this.checkBonusEntries(user);
-                if (!highestBonusEntries) continue;
+                const highestBonus = await this.checkBonusEntries(user);
+                if (!highestBonus) continue;
 
-                for (let i = 0; i < highestBonusEntries; i++) userArray.push(user);
+                if (this.bonusEntries.at(-1).usePercent) {
+                    userArray[userArray.indexOf(user)] = Object.defineProperty(user, 'bonusPercentage', {
+                        value: highestBonus,
+                    });
+                } else for (let i = 0; i < highestBonus; i++) userArray.push(user);
             }
         }
 
@@ -405,13 +415,33 @@ class Giveaway extends EventEmitter {
         if (!userArray || userArray.length <= winnerCount)
             rolledWinners = users.random(Math.min(winnerCount, users.size));
         else {
-            /** 
-             * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts#L193
-             * because collections/maps do not allow dublicates and so we cannot use their built in "random" function
-             */
-            rolledWinners = Array.from({
-                length: Math.min(winnerCount, users.size)
-            }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
+            if (this.bonusEntries.at(-1).usePercent) {
+                const weightedRandom = (users) => {
+                    let i;
+                    const percentages = [];
+                
+                    for (i = 0; i < users.length; i++) percentages[i] = (100 + users[i].bonusPercentage || 100) + (percentages[i - 1] || 0);
+                    const random = Math.random() * percentages[percentages.length - 1];
+                    for (i = 0; i < percentages.length; i++) if (percentages[i] > random) break;
+                    
+                    return users[i];
+                }
+
+                rolledWinners = [];
+                while (rolledWinners.length < winnerCount && userArray.length) {
+                    const user = weightedRandom(userArray);
+                    userArray.splice(userArray.indexOf(user), 1);
+                    rolledWinners.push(user);
+                }
+            } else {
+                /** 
+                 * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts#L193
+                 * because collections/maps do not allow dublicates and so we cannot use their built in "random" function
+                 */
+                rolledWinners = Array.from({
+                    length: Math.min(winnerCount, users.size)
+                }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
+            }     
         }
 
         const winners = [];
