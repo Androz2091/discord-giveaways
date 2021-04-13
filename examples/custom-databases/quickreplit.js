@@ -5,9 +5,9 @@ const Discord = require('discord.js'),
         token: 'Your Discord Bot Token'
     };
 
-// Load Replit Database
-const Database = require('@replit/database');
-const db = new Database();
+// Load quick.replit
+const { Database } = require("quick.replit");
+const db = new Database(process.env.REPLIT_DB_URL)
 (async () => {
     if (!Array.isArray(await db.get('giveaways'))) await db.set('giveaways', []);
 })();
@@ -22,12 +22,8 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
-        // Get all giveaways from the database
-        const giveawaysArray = await db.get('giveaways');
-        // Push the new giveaway into the array
-        giveawaysArray.push(giveawayData);
-        // Save the updated array
-        await db.set('giveaways', giveawaysArray);
+        // Add the new giveaway to the database
+        await db.push('giveaways', giveawayData);
         // Don't forget to return something!
         return true;
     }
@@ -69,9 +65,16 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
         embedColorEnd: '#000000',
         reaction: '🎉'
     }
-});
+}, false); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
+
+// Check the DB when it is ready
+db.on('ready', async () => {
+    if (!Array.isArray(await db.get('giveaways'))) await db.set('giveaways', []);
+    // Start the manager only after the DB got checked to prevent an error
+    client.giveawaysManager._init();
+});
 
 client.on('ready', () => {
     console.log('I\'m ready!');
