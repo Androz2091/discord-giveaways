@@ -86,7 +86,6 @@ client.on('message', (message) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
-
 });
 
 client.login(settings.token);
