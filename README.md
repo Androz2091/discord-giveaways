@@ -386,11 +386,12 @@ Here is an example, using `quick.db`, a SQLite database. The comments in the cod
 
 Other examples:
 
-- [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- [MongoDB (Mongoose) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
-- [MongoDB (QuickMongo) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
-- [Enmap example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
-- [Replit Database example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js) ⚠️ Only usable if your bot is hosted on [Replit](https://repl.it/)
+- [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+- MongoDB
+  - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
+  - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
+- [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
+- [Replit Database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js) ⚠️ Only usable if your bot is hosted on [Replit](https://repl.com/)
 
 ```js
 const Discord = require('discord.js'),

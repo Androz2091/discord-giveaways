@@ -57,7 +57,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         // Don't forget to return something!
         return true;
     }
-}
+};
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithOwnDatabase(client, {
