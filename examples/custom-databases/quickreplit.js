@@ -7,7 +7,7 @@ const Discord = require('discord.js'),
 
 // Load quick.replit
 const { Database } = require('quick.replit');
-const db = new Database()
+const db = new Database();
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
