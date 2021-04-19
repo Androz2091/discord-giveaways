@@ -221,6 +221,13 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
             resolve(giveaway);
+            message
+                .awaitReactions(
+                    (reaction, user) => (reaction.id === giveaway.reaction || reaction.emoji.name === giveaway.reaction) && !user.bot,
+                    { maxUsers: giveaway.winnerCount }
+                )
+                .then((collected) => this.end(giveaway.messageID).catch(() => {}))
+                .catch((err) => console.error(err));
         });
     }
 
@@ -410,7 +417,11 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            if (giveaway.isDrop && giveaway.message.reactions.cache.get(giveaway.reaction).count - 1 >= giveaway.winnerCount) {
+            if (
+                giveaway.isDrop &&
+                giveaway.giveawayDuration - giveaway.remainingTime > this.client.uptime &&
+                giveaway.message.reactions.cache.get(giveaway.reaction).count - 1 >= giveaway.winnerCount
+            ) {
                 return this.end(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
@@ -456,7 +467,13 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
-            if (giveaway.isDrop && reaction.count >= giveaway.winnerCount) this.end(giveaway.messageID).catch(() => {});
+            if (
+                giveaway.isDrop &&
+                giveaway.giveawayDuration - giveaway.remainingTime > this.client.uptime &&
+                reaction.count >= giveaway.winnerCount
+            ) {
+                this.end(giveaway.messageID).catch(() => {});
+            }
         } else {
             this.emit('giveawayReactionRemoved', giveaway, member, reaction);
         }
