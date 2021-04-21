@@ -278,15 +278,12 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            if (!giveaway.channel) {
+            if (!giveaway.channel && !doNotDeleteMessage) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
-                if (giveaway.message) {
-                    // Delete the giveaway message
-                    giveaway.message.delete();
-                }
+                if (giveaway.message) giveaway.message.delete();
             }
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);

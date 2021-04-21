@@ -523,7 +523,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            const winners = await this.roll(options.winnerCount);
+            const winners = await this.roll(options.winnerCount || undefined);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
