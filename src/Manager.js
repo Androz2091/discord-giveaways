@@ -83,22 +83,35 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateEndEmbed(giveaway, winners) {
-        const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-        const winnersString =
-            giveaway.messages.winners.substr(0, 1).toUpperCase() +
-            giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
-            ': ' +
-            formattedWinners;
+        let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+
+        const descriptionString = (formattedWinners) => {
+            const winnersString =
+                giveaway.messages.winners.substr(0, 1).toUpperCase() +
+                giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
+                ': ' +
+                formattedWinners;
+
+            return (
+                winnersString +
+                '\n' +
+                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            );
+        };
+
+        for (
+            let i = 1;
+            descriptionString(formattedWinners).length > 2048 ||
+            giveaway.prize.length + giveaway.messages.endedAt.length + descriptionString(formattedWinners).length > 6000;
+            i++
+        ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
+
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt)
-            .setDescription(
-                winnersString +
-                    '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
-            )
+            .setDescription(descriptionString(formattedWinners))
             .setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
     }
@@ -204,10 +217,7 @@ class GiveawaysManager extends EventEmitter {
                 botsCanWin: options.botsCanWin,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : [],
                 exemptMembers: options.exemptMembers,
-                bonusEntries:
-                    (Array.isArray(options.bonusEntries) && options.bonusEntries.every((elem) => typeof elem === 'object'))
-                        ? options.bonusEntries
-                        : [],
+                bonusEntries: (Array.isArray(options.bonusEntries) && options.bonusEntries.every((elem) => typeof elem === 'object')) ? options.bonusEntries : [],
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData,
@@ -283,24 +293,21 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {Discord.Snowflake} messageID  The message ID of the giveaway
-     * @param {boolean} doNotDeleteMessage Whether the giveaway message shouldn't be deleted
+     * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
      * @returns {Promise<void>}
      */
-    delete(messageID, doNotDeleteMessage) {
+    delete(messageID, doNotDeleteMessage = false) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) {
                 return reject('No giveaway found with ID ' + messageID + '.');
             }
-            if (!giveaway.channel) {
+            if (!giveaway.channel && !doNotDeleteMessage) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
-                if (giveaway.message) {
-                    // Delete the giveaway message
-                    giveaway.message.delete();
-                }
+                if (giveaway.message) giveaway.message.delete();
             }
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);

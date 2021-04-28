@@ -43,7 +43,7 @@ declare module 'discord-giveaways' {
         public emit<K extends keyof GiveawaysManagerEvents>(event: K, ...args: GiveawaysManagerEvents[K]): boolean;
     }
     interface BonusEntry {
-        bonus(member: GuildMember): number | Promise<number>;
+        bonus(member?: GuildMember): number | Promise<number>;
         cumulative: boolean;
     }
     interface LastChanceOptions {
@@ -66,7 +66,7 @@ declare module 'discord-giveaways' {
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: () => boolean | Promise<boolean>;
+        exemptMembers?: (member?: GuildMember) => boolean | Promise<boolean>;
         bonusEntries?: BonusEntry[];
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
@@ -135,10 +135,11 @@ declare module 'discord-giveaways' {
         readonly messageURL: string;
         readonly content: string;
         readonly channel: TextChannel;
+        readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly isDrop: boolean;
 
-        public exemptMembers(): boolean;
+        public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
         // @ts-ignore-next-line
@@ -177,7 +178,7 @@ declare module 'discord-giveaways' {
         messageID?: Snowflake | null;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: (member: GuildMember) => boolean;
+        exemptMembers?: string;
         bonusEntries?: string;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
