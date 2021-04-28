@@ -391,7 +391,9 @@ Other examples:
   - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
   - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
 - [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
-- [Replit Database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js) ⚠️ Only usable if your bot is hosted on [Replit](https://repl.com/)
+- Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
+  - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
+  - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickreplit.js)
 
 ```js
 const Discord = require('discord.js'),
