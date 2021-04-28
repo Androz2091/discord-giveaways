@@ -508,7 +508,12 @@ class Giveaway extends EventEmitter {
                     .replace('{messageURL}', this.messageURL);
                 if (messageString.length <= 2000) this.message.channel.send(messageString);
                 else {
-                    this.message.channel.send(this.messages.winMessage.substr(0, this.messages.winMessage.indexOf('{winners}')));
+                    this.message.channel.send(
+                        this.messages.winMessage
+                            .substr(0, this.messages.winMessage.indexOf('{winners}'))
+                            .replace('{prize}', this.prize)
+                            .replace('{messageURL}', this.messageURL)
+                    );
                     while (formattedWinners.length >= 2000) {
                         await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
@@ -560,7 +565,12 @@ class Giveaway extends EventEmitter {
                     .replace('{messageURL}', this.messageURL);
                 if (messageString.length <= 2000) this.message.channel.send(messageString);
                 else {
-                    this.message.channel.send(options.messages.congrat.substr(0, options.messages.congrat.indexOf('{winners}')));
+                    this.message.channel.send(
+                        options.messages.congrat
+                            .substr(0, options.messages.congrat.indexOf('{winners}'))
+                            .replace('{prize}', this.prize)
+                            .replace('{messageURL}', this.messageURL)
+                    );
                     while (formattedWinners.length >= 2000) {
                         await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);

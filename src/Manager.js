@@ -85,7 +85,7 @@ class GiveawaysManager extends EventEmitter {
     generateEndEmbed(giveaway, winners) {
         let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
 
-        const descriptionString = formattedWinners => {
+        const descriptionString = (formattedWinners) => {
             const winnersString =
                 giveaway.messages.winners.substr(0, 1).toUpperCase() +
                 giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
