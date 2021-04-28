@@ -83,22 +83,35 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateEndEmbed(giveaway, winners) {
-        const formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-        const winnersString =
-            giveaway.messages.winners.substr(0, 1).toUpperCase() +
-            giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
-            ': ' +
-            formattedWinners;
+        let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+
+        const descriptionString = formattedWinners => {
+            const winnersString =
+                giveaway.messages.winners.substr(0, 1).toUpperCase() +
+                giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
+                ': ' +
+                formattedWinners;
+
+            return (
+                winnersString +
+                '\n' +
+                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            );
+        };
+
+        for (
+            let i = 1;
+            descriptionString(formattedWinners).length > 2048 ||
+            giveaway.prize.length + giveaway.messages.endedAt.length + descriptionString(formattedWinners).length > 6000;
+            i++
+        ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
+
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt)
-            .setDescription(
-                winnersString +
-                    '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
-            )
+            .setDescription(descriptionString(formattedWinners))
             .setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
     }
