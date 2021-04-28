@@ -1,5 +1,6 @@
 ---
 name: Bug report
+about: Report incorrect or unexpected behavior
 title: ''
 labels: bug
 assignees: ''
