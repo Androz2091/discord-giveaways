@@ -479,6 +479,7 @@ class Giveaway extends EventEmitter {
                 return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             }
             this.ended = true;
+            this.endAt = Date.now();
             await this.fetchMessage().catch(() => {});
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
