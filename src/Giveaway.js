@@ -189,23 +189,33 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * Function to filter members. If true is returned, the member won't be able to win the giveaway.
+     * The exemptMembers function of the giveaway
      * @type {Function}
      */
+     get exemptMembersFunction() {
+        return this.options.exemptMembers
+            ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
+                ? eval(`(${this.options.exemptMembers})`)
+                : eval(this.options.exemptMembers) 
+            : null;
+    }
+
+    /**
+     * Function to filter members. If true is returned, the member won't be able to win the giveaway.
+     * @property {Discord.GuildMember} member The member to check
+     * @returns {Promise<boolean>} Whether the member should get exempted
+     */
     async exemptMembers(member) {
-        if (this.options.exemptMembers && typeof this.options.exemptMembers === 'function') {
+        if (typeof this.exemptMembersFunction === 'function') {
             try {
-                const result = await this.options.exemptMembers(member);
+                const result = await this.exemptMembersFunction(member);
                 return result;
             } catch (err) {
-                console.error(`Giveaway message ID: ${this.messageID}\n${serialize(this.options.exemptMembers)}\n${err}`);
+                console.error(`Giveaway message ID: ${this.messageID}\n${serialize(this.exemptMembersFunction)}\n${err}`);
                 return false;
             }
         }
-        if (
-            this.manager.options.default.exemptMembers &&
-            typeof this.manager.options.default.exemptMembers === 'function'
-        ) {
+        if (typeof this.manager.options.default.exemptMembers === 'function') {
             return await this.manager.options.default.exemptMembers(member);
         }
         return false;
@@ -290,7 +300,7 @@ class Giveaway extends EventEmitter {
             embedColorEnd: this.options.embedColorEnd,
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
-            exemptMembers: this.options.exemptMembers,
+            exemptMembers: (!this.options.exemptMembers || typeof this.options.exemptMembers === 'string') ? this.options.exemptMembers : serialize(this.options.exemptMembers),
             bonusEntries: typeof this.options.bonusEntries === 'string' ? this.options.bonusEntries : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
             winnerIDs: this.winnerIDs,
