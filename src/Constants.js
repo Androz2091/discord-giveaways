@@ -131,7 +131,7 @@ exports.defaultManagerOptions = {
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-            secondsBeforeLastChance: 5000,
+            threshold: 5000,
             embedColor: '#FF0000'
         }
     }
