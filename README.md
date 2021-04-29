@@ -286,7 +286,7 @@ client.giveawaysManager.start(message.channel, {
     lastChance: {
         enabled: true,
         content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-        secondsBeforeLastChance: 5000,
+        threshold: 5000,
         embedColor: '#FF0000'
     }
 })
