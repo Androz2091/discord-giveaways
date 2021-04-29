@@ -193,7 +193,7 @@ class Giveaway extends EventEmitter {
      * @type {Boolean}
      */
     get isDrop() {
-        return this.options.isDrop;
+        return this.options.isDrop || false;
     }
 
     /**
