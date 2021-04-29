@@ -94,6 +94,28 @@ exports.LastChanceOptions = {
 };
 
 /**
+ * The pause method options
+ * @typedef GiveawayPauseOptions
+ *
+ * @property {boolean} [isPaused] Whether the giveaway is paused
+ * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused
+ * @property {number} [unPauseAfter] The number of ms after which the giveaway will unpause
+ * @property {string} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused
+ */
+ exports.GiveawayPauseOptions = {};
+
+/**
+ * Default pause options
+ * @type {GiveawayPauseOptions}
+ */
+ exports.defaultPauseOptions = {
+    isPaused: false,
+    content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+    unPauseAfter: null,
+    embedColor: '#FFFF00'
+};
+
+/**
  * The giveaways manager options
  * @typedef GiveawaysManagerOptions
  *
@@ -198,5 +220,6 @@ exports.GiveawayEditOptions = {};
  * @property {string?} [hostedBy] Mention of user who hosts the giveaway
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
+ * @property {GiveawayPauseOptions} [pause] The pause system options
  */
 exports.GiveawayData = {};

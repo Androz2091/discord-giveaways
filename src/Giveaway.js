@@ -8,7 +8,8 @@ const {
     GiveawayMessages,
     GiveawayRerollOptions,
     LastChanceOptions,
-    BonusEntry
+    BonusEntry,
+    GiveawayPauseOptions
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 
@@ -180,6 +181,14 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Pause options for this giveaway
+     * @type {GiveawayPauseOptions}
+     */
+     get pauseOptions() {
+        return this.options.pauseOptions
+    }
+
+    /**
      * The bonus entries for this giveaway
      * @type {BonusEntry[]?}
      */
@@ -305,7 +314,8 @@ class Giveaway extends EventEmitter {
             reaction: this.options.reaction,
             winnerIDs: this.winnerIDs,
             extraData: this.extraData,
-            lastChance: this.options.lastChance
+            lastChance: this.options.lastChance,
+            pauseOptions: this.options.pauseOptions
         };
         return baseData;
     }
@@ -588,6 +598,63 @@ class Giveaway extends EventEmitter {
                 this.channel.send(options.messages.error);
                 resolve([]);
             }
+        });
+    }
+
+    /**
+     * Pause's the giveaway
+     * @param {GiveawayPauseOptions} options The pause options
+     * @returns {Promise<Giveaway>} The paused giveaway
+     */
+     pause(options = {}) {
+        return new Promise(async (resolve, reject) => {
+            if (this.ended) {
+                return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
+            }
+            if (!this.channel) {
+                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+            }
+            await this.fetchMessage().catch(() => {});
+            if (!this.message) {
+                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            }
+            if(this.pauseOptions.isPaused) return reject('Giveaway with ID ' + this.messageID + ' is already paused.');
+            // Update data
+            if (options.content && typeof options.content === "string") this.pauseOptions.content = this.options.pauseOptions.content;
+            if (options.unPauseAfter && !isNaN(options.unPauseAfter)) this.pauseOptions.unPauseAfter = Date.now() + this.options.pauseOptions.unPauseAfter;
+            if (options.embedColor && typeof options.embedColor === "string") this.pauseOptions.embedColor = this.options.pauseOptions.embedColor;
+            this.pauseOptions.isPaused = true;
+            const embed = this.manager.generatePauseEmbed(this);
+            this.message.edit({ embed }).catch(() => {});
+            // Call the db method
+            await this.manager.editGiveaway(this.messageID, this.data);
+            resolve(this);
+        });
+    }
+
+    /**
+     * UnPause's the paused giveaway
+     * @returns {Promise<Giveaway>} The unpaused giveaway
+     */
+     unpause() {
+        return new Promise(async (resolve, reject) => {
+            if (this.ended) {
+                return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
+            }
+            if (!this.channel) {
+                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
+            }
+            await this.fetchMessage().catch(() => {});
+            if (!this.message) {
+                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            }
+            if(!this.pauseOptions.isPaused) return reject('Giveaway with ID ' + this.messageID + ' is not paused.');
+            // Update data
+            this.pauseOptions.isPaused = false;
+            this.endAt = Date.now() + this.remainingTime;
+            // Call the db method
+            await this.manager.editGiveaway(this.messageID, this.data);
+            resolve(this);
         });
     }
 }

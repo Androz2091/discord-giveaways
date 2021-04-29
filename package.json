@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.0.5",
-    "discord.js": "^12.5.1",
+    "discord.js": "^12.5.3",
     "eslint": "^7.6.0",
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",

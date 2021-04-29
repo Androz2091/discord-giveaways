@@ -29,7 +29,8 @@ declare module 'discord-giveaways' {
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel, options: GiveawayStartOptions): Promise<Giveaway>;
-
+        public pause(messageID: Snowflake, options: GiveawayPauseOptions): Promise<Giveaway>;
+        public unpause(messageID: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
             event: K,
             listener: (...args: GiveawaysManagerEvents[K]) => void
@@ -51,6 +52,12 @@ declare module 'discord-giveaways' {
         embedColor: string;
         content: string;
         threshold: number;
+    }
+    interface GiveawayPauseOptions {
+        isPaused: boolean;
+        content: string;
+        unPauseAfter: number;
+        embedColor: string;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
@@ -74,6 +81,7 @@ declare module 'discord-giveaways' {
         messages?: Partial<GiveawaysMessages>;
         extraData?: any;
         lastChance?: LastChanceOptions;
+        pauseOptions?: GiveawayPauseOptions;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -140,6 +148,8 @@ declare module 'discord-giveaways' {
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
+        public pause(options: GiveawayPauseOptions): Promise<Giveaway>;
+        public unpause(): Promise<Giveaway>;
         // @ts-ignore-next-line
         public async fetchMessage(): Promise<Message>;
         public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
@@ -182,5 +192,6 @@ declare module 'discord-giveaways' {
         hostedBy?: string | null;
         extraData?: any;
         lastChance?: LastChanceOptions;
+        pauseOptions?: GiveawayPauseOptions;
     }
 }

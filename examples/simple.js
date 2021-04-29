@@ -86,6 +86,24 @@ client.on('message', (message) => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });
     }
+
+    if(command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch(() => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
+    }
+
+    if(command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway un paused!');
+        }).catch(() => {
+            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        });
+    }
 });
 
 client.login(settings.token);
