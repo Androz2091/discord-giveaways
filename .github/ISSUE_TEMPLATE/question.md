@@ -12,6 +12,6 @@ assignees: ''
 **Before asking your question!**
 
 - Please read the [documentation](https://discord-giveaways.js.org/), it contains a lot of information.
-- Check the [answered questions on GitHub](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aclosed), your question may have already been asked.
+- Check the [answered questions](https://github.com/Androz2091/discord-giveaways/issues?q=is%3Aissue+is%3Aclosed+label%3Aquestion), your question may have already been asked.
 
 -->

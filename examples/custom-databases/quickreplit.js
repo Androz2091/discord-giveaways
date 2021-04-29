@@ -5,9 +5,9 @@ const Discord = require('discord.js'),
         token: 'Your Discord Bot Token'
     };
 
-// Load quickmongo
-const { Database } = require('quickmongo');
-const db = new Database('mongodb://localhost/giveaways');
+// Load quick.replit
+const { Database } = require('quick.replit');
+const db = new Database();
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
