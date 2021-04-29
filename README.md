@@ -296,6 +296,46 @@ client.giveawaysManager.start(message.channel, {
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
 </a>
 
+### Pause a Giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID, {
+            content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+            unPauseAfter: null,
+            embedColor: '#FFFF00'
+        }).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send('Encountered an error while pausing giveaway with ID ' + messageID + 'Error: ' + err + '');
+        });
+    }
+});
+```
+
+### Un Pause a Giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway un paused!');
+        }).catch((err) => {
+            message.channel.send('Encountered an error while un pausing giveaway with ID ' + messageID + 'Error: ' + err + '');
+        });
+    }
+});
+```
+
 ### Bonus Entries
 
 ```js
