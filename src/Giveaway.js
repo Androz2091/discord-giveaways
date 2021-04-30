@@ -395,7 +395,9 @@ class Giveaway extends EventEmitter {
         // Fetch all reaction users
         let userCollection = await reaction.users.fetch();
         while (userCollection.size % 100 === 0) {
-            userCollection = userCollection.concat(await reaction.users.fetch({ after: userCollection.lastKey() }));
+            const newUsers = await reaction.users.fetch({ after: userCollection.lastKey() });
+            if (newUsers.size === 0) break;
+            userCollection = userCollection.concat(newUsers);
         }
 
         const users = userCollection

@@ -259,7 +259,7 @@ client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
     // Only members who have the "Nitro Boost" role are able to win
     exemptMembers: (member) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
-})
+});
 ```
 
 ⚠️ **Note**: If the function should be customizable
@@ -273,7 +273,7 @@ client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
     // Only members who have the the role which is assigned to "roleName" are able to win
     exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
-})
+});
 ```
 
 ### Last Chance
@@ -289,7 +289,7 @@ client.giveawaysManager.start(message.channel, {
         threshold: 5000,
         embedColor: '#FF0000'
     }
-})
+});
 ```
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
@@ -310,7 +310,7 @@ client.giveawaysManager.start(message.channel, {
             cumulative: false
         }
     ]
-})
+});
 ```
 
 ⚠️ **Note**: If the `bonus` function should be customizable
@@ -330,7 +330,7 @@ client.giveawaysManager.start(message.channel, {
             cumulative: false 
         }
     ]
-})
+});
 ```
 
 ## 🇫🇷 Translation
