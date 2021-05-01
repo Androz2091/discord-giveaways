@@ -313,7 +313,7 @@ class GiveawaysManager extends EventEmitter {
     async deleteGiveaway(messageID) {
         await writeFileAsync(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), null, '\t'),
             'utf-8'
         );
         this.refreshStorage();
@@ -371,7 +371,7 @@ class GiveawaysManager extends EventEmitter {
     async editGiveaway(_messageID, _giveawayData) {
         await writeFileAsync(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), null, '\t'),
             'utf-8'
         );
         this.refreshStorage();
@@ -387,7 +387,7 @@ class GiveawaysManager extends EventEmitter {
     async saveGiveaway(messageID, giveawayData) {
         await writeFileAsync(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), null, '\t'),
             'utf-8'
         );
         this.refreshStorage();
