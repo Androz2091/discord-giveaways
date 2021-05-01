@@ -23,8 +23,7 @@ declare module 'discord-giveaways' {
         public ready: boolean;
 
         public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>;
-        // @ts-ignore-next-line
-        public async deleteGiveaway(messageID: Snowflake): Promise<void>;
+        public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
