@@ -22,7 +22,7 @@ declare module 'discord-giveaways' {
         public options: GiveawaysManagerOptions;
         public ready: boolean;
 
-        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>;
+        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<boolean>;
         public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageID: Snowflake): Promise<GuildMember[]>;
