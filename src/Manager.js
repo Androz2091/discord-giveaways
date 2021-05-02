@@ -283,7 +283,7 @@ class GiveawaysManager extends EventEmitter {
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {Discord.Snowflake} messageID  The message ID of the giveaway
      * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>}
      */
     delete(messageID, doNotDeleteMessage = false) {
         return new Promise(async (resolve, reject) => {
@@ -301,14 +301,14 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
             this.emit('giveawayDeleted', giveaway);
-            resolve();
+            resolve(true);
         });
     }
 
     /**
      * Delete a giveaway from the database
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to delete
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>}
      */
     async deleteGiveaway(messageID) {
         await writeFileAsync(
@@ -317,7 +317,8 @@ class GiveawaysManager extends EventEmitter {
             'utf-8'
         );
         this.refreshStorage();
-        return;
+
+        return true;
     }
 
     /**
@@ -429,7 +430,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * @ignore
-     * @param {any} packet 
+     * @param {any} packet
      */
     async _handleRawPacket(packet) {
         if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
@@ -514,7 +515,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
- * // This can be used to add features like removing reactions of members when they do not have a specific role (such as giveaway requirements). Best used with the `exemptMembers` property of the giveaways. 
+ * // This can be used to add features like removing reactions of members when they do not have a specific role (such as giveaway requirements). Best used with the `exemptMembers` property of the giveaways.
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
