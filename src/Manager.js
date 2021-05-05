@@ -568,4 +568,4 @@ class GiveawaysManager extends EventEmitter {
  * });
  */
 
- module.exports = GiveawaysManager;
+module.exports = GiveawaysManager;
