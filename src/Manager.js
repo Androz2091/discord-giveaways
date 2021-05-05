@@ -515,7 +515,8 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
- * // This can be used to add features like removing reactions of members when they do not have a specific role (such as giveaway requirements). Best used with the `exemptMembers` property of the giveaways.
+ * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
+ * // Best used with the "exemptMembers" property of the giveaways 
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
@@ -532,7 +533,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
- * // This can be used to add features such as a member-left-giveaway message in DM
+ * // This can be used to add features such as a member-left-giveaway message per DM
  * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
  *      return member.send('That\'s sad, you won\'t be able to win the super cookie!');
  * });
@@ -559,7 +560,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.GuildMember[]} winners The winners of the giveaway
  *
  * @example
- * // This can be used to add features such as a congratulatory message in DM
+ * // This can be used to add features such as a congratulatory message per DM
  * manager.on('giveawayRerolled', (giveaway, winners) => {
  *      winners.forEach((member) => {
  *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
@@ -567,4 +568,4 @@ class GiveawaysManager extends EventEmitter {
  * });
  */
 
-module.exports = GiveawaysManager;
+ module.exports = GiveawaysManager;
