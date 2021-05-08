@@ -190,8 +190,8 @@ class GiveawaysManager extends EventEmitter {
             if (!channel || !channel.id) {
                 return reject(`channel is not a valid guildchannel. (val=${channel})`);
             }
-            if (!options.time || isNaN(options.time)) {
-                return reject(`options.time is not a number. (val=${options.time})`);
+            if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
+                return reject(`options.time is not a positive number. (val=${options.time})`);
             }
             if (typeof options.prize !== 'string') {
                 return reject(`options.prize is not a string. (val=${options.prize})`);
