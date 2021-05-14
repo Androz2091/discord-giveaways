@@ -176,7 +176,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return this.options.lastChance || this.manager.options.default.lastChance;
+        return (this.options.lastChance && typeof this.options.lastChance === 'object') ? merge(this.manager.options.default.lastChance, this.options.lastChance) : this.manager.options.default.lastChance;
     }
 
     /**
