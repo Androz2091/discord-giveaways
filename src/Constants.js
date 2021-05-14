@@ -73,7 +73,7 @@ exports.defaultGiveawayMessages = {
  * @typedef BonusEntry
  *
  * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
- * @property {boolean} cumulative Wheter the amount of entries from the function can can get added to other other cumulativable amount of entries.
+ * @property {boolean} cumulative Whether the amount of entries from the function can get summed with other amounts of entries.
  */
 exports.BonusEntry = {};
 

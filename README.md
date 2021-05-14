@@ -303,10 +303,11 @@ client.giveawaysManager.start(message.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
-    bonusEntries: [
-        // Members who have the "Nitro Boost" role get 2 bonus entries
+    bonusEntries: [  
         {
+            // Members who have the "Nitro Boost" role get 2 bonus entries
             bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
+            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false
         }
     ]
@@ -324,9 +325,10 @@ client.giveawaysManager.start(message.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     bonusEntries: [
-        // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleBonusEntries"
         {   
+            // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
             bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
+            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false 
         }
     ]
