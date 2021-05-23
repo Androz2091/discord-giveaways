@@ -403,7 +403,16 @@ class GiveawaysManager extends EventEmitter {
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
         this.giveaways.forEach(async (giveaway) => {
-            if (giveaway.ended) return;
+            if (giveaway.ended) {
+                if (
+                    !isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number' &&
+                    giveaway.endAt + this.options.endedGiveawaysLifetime <= Date.now()
+                ) {
+                    this.giveaways = this.giveaways.filter((g) => g.messageID !== giveaway.messageID);
+                    await this.deleteGiveaway(giveaway.messageID);
+                }
+                return;
+            }
             if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) {
                 return this.end(giveaway.messageID).catch(() => {});
@@ -483,9 +492,7 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways = this.giveaways.filter(
                 (g) => !endedGiveaways.map((giveaway) => giveaway.messageID).includes(g.messageID)
             );
-            for (const giveaway of endedGiveaways) {
-                await this.deleteGiveaway(giveaway.messageID);
-            }
+            for (const giveaway of endedGiveaways) await this.deleteGiveaway(giveaway.messageID);
         }
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));
