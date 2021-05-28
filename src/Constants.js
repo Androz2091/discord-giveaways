@@ -8,7 +8,7 @@ const Discord = require('discord.js');
  * @property {string} [giveawayEnded='@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway is ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Incite people to react to the giveaway.
  * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below inviteToParticipate in the giveaway embed. {duration} will be replaced automatically with the time remaining.
- * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
+ * @property {string} [winMessage='{mentionHost}\nCongratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
  * @property {string} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there's no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
@@ -53,7 +53,7 @@ exports.defaultGiveawayMessages = {
     giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
     inviteToParticipate: 'React with 🎉 to participate!',
     timeRemaining: 'Time remaining: **{duration}**',
-    winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
+    winMessage: '{mentionHost}\nCongratulations, {winners}! You won **{prize}**!\n{messageURL}',
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'winner(s)',
@@ -143,7 +143,7 @@ exports.defaultManagerOptions = {
  *
  * @property {number?} [winnerCount=this.winnerCount] The number of winners to pick
  * @property {Object} [messages] The messages used in this method
- * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are winners
+ * @property {string} [messages.congrat='{mentionHost}\n:tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are winners
  * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no winner can be choosen
  */
 exports.GiveawayRerollOptions = {};
@@ -155,7 +155,7 @@ exports.GiveawayRerollOptions = {};
 exports.defaultRerollOptions = {
     winnerCount: null,
     messages: {
-        congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
+        congrat: '{mentionHost}\n:tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
         error: 'No valid participations, no new winner(s) can be chosen!'
     }
 };

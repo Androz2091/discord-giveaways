@@ -513,7 +513,8 @@ class Giveaway extends EventEmitter {
                 const messageString = this.messages.winMessage
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
-                    .replace('{messageURL}', this.messageURL);
+                    .replace('{messageURL}', this.messageURL)
+                    .replace('{mentionHost}', `${this.hostedBy.toString()}`);
                 if (messageString.length <= 2000) this.message.channel.send(messageString);
                 else {
                     this.message.channel.send(
@@ -521,6 +522,7 @@ class Giveaway extends EventEmitter {
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL)
+                            .replace('{mentionHost}', `${this.hostedBy.toString()}`)
                     );
                     while (formattedWinners.length >= 2000) {
                         await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
@@ -532,6 +534,7 @@ class Giveaway extends EventEmitter {
                             .substr(this.messages.winMessage.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL)
+                            .replace('{mentionHost}', `${this.hostedBy.toString()}`)
                     );
                 }
                 resolve(winners);
@@ -573,7 +576,8 @@ class Giveaway extends EventEmitter {
                 const messageString = options.messages.congrat
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
-                    .replace('{messageURL}', this.messageURL);
+                    .replace('{messageURL}', this.messageURL)
+                    .replace('{mentionHost}', `${this.hostedBy.toString()}`);
                 if (messageString.length <= 2000) this.message.channel.send(messageString);
                 else {
                     this.message.channel.send(
@@ -581,6 +585,7 @@ class Giveaway extends EventEmitter {
                             .substr(0, options.messages.congrat.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL)
+                            .replace('{mentionHost}', `${this.hostedBy.toString()}`)
                     );
                     while (formattedWinners.length >= 2000) {
                         await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
@@ -592,6 +597,7 @@ class Giveaway extends EventEmitter {
                             .substr(options.messages.congrat.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL)
+                            .replace('{mentionHost}', `${this.hostedBy.toString()}`)
                     );
                 }
                 resolve(winners);

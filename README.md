@@ -367,7 +367,7 @@ client.giveawaysManager.start(message.channel, {
         giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         timeRemaining: 'Time remaining: **{duration}**',
         inviteToParticipate: 'React with 🎉 to participate!',
-        winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
+        winMessage: '{mentionHost}\nCongratulations, {winners}! You won **{prize}**!\n{messageURL}',
         embedFooter: 'Powered by the discord-giveaways package',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {user}',
@@ -389,7 +389,7 @@ And for the `reroll()` function:
 ```js
 client.giveawaysManager.reroll(messageID, {
         messages: {
-            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
+            congrat: '{mentionHost}\n:tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
         }
     }).catch((err) => {
