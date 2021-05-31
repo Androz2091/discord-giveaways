@@ -318,7 +318,7 @@ client.on('message', (message) => {
 });
 ```
 
-### Un Pause a Giveaway
+### Unpause a Giveaway
 
 ```js
 client.on('message', (message) => {
@@ -328,9 +328,9 @@ client.on('message', (message) => {
     if (command === 'unpause') {
         const messageID = args[0];
         client.giveawaysManager.unpause(messageID).then(() => {
-            message.channel.send('Success! Giveaway un paused!');
+            message.channel.send('Success! Giveaway unpaused!');
         }).catch((err) => {
-            message.channel.send('Encountered an error while un pausing giveaway with ID ' + messageID + 'Error: ' + err + '');
+            message.channel.send('Encountered an error while unpausing giveaway with ID ' + messageID + '\nError: ' + err + '');
         });
     }
 });
