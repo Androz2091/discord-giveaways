@@ -73,7 +73,7 @@ exports.defaultGiveawayMessages = {
  * @typedef BonusEntry
  *
  * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
- * @property {boolean} cumulative Whether the amount of entries from the function should be added to already existing amount of entries, if any.
+ * @property {boolean} [cumulative] Whether the amount of entries from the function can get summed with other amounts of entries.
  */
 exports.BonusEntry = {};
 
@@ -99,7 +99,7 @@ exports.LastChanceOptions = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
- * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB.
+ * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {boolean} [hasGuildMembersIntent=false] Whether the client instance has access to the "GUILD_MEMBERS" intent. If set to true, everything will be faster.
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] If bots can win giveaways.
@@ -131,7 +131,7 @@ exports.defaultManagerOptions = {
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-            secondsBeforeLastChance: 5000,
+            threshold: 5000,
             embedColor: '#FF0000'
         }
     }

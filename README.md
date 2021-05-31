@@ -70,7 +70,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **client**: the discord client (your discord bot instance).
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
--   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended.
+-   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
 -   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
 -   **options.default.botsCanWin**: whether bots can win a giveaway.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
@@ -259,7 +259,7 @@ client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
     // Only members who have the "Nitro Boost" role are able to win
     exemptMembers: (member) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
-})
+});
 ```
 
 ⚠️ **Note**: If the function should be customizable
@@ -273,7 +273,7 @@ client.giveawaysManager.start(message.channel, {
     prize: 'Free Steam Key',
     // Only members who have the the role which is assigned to "roleName" are able to win
     exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
-})
+});
 ```
 
 ### Last Chance
@@ -289,7 +289,7 @@ client.giveawaysManager.start(message.channel, {
         threshold: 5000,
         embedColor: '#FF0000'
     }
-})
+});
 ```
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
@@ -303,14 +303,15 @@ client.giveawaysManager.start(message.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
-    bonusEntries: [
-        // Members who have the "Nitro Boost" role get 2 bonus entries
+    bonusEntries: [  
         {
+            // Members who have the "Nitro Boost" role get 2 bonus entries
             bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
+            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false
         }
     ]
-})
+});
 ```
 
 ⚠️ **Note**: If the `bonus` function should be customizable
@@ -324,13 +325,14 @@ client.giveawaysManager.start(message.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     bonusEntries: [
-        // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleBonusEntries"
         {   
+            // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
             bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
+            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false 
         }
     ]
-})
+});
 ```
 
 ## 🇫🇷 Translation

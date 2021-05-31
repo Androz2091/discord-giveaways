@@ -190,8 +190,8 @@ class GiveawaysManager extends EventEmitter {
             if (!channel || !channel.id) {
                 return reject(`channel is not a valid guildchannel. (val=${channel})`);
             }
-            if (!options.time || isNaN(options.time)) {
-                return reject(`options.time is not a number. (val=${options.time})`);
+            if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
+                return reject(`options.time is not a positive number. (val=${options.time})`);
             }
             if (typeof options.prize !== 'string') {
                 return reject(`options.prize is not a string. (val=${options.prize})`);
@@ -214,7 +214,7 @@ class GiveawaysManager extends EventEmitter {
                 botsCanWin: options.botsCanWin,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : [],
                 exemptMembers: options.exemptMembers,
-                bonusEntries: (Array.isArray(options.bonusEntries) && options.bonusEntries.every((elem) => typeof elem === 'object')) ? options.bonusEntries : [],
+                bonusEntries: Array.isArray(options.bonusEntries) ? options.bonusEntries.filter((elem) => typeof elem === 'object') : [],
                 embedColor: options.embedColor,
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData,
@@ -283,7 +283,7 @@ class GiveawaysManager extends EventEmitter {
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {Discord.Snowflake} messageID  The message ID of the giveaway
      * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>}
      */
     delete(messageID, doNotDeleteMessage = false) {
         return new Promise(async (resolve, reject) => {
@@ -301,14 +301,14 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
             this.emit('giveawayDeleted', giveaway);
-            resolve();
+            resolve(true);
         });
     }
 
     /**
      * Delete a giveaway from the database
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to delete
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>}
      */
     async deleteGiveaway(messageID) {
         await writeFileAsync(
@@ -317,7 +317,8 @@ class GiveawaysManager extends EventEmitter {
             'utf-8'
         );
         this.refreshStorage();
-        return;
+
+        return true;
     }
 
     /**
@@ -402,7 +403,16 @@ class GiveawaysManager extends EventEmitter {
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
         this.giveaways.forEach(async (giveaway) => {
-            if (giveaway.ended) return;
+            if (giveaway.ended) {
+                if (
+                    !isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number' &&
+                    giveaway.endAt + this.options.endedGiveawaysLifetime <= Date.now()
+                ) {
+                    this.giveaways = this.giveaways.filter((g) => g.messageID !== giveaway.messageID);
+                    await this.deleteGiveaway(giveaway.messageID);
+                }
+                return;
+            }
             if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) {
                 return this.end(giveaway.messageID).catch(() => {});
@@ -429,7 +439,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * @ignore
-     * @param {any} packet 
+     * @param {any} packet
      */
     async _handleRawPacket(packet) {
         if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
@@ -482,9 +492,7 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways = this.giveaways.filter(
                 (g) => !endedGiveaways.map((giveaway) => giveaway.messageID).includes(g.messageID)
             );
-            for (const giveaway of endedGiveaways) {
-                await this.deleteGiveaway(giveaway.messageID);
-            }
+            for (const giveaway of endedGiveaways) await this.deleteGiveaway(giveaway.messageID);
         }
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));
@@ -514,7 +522,8 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
- * // This can be used to add features like removing reactions of members when they do not have a specific role (such as giveaway requirements). Best used with the `exemptMembers` property of the giveaways. 
+ * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
+ * // Best used with the "exemptMembers" property of the giveaways 
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
@@ -531,7 +540,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
- * // This can be used to add features such as a member-left-giveaway message in DM
+ * // This can be used to add features such as a member-left-giveaway message per DM
  * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
  *      return member.send('That\'s sad, you won\'t be able to win the super cookie!');
  * });
@@ -558,7 +567,7 @@ class GiveawaysManager extends EventEmitter {
  * @param {Discord.GuildMember[]} winners The winners of the giveaway
  *
  * @example
- * // This can be used to add features such as a congratulatory message in DM
+ * // This can be used to add features such as a congratulatory message per DM
  * manager.on('giveawayRerolled', (giveaway, winners) => {
  *      winners.forEach((member) => {
  *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);

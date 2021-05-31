@@ -79,7 +79,7 @@ class Giveaway extends EventEmitter {
         this.winnerIDs = options.winnerIDs;
         /**
          * The mention of the user who hosts this giveaway
-         * @type {?string}
+         * @type {string?}
          */
         this.hostedBy = options.hostedBy;
         /**
@@ -149,7 +149,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The reaction on the giveaway message
-     * @type {string}
+     * @type {Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
         return this.options.reaction || this.manager.options.default.reaction;
@@ -176,7 +176,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return this.options.lastChance || this.manager.options.default.lastChance;
+        return (this.options.lastChance && typeof this.options.lastChance === 'object') ? merge(this.manager.options.default.lastChance, this.options.lastChance) : this.manager.options.default.lastChance;
     }
 
     /**
@@ -391,7 +391,16 @@ class Giveaway extends EventEmitter {
         const guild = this.channel.guild;
         // Fetch guild members
         if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
-        const users = (await reaction.users.fetch())
+
+        // Fetch all reaction users
+        let userCollection = await reaction.users.fetch();
+        while (userCollection.size % 100 === 0) {
+            const newUsers = await reaction.users.fetch({ after: userCollection.lastKey() });
+            if (newUsers.size === 0) break;
+            userCollection = userCollection.concat(newUsers);
+        }
+
+        const users = userCollection
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
         if (!users.size) return [];
@@ -464,11 +473,10 @@ class Giveaway extends EventEmitter {
             // Update data
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0) this.winnerCount = options.newWinnerCount;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
-            if (options.addTime && !isNaN(options.addTime)) this.endAt = this.endAt + options.addTime;
-            if (options.setEndTimestamp && !isNaN(options.setEndTimestamp)) this.endAt = options.setEndTimestamp;
+            if (!isNaN(options.addTime) && typeof options.addTime === 'number') this.endAt = this.endAt + options.addTime;
+            if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number') this.endAt = options.setEndTimestamp;
             if (options.newMessages && typeof options.newMessages === 'object') this.messages = merge(this.messages, options.newMessages);
-            if (Array.isArray(options.newBonusEntries) && options.newBonusEntries.every((elem) => typeof elem === 'object'))
-                this.options.bonusEntries = options.newBonusEntries;
+            if (Array.isArray(options.newBonusEntries)) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             if (options.newExtraData) this.extraData = options.newExtraData;
             // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
@@ -551,6 +559,9 @@ class Giveaway extends EventEmitter {
             await this.fetchMessage().catch(() => {});
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            }
+            if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
+                return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
             const winners = await this.roll(options.winnerCount || undefined);
             if (winners.length > 0) {
