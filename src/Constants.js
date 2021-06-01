@@ -105,9 +105,9 @@ exports.LastChanceOptions = {
  * @property {Boolean} [default.botsCanWin=false] If bots can win giveaways.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win a giveaway.
- * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The color of the giveaway embed when it is running.
- * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embed when it has ended.
- * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in the giveaway.
+ * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The color of the giveaway embeds when they are running.
+ * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embeds when they have ended.
+ * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
  * @property {LastChanceOptions} [default.lastChance] The options for the last chance system.
  */
 exports.GiveawaysManagerOptions = {};
@@ -144,7 +144,7 @@ exports.defaultManagerOptions = {
  * @property {number?} [winnerCount=this.winnerCount] The number of winners to pick.
  * @property {Object} [messages] The messages used in this method.
  * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are winners.
- * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no winners could be chosen.
+ * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
  */
 exports.GiveawayRerollOptions = {};
 
@@ -195,7 +195,7 @@ exports.GiveawayEditOptions = {};
  * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway.
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed when it is running.
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
- * @property {string?} [hostedBy] The mention of user who hosts the giveaway.
+ * @property {string?} [hostedBy] The mention of the user who hosts the giveaway.
  * @property {any} [extraData] The extra data value(s) for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  */
