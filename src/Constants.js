@@ -83,7 +83,7 @@ exports.BonusEntry = {};
  *
  * @property {boolean} [enabled] Whether the last chance system is enabled.
  * @property {string} [content] The text of the embed when the last chance system is enabled.
- * @property {number} [threshold] The number of milliseconds before the giveaway ends which the last chance system will be enabled.
+ * @property {number} [threshold] The number of milliseconds before the giveaway ends when the last chance system will be enabled.
  * @property {string} [embedColor] The color of the embed when last chance is enabled.
  */
 exports.LastChanceOptions = {
