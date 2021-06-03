@@ -19,7 +19,7 @@ const Discord = require('discord.js');
  * @property {string} [units.minutes='minutes'] The name of the "minutes" unit
  * @property {string} [units.hours='hours'] The name of the "hours" unit
  * @property {string} [units.days='days'] The name of the "days" unit
- * @property {Boolean} [units.pluralS='false'] Whether to force removing the "S" which marks the plural when the value is lower than 2
+ * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
 exports.GiveawayMessages = {};
 
@@ -39,7 +39,7 @@ exports.GiveawayMessages = {};
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
  * @property {GiveawayMessages} [messages] The giveaway messages.
- * @property {any} [extraData] The extra data value(s) for this giveaway.
+ * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  */
 exports.GiveawayStartOptions = {};
@@ -169,7 +169,7 @@ exports.defaultRerollOptions = {
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration.
  * @property {number} [setEndTimestamp] The timestamp of the new end date.
  * @property {GiveawayMessages} [newMessages] The new giveaway messages.
- * @property {any} [newExtraData] The new extra data value(s) for this giveaway.
+ * @property {any} [newExtraData] The new extra data for this giveaway.
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
  */
 exports.GiveawayEditOptions = {};
@@ -196,7 +196,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed when it is running.
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
  * @property {string?} [hostedBy] The mention of the user who hosts the giveaway.
- * @property {any} [extraData] The extra data value(s) for this giveaway.
+ * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  */
 exports.GiveawayData = {};
