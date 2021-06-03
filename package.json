@@ -39,7 +39,7 @@
     "serialize-javascript": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^14.0.5",
+    "@types/node": "^15.9.0",
     "discord.js": "^12.5.1",
     "eslint": "^7.6.0",
     "jsdoc": "^3.6.4",
