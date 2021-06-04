@@ -578,9 +578,9 @@ class Giveaway extends EventEmitter {
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
                         while (formattedWinners.length >= 2048) {
                             await this.message.channel.send(
-                                tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2000)))
+                                tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',')
                             );
-                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2000) + 2).length);
+                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                         }
                         this.message.channel.send(tempEmbed.setDescription(formattedWinners));
                         this.message.channel.send(
@@ -648,9 +648,9 @@ class Giveaway extends EventEmitter {
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
                         while (formattedWinners.length >= 2048) {
                             await this.message.channel.send(
-                                tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2000)))
+                                tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',')
                             );
-                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2000) + 2).length);
+                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                         }
                         this.message.channel.send(tempEmbed.setDescription(formattedWinners));
                         this.message.channel.send(
