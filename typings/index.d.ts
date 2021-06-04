@@ -44,7 +44,7 @@ declare module 'discord-giveaways' {
     }
     interface BonusEntry {
         bonus(member?: GuildMember): number | Promise<number>;
-        cumulative: boolean;
+        cumulative?: boolean;
     }
     interface LastChanceOptions {
         enabled: boolean;
@@ -110,7 +110,6 @@ declare module 'discord-giveaways' {
 
         public channelID: Snowflake;
         public client: Client;
-        public data: GiveawayData;
         public endAt: number;
         public ended: boolean;
         public guildID: Snowflake;
@@ -127,28 +126,28 @@ declare module 'discord-giveaways' {
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
-        readonly giveawayDuration: number;
         readonly embedColor: ColorResolvable;
         readonly embedColorEnd: ColorResolvable;
         readonly botsCanWin: boolean;
         readonly reaction: string;
+        readonly lastChance: LastChanceOptions;
 
         // getters calculated using other values
         readonly remainingTime: number;
+        readonly giveawayDuration: number;
         readonly messageURL: string;
-        readonly content: string;
+        readonly remainingTimeText: string;
         readonly channel: TextChannel;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
+        readonly data: GiveawayData;
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
-        // @ts-ignore-next-line
-        public async fetchMessage(): Promise<Message>;
+        public fetchMessage(): Promise<Message>;
         public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
-        // @ts-ignore-next-line
-        public async roll(winnerCount?: number): Promise<GuildMember[]>;
+        public roll(winnerCount?: number): Promise<GuildMember[]>;
         public fillInString(string: string): string;
         public fillInString(embed: MessageEmbed): MessageEmbed | null;
     }
