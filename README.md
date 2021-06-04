@@ -104,9 +104,10 @@ client.on('message', (message) => {
 ```
 
 -   **options.time**: the giveaway duration.
--   **options.prize**: the giveaway prize.
--   **options.hostedBy**: the user who hosts the giveaway.
+-   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages)
 -   **options.winnerCount**: the number of giveaway winners.
+-   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation)
+-   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
@@ -157,7 +158,7 @@ client.on('message', (message) => {
 ```
 
 -   **options.winnerCount**: the number of winners to pick.
--   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation)
+-   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -292,6 +293,8 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in `lastChance.content`.
+
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
 </a>
@@ -335,6 +338,26 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
+### Send embed as message
+
+You can send an embed instead of, or with the normal message for the following messages:  
+`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error`.
+
+The format looks like this: `message: { content: '', embed: new Discord.MessageEmbed() }`
+
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed string properties.
+
+
+### Access giveaway properties in messages
+
+You can access any giveaway property or function inside of giveaway messages with the format: `{this.}`.  
+For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }`.
+
+Also, you can write javascript code inside of the `{}`.  
+For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }`.
+
+If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
+
 ## 🇫🇷 Translation
 
 You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text:
@@ -343,7 +366,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
 -   **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message)
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
@@ -367,10 +390,10 @@ client.giveawaysManager.start(message.channel, {
         giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         timeRemaining: 'Time remaining: **{duration}**',
         inviteToParticipate: 'React with 🎉 to participate!',
-        winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
+        winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
         embedFooter: 'Powered by the discord-giveaways package',
         noWinner: 'Giveaway cancelled, no valid participations.',
-        hostedBy: 'Hosted by: {user}',
+        hostedBy: 'Hosted by: {this.hostedBy}',
         winners: 'winner(s)',
         endedAt: 'Ended at',
         units: {
@@ -384,12 +407,14 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all these messages (except for the "units" object).
+
 And for the `reroll()` function:
 
 ```js
 client.giveawaysManager.reroll(messageID, {
         messages: {
-            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
+            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
         }
     }).catch((err) => {
@@ -398,7 +423,10 @@ client.giveawaysManager.reroll(messageID, {
 ```
 
 -   **options.messages.congrat**: the congratulatory message.  
--   **options.messages.error**: the error message if there is no valid participant.
+-   **options.messages.error**: the error message if there is no valid participant. 
+
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
+You can [send embeds instead of, or with the normal messages](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 
 ## Custom Database
 

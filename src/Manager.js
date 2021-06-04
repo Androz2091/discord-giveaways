@@ -65,15 +65,15 @@ class GiveawaysManager extends EventEmitter {
             .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
-                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
+                (lastChanceEnabled ? giveaway.fillInString(giveaway.lastChance.content) + '\n\n' : '') +
                 giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
                     '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy : '')
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString());
-        return embed;
+        return giveaway.fillInEmbed(embed);
     }
 
     /**
@@ -95,7 +95,7 @@ class GiveawaysManager extends EventEmitter {
             return (
                 winnersString +
                 '\n' +
-                (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+                (giveaway.hostedBy ? giveaway.messages.hostedBy : '')
             );
         };
 
@@ -113,7 +113,7 @@ class GiveawaysManager extends EventEmitter {
             .setFooter(giveaway.messages.endedAt)
             .setDescription(descriptionString(formattedWinners))
             .setTimestamp(new Date(giveaway.endAt).toISOString());
-        return embed;
+        return giveaway.fillInEmbed(embed);
     }
 
     /**
@@ -130,10 +130,10 @@ class GiveawaysManager extends EventEmitter {
             .setDescription(
                 giveaway.messages.noWinner +
                     '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy : '')
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString());
-        return embed;
+        return giveaway.fillInEmbed(embed);
     }
 
     /**
