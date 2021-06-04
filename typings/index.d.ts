@@ -25,7 +25,7 @@ declare module 'discord-giveaways' {
         public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<boolean>;
         public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageID: Snowflake): Promise<GuildMember[]>;
+        public end(messageID: Snowflake, noWinnerMessage?: string): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel, options: GiveawayStartOptions): Promise<Giveaway>;
 
@@ -138,7 +138,7 @@ declare module 'discord-giveaways' {
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(): Promise<GuildMember[]>;
+        public end(noWinnerMessage?: string): Promise<GuildMember[]>;
         // @ts-ignore-next-line
         public async fetchMessage(): Promise<Message>;
         public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
