@@ -77,7 +77,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.default.embedColorEnd**: a hexadecimal color for the embeds of giveaways when they are ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
--   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
+-   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance).
 
 ### Start a giveaway
 
@@ -104,20 +104,20 @@ client.on('message', (message) => {
 ```
 
 -   **options.time**: the giveaway duration.
--   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages)
+-   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.winnerCount**: the number of giveaway winners.
--   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation)
+-   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
 -   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: whether bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
--   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
+-   **exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members).
+-   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries).
 -   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
 -   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
--   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
+-   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance).
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
@@ -188,12 +188,12 @@ client.on('message', (message) => {
 });
 ```
 
--   **options.newWinnerCount**: the new number of winners.  
--   **options.newPrize**: the new prize.  
+-   **options.newWinnerCount**: the new number of winners.
+-   **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages
--   **options.newExtraData**: the new extra data value for the giveaway
+-   **options.newMessages**: the new giveaway messages. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 
 ⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
@@ -366,7 +366,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
 -   **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message)
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
@@ -422,8 +422,8 @@ client.giveawaysManager.reroll(messageID, {
     });
 ```
 
--   **options.messages.congrat**: the congratulatory message.  
--   **options.messages.error**: the error message if there is no valid participant. 
+-   **options.messages.congrat**: the congratulatory message.
+-   **options.messages.error**: the error message if there is no valid participant.
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
 You can [send embeds instead of, or with the normal messages](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
@@ -446,9 +446,9 @@ Other examples:
 - [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
 - MongoDB
   - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
-  - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
+  - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead.
 - [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
-- Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
+- Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/).
   - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
   - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickreplit.js)
 
