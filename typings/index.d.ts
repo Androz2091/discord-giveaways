@@ -149,6 +149,8 @@ declare module 'discord-giveaways' {
         public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
         // @ts-ignore-next-line
         public async roll(winnerCount?: number): Promise<GuildMember[]>;
+        public fillInString(string: string): string;
+        public fillInString(embed: MessageEmbed): MessageEmbed | null;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
