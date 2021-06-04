@@ -10,7 +10,8 @@ declare module 'discord-giveaways' {
         GuildMember,
         TextChannel,
         MessageReaction,
-        Message
+        Message,
+        MessageEmbed
     } from 'discord.js';
 
     export const version: string;
@@ -79,7 +80,7 @@ declare module 'discord-giveaways' {
         giveawayEnded?: string;
         inviteToParticipate?: string;
         timeRemaining?: string;
-        winMessage?: string;
+        winMessage?: string | MessageObject;
         embedFooter?: string;
         noWinner?: string;
         winners?: string;
@@ -92,6 +93,10 @@ declare module 'discord-giveaways' {
             days?: string;
             pluralS?: false;
         };
+    }
+    interface MessageObject {
+        content?: string;
+        embed?: MessageEmbed;
     }
     interface GiveawaysManagerEvents {
         giveawayEnded: [Giveaway, GuildMember[]];
@@ -157,8 +162,8 @@ declare module 'discord-giveaways' {
     interface GiveawayRerollOptions {
         winnerCount?: number | null;
         messages?: {
-            congrat?: string;
-            error?: string;
+            congrat?: string | MessageObject;
+            error?: string | MessageObject;
         };
     }
     interface GiveawayData {
