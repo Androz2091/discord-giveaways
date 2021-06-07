@@ -73,7 +73,7 @@ exports.defaultGiveawayMessages = {
  * @typedef BonusEntry
  *
  * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
- * @property {boolean} [cumulative] Whether the amount of entries from the function can get summed with other amounts of entries.
+ * @property {boolean} [cumulative] If the amount of entries from the function can get summed with other amounts of entries.
  */
 exports.BonusEntry = {};
 
@@ -81,10 +81,10 @@ exports.BonusEntry = {};
  * The last chance options.
  * @typedef LastChanceOptions
  *
- * @property {boolean} [enabled] Whether the last chance system is enabled.
- * @property {string} [content] The text of the embed when the last chance system is enabled.
- * @property {number} [threshold] The number of milliseconds before the giveaway ends when the last chance system will be enabled.
- * @property {string} [embedColor] The color of the embed when last chance is enabled.
+ * @property {boolean} [enabled=false] If the last chance system is enabled.
+ * @property {string} [content='⚠️ **LAST CHANCE TO ENTER !** ⚠️'] The text of the embed when the last chance system is enabled.
+ * @property {number} [threshold=5000] The number of milliseconds before the giveaway ends when the last chance system will be enabled.
+ * @property {string} [embedColor='#FF0000'] The color of the embed when last chance is enabled.
  */
 exports.LastChanceOptions = {
     enabled: false,

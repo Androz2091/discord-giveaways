@@ -55,10 +55,10 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Generate an embed displayed when a giveaway is running (with the remaining time)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
-     * @param {boolean} lastChanceEnabled Whether or not to include the last chance text
+     * @param {boolean} [lastChanceEnabled=false] Whether or not to include the last chance text
      * @returns {Discord.MessageEmbed} The generated embed
      */
-    generateMainEmbed(giveaway, lastChanceEnabled) {
+    generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed();
         embed
             .setAuthor(giveaway.prize)
@@ -233,7 +233,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Choose new winner(s) for the giveaway
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to reroll
-     * @param {GiveawayRerollOptions} options The reroll options
+     * @param {GiveawayRerollOptions} [options] The reroll options
      * @returns {Promise<Discord.GuildMember[]>} The new winners
      *
      * @example
@@ -259,7 +259,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Edits a giveaway. The modifications will be applicated when the giveaway will be updated.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to edit
-     * @param {GiveawayEditOptions} options The edit options
+     * @param {GiveawayEditOptions} [options={}] The edit options
      * @returns {Promise<Giveaway>} The edited giveaway
      *
      * @example
