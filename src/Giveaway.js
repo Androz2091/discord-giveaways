@@ -305,7 +305,7 @@ class Giveaway extends EventEmitter {
                     ? this.options.exemptMembers || undefined
                     : serialize(this.options.exemptMembers),
             bonusEntries:
-                typeof this.options.bonusEntries === 'string'
+                (!this.options.bonusEntries || typeof this.options.bonusEntries === 'string')
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
