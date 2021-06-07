@@ -51,7 +51,7 @@ class Giveaway extends EventEmitter {
          * Whether the giveaway is ended
          * @type {Boolean}
          */
-        this.ended = options.ended;
+        this.ended = options.ended || false;
         /**
          * The channel ID of the giveaway
          * @type {Discord.Snowflake}
@@ -76,7 +76,7 @@ class Giveaway extends EventEmitter {
          * The winner IDs for this giveaway after it ended
          * @type {Array<string>}
          */
-        this.winnerIDs = options.winnerIDs;
+        this.winnerIDs = options.winnerIDs || [];
         /**
          * The mention of the user who hosts this giveaway
          * @type {string?}
@@ -176,7 +176,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return (this.options.lastChance && typeof this.options.lastChance === 'object') ? merge(this.manager.options.default.lastChance, this.options.lastChance) : this.manager.options.default.lastChance;
+        return  merge(this.manager.options.default.lastChance, this.options.lastChance);
     }
 
     /**
@@ -291,7 +291,7 @@ class Giveaway extends EventEmitter {
             guildID: this.guildID,
             startAt: this.startAt,
             endAt: this.endAt,
-            ended: this.ended,
+            ended: this.ended || undefined,
             winnerCount: this.winnerCount,
             prize: this.prize,
             messages: this.messages,
@@ -300,10 +300,10 @@ class Giveaway extends EventEmitter {
             embedColorEnd: this.options.embedColorEnd,
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
-            exemptMembers: (!this.options.exemptMembers || typeof this.options.exemptMembers === 'string') ? this.options.exemptMembers : serialize(this.options.exemptMembers),
-            bonusEntries: typeof this.options.bonusEntries === 'string' ? this.options.bonusEntries : serialize(this.options.bonusEntries),
+            exemptMembers: (!this.options.exemptMembers || typeof this.options.exemptMembers === 'string') ? (this.options.exemptMembers || undefined) : serialize(this.options.exemptMembers),
+            bonusEntries: typeof this.options.bonusEntries === 'string' ? (this.options.bonusEntries || undefined) : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
-            winnerIDs: this.winnerIDs,
+            winnerIDs: this.winnerIDs.length ? this.winnerIDs : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance
         };

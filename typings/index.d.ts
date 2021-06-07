@@ -59,9 +59,9 @@ declare module 'discord-giveaways' {
         default?: GiveawayStartOptions;
     }
     interface GiveawayStartOptions {
-        time?: number;
-        winnerCount?: number;
-        prize?: string;
+        time: number;
+        winnerCount: number;
+        prize: string;
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
@@ -70,7 +70,7 @@ declare module 'discord-giveaways' {
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: EmojiIdentifierResolvable;
-        messages?: Partial<GiveawaysMessages>;
+        messages?: GiveawaysMessages;
         extraData?: any;
         lastChance?: LastChanceOptions;
     }
@@ -108,10 +108,10 @@ declare module 'discord-giveaways' {
         public endAt: number;
         public ended: boolean;
         public guildID: Snowflake;
-        public hostedBy: User | null;
+        public hostedBy?: User;
         public manager: GiveawaysManager;
         public message: Message | null;
-        public messageID: Snowflake | null;
+        public messageID?: Snowflake;
         public messages: GiveawaysMessages;
         public options: GiveawayData;
         public prize: string;
@@ -141,7 +141,7 @@ declare module 'discord-giveaways' {
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
         public fetchMessage(): Promise<Message>;
-        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
+        public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
     }
     interface GiveawayEditOptions {
@@ -164,12 +164,12 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
-        winnerIDs: Snowflake[];
         messages: GiveawaysMessages;
-        ended: boolean;
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
+        ended?: boolean;
+        winnerIDs?: Snowflake[];
         messageID?: Snowflake | null;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];

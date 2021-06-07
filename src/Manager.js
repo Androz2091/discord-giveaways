@@ -203,22 +203,20 @@ class GiveawaysManager extends EventEmitter {
                 startAt: Date.now(),
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
-                winnerIDs: [],
                 channelID: channel.id,
                 guildID: channel.guild.id,
-                ended: false,
                 prize: options.prize,
-                hostedBy: options.hostedBy ? options.hostedBy.toString() : null,
+                hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages: options.messages,
-                reaction: options.reaction,
-                botsCanWin: options.botsCanWin,
-                exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : [],
+                reaction: options.reaction || undefined,
+                botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
+                exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
                 exemptMembers: options.exemptMembers,
-                bonusEntries: Array.isArray(options.bonusEntries) ? options.bonusEntries.filter((elem) => typeof elem === 'object') : [],
-                embedColor: options.embedColor,
-                embedColorEnd: options.embedColorEnd,
+                bonusEntries: Array.isArray(options.bonusEntries) ? options.bonusEntries.filter((elem) => typeof elem === 'object') : undefined,
+                embedColor: options.embedColor || undefined,
+                embedColorEnd: options.embedColorEnd || undefined,
                 extraData: options.extraData,
-                lastChance: options.lastChance
+                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined
             });
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send(giveaway.messages.giveaway, { embed });
