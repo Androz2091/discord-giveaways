@@ -168,7 +168,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.PermissionResolvable[]}
      */
     get exemptPermissions() {
-        return (Array.isArray(this.options.exemptPermissions) && this.options.exemptPermissions.length) ? this.options.exemptPermissions : this.manager.options.default.exemptPermissions;
+        return this.options.exemptPermissions?.length ? this.options.exemptPermissions : this.manager.options.default.exemptPermissions;
     }
 
     /**
@@ -181,16 +181,16 @@ class Giveaway extends EventEmitter {
 
     /**
      * The bonus entries for this giveaway
-     * @type {BonusEntry[]?}
+     * @type {BonusEntry[]}
      */
     get bonusEntries() {
         const validBonusEntries = eval(this.options.bonusEntries);
-        return (Array.isArray(validBonusEntries) && validBonusEntries.length) ? validBonusEntries : [];
+        return validBonusEntries?.length ? validBonusEntries : [];
     }
 
     /**
      * The exemptMembers function of the giveaway
-     * @type {Function}
+     * @type {Function|null}
      */
     get exemptMembersFunction() {
         return this.options.exemptMembers

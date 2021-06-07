@@ -154,7 +154,7 @@ class GiveawaysManager extends EventEmitter {
                 .end()
                 .then((winners) => {
                     this.emit('giveawayEnded', giveaway, winners);
-                    resolve();
+                    resolve(winners);
                 })
                 .catch(reject);
         });
@@ -250,7 +250,7 @@ class GiveawaysManager extends EventEmitter {
                 .reroll(options)
                 .then((winners) => {
                     this.emit('giveawayRerolled', giveaway, winners);
-                    resolve();
+                    resolve(winners);
                 })
                 .catch(reject);
         });
@@ -317,7 +317,6 @@ class GiveawaysManager extends EventEmitter {
             'utf-8'
         );
         this.refreshStorage();
-
         return true;
     }
 
