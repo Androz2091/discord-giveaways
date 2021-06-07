@@ -87,7 +87,7 @@ client.on('message', (message) => {
         });
     }
 
-    if(command === 'pause') {
+    if (command === 'pause') {
         const messageID = args[0];
         client.giveawaysManager.pause(messageID).then(() => {
             message.channel.send('Success! Giveaway paused!');
@@ -96,7 +96,7 @@ client.on('message', (message) => {
         });
     }
 
-    if(command === 'unpause') {
+    if (command === 'unpause') {
         const messageID = args[0];
         client.giveawaysManager.unpause(messageID).then(() => {
             message.channel.send('Success! Giveaway un paused!');

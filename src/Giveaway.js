@@ -9,7 +9,8 @@ const {
     GiveawayRerollOptions,
     LastChanceOptions,
     BonusEntry,
-    GiveawayPauseOptions
+    GiveawayPauseOptions,
+    defaultPauseOptions 
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 
@@ -185,7 +186,7 @@ class Giveaway extends EventEmitter {
      * @type {GiveawayPauseOptions}
      */
      get pauseOptions() {
-        return this.options.pauseOptions
+        return this.options.pauseOptions || defaultPauseOptions;
     }
 
     /**
@@ -629,7 +630,9 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            if(this.pauseOptions.isPaused) return reject('Giveaway with ID ' + this.messageID + ' is already paused.');
+            if (this.pauseOptions.isPaused) {
+                return reject('Giveaway with ID ' + this.messageID + ' is already paused.');
+            }
             // Update data
             if (options.content && typeof options.content === "string") this.pauseOptions.content = this.options.pauseOptions.content;
             if (options.unPauseAfter && !isNaN(options.unPauseAfter)) this.pauseOptions.unPauseAfter = Date.now() + this.options.pauseOptions.unPauseAfter;
@@ -659,7 +662,9 @@ class Giveaway extends EventEmitter {
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
-            if(!this.pauseOptions.isPaused) return reject('Giveaway with ID ' + this.messageID + ' is not paused.');
+            if (!this.pauseOptions.isPaused) {
+                 return reject('Giveaway with ID ' + this.messageID + ' is not paused.');
+             }
             // Update data
             this.pauseOptions.isPaused = false;
             this.endAt = Date.now() + this.remainingTime;

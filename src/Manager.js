@@ -244,7 +244,7 @@ class GiveawaysManager extends EventEmitter {
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData,
                 lastChance: options.lastChance,
-                pauseOptions: typeof options.pauseOptions === 'object' ? options.pauseOptions : defaultPauseOptions 
+                pauseOptions: typeof options.pauseOptions === 'object' ? options.pauseOptions : null
             });
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send(giveaway.messages.giveaway, { embed });
@@ -487,9 +487,9 @@ class GiveawaysManager extends EventEmitter {
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
             }
-            if(giveaway.pauseOptions.isPaused) {
-            if(giveaway.pauseOptions.unPauseAfter && !isNaN(giveaway.pauseOptions.unPauseAfter) && Date.now() >= giveaway.pauseOptions.unPauseAfter) return this.unpause(giveaway.messageID).catch(() => {});
-            return;
+            if (giveaway.pauseOptions.isPaused) {
+                if (giveaway.pauseOptions.unPauseAfter && !isNaN(giveaway.pauseOptions.unPauseAfter) && Date.now() >= giveaway.pauseOptions.unPauseAfter) return this.unpause(giveaway.messageID).catch(() => {});
+                return;
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});

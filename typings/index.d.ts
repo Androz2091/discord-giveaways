@@ -56,7 +56,7 @@ declare module 'discord-giveaways' {
         isPaused: boolean;
         content: string;
         unPauseAfter: number;
-        embedColor: string;
+        embedColor: ColorResolvable;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
