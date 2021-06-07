@@ -22,9 +22,8 @@ declare module 'discord-giveaways' {
         public options: GiveawaysManagerOptions;
         public ready: boolean;
 
-        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>;
-        // @ts-ignore-next-line
-        public async deleteGiveaway(messageID: Snowflake): Promise<void>;
+        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<boolean>;
+        public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
@@ -45,7 +44,7 @@ declare module 'discord-giveaways' {
     }
     interface BonusEntry {
         bonus(member?: GuildMember): number | Promise<number>;
-        cumulative: boolean;
+        cumulative?: boolean;
     }
     interface LastChanceOptions {
         enabled: boolean;
@@ -114,7 +113,6 @@ declare module 'discord-giveaways' {
 
         public channelID: Snowflake;
         public client: Client;
-        public data: GiveawayData;
         public endAt: number;
         public ended: boolean;
         public guildID: Snowflake;
@@ -131,30 +129,30 @@ declare module 'discord-giveaways' {
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
-        readonly giveawayDuration: number;
         readonly embedColor: ColorResolvable;
         readonly embedColorEnd: ColorResolvable;
         readonly botsCanWin: boolean;
         readonly reaction: string;
+        readonly lastChance: LastChanceOptions;
 
         // getters calculated using other values
         readonly remainingTime: number;
+        readonly giveawayDuration: number;
         readonly messageURL: string;
-        readonly content: string;
+        readonly remainingTimeText: string;
         readonly channel: TextChannel;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
+        readonly data: GiveawayData;
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
+        public fetchMessage(): Promise<Message>;
+        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
+        public roll(winnerCount?: number): Promise<GuildMember[]>;
         public pause(options: GiveawayPauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
-        // @ts-ignore-next-line
-        public async fetchMessage(): Promise<Message>;
-        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
-        // @ts-ignore-next-line
-        public async roll(winnerCount?: number): Promise<GuildMember[]>;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;

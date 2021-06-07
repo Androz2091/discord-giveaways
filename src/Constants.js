@@ -73,7 +73,7 @@ exports.defaultGiveawayMessages = {
  * @typedef BonusEntry
  *
  * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
- * @property {boolean} cumulative Wheter the amount of entries from the function can can get added to other other cumulativable amount of entries.
+ * @property {boolean} [cumulative] Whether the amount of entries from the function can get summed with other amounts of entries.
  */
 exports.BonusEntry = {};
 
@@ -81,10 +81,10 @@ exports.BonusEntry = {};
  * The last chance options
  * @typedef LastChanceOptions
  *
- * @property {boolean} [enabled] Whether the last chance system is enabled
- * @property {string} [content] The text of the embed when last chance is enabled
- * @property {number} [threshold] The number of ms after which the last chance system will be enabled
- * @property {string} [lastChance.embedColor] The color of the embed when last chance is enabled
+ * @property {boolean} [enabled=false] Whether the last chance system is enabled
+ * @property {string} [content='⚠️ **LAST CHANCE TO ENTER !** ⚠️'] The text of the embed when last chance is enabled
+ * @property {number} [threshold=5000] The number of ms after which the last chance system will be enabled
+ * @property {string} [embedColor='#FF0000'] The color of the embed when last chance is enabled
  */
 exports.LastChanceOptions = {
     enabled: false,
@@ -121,7 +121,7 @@ exports.LastChanceOptions = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
- * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB.
+ * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {boolean} [hasGuildMembersIntent=false] Whether the client instance has access to the GUILD_MEMBERS intent. If set to true, everything will be faster.
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
@@ -153,7 +153,7 @@ exports.defaultManagerOptions = {
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-            secondsBeforeLastChance: 5000,
+            threshold: 5000,
             embedColor: '#FF0000'
         }
     }
