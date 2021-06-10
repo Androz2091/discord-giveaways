@@ -38,6 +38,11 @@ class Giveaway extends EventEmitter {
          */
         this.prize = options.prize;
         /**
+         * Image appearing as a thumbnail
+         * @type {?string}
+         */
+        this.thumbnail = options.thumbnail;
+        /**
          * The start date of the giveaway
          * @type {Number}
          */
@@ -196,7 +201,7 @@ class Giveaway extends EventEmitter {
         return this.options.exemptMembers
             ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
                 ? eval(`(${this.options.exemptMembers})`)
-                : eval(this.options.exemptMembers) 
+                : eval(this.options.exemptMembers)
             : null;
     }
 
@@ -249,9 +254,9 @@ class Giveaway extends EventEmitter {
             isHour = hours > 0,
             isMinute = minutes > 0;
         const dayUnit =
-                days < 2 && (this.messages.units.pluralS || this.messages.units.days.endsWith('s'))
-                    ? this.messages.units.days.substr(0, this.messages.units.days.length - 1)
-                    : this.messages.units.days,
+            days < 2 && (this.messages.units.pluralS || this.messages.units.days.endsWith('s'))
+                ? this.messages.units.days.substr(0, this.messages.units.days.length - 1)
+                : this.messages.units.days,
             hourUnit =
                 hours < 2 && (this.messages.units.pluralS || this.messages.units.hours.endsWith('s'))
                     ? this.messages.units.hours.substr(0, this.messages.units.hours.length - 1)
@@ -317,7 +322,7 @@ class Giveaway extends EventEmitter {
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
             if (!this.messageID) return;
-            const message = await this.channel.messages.fetch(this.messageID).catch(() => {});
+            const message = await this.channel.messages.fetch(this.messageID).catch(() => { });
             if (!message) {
                 this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
                 await this.manager.deleteGiveaway(this.messageID);
@@ -335,7 +340,7 @@ class Giveaway extends EventEmitter {
     async checkWinnerEntry(user) {
         if (this.winnerIDs.includes(user.id)) return false;
         const guild = this.channel.guild;
-        const member = guild.members.cache.get(user.id) || (await guild.members.fetch(user.id).catch(() => {}));
+        const member = guild.members.cache.get(user.id) || (await guild.members.fetch(user.id).catch(() => { }));
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
@@ -363,7 +368,7 @@ class Giveaway extends EventEmitter {
                                 cumulativeEntries.push(result);
                             } else {
                                 entries.push(result);
-                            }  
+                            }
                         }
                     } catch (err) {
                         console.error(`Giveaway message ID: ${this.messageID}\n${serialize(obj.bonus)}\n${err}`);
@@ -457,7 +462,7 @@ class Giveaway extends EventEmitter {
             if (!this.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             }
-            await this.fetchMessage().catch(() => {});
+            await this.fetchMessage().catch(() => { });
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
@@ -490,7 +495,7 @@ class Giveaway extends EventEmitter {
             }
             this.ended = true;
             this.endAt = Date.now();
-            await this.fetchMessage().catch(() => {});
+            await this.fetchMessage().catch(() => { });
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
@@ -500,7 +505,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                await this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => { });
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = this.messages.winMessage
                     .replace('{winners}', formattedWinners)
@@ -529,7 +534,7 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => { });
                 resolve([]);
             }
         });
@@ -548,7 +553,7 @@ class Giveaway extends EventEmitter {
             if (!this.channel) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             }
-            await this.fetchMessage().catch(() => {});
+            await this.fetchMessage().catch(() => { });
             if (!this.message) {
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
@@ -557,7 +562,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                await this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => { });
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = options.messages.congrat
                     .replace('{winners}', formattedWinners)

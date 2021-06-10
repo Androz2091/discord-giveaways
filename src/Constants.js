@@ -185,6 +185,7 @@ exports.GiveawayEditOptions = {};
  * @property {GiveawayMessages} messages The giveaway messages
  * @property {boolean} ended Whether the giveaway is ended
  * @property {string} prize The prize of the giveaway
+ * @property {string?} [thumbnail] Image appearing as a thumbnail
  * @property {Discord.Snowflake} channelID The ID of the channel
  * @property {Discord.Snowflake} guildID The ID of the guild
  * @property {Discord.Snowflake?} [messageID] The ID of the message
