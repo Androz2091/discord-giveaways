@@ -61,7 +61,7 @@ class GiveawaysManager extends EventEmitter {
     generateMainEmbed(giveaway, lastChanceEnabled) {
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
+            .setTitle(giveaway.prize)
             .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
