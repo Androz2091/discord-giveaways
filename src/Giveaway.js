@@ -127,7 +127,7 @@ class Giveaway extends EventEmitter {
      * @type {Number}
      * @readonly
      */
-    get giveawayDuration() {
+    get duration() {
         return this.endAt - this.startAt;
     }
 

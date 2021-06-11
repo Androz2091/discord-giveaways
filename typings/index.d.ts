@@ -129,7 +129,7 @@ declare module 'discord-giveaways' {
 
         // getters calculated using other values
         readonly remainingTime: number;
-        readonly giveawayDuration: number;
+        readonly duration: number;
         readonly messageURL: string;
         readonly remainingTimeText: string;
         readonly channel: TextChannel;
