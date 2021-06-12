@@ -61,18 +61,20 @@ class GiveawaysManager extends EventEmitter {
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
+            .setTitle(giveaway.prize)
             .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
             .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
             .setDescription(
                 (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
-                giveaway.messages.inviteToParticipate +
+                    giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
+            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setThumbnail(giveaway.thumbnail);
+
         return embed;
     }
 
@@ -108,11 +110,12 @@ class GiveawaysManager extends EventEmitter {
 
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
+            .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt)
             .setDescription(descriptionString(formattedWinners))
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
+            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setThumbnail(giveaway.thumbnail);
         return embed;
     }
 
@@ -124,7 +127,7 @@ class GiveawaysManager extends EventEmitter {
     generateNoValidParticipantsEndEmbed(giveaway) {
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
+            .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt)
             .setDescription(
@@ -132,7 +135,8 @@ class GiveawaysManager extends EventEmitter {
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
+            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setThumbnail(giveaway.thumbnail);
         return embed;
     }
 
@@ -202,6 +206,7 @@ class GiveawaysManager extends EventEmitter {
                     (options.messages && typeof options.messages === 'object')
                         ? merge(defaultGiveawayMessages, options.messages)
                         : defaultGiveawayMessages,
+                thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 reaction: options.reaction || undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
