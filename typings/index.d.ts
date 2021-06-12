@@ -60,9 +60,9 @@ declare module 'discord-giveaways' {
         default?: GiveawayStartOptions;
     }
     interface GiveawayStartOptions {
-        time?: number;
-        winnerCount?: number;
-        prize?: string;
+        time: number;
+        winnerCount: number;
+        prize: string;
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
@@ -71,7 +71,8 @@ declare module 'discord-giveaways' {
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: EmojiIdentifierResolvable;
-        messages?: Partial<GiveawaysMessages>;
+        messages?: GiveawaysMessages;
+        thumbnail?: string;
         extraData?: any;
         lastChance?: LastChanceOptions;
     }
@@ -113,11 +114,12 @@ declare module 'discord-giveaways' {
         public endAt: number;
         public ended: boolean;
         public guildID: Snowflake;
-        public hostedBy: User | null;
+        public hostedBy?: User;
         public manager: GiveawaysManager;
         public message: Message | null;
-        public messageID: Snowflake | null;
+        public messageID?: Snowflake;
         public messages: GiveawaysMessages;
+        public thumbnail?: string;
         public options: GiveawayData;
         public prize: string;
         public startAt: number;
@@ -134,7 +136,7 @@ declare module 'discord-giveaways' {
 
         // getters calculated using other values
         readonly remainingTime: number;
-        readonly giveawayDuration: number;
+        readonly duration: number;
         readonly messageURL: string;
         readonly remainingTimeText: string;
         readonly channel: TextChannel;
@@ -146,7 +148,7 @@ declare module 'discord-giveaways' {
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
         public fetchMessage(): Promise<Message>;
-        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
+        public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
         public fillInString(string: string): string;
         public fillInString(embed: MessageEmbed): MessageEmbed | null;
@@ -157,6 +159,7 @@ declare module 'discord-giveaways' {
         addTime?: number;
         setEndTimestamp?: number;
         newMessages?: Partial<GiveawaysMessages>;
+        newThumbnail?: string;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
     }
@@ -171,12 +174,12 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
-        winnerIDs: Snowflake[];
         messages: GiveawaysMessages;
-        ended: boolean;
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
+        ended?: boolean;
+        winnerIDs?: Snowflake[];
         messageID?: Snowflake | null;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
@@ -184,6 +187,7 @@ declare module 'discord-giveaways' {
         bonusEntries?: string;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
+        thumbnail?: string;
         hostedBy?: string | null;
         extraData?: any;
         lastChance?: LastChanceOptions;

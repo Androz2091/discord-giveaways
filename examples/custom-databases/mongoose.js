@@ -104,7 +104,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'

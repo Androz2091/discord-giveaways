@@ -39,6 +39,7 @@ exports.GiveawayMessages = {};
  * @property {Discord.ColorResolvable} [embedColorEnd] The giveaway embeds color when they are ended
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate to the giveaways
  * @property {GiveawayMessages} [messages] The giveaway messages
+ * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
  */
@@ -149,7 +150,7 @@ exports.defaultManagerOptions = {
  * The reroll method options
  * @typedef GiveawayRerollOptions
  *
- * @property {number?} [winnerCount=this.winnerCount] The number of winners to pick
+ * @property {number} [winnerCount=this.winnerCount] The number of winners to pick
  * @property {Object} [messages] The messages used in this method
  * @property {string|MessageObject} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}'] The message used if there are winners
  * @property {string|MessageObject} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no winner can be choosen
@@ -177,6 +178,7 @@ exports.defaultRerollOptions = {
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration
  * @property {number} [setEndTimestamp] The timestamp of the new end date
  * @property {GiveawayMessages} [newMessages] The new giveaway messages
+ * @property {string} [newThumbnail] The new thumbnail url.
  * @property {any} [newExtraData] The new extra data value for this giveaway
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects
  */
@@ -189,21 +191,22 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway
- * @property {Discord.Snowflake[]} winnerIDs winnerIDs The winner IDs of the giveaway after it ended
  * @property {GiveawayMessages} messages The giveaway messages
- * @property {boolean} ended Whether the giveaway is ended
  * @property {string} prize The prize of the giveaway
+ * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {Discord.Snowflake} channelID The ID of the channel
  * @property {Discord.Snowflake} guildID The ID of the guild
- * @property {Discord.Snowflake?} [messageID] The ID of the message
+ * @property {boolean} [ended] Whether the giveaway is ended
+ * @property {Discord.Snowflake[]} [winnerIDs] winnerIDs The winner IDs of the giveaway after it ended
+ * @property {Discord.Snowflake} [messageID] The ID of the message
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction of the giveaway
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win the giveaway
- * @property {string?} [exemptMembers] Filter function to exempt members from winning the giveaway
+ * @property {string} [exemptMembers] Filter function to exempt members from winning the giveaway
  * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
- * @property {string?} [hostedBy] Mention of user who hosts the giveaway
+ * @property {string} [hostedBy] Mention of user who hosts the giveaway
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
  */
