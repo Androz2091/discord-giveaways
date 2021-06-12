@@ -201,11 +201,6 @@ class GiveawaysManager extends EventEmitter {
                 channelID: channel.id,
                 guildID: channel.guild.id,
                 prize: options.prize,
-                hostedBy: options.hostedBy ? options.hostedBy.toString() : null,
-                messages: options.messages,
-                reaction: options.reaction,
-                botsCanWin: options.botsCanWin,
-                exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : [],
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
                     (options.messages && typeof options.messages === 'object')
