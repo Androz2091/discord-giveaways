@@ -152,6 +152,7 @@ declare module 'discord-giveaways' {
         addTime?: number;
         setEndTimestamp?: number;
         newMessages?: Partial<GiveawaysMessages>;
+        newThumbnail?: string;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
     }
