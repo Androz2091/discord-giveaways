@@ -189,7 +189,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.Snowflake} channelID The ID of the channel
  * @property {Discord.Snowflake} guildID The ID of the guild
  * @property {boolean} [ended] Whether the giveaway is ended
- * @property {Discord.Snowflake[]} [winnerIDs] winnerIDs The winner IDs of the giveaway after it ended
+ * @property {Discord.Snowflake[]} [winnerIDs] The winner IDs of the giveaway after it ended
  * @property {Discord.Snowflake} [messageID] The ID of the message
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction of the giveaway
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
