@@ -59,7 +59,7 @@ class Giveaway extends EventEmitter {
         this.channelID = options.channelID;
         /**
          * The message ID of the giveaway
-         * @type {Discord.Snowflake?}
+         * @type {Discord.Snowflake}
          */
         this.messageID = options.messageID;
         /**
@@ -74,12 +74,12 @@ class Giveaway extends EventEmitter {
         this.winnerCount = options.winnerCount;
         /**
          * The winner IDs for this giveaway after it ended
-         * @type {Array<string>}
+         * @type {string[]}
          */
         this.winnerIDs = options.winnerIDs || [];
         /**
          * The mention of the user who hosts this giveaway
-         * @type {string?}
+         * @type {string}
          */
         this.hostedBy = options.hostedBy;
         /**
@@ -104,7 +104,7 @@ class Giveaway extends EventEmitter {
         this.options = options;
         /**
          * The message instance of the embed of this giveaway
-         * @type {Discord.Message?}
+         * @type {?Discord.Message}
          */
         this.message = null;
     }
