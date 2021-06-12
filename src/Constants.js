@@ -9,7 +9,7 @@ const Discord = require('discord.js');
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Incite people to react to the giveaway.
  * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below inviteToParticipate in the giveaway embed. {duration} will be replaced automatically with the time remaining.
  * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
- * @property {string} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
+ * @property {string|embedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there's no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
@@ -68,6 +68,14 @@ exports.defaultGiveawayMessages = {
         pluralS: false
     }
 };
+
+/**
+ * Embed Footer object.
+ * @typedef embedFooterObject
+ *
+ * @property {string} [text] The text of the footer.
+ * @property {string} [iconURL] The icon URL of the footer.
+ */
 
 /**
  * Bonus entry object.

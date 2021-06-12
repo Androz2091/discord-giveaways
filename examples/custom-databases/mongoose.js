@@ -32,7 +32,7 @@ const giveawaySchema = new mongoose.Schema({
         inviteToParticipate: String,
         timeRemaining: String,
         winMessage: String,
-        embedFooter: String,
+        embedFooter: mongoose.Mixed,
         noWinner: String,
         winners: String,
         endedAt: String,

@@ -89,7 +89,7 @@ declare module 'discord-giveaways' {
         inviteToParticipate?: string;
         timeRemaining?: string;
         winMessage?: string;
-        embedFooter?: string;
+        embedFooter?: string | { text: string; iconURL: string; };
         noWinner?: string;
         winners?: string;
         endedAt?: string;
