@@ -22,9 +22,8 @@ declare module 'discord-giveaways' {
         public options: GiveawaysManagerOptions;
         public ready: boolean;
 
-        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<void>;
-        // @ts-ignore-next-line
-        public async deleteGiveaway(messageID: Snowflake): Promise<void>;
+        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<boolean>;
+        public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
@@ -44,7 +43,7 @@ declare module 'discord-giveaways' {
     }
     interface BonusEntry {
         bonus(member?: GuildMember): number | Promise<number>;
-        cumulative: boolean;
+        cumulative?: boolean;
     }
     interface LastChanceOptions {
         enabled: boolean;
@@ -60,9 +59,9 @@ declare module 'discord-giveaways' {
         default?: GiveawayStartOptions;
     }
     interface GiveawayStartOptions {
-        time?: number;
-        winnerCount?: number;
-        prize?: string;
+        time: number;
+        winnerCount: number;
+        prize: string;
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
@@ -71,7 +70,7 @@ declare module 'discord-giveaways' {
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: EmojiIdentifierResolvable;
-        messages?: Partial<GiveawaysMessages>;
+        messages?: GiveawaysMessages;
         extraData?: any;
         lastChance?: LastChanceOptions;
     }
@@ -106,14 +105,13 @@ declare module 'discord-giveaways' {
 
         public channelID: Snowflake;
         public client: Client;
-        public data: GiveawayData;
         public endAt: number;
         public ended: boolean;
         public guildID: Snowflake;
-        public hostedBy: User | null;
+        public hostedBy?: User;
         public manager: GiveawaysManager;
         public message: Message | null;
-        public messageID: Snowflake | null;
+        public messageID?: Snowflake;
         public messages: GiveawaysMessages;
         public options: GiveawayData;
         public prize: string;
@@ -123,28 +121,28 @@ declare module 'discord-giveaways' {
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
-        readonly giveawayDuration: number;
         readonly embedColor: ColorResolvable;
         readonly embedColorEnd: ColorResolvable;
         readonly botsCanWin: boolean;
         readonly reaction: string;
+        readonly lastChance: LastChanceOptions;
 
         // getters calculated using other values
         readonly remainingTime: number;
+        readonly duration: number;
         readonly messageURL: string;
-        readonly content: string;
+        readonly remainingTimeText: string;
         readonly channel: TextChannel;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
+        readonly data: GiveawayData;
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(): Promise<GuildMember[]>;
-        // @ts-ignore-next-line
-        public async fetchMessage(): Promise<Message>;
-        public reroll(options: GiveawayRerollOptions): Promise<GuildMember[]>;
-        // @ts-ignore-next-line
-        public async roll(winnerCount?: number): Promise<GuildMember[]>;
+        public fetchMessage(): Promise<Message>;
+        public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
+        public roll(winnerCount?: number): Promise<GuildMember[]>;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
@@ -166,12 +164,12 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
-        winnerIDs: Snowflake[];
         messages: GiveawaysMessages;
-        ended: boolean;
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
+        ended?: boolean;
+        winnerIDs?: Snowflake[];
         messageID?: Snowflake | null;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];

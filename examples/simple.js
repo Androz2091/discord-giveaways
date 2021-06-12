@@ -13,7 +13,6 @@ const manager = new GiveawaysManager(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -63,7 +62,7 @@ client.on('message', (message) => {
         }).then(() => {
             // Here, we can calculate the time after which we are sure that the lib will update the giveaway
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
-            message.channel.send('Success! Giveaway will updated in less than ' + numberOfSecondsMax + ' seconds.');
+            message.channel.send('Success! Giveaway will update in less than ' + numberOfSecondsMax + ' seconds.');
         }).catch(() => {
             message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
         });

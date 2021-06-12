@@ -74,7 +74,7 @@ exports.defaultGiveawayMessages = {
  * @typedef BonusEntry
  *
  * @property {Function} bonus The filter function that takes one parameter, a member and returns the amount of entries.
- * @property {boolean} cumulative Wheter the amount of entries from the function can can get added to other other cumulativable amount of entries.
+ * @property {boolean} [cumulative] Whether the amount of entries from the function can get summed with other amounts of entries.
  */
 exports.BonusEntry = {};
 
@@ -82,10 +82,10 @@ exports.BonusEntry = {};
  * The last chance options
  * @typedef LastChanceOptions
  *
- * @property {boolean} [enabled] Whether the last chance system is enabled
- * @property {string} [content] The text of the embed when last chance is enabled
- * @property {number} [threshold] The number of ms after which the last chance system will be enabled
- * @property {string} [embedColor] The color of the embed when last chance is enabled
+ * @property {boolean} [enabled=false] Whether the last chance system is enabled
+ * @property {string} [content='⚠️ **LAST CHANCE TO ENTER !** ⚠️'] The text of the embed when last chance is enabled
+ * @property {number} [threshold=5000] The number of ms after which the last chance system will be enabled
+ * @property {string} [embedColor='#FF0000'] The color of the embed when last chance is enabled
  */
 exports.LastChanceOptions = {
     enabled: false,
@@ -100,7 +100,7 @@ exports.LastChanceOptions = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
- * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB.
+ * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {boolean} [hasGuildMembersIntent=false] Whether the client instance has access to the GUILD_MEMBERS intent. If set to true, everything will be faster.
  * @property {GiveawayStartOptions} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
@@ -132,7 +132,7 @@ exports.defaultManagerOptions = {
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-            secondsBeforeLastChance: 5000,
+            threshold: 5000,
             embedColor: '#FF0000'
         }
     }
@@ -142,7 +142,7 @@ exports.defaultManagerOptions = {
  * The reroll method options
  * @typedef GiveawayRerollOptions
  *
- * @property {number?} [winnerCount=this.winnerCount] The number of winners to pick
+ * @property {number} [winnerCount=this.winnerCount] The number of winners to pick
  * @property {Object} [messages] The messages used in this method
  * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are winners
  * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no winner can be choosen
@@ -182,22 +182,22 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway
  * @property {number} endAt The end date of the giveaway
  * @property {number} winnerCount The number of winners of the giveaway
- * @property {Discord.Snowflake[]} winnerIDs winnerIDs The winner IDs of the giveaway after it ended
  * @property {GiveawayMessages} messages The giveaway messages
- * @property {boolean} ended Whether the giveaway is ended
  * @property {string} prize The prize of the giveaway
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {Discord.Snowflake} channelID The ID of the channel
  * @property {Discord.Snowflake} guildID The ID of the guild
- * @property {Discord.Snowflake?} [messageID] The ID of the message
+ * @property {boolean} [ended] Whether the giveaway is ended
+ * @property {Discord.Snowflake[]} [winnerIDs] winnerIDs The winner IDs of the giveaway after it ended
+ * @property {Discord.Snowflake} [messageID] The ID of the message
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction of the giveaway
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions won't be able to win the giveaway
- * @property {string?} [exemptMembers] Filter function to exempt members from winning the giveaway
+ * @property {string} [exemptMembers] Filter function to exempt members from winning the giveaway
  * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway ended when it's ended
- * @property {string?} [hostedBy] Mention of user who hosts the giveaway
+ * @property {string} [hostedBy] Mention of user who hosts the giveaway
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
  */
