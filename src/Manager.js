@@ -117,7 +117,7 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt)
+            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(descriptionString(formattedWinners))
             .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
@@ -134,7 +134,7 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt)
+            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(
                 giveaway.messages.noWinner +
                     '\n' +
