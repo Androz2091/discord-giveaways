@@ -57,7 +57,15 @@ declare module 'discord-giveaways' {
         updateCountdownEvery?: number;
         endedGiveawaysLifetime?: number;
         hasGuildMembersIntent?: boolean;
-        default?: GiveawayStartOptions;
+        default?: {
+            botsCanWin?: boolean,
+            exemptPermissions?: PermissionResolvable[],
+            exemptMembers?: (member?: GuildMember) => boolean | Promise<boolean>,
+            embedColor?: ColorResolvable,
+            embedColorEnd?: ColorResolvable,
+            reaction?: EmojiIdentifierResolvable,
+            lastChance?: LastChanceOptions;
+        };
     }
     interface GiveawayStartOptions {
         time: number;
@@ -82,7 +90,7 @@ declare module 'discord-giveaways' {
         inviteToParticipate?: string;
         timeRemaining?: string;
         winMessage?: string | MessageObject;
-        embedFooter?: string;
+        embedFooter?: string | { text: string; iconURL: string; };
         noWinner?: string;
         winners?: string;
         endedAt?: string;
@@ -131,7 +139,7 @@ declare module 'discord-giveaways' {
         readonly embedColor: ColorResolvable;
         readonly embedColorEnd: ColorResolvable;
         readonly botsCanWin: boolean;
-        readonly reaction: string;
+        readonly reaction: EmojiIdentifierResolvable;
         readonly lastChance: LastChanceOptions;
 
         // getters calculated using other values

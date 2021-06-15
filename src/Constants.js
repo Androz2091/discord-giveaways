@@ -9,7 +9,7 @@ const Discord = require('discord.js');
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Incite people to react to the giveaway.
  * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below inviteToParticipate in the giveaway embed. {duration} will be replaced automatically with the time remaining.
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended.
- * @property {string} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
+ * @property {string|embedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there's no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
@@ -70,6 +70,14 @@ exports.defaultGiveawayMessages = {
 };
 
 /**
+ * Embed Footer object.
+ * @typedef embedFooterObject
+ *
+ * @property {string} [text] The text of the footer.
+ * @property {string} [iconURL] The icon URL of the footer.
+ */
+
+/**
  * Message object.
  * @typedef MessageObject
  * 
@@ -110,7 +118,7 @@ exports.LastChanceOptions = {
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval (in ms).
  * @property {number} [endedGiveawaysLifetime=null] The time (in ms) after which a ended giveaway should get deleted from the DB. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {boolean} [hasGuildMembersIntent=false] Whether the client instance has access to the GUILD_MEMBERS intent. If set to true, everything will be faster.
- * @property {GiveawayStartOptions} [default] The default options for new giveaways.
+ * @property {Object} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] Whether the bots are able to win a giveaway.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
  * @property {Function} [default.exemptMembers] Function to filter members. If true is returned, the member won't be able to win a giveaway.
@@ -197,7 +205,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.Snowflake} channelID The ID of the channel
  * @property {Discord.Snowflake} guildID The ID of the guild
  * @property {boolean} [ended] Whether the giveaway is ended
- * @property {Discord.Snowflake[]} [winnerIDs] winnerIDs The winner IDs of the giveaway after it ended
+ * @property {Discord.Snowflake[]} [winnerIDs] The winner IDs of the giveaway after it ended
  * @property {Discord.Snowflake} [messageID] The ID of the message
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction of the giveaway
  * @property {boolean} [botsCanWin] Whether the bots can win the giveaway

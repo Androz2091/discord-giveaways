@@ -151,7 +151,7 @@ client.on('message', (message) => {
         client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -182,7 +182,7 @@ client.on('message', (message) => {
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
             message.channel.send('Success! Giveaway will update in less than ' + numberOfSecondsMax + ' seconds.');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -210,7 +210,7 @@ client.on('message', (message) => {
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -232,7 +232,7 @@ client.on('message', (message) => {
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -417,8 +417,6 @@ client.giveawaysManager.reroll(messageID, {
             congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
         }
-    }).catch((err) => {
-        message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
     });
 ```
 

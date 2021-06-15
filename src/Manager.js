@@ -49,6 +49,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(defaultManagerOptions, options);
+        if (new Discord.Intents(this.client.options.intents || this.client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
 
@@ -63,7 +64,12 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
-            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
+            .setFooter(
+                `${giveaway.winnerCount} ${giveaway.messages.winners} • ${
+                    giveaway.messages.embedFooter.text || giveaway.messages.embedFooter
+                }`,
+                giveaway.messages.embedFooter.iconURL
+            )
             .setDescription(
                 (lastChanceEnabled ? giveaway.fillInString(giveaway.lastChance.content) + '\n\n' : '') +
                     giveaway.messages.inviteToParticipate +
@@ -111,7 +117,7 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt)
+            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(descriptionString(formattedWinners))
             .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
@@ -128,7 +134,7 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt)
+            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(
                 giveaway.messages.noWinner +
                     '\n' +

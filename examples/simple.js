@@ -48,8 +48,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -63,8 +63,8 @@ client.on('message', (message) => {
             // Here, we can calculate the time after which we are sure that the lib will update the giveaway
             const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
             message.channel.send('Success! Giveaway will update in less than ' + numberOfSecondsMax + ' seconds.');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -72,8 +72,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
     
@@ -81,8 +81,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
