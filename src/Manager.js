@@ -244,7 +244,7 @@ class GiveawaysManager extends EventEmitter {
                 embedColorEnd: options.embedColorEnd,
                 extraData: options.extraData,
                 lastChance: options.lastChance,
-                pauseOptions: typeof options.pauseOptions === 'object' ? options.pauseOptions : null
+                pauseOptions: typeof options.pauseOptions === 'object' ? options.pauseOptions : undefined
             });
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send(giveaway.messages.giveaway, { embed });

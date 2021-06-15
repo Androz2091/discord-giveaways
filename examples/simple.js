@@ -91,8 +91,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.pause(messageID).then(() => {
             message.channel.send('Success! Giveaway paused!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -100,8 +100,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.unpause(messageID).then(() => {
             message.channel.send('Success! Giveaway un paused!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });

@@ -237,6 +237,42 @@ client.on('message', (message) => {
 });
 ```
 
+### Pause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
+### Unpause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway unpaused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
 ### Fetch giveaways
 
 ```js
@@ -295,46 +331,6 @@ client.giveawaysManager.start(message.channel, {
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
 </a>
-
-### Pause a Giveaway
-
-```js
-client.on('message', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'pause') {
-        const messageID = args[0];
-        client.giveawaysManager.pause(messageID, {
-            content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
-            unPauseAfter: null,
-            embedColor: '#FFFF00'
-        }).then(() => {
-            message.channel.send('Success! Giveaway paused!');
-        }).catch((err) => {
-            message.channel.send('Encountered an error while pausing giveaway with ID ' + messageID + 'Error: ' + err + '');
-        });
-    }
-});
-```
-
-### Unpause a Giveaway
-
-```js
-client.on('message', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'unpause') {
-        const messageID = args[0];
-        client.giveawaysManager.unpause(messageID).then(() => {
-            message.channel.send('Success! Giveaway unpaused!');
-        }).catch((err) => {
-            message.channel.send('Encountered an error while unpausing giveaway with ID ' + messageID + '\nError: ' + err + '');
-        });
-    }
-});
-```
 
 ### Bonus Entries
 
