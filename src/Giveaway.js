@@ -91,7 +91,7 @@ class Giveaway extends EventEmitter {
          * The URL appearing as the thumbnail on the giveaway embed.
          * @type {string}
          */
-         this.thumbnail = options.thumbnail;
+        this.thumbnail = options.thumbnail;
         /**
          * Extra data concerning this giveaway
          * @type {any}
