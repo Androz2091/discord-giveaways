@@ -191,7 +191,7 @@ class Giveaway extends EventEmitter {
      * @type {GiveawayPauseOptions}
      */
      get pauseOptions() {
-        return this.options.pauseOptions ? merge(defaultPauseOptions, this.options.pauseOptions) : defaultPauseOptions;
+        return merge(defaultPauseOptions, this.options.pauseOptions || {});
     }
 
     /**
@@ -611,62 +611,60 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * Pause's the giveaway
-     * @param {GiveawayPauseOptions} options The pause options
-     * @returns {Promise<Giveaway>} The paused giveaway
+     * Pauses the giveaway.
+     * @param {GiveawayPauseOptions} options The pause.
+     * @returns {Promise<Giveaway>} The paused giveaway.
      */
-     pause(options = {}) {
+     
+    pause(options = {}) {
         return new Promise(async (resolve, reject) => {
-            if (this.ended) {
-                return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
-            }
-            if (!this.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
-            }
+            if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
+            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
-            if (!this.message) {
-                return reject('Unable to fetch message with ID ' + this.messageID + '.');
-            }
-            if (this.pauseOptions.isPaused) {
-                return reject('Giveaway with ID ' + this.messageID + ' is already paused.');
-            }
+            if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            if (this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is already paused.');
+
             // Update data
-            if (options.content && typeof options.content === "string") this.pauseOptions.content = this.options.pauseOptions.content;
-            if (options.unPauseAfter && !isNaN(options.unPauseAfter)) this.pauseOptions.unPauseAfter = Date.now() + this.options.pauseOptions.unPauseAfter;
-            if (options.embedColor && typeof options.embedColor === "string") this.pauseOptions.embedColor = this.options.pauseOptions.embedColor;
+            if (typeof options.content === 'string') this.pauseOptions.content = options.pauseOptions.content;
+            if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'string') {
+                if (this.pauseOptions.unPauseAfter < Date.now()) this.pauseOptions.unPauseAfter = Date.now() + options.pauseOptions.unPauseAfter;
+                else this.pauseOptions.unPauseAfter = options.pauseOptions.unPauseAfter;
+            }
+            let embedColor;
+            try {
+                embedColor = Discord.Util.resolveColor(options.pauseOptions.embedColor);
+            } catch {
+                embedColor = null;
+            }
+            if (!IsNaN(embedColor) && typeof embedColor === 'number') this.pauseOptions.embedColor = embedColor;
             this.pauseOptions.isPaused = true;
-            const embed = this.manager.generatePauseEmbed(this);
-            this.message.edit({ embed }).catch(() => {});
-            // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
+            const embed = this.manager.generateMainEmbed(this);
+            this.message.edit({ embed }).catch(() => {});
             resolve(this);
         });
     }
 
     /**
-     * UnPause's the paused giveaway
-     * @returns {Promise<Giveaway>} The unpaused giveaway
+     * Unpauses the giveaway.
+     * @returns {Promise<Giveaway>} The unpaused giveaway.
      */
-     unpause() {
+    unpause() {
         return new Promise(async (resolve, reject) => {
-            if (this.ended) {
-                return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
-            }
-            if (!this.channel) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
-            }
+            if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
+            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
-            if (!this.message) {
-                return reject('Unable to fetch message with ID ' + this.messageID + '.');
-            }
-            if (!this.pauseOptions.isPaused) {
-                 return reject('Giveaway with ID ' + this.messageID + ' is not paused.');
-             }
+            if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            if (!this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is not paused.');
+            
             // Update data
+            if (!IsNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause == 'number') {
+                this.endAt = this.endAt + this.pauseOptions.durationAfterPause;
+            }
             this.pauseOptions.isPaused = false;
-            this.endAt = Date.now() + this.remainingTime;
-            // Call the db method
             await this.manager.editGiveaway(this.messageID, this.data);
+            const embed = this.manager.generateMainEmbed(this);
+            this.message.edit({ embed }).catch(() => {});
             resolve(this);
         });
     }

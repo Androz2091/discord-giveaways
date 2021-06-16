@@ -63,25 +63,31 @@ class GiveawaysManager extends EventEmitter {
      */
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed();
-        embed
-            .setTitle(giveaway.prize)
-            .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
-            .setFooter(
-                `${giveaway.winnerCount} ${giveaway.messages.winners} • ${
-                    giveaway.messages.embedFooter.text || giveaway.messages.embedFooter
-                }`,
-                giveaway.messages.embedFooter.iconURL
-            )
-            .setDescription(
-                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
-                    giveaway.messages.inviteToParticipate +
-                    '\n' +
-                    giveaway.remainingTimeText +
-                    '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
-            )
-            .setTimestamp(new Date(giveaway.endAt).toISOString())
-            .setThumbnail(giveaway.thumbnail);
+				embed
+					.setTitle(giveaway.prize)
+					.setColor(
+						(giveaways.pauseOptions.enabled && giveaway.pauseOptions.embedColor)
+							? giveaway.pauseOptions.embedColor
+							: lastChanceEnabled
+							? giveaway.lastChance.embedColor
+							: giveaway.embedColor
+					)
+					.setFooter(
+						`${giveaway.winnerCount} ${giveaway.messages.winners} • ${
+							giveaway.messages.embedFooter.text || giveaway.messages.embedFooter
+						}`,
+						giveaway.messages.embedFooter.iconURL
+					)
+					.setDescription(
+						(giveaways.pauseOptions.enabled ? giveaway.pauseOptions.content + '\n\n' : (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '')) +
+							giveaway.messages.inviteToParticipate +
+							'\n' +
+							giveaway.remainingTimeText +
+							'\n' +
+							(giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+					)
+					.setTimestamp(new Date(giveaway.endAt).toISOString())
+					.setThumbnail(giveaway.thumbnail);
 
         return embed;
     }
@@ -145,29 +151,6 @@ class GiveawaysManager extends EventEmitter {
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
-        return embed;
-    }
-
-    /**
-     * Generate an embed displayed when a giveaway is paused
-     * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
-     * @returns {Discord.MessageEmbed} The generated embed
-     */
-     generatePauseEmbed(giveaway) {
-        const embed = new Discord.MessageEmbed();
-        embed
-            .setAuthor(giveaway.prize)
-            .setColor(giveaway.pauseOptions.embedColor)
-            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
-            .setDescription(
-                giveaway.pauseOptions.content + '\n\n' +
-                giveaway.messages.inviteToParticipate +
-                    '\n' +
-                    giveaway.remainingTimeText +
-                    '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
-            )
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
     }
 
@@ -286,39 +269,35 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
-     * Pauses the ongoing giveaway
-     * @param {Discord.Snowflake} messageID The message ID of the giveaway to reroll
-     * @param {GiveawayPauseOptions} options The pause options
-     * @returns {Promise<Giveaway>}
+     * Pauses a giveaway.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to pause.
+     * @param {GiveawayPauseOptions} options The pause options.
+     * @returns {Promise<Giveaway>} The paused giveaway.
      *
      * @example
      * manager.pause('664900661003157510');
      */
-     pause(messageID, options = {}) {
+    pause(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(defaultPauseOptions, options);
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) {
-                return reject('No giveaway found with ID ' + messageID + '.');
-            }
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
             giveaway.pause(options).then(resolve).catch(reject);
         });
     }
 
     /**
-     * Un-Pauses the giveaway
-     * @param {Discord.Snowflake} messageID The message ID of the giveaway to reroll
-     * @returns {Promise<Giveaway>}
+     * Unpauses a giveaway.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to unpause.
+     * @returns {Promise<Giveaway>} The unpaused giveaway.
      *
      * @example
      * manager.unpause('664900661003157510');
      */
-     unpause(messageID) {
+    unpause(messageID) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) {
-                return reject('No giveaway found with ID ' + messageID + '.');
-            }
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
             giveaway.unpause().then(resolve).catch(reject);
         });
     }
