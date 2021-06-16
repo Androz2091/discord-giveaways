@@ -65,8 +65,12 @@ class GiveawaysManager extends EventEmitter {
             .setTitle(giveaway.prize)
             .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
             .setFooter(
-                `${giveaway.winnerCount} ${giveaway.messages.winners} • ${
-                    giveaway.messages.embedFooter.text || giveaway.messages.embedFooter
+                `${giveaway.winnerCount} ${giveaway.messages.winners}${
+                    typeof giveaway.messages.embedFooter === 'object'
+                        ? giveaway.messages.embedFooter.text?.length > 0
+                            ? ' • ' + giveaway.messages.embedFooter.text
+                            : ''
+                        : ' • ' + giveaway.messages.embedFooter
                 }`,
                 giveaway.messages.embedFooter.iconURL
             )
