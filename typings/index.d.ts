@@ -47,10 +47,10 @@ declare module 'discord-giveaways' {
         cumulative?: boolean;
     }
     interface LastChanceOptions {
-        enabled: boolean;
-        embedColor: string;
-        content: string;
-        threshold: number;
+        enabled?: boolean;
+        embedColor?: ColorResolvable;
+        content?: string;
+        threshold?: number;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
@@ -90,7 +90,7 @@ declare module 'discord-giveaways' {
         inviteToParticipate?: string;
         timeRemaining?: string;
         winMessage?: string | MessageObject;
-        embedFooter?: string | { text: string; iconURL: string; };
+        embedFooter?: string | { text?: string; iconURL?: string; };
         noWinner?: string;
         winners?: string;
         endedAt?: string;
@@ -166,13 +166,13 @@ declare module 'discord-giveaways' {
         newPrize?: string;
         addTime?: number;
         setEndTimestamp?: number;
-        newMessages?: Partial<GiveawaysMessages>;
+        newMessages?: GiveawaysMessages;
         newThumbnail?: string;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
     }
     interface GiveawayRerollOptions {
-        winnerCount?: number | null;
+        winnerCount?: number;
         messages?: {
             congrat?: string | MessageObject;
             error?: string | MessageObject;
@@ -182,13 +182,13 @@ declare module 'discord-giveaways' {
         startAt: number;
         endAt: number;
         winnerCount: number;
-        messages: GiveawaysMessages;
+        messages: Required<GiveawaysMessages>;
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
         ended?: boolean;
         winnerIDs?: Snowflake[];
-        messageID?: Snowflake | null;
+        messageID?: Snowflake;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: string;
@@ -196,7 +196,7 @@ declare module 'discord-giveaways' {
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         thumbnail?: string;
-        hostedBy?: string | null;
+        hostedBy?: string;
         extraData?: any;
         lastChance?: LastChanceOptions;
     }

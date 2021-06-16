@@ -101,7 +101,7 @@ exports.BonusEntry = {};
  * @property {boolean} [enabled=false] Whether the last chance system is enabled
  * @property {string} [content='⚠️ **LAST CHANCE TO ENTER !** ⚠️'] The text of the embed when last chance is enabled
  * @property {number} [threshold=5000] The number of ms after which the last chance system will be enabled
- * @property {string} [embedColor='#FF0000'] The color of the embed when last chance is enabled
+ * @property {Discord.ColorResolvable} [embedColor='#FF0000'] The color of the embed when last chance is enabled
  */
 exports.LastChanceOptions = {
     enabled: false,
