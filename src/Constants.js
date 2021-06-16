@@ -73,7 +73,7 @@ exports.defaultGiveawayMessages = {
  * Embed Footer object.
  * @typedef embedFooterObject
  *
- * @property {string} [text] The text of the footer.
+ * @property {string} [text] The text of the footer. If the value is a empty string then embedFooter will not show up in the giveaway embed.
  * @property {string} [iconURL] The icon URL of the footer.
  */
 
