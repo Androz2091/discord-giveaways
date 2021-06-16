@@ -464,7 +464,10 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             if (giveaway.pauseOptions.isPaused) {
-                if (giveaway.pauseOptions.unPauseAfter && !isNaN(giveaway.pauseOptions.unPauseAfter) && Date.now() >= giveaway.pauseOptions.unPauseAfter) return this.unpause(giveaway.messageID).catch(() => {});
+                if (
+                    !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
+                    Date.now() < giveaway.pauseOptions.unPauseAfter
+                ) this.unpause(giveaway.messageID).catch(() => {});
                 return;
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);

@@ -614,8 +614,7 @@ class Giveaway extends EventEmitter {
      * Pauses the giveaway.
      * @param {GiveawayPauseOptions} options The pause.
      * @returns {Promise<Giveaway>} The paused giveaway.
-     */
-     
+     */  
     pause(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
@@ -626,9 +625,17 @@ class Giveaway extends EventEmitter {
 
             // Update data
             if (typeof options.content === 'string') this.pauseOptions.content = options.pauseOptions.content;
-            if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'string') {
-                if (this.pauseOptions.unPauseAfter < Date.now()) this.pauseOptions.unPauseAfter = Date.now() + options.pauseOptions.unPauseAfter;
-                else this.pauseOptions.unPauseAfter = options.pauseOptions.unPauseAfter;
+            if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'number') {
+                if (options.pauseOptions.unPauseAfter < Date.now()) {
+                    this.pauseOptions.unPauseAfter = Date.now() + options.pauseOptions.unPauseAfter;
+                    this.endAt = this.endAt + options.pauseOptions.unPauseAfter;
+                } else { 
+                    this.pauseOptions.unPauseAfter = options.pauseOptions.unPauseAfter;
+                    this.endAt = this.endAt + this.pauseOptions.unPauseAfter - Date.now();
+                }
+            } else {
+                this.endAt = Infinity;
+                this.pauseOptions.durationAfterPause = this.remainingTime;
             }
             let embedColor;
             try {
@@ -636,11 +643,12 @@ class Giveaway extends EventEmitter {
             } catch {
                 embedColor = null;
             }
-            if (!IsNaN(embedColor) && typeof embedColor === 'number') this.pauseOptions.embedColor = embedColor;
+            if (!isNaN(embedColor) && typeof embedColor === 'number') this.pauseOptions.embedColor = options.pauseOptions.embedColor;
             this.pauseOptions.isPaused = true;
+
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({ embed }).catch(() => {});
+            this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
             resolve(this);
         });
     }
@@ -658,13 +666,14 @@ class Giveaway extends EventEmitter {
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is not paused.');
             
             // Update data
-            if (!IsNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause == 'number') {
-                this.endAt = this.endAt + this.pauseOptions.durationAfterPause;
+            if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause == 'number') {
+                this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
             this.pauseOptions.isPaused = false;
+
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({ embed }).catch(() => {});
+            this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
             resolve(this);
         });
     }
