@@ -487,6 +487,7 @@ class Giveaway extends EventEmitter {
             if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
+
             // Update data
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0) this.winnerCount = options.newWinnerCount;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
@@ -496,8 +497,13 @@ class Giveaway extends EventEmitter {
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
             if (Array.isArray(options.newBonusEntries)) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             if (options.newExtraData) this.extraData = options.newExtraData;
-            // Call the db method
+            
             await this.manager.editGiveaway(this.messageID, this.data);
+            if (this.remainingTime <= 0) this.manager.end(this.messageID).catch(() => {});
+            else {
+                const embed = this.manager.generateMainEmbed(this);
+                this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+            }
             resolve(this);
         });
     }

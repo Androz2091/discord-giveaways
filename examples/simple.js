@@ -60,9 +60,7 @@ client.on('message', (message) => {
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            // Here, we can calculate the time after which we are sure that the lib will update the giveaway
-            const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
-            message.channel.send('Success! Giveaway will update in less than ' + numberOfSecondsMax + ' seconds.');
+            message.channel.send('Success! Giveaway updated!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });

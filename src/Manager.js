@@ -63,32 +63,39 @@ class GiveawaysManager extends EventEmitter {
      */
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed();
-				embed
-					.setTitle(giveaway.prize)
-					.setColor(
-						(giveaways.pauseOptions.enabled && giveaway.pauseOptions.embedColor)
-							? giveaway.pauseOptions.embedColor
-							: lastChanceEnabled
-							? giveaway.lastChance.embedColor
-							: giveaway.embedColor
-					)
-					.setFooter(
-						`${giveaway.winnerCount} ${giveaway.messages.winners} • ${
-							giveaway.messages.embedFooter.text || giveaway.messages.embedFooter
-						}`,
-						giveaway.messages.embedFooter.iconURL
-					)
-					.setDescription(
-						(giveaways.pauseOptions.enabled ? giveaway.pauseOptions.content + '\n\n' : (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '')) +
-							giveaway.messages.inviteToParticipate +
-							'\n' +
-							giveaway.remainingTimeText +
-							'\n' +
-							(giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
-					)
-					.setTimestamp(new Date(giveaway.endAt).toISOString())
-					.setThumbnail(giveaway.thumbnail);
-
+        embed
+            .setTitle(giveaway.prize)
+            .setColor(
+                giveaways.pauseOptions.enabled && giveaway.pauseOptions.embedColor
+                    ? giveaway.pauseOptions.embedColor
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.embedColor
+                    : giveaway.embedColor
+            )
+            .setFooter(
+                `${giveaway.winnerCount} ${giveaway.messages.winners}${
+                    typeof giveaway.messages.embedFooter === 'object'
+                        ? giveaway.messages.embedFooter.text?.length > 0
+                            ? ' • ' + giveaway.messages.embedFooter.text
+                            : ''
+                        : ' • ' + giveaway.messages.embedFooter
+                }`,
+                giveaway.messages.embedFooter.iconURL
+            )
+            .setDescription(
+                (giveaways.pauseOptions.enabled
+                    ? giveaway.pauseOptions.content + '\n\n'
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.content + '\n\n'
+                    : '') +
+                    giveaway.messages.inviteToParticipate +
+                    '\n' +
+                    giveaway.remainingTimeText +
+                    '\n' +
+                    (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
+            )
+            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setThumbnail(giveaway.thumbnail);
         return embed;
     }
 
@@ -183,7 +190,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.TextChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      *
-     * @returns {Promise<Giveaway>}
+     * @returns {Promise<Giveaway>} The created giveaway.
      *
      * @example
      * manager.start(message.channel, {
@@ -208,6 +215,15 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
 
+            const validateEmbedColor = async (embedColor) => {
+                try { 
+                    embedColor = Discord.Util.resolveColor(embedColor);
+                    if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
+                } catch {
+                    return false;
+                }
+            };
+
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
                 endAt: Date.now() + options.time,
@@ -224,10 +240,10 @@ class GiveawaysManager extends EventEmitter {
                 reaction: options.reaction || undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
-                exemptMembers: options.exemptMembers,
+                exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,
                 bonusEntries: Array.isArray(options.bonusEntries) ? options.bonusEntries.filter((elem) => typeof elem === 'object') : undefined,
-                embedColor: options.embedColor || undefined,
-                embedColorEnd: options.embedColorEnd || undefined,
+                embedColor: validateEmbedColor(options.embedColor) ? options.embedColor : undefined,
+                embedColorEnd: validateEmbedColor(options.embedColorEnd) ? options.embedColorEnd : undefined,
                 extraData: options.extraData,
                 lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
                 pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined
