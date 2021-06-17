@@ -634,8 +634,8 @@ class Giveaway extends EventEmitter {
                     this.endAt = this.endAt + this.pauseOptions.unPauseAfter - Date.now();
                 }
             } else {
-                this.endAt = Infinity;
                 this.pauseOptions.durationAfterPause = this.remainingTime;
+                this.endAt = Infinity;
             }
             let embedColor;
             try {
