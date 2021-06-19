@@ -94,8 +94,8 @@ class GiveawaysManager extends EventEmitter {
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
-            .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
+        if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
     }
 
@@ -287,7 +287,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Pauses a giveaway.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to pause.
-     * @param {GiveawayPauseOptions} options The pause options.
+     * @param {GiveawayPauseOptions} [options={}] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      *
      * @example
@@ -295,7 +295,6 @@ class GiveawaysManager extends EventEmitter {
      */
     pause(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
-            options = merge(defaultPauseOptions, options);
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
             giveaway.pause(options).then(resolve).catch(reject);

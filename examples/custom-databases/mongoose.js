@@ -66,7 +66,8 @@ const giveawaySchema = new mongoose.Schema({
         isPaused: Boolean,
         content: String,
         unPauseAfter: Number,
-        embedColor: mongoose.Mixed
+        embedColor: mongoose.Mixed,
+        durationAfterPause: Number
     }
 });
 

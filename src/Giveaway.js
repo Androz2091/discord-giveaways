@@ -48,7 +48,7 @@ class Giveaway extends EventEmitter {
          * The end date of the giveaway
          * @type {Number}
          */
-        this.endAt = options.endAt;
+        this.endAt = options.endAt === null ? Infinity : options.endAt;
         /**
          * Whether the giveaway is ended
          * @type {Boolean}
@@ -251,6 +251,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get remainingTimeText() {
+        if (this.endAt === Infinity) return this.messages.timeRemainin.replace('{duration}', 'Infinity');
         const roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
         // Gets days, hours, minutes and seconds
         const days = roundTowardsZero(this.remainingTime / 86400000),

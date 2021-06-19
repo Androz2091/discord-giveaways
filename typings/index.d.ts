@@ -57,6 +57,7 @@ declare module 'discord-giveaways' {
         content: string;
         unPauseAfter: number;
         embedColor: ColorResolvable;
+        durationAfterPause: number;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
@@ -154,6 +155,7 @@ declare module 'discord-giveaways' {
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
+        readonly pauseOptions: GiveawayPauseOptions;
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
