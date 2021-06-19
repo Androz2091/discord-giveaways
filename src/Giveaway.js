@@ -631,7 +631,7 @@ class Giveaway extends EventEmitter {
             if (this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is already paused.');
 
             // Update data
-            const pauseOptions = {};
+            const pauseOptions = this.options.pauseOptions || {};
             if (typeof options.content === 'string') pauseOptions.content = options.content;
             if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'number') {
                 if (options.unPauseAfter < Date.now()) {

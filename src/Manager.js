@@ -66,7 +66,7 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(
-                giveaway.pauseOptions.enabled && giveaway.pauseOptions.embedColor
+                giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
                     ? giveaway.pauseOptions.embedColor
                     : lastChanceEnabled
                     ? giveaway.lastChance.embedColor
@@ -83,7 +83,7 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.messages.embedFooter.iconURL
             )
             .setDescription(
-                (giveaway.pauseOptions.enabled
+                (giveaway.pauseOptions.isPaused
                     ? giveaway.pauseOptions.content + '\n\n'
                     : lastChanceEnabled
                     ? giveaway.lastChance.content + '\n\n'
@@ -491,7 +491,6 @@ class GiveawaysManager extends EventEmitter {
                     !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
                     Date.now() < giveaway.pauseOptions.unPauseAfter
                 ) this.unpause(giveaway.messageID).catch(() => {});
-                return;
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
