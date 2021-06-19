@@ -483,7 +483,11 @@ class GiveawaysManager extends EventEmitter {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
                     (isNaN(giveaway.pauseOptions.durationAfterPause) || typeof giveaway.pauseOptions.durationAfterPause !== 'number')
-                ) giveaway.pauseOptions.durationAfterPause = giveaway.remainingTime;
+                ) {
+                    giveaway.options.pauseOptions.durationAfterPause = giveaway.remainingTime;
+                    giveaway.endAt = Infinity;
+                    await this.editGiveaway(giveaway.messageID, giveaway.data);
+                }
                 if (
                     !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
                     Date.now() < giveaway.pauseOptions.unPauseAfter

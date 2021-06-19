@@ -630,17 +630,17 @@ class Giveaway extends EventEmitter {
             if (this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is already paused.');
 
             // Update data
-            if (typeof options.content === 'string') this.pauseOptions.content = options.pauseOptions.content;
+            if (typeof options.content === 'string') this.options.pauseOptions.content = options.pauseOptions.content;
             if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'number') {
                 if (options.pauseOptions.unPauseAfter < Date.now()) {
-                    this.pauseOptions.unPauseAfter = Date.now() + options.pauseOptions.unPauseAfter;
+                    this.options.pauseOptions.unPauseAfter = Date.now() + options.pauseOptions.unPauseAfter;
                     this.endAt = this.endAt + options.pauseOptions.unPauseAfter;
                 } else { 
-                    this.pauseOptions.unPauseAfter = options.pauseOptions.unPauseAfter;
+                    this.options.pauseOptions.unPauseAfter = options.pauseOptions.unPauseAfter;
                     this.endAt = this.endAt + this.pauseOptions.unPauseAfter - Date.now();
                 }
             } else {
-                this.pauseOptions.durationAfterPause = this.remainingTime;
+                this.options.pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
             let embedColor;
@@ -649,8 +649,8 @@ class Giveaway extends EventEmitter {
             } catch {
                 embedColor = null;
             }
-            if (!isNaN(embedColor) && typeof embedColor === 'number') this.pauseOptions.embedColor = options.pauseOptions.embedColor;
-            this.pauseOptions.isPaused = true;
+            if (!isNaN(embedColor) && typeof embedColor === 'number') this.options.pauseOptions.embedColor = options.pauseOptions.embedColor;
+            this.options.pauseOptions.isPaused = true;
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
@@ -675,7 +675,7 @@ class Giveaway extends EventEmitter {
             if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause == 'number') {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
-            this.pauseOptions.isPaused = false;
+            this.options.pauseOptions.isPaused = false;
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
