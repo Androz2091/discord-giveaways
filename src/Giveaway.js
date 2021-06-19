@@ -630,14 +630,14 @@ class Giveaway extends EventEmitter {
             if (this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is already paused.');
 
             // Update data
-            if (typeof options.content === 'string') this.options.pauseOptions.content = options.pauseOptions.content;
+            if (typeof options.content === 'string') this.options.pauseOptions.content = options.content;
             if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'number') {
-                if (options.pauseOptions.unPauseAfter < Date.now()) {
-                    this.options.pauseOptions.unPauseAfter = Date.now() + options.pauseOptions.unPauseAfter;
-                    this.endAt = this.endAt + options.pauseOptions.unPauseAfter;
+                if (options.unPauseAfter < Date.now()) {
+                    this.options.pauseOptions.unPauseAfter = Date.now() + options.unPauseAfter;
+                    this.endAt = this.endAt + options.unPauseAfter;
                 } else { 
-                    this.options.pauseOptions.unPauseAfter = options.pauseOptions.unPauseAfter;
-                    this.endAt = this.endAt + this.pauseOptions.unPauseAfter - Date.now();
+                    this.options.pauseOptions.unPauseAfter = options.unPauseAfter;
+                    this.endAt = this.endAt + options.unPauseAfter - Date.now();
                 }
             } else {
                 this.options.pauseOptions.durationAfterPause = this.remainingTime;
@@ -645,11 +645,11 @@ class Giveaway extends EventEmitter {
             }
             let embedColor;
             try {
-                embedColor = Discord.Util.resolveColor(options.pauseOptions.embedColor);
+                embedColor = Discord.Util.resolveColor(options.embedColor);
             } catch {
                 embedColor = null;
             }
-            if (!isNaN(embedColor) && typeof embedColor === 'number') this.options.pauseOptions.embedColor = options.pauseOptions.embedColor;
+            if (!isNaN(embedColor) && typeof embedColor === 'number') this.options.pauseOptions.embedColor = options.embedColor;
             this.options.pauseOptions.isPaused = true;
 
             await this.manager.editGiveaway(this.messageID, this.data);
