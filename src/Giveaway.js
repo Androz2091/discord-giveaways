@@ -630,17 +630,18 @@ class Giveaway extends EventEmitter {
             if (this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is already paused.');
 
             // Update data
-            if (typeof options.content === 'string') this.options.pauseOptions.content = options.content;
+            const pauseOptions = {};
+            if (typeof options.content === 'string') pauseOptions.content = options.content;
             if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'number') {
                 if (options.unPauseAfter < Date.now()) {
-                    this.options.pauseOptions.unPauseAfter = Date.now() + options.unPauseAfter;
+                    pauseOptions.unPauseAfter = Date.now() + options.unPauseAfter;
                     this.endAt = this.endAt + options.unPauseAfter;
                 } else { 
-                    this.options.pauseOptions.unPauseAfter = options.unPauseAfter;
+                    pauseOptions.unPauseAfter = options.unPauseAfter;
                     this.endAt = this.endAt + options.unPauseAfter - Date.now();
                 }
             } else {
-                this.options.pauseOptions.durationAfterPause = this.remainingTime;
+                pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
             let embedColor;
@@ -649,8 +650,9 @@ class Giveaway extends EventEmitter {
             } catch {
                 embedColor = null;
             }
-            if (!isNaN(embedColor) && typeof embedColor === 'number') this.options.pauseOptions.embedColor = options.embedColor;
-            this.options.pauseOptions.isPaused = true;
+            if (!isNaN(embedColor) && typeof embedColor === 'number') pauseOptions.embedColor = options.embedColor;
+            pauseOptions.isPaused = true;
+            this.options.pauseOptions = pauseOptions;
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
