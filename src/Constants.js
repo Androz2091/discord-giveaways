@@ -15,10 +15,10 @@ const Discord = require('discord.js');
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {string} [hostedBy='Hosted by: {user}'] Below the "inviteToParticipate" message, in the description of the embed.
  * @property {Object} [units]
- * @property {string} [units.seconds='seconds'] The name of the "seconds" unit
- * @property {string} [units.minutes='minutes'] The name of the "minutes" unit
- * @property {string} [units.hours='hours'] The name of the "hours" unit
- * @property {string} [units.days='days'] The name of the "days" unit
+ * @property {string} [units.seconds='seconds'] The name of the "seconds" unit.
+ * @property {string} [units.minutes='minutes'] The name of the "minutes" unit.
+ * @property {string} [units.hours='hours'] The name of the "hours" unit.
+ * @property {string} [units.days='days'] The name of the "days" unit.
  * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
 
@@ -88,7 +88,7 @@ exports.BonusEntry = {};
  * @property {boolean} [enabled=false] If the last chance system is enabled.
  * @property {string} [content='⚠️ **LAST CHANCE TO ENTER !** ⚠️'] The text of the embed when the last chance system is enabled.
  * @property {number} [threshold=5000] The number of milliseconds before the giveaway ends when the last chance system will be enabled.
- * @property {{Discord.ColorResolvable} [embedColor='#FF0000'] The color of the embed when last chance is enabled.
+ * @property {Discord.ColorResolvable} [embedColor='#FF0000'] The color of the embed when last chance is enabled.
  */
 exports.LastChanceOptions = {
     enabled: false,
