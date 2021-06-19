@@ -10,13 +10,12 @@ const {
     defaultGiveawayMessages,
     defaultManagerOptions,
     defaultRerollOptions,
-    defaultPauseOptions,
     GiveawayEditOptions,
     GiveawayData,
     GiveawayRerollOptions,
     GiveawaysManagerOptions,
     GiveawayStartOptions,
-    GiveawayPauseOptions
+    PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 
@@ -287,7 +286,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Pauses a giveaway.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to pause.
-     * @param {GiveawayPauseOptions} [options={}] The pause options.
+     * @param {PauseOptions} [options] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      *
      * @example

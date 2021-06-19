@@ -28,7 +28,7 @@ declare module 'discord-giveaways' {
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel, options: GiveawayStartOptions): Promise<Giveaway>;
-        public pause(messageID: Snowflake, options: GiveawayPauseOptions): Promise<Giveaway>;
+        public pause(messageID: Snowflake, options: PauseOptions): Promise<Giveaway>;
         public unpause(messageID: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
             event: K,
@@ -52,7 +52,7 @@ declare module 'discord-giveaways' {
         content?: string;
         threshold?: number;
     }
-    interface GiveawayPauseOptions {
+    interface PauseOptions {
         isPaused: boolean;
         content: string;
         unPauseAfter: number;
@@ -90,7 +90,7 @@ declare module 'discord-giveaways' {
         thumbnail?: string;
         extraData?: any;
         lastChance?: LastChanceOptions;
-        pauseOptions?: GiveawayPauseOptions;
+        pauseOptions?: PauseOptions;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -155,7 +155,7 @@ declare module 'discord-giveaways' {
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
-        readonly pauseOptions: GiveawayPauseOptions;
+        readonly pauseOptions: PauseOptions;
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -163,7 +163,7 @@ declare module 'discord-giveaways' {
         public fetchMessage(): Promise<Message>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
-        public pause(options: GiveawayPauseOptions): Promise<Giveaway>;
+        public pause(options: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
     }
     interface GiveawayEditOptions {
@@ -204,6 +204,6 @@ declare module 'discord-giveaways' {
         hostedBy?: string;
         extraData?: any;
         lastChance?: LastChanceOptions;
-        pauseOptions?: GiveawayPauseOptions;
+        pauseOptions?: PauseOptions;
     }
 }

@@ -103,22 +103,16 @@ exports.LastChanceOptions = {
 };
 
 /**
- * The pause method options
- * @typedef GiveawayPauseOptions
+ * The pause options.
+ * @typedef PauseOptions
  *
- * @property {boolean} [isPaused=false] Whether the giveaway is paused.
+ * @property {boolean} [isPaused=false] If the giveaway is paused.
  * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused.
- * @property {number} [unPauseAfter=null] The number of ms after which the giveaway will unpause.
+ * @property {number} [unPauseAfter=null] The number of milliseconds after which the giveaway will automatically unpause.
  * @property {Discord.EmbedColorResolveAble} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
- * @property {number} [durationAfterPause=null|this.remainingTime] The remaining duraton after the giveaway is unpaused. ⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
+ * @property {number} [durationAfterPause=null|this.remainingTime] The remaining duration after the giveaway is unpaused. ⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
  */
- exports.GiveawayPauseOptions = {};
-
-/**
- * Default pause options
- * @type {GiveawayPauseOptions}
- */
- exports.defaultPauseOptions = {
+exports.PauseOptions = {
     isPaused: false,
     content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
     unPauseAfter: null,

@@ -9,8 +9,7 @@ const {
     GiveawayRerollOptions,
     LastChanceOptions,
     BonusEntry,
-    GiveawayPauseOptions,
-    defaultPauseOptions 
+    PauseOptions
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 
@@ -188,10 +187,10 @@ class Giveaway extends EventEmitter {
 
     /**
      * Pause options for this giveaway
-     * @type {GiveawayPauseOptions}
+     * @type {PauseOptions}
      */
      get pauseOptions() {
-        return merge(defaultPauseOptions, this.options.pauseOptions || {});
+        return merge(PauseOptions, this.options.pauseOptions || {});
     }
 
     /**
