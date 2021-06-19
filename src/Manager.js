@@ -66,7 +66,7 @@ class GiveawaysManager extends EventEmitter {
         embed
             .setTitle(giveaway.prize)
             .setColor(
-                giveaways.pauseOptions.enabled && giveaway.pauseOptions.embedColor
+                giveaway.pauseOptions.enabled && giveaway.pauseOptions.embedColor
                     ? giveaway.pauseOptions.embedColor
                     : lastChanceEnabled
                     ? giveaway.lastChance.embedColor
@@ -83,7 +83,7 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.messages.embedFooter.iconURL
             )
             .setDescription(
-                (giveaways.pauseOptions.enabled
+                (giveaway.pauseOptions.enabled
                     ? giveaway.pauseOptions.content + '\n\n'
                     : lastChanceEnabled
                     ? giveaway.lastChance.content + '\n\n'
