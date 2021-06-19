@@ -227,6 +227,6 @@ exports.GiveawayEditOptions = {};
  * @property {string} [hostedBy] Mention of user who hosts the giveaway
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
- * @property {GiveawayPauseOptions} [pauseOptions] The pause system options.
+ * @property {PauseOptions} [pauseOptions] The pause system options.
  */
 exports.GiveawayData = {};
