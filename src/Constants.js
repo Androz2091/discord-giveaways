@@ -42,6 +42,14 @@ exports.GiveawayMessages = {
 };
 
 /**
+ * Embed Footer object.
+ * @typedef embedFooterObject
+ *
+ * @property {string} [text] The text of the footer. If the value is a empty string then embedFooter will not show up in the giveaway embed.
+ * @property {string} [iconURL] The icon URL of the footer.
+ */
+
+/**
  * The start options for new giveaways
  * @typedef GiveawayStartOptions
  *
@@ -62,14 +70,6 @@ exports.GiveawayMessages = {
  * @property {LastChanceOptions} [lastChance] The last chance system options
  */
 exports.GiveawayStartOptions = {};
-
-/**
- * Embed Footer object.
- * @typedef embedFooterObject
- *
- * @property {string} [text] The text of the footer. If the value is a empty string then embedFooter will not show up in the giveaway embed.
- * @property {string} [iconURL] The icon URL of the footer.
- */
 
 /**
  * Bonus entry object.
