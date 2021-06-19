@@ -251,7 +251,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get remainingTimeText() {
-        if (this.endAt === Infinity) return this.messages.timeRemainin.replace('{duration}', 'Infinity');
+        if (this.endAt === Infinity) return this.messages.timeRemaining.replace('{duration}', 'Infinity');
         const roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
         // Gets days, hours, minutes and seconds
         const days = roundTowardsZero(this.remainingTime / 86400000),
