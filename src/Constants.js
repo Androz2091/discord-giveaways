@@ -21,7 +21,25 @@ const Discord = require('discord.js');
  * @property {string} [units.days='days'] The name of the 'days' units
  * @property {Boolean} [units.pluralS='false'] Whether to force removing the "S" which marks the plural when the value is lower than 2
  */
-exports.GiveawayMessages = {};
+exports.GiveawayMessages = {
+    giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
+    giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+    inviteToParticipate: 'React with 🎉 to participate!',
+    timeRemaining: 'Time remaining: **{duration}**',
+    winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
+    embedFooter: 'Powered by the discord-giveaways package',
+    noWinner: 'Giveaway cancelled, no valid participations.',
+    winners: 'winner(s)',
+    endedAt: 'Ended at',
+    hostedBy: 'Hosted by: {user}',
+    units: {
+        seconds: 'seconds',
+        minutes: 'minutes',
+        hours: 'hours',
+        days: 'days',
+        pluralS: false
+    }
+};
 
 /**
  * The start options for new giveaways
@@ -44,30 +62,6 @@ exports.GiveawayMessages = {};
  * @property {LastChanceOptions} [lastChance] The last chance system options
  */
 exports.GiveawayStartOptions = {};
-
-/**
- * Default giveaway messages
- * @type {GiveawayMessages}
- */
-exports.defaultGiveawayMessages = {
-    giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
-    giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
-    inviteToParticipate: 'React with 🎉 to participate!',
-    timeRemaining: 'Time remaining: **{duration}**',
-    winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
-    embedFooter: 'Powered by the discord-giveaways package',
-    noWinner: 'Giveaway cancelled, no valid participations.',
-    winners: 'winner(s)',
-    endedAt: 'Ended at',
-    hostedBy: 'Hosted by: {user}',
-    units: {
-        seconds: 'seconds',
-        minutes: 'minutes',
-        hours: 'hours',
-        days: 'days',
-        pluralS: false
-    }
-};
 
 /**
  * Embed Footer object.
@@ -119,13 +113,7 @@ exports.LastChanceOptions = {
  * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in the giveaways
  * @property {LastChanceOptions} [default.lastChance] The last chance system parameters
  */
-exports.GiveawaysManagerOptions = {};
-
-/**
- * Defaults options for the GiveawaysManager
- * @type {GiveawaysManagerOptions}
- */
-exports.defaultManagerOptions = {
+exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
     updateCountdownEvery: 5000,
     endedGiveawaysLifetime: null,
@@ -155,13 +143,7 @@ exports.defaultManagerOptions = {
  * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are winners
  * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no winner can be choosen
  */
-exports.GiveawayRerollOptions = {};
-
-/**
- * Default reroll options
- * @type {GiveawayRerollOptions}
- */
-exports.defaultRerollOptions = {
+exports.GiveawayRerollOptions = {
     winnerCount: null,
     messages: {
         congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
