@@ -254,6 +254,12 @@ client.on('message', (message) => {
 });
 ```
 
+-   **options.content**: the text of the embed when the giveaway is paused.
+-   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **options.embedColor**: the color of the embed when the giveaway is paused.
+
+⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of the giveaway!
+
 ### Unpause a giveaway
 
 ```js
@@ -329,6 +335,26 @@ client.giveawaysManager.start(message.channel, {
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
+</a>
+
+### Pause Options
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Discord Nitro!',
+    pauseOptions: {
+        isPaused: true,
+        content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+        unPauseAfter: null,
+        embedColor: '#FFFF00'
+    }
+});
+```
+
+<a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
+    <img src="https://zupimages.net/up/21/24/dxhk.png"/>
 </a>
 
 ### Bonus Entries
