@@ -7,9 +7,7 @@ const existsAsync = promisify(exists);
 const readFileAsync = promisify(readFile);
 const Discord = require('discord.js');
 const {
-    defaultGiveawayMessages,
-    defaultManagerOptions,
-    defaultRerollOptions,
+    GiveawayMessages,
     GiveawayEditOptions,
     GiveawayData,
     GiveawayRerollOptions,
@@ -49,7 +47,7 @@ class GiveawaysManager extends EventEmitter {
          * The manager options
          * @type {GiveawaysManagerOptions}
          */
-        this.options = merge(defaultManagerOptions, options);
+        this.options = merge(GiveawaysManagerOptions, options);
         if (new Discord.Intents(this.client.options.intents || this.client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
@@ -233,8 +231,8 @@ class GiveawaysManager extends EventEmitter {
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
                     (options.messages && typeof options.messages === 'object')
-                        ? merge(defaultGiveawayMessages, options.messages)
-                        : defaultGiveawayMessages,
+                        ? merge(GiveawayMessages, options.messages)
+                        : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 reaction: options.reaction || undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
@@ -269,7 +267,7 @@ class GiveawaysManager extends EventEmitter {
      */
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
-            options = merge(defaultRerollOptions, options);
+            options = merge(GiveawayRerollOptions, options);
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
 
