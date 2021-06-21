@@ -111,10 +111,10 @@ client.on('message', (message) => {
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: if bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
+-   **options.exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
 -   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
 -   **options.embedColor**: a hexadecimal color for the embed of the giveaway when it is running.
--   **options.embedColorEnd**: a hexadecimal color the embed of the giveaway when is has ended.
+-   **options.embedColorEnd**: a hexadecimal color for the embed of the giveaway when is has ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 -   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
