@@ -73,6 +73,7 @@ declare module 'discord-giveaways' {
         messages?: GiveawaysMessages;
         extraData?: any;
         lastChance?: LastChanceOptions;
+        scheduleAt?: number;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -152,6 +153,7 @@ declare module 'discord-giveaways' {
         newMessages?: Partial<GiveawaysMessages>;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
+        newScheduleAt?: number;
     }
     interface GiveawayRerollOptions {
         winnerCount?: number | null;
@@ -180,5 +182,6 @@ declare module 'discord-giveaways' {
         hostedBy?: string | null;
         extraData?: any;
         lastChance?: LastChanceOptions;
+        scheduleAt?: number;
     }
 }

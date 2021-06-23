@@ -41,6 +41,7 @@ exports.GiveawayMessages = {};
  * @property {GiveawayMessages} [messages] The giveaway messages
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
+ * @property {number} [scheduleAt] The schedule date of the giveaway
  */
 exports.GiveawayStartOptions = {};
 
@@ -171,6 +172,7 @@ exports.defaultRerollOptions = {
  * @property {GiveawayMessages} [newMessages] The new giveaway messages
  * @property {any} [newExtraData] The new extra data value for this giveaway
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects
+ * @property {number} [newScheduleAt] The new schedule date of the giveaway
  */
 exports.GiveawayEditOptions = {};
 
@@ -198,5 +200,6 @@ exports.GiveawayEditOptions = {};
  * @property {string} [hostedBy] Mention of user who hosts the giveaway
  * @property {any} [extraData] The extra data value for this giveaway
  * @property {LastChanceOptions} [lastChance] The last chance system options
+ * @property {number} [scheduleAt] The schedule date of the giveaway
  */
 exports.GiveawayData = {};
