@@ -77,6 +77,7 @@ exports.GiveawayMessages = {
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
+ * @property {PauseOptions} [pauseOptions] The options for the pause system.
  */
 exports.GiveawayStartOptions = {};
 
@@ -103,6 +104,24 @@ exports.LastChanceOptions = {
     content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
     threshold: 5000,
     embedColor: '#FF0000'
+};
+
+/**
+ * The pause options.
+ * @typedef PauseOptions
+ *
+ * @property {boolean} [isPaused=false] If the giveaway is paused.
+ * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused.
+ * @property {number} [unPauseAfter=null] The number of milliseconds after which the giveaway will automatically unpause.
+ * @property {Discord.EmbedColorResolveAble} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
+ * @property {number} [durationAfterPause=null|this.remainingTime] The remaining duration after the giveaway is unpaused. ⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
+ */
+exports.PauseOptions = {
+    isPaused: false,
+    content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+    unPauseAfter: null,
+    embedColor: '#FFFF00',
+    durationAfterPause: null
 };
 
 /**
@@ -200,5 +219,6 @@ exports.GiveawayEditOptions = {};
  * @property {string} [hostedBy] The mention of the user who hosts the giveaway.
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
+ * @property {PauseOptions} [pauseOptions] The options for the pause system.
  */
 exports.GiveawayData = {};

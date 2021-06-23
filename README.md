@@ -13,8 +13,8 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🔄 Automatic restart after bot crash!
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
--   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries etc...)
--   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
+-   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, etc...)
+-   🚀 Super powerful: start, edit, reroll, end, delete and pause giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
 -   and much more!
@@ -118,6 +118,7 @@ client.on('message', (message) => {
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 -   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance).
+-   **options.pauseOptions**: the pause system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#pause-options).
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
@@ -236,6 +237,48 @@ client.on('message', (message) => {
 });
 ```
 
+### Pause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
+-   **options.content**: the text of the embed when the giveaway is paused.
+-   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **options.embedColor**: the color of the embed when the giveaway is paused.
+
+⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
+
+### Unpause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway unpaused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
 ### Fetch giveaways
 
 ```js
@@ -295,6 +338,26 @@ You can [access giveaway properties](https://github.com/Androz2091/discord-givea
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
+</a>
+
+### Pause Options
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Discord Nitro!',
+    pauseOptions: {
+        isPaused: true,
+        content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+        unPauseAfter: null,
+        embedColor: '#FFFF00'
+    }
+});
+```
+
+<a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
+    <img src="https://zupimages.net/up/21/24/dxhk.png"/>
 </a>
 
 ### Bonus Entries
