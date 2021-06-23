@@ -13,8 +13,8 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🔄 Automatic restart after bot crash!
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
--   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries etc...)
--   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
+-   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, etc...)
+-   🚀 Super powerful: start, edit, reroll, end, delete and pause giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
 -   and much more!
@@ -48,7 +48,6 @@ const manager = new GiveawaysManager(client, {
     hasGuildMembersIntent: false,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -71,11 +70,11 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
 -   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
--   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
--   **options.default.botsCanWin**: whether bots can win a giveaway.
+-   **options.hasGuildMembersIntent**: if the bot has access to the "GUILD_MEMBERS" intent. It works without, but it will be faster with.
+-   **options.default.botsCanWin**: if bots can win giveaways.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
--   **options.default.embedColorEnd**: a hexadecimal color for the embeds of giveaways when they are ended.
+-   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways when they are running.
+-   **options.default.embedColorEnd**: a hexadecimal color for the embeds of giveaways when they have ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
 
@@ -105,18 +104,21 @@ client.on('message', (message) => {
 
 -   **options.time**: the giveaway duration.
 -   **options.prize**: the giveaway prize.
--   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerCount**: the number of giveaway winners.
+-   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
+-   **options.thumbnail**: the giveaway thumbnail url.
+-   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
--   **options.botsCanWin**: whether bots can win the giveaway.
+-   **options.botsCanWin**: if bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
+-   **options.exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
 -   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
--   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
--   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
+-   **options.embedColor**: a hexadecimal color for the embed of the giveaway when it is running.
+-   **options.embedColorEnd**: a hexadecimal color for the embed of the giveaway when is has ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 -   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
+-   **options.pauseOptions**: the pause system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#pause-options).
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
@@ -150,7 +152,7 @@ client.on('message', (message) => {
         client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -177,11 +179,9 @@ client.on('message', (message) => {
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            // Here, we can calculate the time after which we are sure that the lib will update the giveaway
-            const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
-            message.channel.send('Success! Giveaway will update in less than ' + numberOfSecondsMax + ' seconds.');
+            message.channel.send('Success! Giveaway updated!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -209,7 +209,7 @@ client.on('message', (message) => {
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -231,7 +231,49 @@ client.on('message', (message) => {
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
+### Pause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
+-   **options.content**: the text of the embed when the giveaway is paused.
+-   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **options.embedColor**: the color of the embed when the giveaway is paused.
+
+⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
+
+### Unpause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway unpaused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -296,6 +338,26 @@ client.giveawaysManager.start(message.channel, {
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
+</a>
+
+### Pause Options
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Discord Nitro!',
+    pauseOptions: {
+        isPaused: true,
+        content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+        unPauseAfter: null,
+        embedColor: '#FFFF00'
+    }
+});
+```
+
+<a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
+    <img src="https://zupimages.net/up/21/24/dxhk.png"/>
 </a>
 
 ### Bonus Entries
@@ -394,8 +456,6 @@ client.giveawaysManager.reroll(messageID, {
             congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
         }
-    }).catch((err) => {
-        message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
     });
 ```
 
@@ -486,7 +546,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -530,7 +589,6 @@ const manager = new GiveawayManagerWithShardSupport(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
