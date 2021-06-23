@@ -480,7 +480,7 @@ class Giveaway extends EventEmitter {
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (!isNaN(options.addTime) && typeof options.addTime === 'number') this.endAt = this.endAt + options.addTime;
             if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number') this.endAt = options.setEndTimestamp;
-            if (!this.message && Number.isInteger(options.newScheduleAt)) {
+            if (!this.message && !isNaN(options.newScheduleAt) && typeof options.newScheduleAt === 'number') {
                 this.scheduleAt = options.newScheduleAt;
                 this.startAt = options.newScheduleAt;
                 this.endAt = options.newScheduleAt + giveawayDuration;
