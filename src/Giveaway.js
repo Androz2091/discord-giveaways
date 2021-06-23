@@ -189,7 +189,7 @@ class Giveaway extends EventEmitter {
      * Pause options for this giveaway
      * @type {PauseOptions}
      */
-     get pauseOptions() {
+    get pauseOptions() {
         return merge(PauseOptions, this.options.pauseOptions || {});
     }
 
