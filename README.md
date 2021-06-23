@@ -259,7 +259,7 @@ client.on('message', (message) => {
 -   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **options.embedColor**: the color of the embed when the giveaway is paused.
 
-⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of the giveaway!
+⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
 
 ### Unpause a giveaway
 
