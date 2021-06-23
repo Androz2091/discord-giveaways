@@ -9,7 +9,7 @@ const Discord = require('discord.js');
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
  * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below "inviteToParticipate" in the giveaway embed. "{duration}" will be replaced automatically with the time remaining.
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended.
- * @property {string|embedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
+ * @property {string|EmbedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there is no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
@@ -44,9 +44,9 @@ exports.GiveawayMessages = {
 
 /**
  * Embed Footer object.
- * @typedef embedFooterObject
+ * @typedef EmbedFooterObject
  *
- * @property {string} [text] The text of the footer. If the value is a empty string then embedFooter will not show up in the giveaway embed.
+ * @property {string} [text] The text of the footer. If the value is a empty string then "embedFooter" will not show up in the giveaway embed.
  * @property {string} [iconURL] The icon URL of the footer.
  */
 

@@ -48,7 +48,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options);
-        if (new Discord.Intents(this.client.options.intents || this.client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
+        if (new Discord.Intents(client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
 
@@ -66,8 +66,8 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
                     ? giveaway.pauseOptions.embedColor
                     : lastChanceEnabled
-                    ? giveaway.lastChance.embedColor
-                    : giveaway.embedColor
+                        ? giveaway.lastChance.embedColor
+                        : giveaway.embedColor
             )
             .setFooter(
                 `${giveaway.winnerCount} ${giveaway.messages.winners}${
@@ -83,8 +83,8 @@ class GiveawaysManager extends EventEmitter {
                 (giveaway.pauseOptions.isPaused
                     ? giveaway.pauseOptions.content + '\n\n'
                     : lastChanceEnabled
-                    ? giveaway.lastChance.content + '\n\n'
-                    : '') +
+                        ? giveaway.lastChance.content + '\n\n'
+                        : '') +
                     giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
