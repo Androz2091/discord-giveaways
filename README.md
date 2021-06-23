@@ -343,7 +343,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
--   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.
+-   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
