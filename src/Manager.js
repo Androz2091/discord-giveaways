@@ -12,7 +12,8 @@ const {
     GiveawayData,
     GiveawayRerollOptions,
     GiveawaysManagerOptions,
-    GiveawayStartOptions
+    GiveawayStartOptions,
+    PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 
@@ -61,7 +62,13 @@ class GiveawaysManager extends EventEmitter {
         const embed = new Discord.MessageEmbed();
         embed
             .setTitle(giveaway.prize)
-            .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
+            .setColor(
+                giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
+                    ? giveaway.pauseOptions.embedColor
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.embedColor
+                    : giveaway.embedColor
+            )
             .setFooter(
                 `${giveaway.winnerCount} ${giveaway.messages.winners}${
                     typeof giveaway.messages.embedFooter === 'object'
@@ -73,16 +80,19 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.messages.embedFooter.iconURL
             )
             .setDescription(
-                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
+                (giveaway.pauseOptions.isPaused
+                    ? giveaway.pauseOptions.content + '\n\n'
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.content + '\n\n'
+                    : '') +
                     giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
-            .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
-
+        if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
     }
 
@@ -232,7 +242,8 @@ class GiveawaysManager extends EventEmitter {
                 embedColor: validateEmbedColor(options.embedColor) ? options.embedColor : undefined,
                 embedColorEnd: validateEmbedColor(options.embedColorEnd) ? options.embedColorEnd : undefined,
                 extraData: options.extraData,
-                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined
+                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
+                pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined
             });
 
             const embed = this.generateMainEmbed(giveaway);
@@ -267,6 +278,39 @@ class GiveawaysManager extends EventEmitter {
                     resolve(winners);
                 })
                 .catch(reject);
+        });
+    }
+
+    /**
+     * Pauses a giveaway.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to pause.
+     * @param {PauseOptions} [options] The pause options.
+     * @returns {Promise<Giveaway>} The paused giveaway.
+     *
+     * @example
+     * manager.pause('664900661003157510');
+     */
+    pause(messageID, options = {}) {
+        return new Promise(async (resolve, reject) => {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
+            giveaway.pause(options).then(resolve).catch(reject);
+        });
+    }
+
+    /**
+     * Unpauses a giveaway.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to unpause.
+     * @returns {Promise<Giveaway>} The unpaused giveaway.
+     *
+     * @example
+     * manager.unpause('664900661003157510');
+     */
+    unpause(messageID) {
+        return new Promise(async (resolve, reject) => {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
+            giveaway.unpause().then(resolve).catch(reject);
         });
     }
 
@@ -430,6 +474,20 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.ended = true;
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
+            }
+            if (giveaway.pauseOptions.isPaused) {
+                if (
+                    (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
+                    (isNaN(giveaway.pauseOptions.durationAfterPause) || typeof giveaway.pauseOptions.durationAfterPause !== 'number')
+                ) {
+                    giveaway.options.pauseOptions.durationAfterPause = giveaway.remainingTime;
+                    giveaway.endAt = Infinity;
+                    await this.editGiveaway(giveaway.messageID, giveaway.data);
+                }
+                if (
+                    !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
+                    Date.now() < giveaway.pauseOptions.unPauseAfter
+                ) this.unpause(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});

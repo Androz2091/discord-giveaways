@@ -83,6 +83,24 @@ client.on('message', (message) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
+
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway un paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
 });
 
 client.login(settings.token);
