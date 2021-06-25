@@ -189,12 +189,14 @@ class GiveawaysManager extends EventEmitter {
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
-            if (options.scheduleTimestamp && (!Number.isInteger(options.scheduleTimestamp) || options.scheduleTimestamp <= Date.now())) options.scheduleTimestamp = undefined;
 
             const giveaway = new Giveaway(this, {
-                startAt: options.scheduleTimestamp || Date.now(),
-                endAt: (options.scheduleTimestamp || Date.now()) + options.time,
-                scheduleTimestamp: options.scheduleTimestamp,
+                startAt: options.scheduleAt || Date.now(),
+                endAt: (options.scheduleAt || Date.now()) + options.time,
+                scheduleAt: 
+                    (!isNaN(options.scheduleAt) && typeof options.scheduleAt === 'number' && options.scheduleAt > Date.now())
+                    ? options.scheduleAt
+                    : undefined,
                 winnerCount: options.winnerCount,
                 channelID: channel.id,
                 guildID: channel.guild.id,
@@ -215,7 +217,7 @@ class GiveawaysManager extends EventEmitter {
                 lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined
             });
 
-            if (!giveaway.scheduleTimestamp) {
+            if (!giveaway.scheduleAt) {
                 const embed = this.generateMainEmbed(giveaway);
                 const message = await channel.send(giveaway.messages.giveaway, { embed });
                 message.react(giveaway.reaction);
@@ -268,7 +270,7 @@ class GiveawaysManager extends EventEmitter {
     edit(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway && !options.scheduleTimestamp) return reject('No giveaway found with ID ' + messageID + '.');
+            if (!giveaway && !options.scheduleAt) return reject('No giveaway found with ID ' + messageID + '.');
             giveaway.edit(options).then(resolve).catch(reject);
         });
     }
@@ -409,8 +411,8 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.remainingTime <= 0) {
                 return this.end(giveaway.messageID).catch(() => {});
             }
-            if (giveaway.scheduleTimestamp) {
-                if (giveaway.scheduleTimestamp < Date.now() || giveaway.scheduleTimestamp - Date.now() < this.options.updateCountdownEvery) {
+            if (giveaway.scheduleAt) {
+                if (giveaway.scheduleAt < Date.now() || giveaway.scheduleAt - Date.now() < this.options.updateCountdownEvery) {
                     setTimeout(async () => {
                         const channel = giveaway.channel || (await this.client.channels.fetch(giveaway.channelID).catch((err) => {}))
                         if (!channel) {
@@ -422,10 +424,10 @@ class GiveawaysManager extends EventEmitter {
                         const message = await giveaway.channel.send(giveaway.messages.giveaway, { embed });
                         message.react(giveaway.reaction);
                         giveaway.messageID = message.id;
-                        giveaway.scheduleTimestamp = undefined;
+                        giveaway.scheduleAt = undefined;
                         await this.editGiveaway(giveaway.messageID, giveaway.data);
                         return;
-                    }, Math.max(giveaway.scheduleTimestamp - Date.now() || 0));
+                    }, Math.max(giveaway.scheduleAt - Date.now() || 0));
                 }
                 return;
             }

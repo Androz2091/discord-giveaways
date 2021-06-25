@@ -96,7 +96,7 @@ class Giveaway extends EventEmitter {
          * The schedule date of the giveaway
          * @type {Number}
          */
-         this.scheduleTimestamp = options.scheduleTimestamp;
+         this.scheduleAt = options.scheduleAt;
         /**
          * The giveaway data
          * @type {GiveawayData}
@@ -296,7 +296,7 @@ class Giveaway extends EventEmitter {
             guildID: this.guildID,
             startAt: this.startAt,
             endAt: this.endAt,
-            scheduleTimestamp: this.scheduleTimestamp,
+            scheduleAt: this.scheduleAt,
             ended: this.ended || undefined,
             winnerCount: this.winnerCount,
             prize: this.prize,
@@ -473,17 +473,17 @@ class Giveaway extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
             if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
-            if (!options.scheduleTimestamp) await this.fetchMessage().catch(() => {});
-            if (!this.message && !options.scheduleTimestamp) return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            if (!this.scheduleAt) await this.fetchMessage().catch(() => {});
+            if (!this.message && !this.scheduleAt) return reject('Unable to fetch message with ID ' + this.messageID + '.');
             // Update data
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0) this.winnerCount = options.newWinnerCount;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (!isNaN(options.addTime) && typeof options.addTime === 'number') this.endAt = this.endAt + options.addTime;
             if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number') this.endAt = options.setEndTimestamp;
-            if (Number.isInteger(options.scheduleTimestamp)) {
-                this.scheduleTimestamp = options.scheduleTimestamp;
-                this.startAt = options.scheduleTimestamp;
-                this.endAt = options.scheduleTimestamp + giveawayDuration;
+            if (!this.message && !isNaN(options.newScheduleAt) && typeof options.newScheduleAt === 'number') {
+                this.scheduleAt = options.newScheduleAt;
+                this.startAt = options.newScheduleAt;
+                this.endAt = options.newScheduleAt + giveawayDuration;
             }
             if (options.newMessages && typeof options.newMessages === 'object') this.messages = merge(this.messages, options.newMessages);
             if (Array.isArray(options.newBonusEntries)) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
