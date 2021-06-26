@@ -203,7 +203,7 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) return reject('The manager is not ready yet.');
-            if (!channel || !channel.id) return reject(`channel is not a valid guildchannel. (val=${channel})`);
+            if (!channel || !channel.id || !channel.isText()) return reject(`channel is not a valid GuildChannel/TextChannel. (val=${channel})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
                 return reject(`options.time is not a positive number. (val=${options.time})`);
             }
