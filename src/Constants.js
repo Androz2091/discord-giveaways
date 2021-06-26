@@ -21,7 +21,6 @@ const Discord = require('discord.js');
  * @property {string} [units.days='days'] The name of the "days" unit.
  * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
-
 exports.GiveawayMessages = {
     giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
     giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
