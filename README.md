@@ -108,7 +108,6 @@ client.on('message', (message) => {
 -   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
 -   **options.thumbnail**: the giveaway thumbnail url.
 -   **options.hostedBy**: the user who hosts the giveaway.
--   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
 -   **options.botsCanWin**: if bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
