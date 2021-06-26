@@ -195,8 +195,8 @@ class GiveawaysManager extends EventEmitter {
                 endAt: (options.scheduleAt || Date.now()) + options.time,
                 scheduleAt: 
                     (!isNaN(options.scheduleAt) && typeof options.scheduleAt === 'number' && options.scheduleAt > Date.now())
-                    ? options.scheduleAt
-                    : undefined,
+                        ? options.scheduleAt
+                        : undefined,
                 winnerCount: options.winnerCount,
                 channelID: channel.id,
                 guildID: channel.guild.id,
