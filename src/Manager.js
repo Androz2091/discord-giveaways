@@ -483,6 +483,7 @@ class GiveawaysManager extends EventEmitter {
                             await this.deleteGiveaway(giveaway.messageID);
                             return;
                         }
+                        giveaway.endAt = Date.now() + giveaway.duration;
                         const embed = this.generateMainEmbed(giveaway);
                         const message = await giveaway.channel.send(giveaway.messages.giveaway, { embed });
                         message.react(giveaway.reaction);
