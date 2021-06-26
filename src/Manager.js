@@ -474,7 +474,6 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             if (!giveaway.channel) return;
-            if (giveaway.remainingTime <= 0) return this.end(giveaway.messageID).catch(() => {});
             if (giveaway.scheduleAt) {
                 if (giveaway.scheduleAt < Date.now() || giveaway.scheduleAt - Date.now() < this.options.updateCountdownEvery) {
                     setTimeout(async () => {
@@ -495,6 +494,7 @@ class GiveawaysManager extends EventEmitter {
                 }
                 return;
             }
+            if (giveaway.remainingTime <= 0) return this.end(giveaway.messageID).catch(() => {});
             await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) {
                 giveaway.ended = true;
