@@ -136,7 +136,7 @@ client.giveawaysManager.giveaways.find((g) => g.guildID === message.guild.id && 
 client.giveawaysManager.giveaways.find((g) => g.guildID === message.guild.id && g.messageID === args[0]);
 
 // If no giveaway was found
-if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
+if (!giveaway) return message.channel.send({ content: 'Unable to find a giveaway for `'+ args.join(' ') +'`.' });
 ```
 
 ### Reroll a giveaway
@@ -149,9 +149,9 @@ client.on('message', (message) => {
     if (command === 'reroll') {
         const messageID = args[0];
         client.giveawaysManager.reroll(messageID).then(() => {
-            message.channel.send('Success! Giveaway rerolled!');
+            message.channel.send({ content: 'Success! Giveaway rerolled!' });
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            message.channel.send({ content: `An error has occurred, please check and try again.\n\`${err}\`` });
         });
     }
 });
@@ -178,9 +178,9 @@ client.on('message', (message) => {
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            message.channel.send('Success! Giveaway updated!');
+            message.channel.send({ content: 'Success! Giveaway updated!' });
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            message.channel.send({ content: `An error has occurred, please check and try again.\n\`${err}\`` });
         });
     }
 });
@@ -206,9 +206,9 @@ client.on('message', (message) => {
     if (command === 'delete') {
         const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
-            message.channel.send('Success! Giveaway deleted!');
+            message.channel.send({ content: 'Success! Giveaway deleted!' });
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            message.channel.send({ content: `An error has occurred, please check and try again.\n\`${err}\`` });
         });
     }
 });
@@ -228,9 +228,9 @@ client.on('message', (message) => {
     if (command === 'end') {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
-            message.channel.send('Success! Giveaway ended!');
+             message.channel.send({ content: 'Success! Giveaway ended!' });
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            message.channel.send({ content: `An error has occurred, please check and try again.\n\`${err}\`` });
         });
     }
 });
@@ -246,9 +246,9 @@ client.on('message', (message) => {
     if (command === 'pause') {
         const messageID = args[0];
         client.giveawaysManager.pause(messageID).then(() => {
-            message.channel.send('Success! Giveaway paused!');
+            message.channel.send({ content: 'Success! Giveaway paused!' });
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            message.channel.send({ content: `An error has occurred, please check and try again.\n\`${err}\`` });
         });
     }
 });
@@ -270,9 +270,9 @@ client.on('message', (message) => {
     if (command === 'unpause') {
         const messageID = args[0];
         client.giveawaysManager.unpause(messageID).then(() => {
-            message.channel.send('Success! Giveaway unpaused!');
+            message.channel.send({ content: 'Success! Giveaway unpaused!' });
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            message.channel.send({ content: `An error has occurred, please check and try again.\n\`${err}\`` });
         });
     }
 });
