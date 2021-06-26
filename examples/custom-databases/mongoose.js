@@ -60,7 +60,8 @@ const giveawaySchema = new mongoose.Schema({
         content: String,
         threshold: Number,
         embedColor: mongoose.Mixed
-    }
+    },
+    scheduleAt: Number
 });
 
 // Create the model
