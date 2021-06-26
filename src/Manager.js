@@ -7,14 +7,13 @@ const existsAsync = promisify(exists);
 const readFileAsync = promisify(readFile);
 const Discord = require('discord.js');
 const {
-    defaultGiveawayMessages,
-    defaultManagerOptions,
-    defaultRerollOptions,
+    GiveawayMessages,
     GiveawayEditOptions,
     GiveawayData,
     GiveawayRerollOptions,
     GiveawaysManagerOptions,
-    GiveawayStartOptions
+    GiveawayStartOptions,
+    PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 
@@ -48,7 +47,8 @@ class GiveawaysManager extends EventEmitter {
          * The manager options
          * @type {GiveawaysManagerOptions}
          */
-        this.options = merge(defaultManagerOptions, options);
+        this.options = merge(GiveawaysManagerOptions, options);
+        if (new Discord.Intents(client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
 
@@ -61,18 +61,38 @@ class GiveawaysManager extends EventEmitter {
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
-            .setColor(lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
-            .setFooter(`${giveaway.winnerCount} ${giveaway.messages.winners} • ${giveaway.messages.embedFooter}`)
+            .setTitle(giveaway.prize)
+            .setColor(
+                giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
+                    ? giveaway.pauseOptions.embedColor
+                    : lastChanceEnabled
+                        ? giveaway.lastChance.embedColor
+                        : giveaway.embedColor
+            )
+            .setFooter(
+                `${giveaway.winnerCount} ${giveaway.messages.winners}${
+                    typeof giveaway.messages.embedFooter === 'object'
+                        ? giveaway.messages.embedFooter.text?.length > 0
+                            ? ' • ' + giveaway.messages.embedFooter.text
+                            : ''
+                        : ' • ' + giveaway.messages.embedFooter
+                }`,
+                giveaway.messages.embedFooter.iconURL
+            )
             .setDescription(
-                (lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
-                giveaway.messages.inviteToParticipate +
+                (giveaway.pauseOptions.isPaused
+                    ? giveaway.pauseOptions.content + '\n\n'
+                    : lastChanceEnabled
+                        ? giveaway.lastChance.content + '\n\n'
+                        : '') +
+                    giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
+            .setThumbnail(giveaway.thumbnail);
+        if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
         return embed;
     }
 
@@ -108,11 +128,12 @@ class GiveawaysManager extends EventEmitter {
 
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
+            .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt)
+            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(descriptionString(formattedWinners))
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
+            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setThumbnail(giveaway.thumbnail);
         return embed;
     }
 
@@ -124,15 +145,16 @@ class GiveawaysManager extends EventEmitter {
     generateNoValidParticipantsEndEmbed(giveaway) {
         const embed = new Discord.MessageEmbed();
         embed
-            .setAuthor(giveaway.prize)
+            .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt)
+            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(
                 giveaway.messages.noWinner +
                     '\n' +
                     (giveaway.hostedBy ? giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
-            .setTimestamp(new Date(giveaway.endAt).toISOString());
+            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setThumbnail(giveaway.thumbnail);
         return embed;
     }
 
@@ -165,7 +187,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.TextChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      *
-     * @returns {Promise<Giveaway>}
+     * @returns {Promise<Giveaway>} The created giveaway.
      *
      * @example
      * manager.start(message.channel, {
@@ -190,6 +212,15 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
 
+            const validateEmbedColor = async (embedColor) => {
+                try { 
+                    embedColor = Discord.Util.resolveColor(embedColor);
+                    if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
+                } catch {
+                    return false;
+                }
+            };
+
             const giveaway = new Giveaway(this, {
                 startAt: options.scheduleAt || Date.now(),
                 endAt: (options.scheduleAt || Date.now()) + options.time,
@@ -204,17 +235,19 @@ class GiveawaysManager extends EventEmitter {
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
                     (options.messages && typeof options.messages === 'object')
-                        ? merge(defaultGiveawayMessages, options.messages)
-                        : defaultGiveawayMessages,
+                        ? merge(GiveawayMessages, options.messages)
+                        : GiveawayMessages,
+                thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 reaction: options.reaction || undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
-                exemptMembers: options.exemptMembers,
+                exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,
                 bonusEntries: Array.isArray(options.bonusEntries) ? options.bonusEntries.filter((elem) => typeof elem === 'object') : undefined,
-                embedColor: options.embedColor || undefined,
-                embedColorEnd: options.embedColorEnd || undefined,
+                embedColor: validateEmbedColor(options.embedColor) ? options.embedColor : undefined,
+                embedColorEnd: validateEmbedColor(options.embedColorEnd) ? options.embedColorEnd : undefined,
                 extraData: options.extraData,
-                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined
+                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
+                pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined
             });
 
             if (!giveaway.scheduleAt) {
@@ -240,7 +273,7 @@ class GiveawaysManager extends EventEmitter {
      */
     reroll(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
-            options = merge(defaultRerollOptions, options);
+            options = merge(GiveawayRerollOptions, options);
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
 
@@ -251,6 +284,39 @@ class GiveawaysManager extends EventEmitter {
                     resolve(winners);
                 })
                 .catch(reject);
+        });
+    }
+
+    /**
+     * Pauses a giveaway.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to pause.
+     * @param {PauseOptions} [options] The pause options.
+     * @returns {Promise<Giveaway>} The paused giveaway.
+     *
+     * @example
+     * manager.pause('664900661003157510');
+     */
+    pause(messageID, options = {}) {
+        return new Promise(async (resolve, reject) => {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
+            giveaway.pause(options).then(resolve).catch(reject);
+        });
+    }
+
+    /**
+     * Unpauses a giveaway.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway to unpause.
+     * @returns {Promise<Giveaway>} The unpaused giveaway.
+     *
+     * @example
+     * manager.unpause('664900661003157510');
+     */
+    unpause(messageID) {
+        return new Promise(async (resolve, reject) => {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
+            giveaway.unpause().then(resolve).catch(reject);
         });
     }
 
@@ -408,9 +474,7 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             if (!giveaway.channel) return;
-            if (giveaway.remainingTime <= 0) {
-                return this.end(giveaway.messageID).catch(() => {});
-            }
+            if (giveaway.remainingTime <= 0) return this.end(giveaway.messageID).catch(() => {});
             if (giveaway.scheduleAt) {
                 if (giveaway.scheduleAt < Date.now() || giveaway.scheduleAt - Date.now() < this.options.updateCountdownEvery) {
                     setTimeout(async () => {
@@ -436,6 +500,20 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.ended = true;
                 await this.editGiveaway(giveaway.messageID, giveaway.data);
                 return;
+            }
+            if (giveaway.pauseOptions.isPaused) {
+                if (
+                    (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
+                    (isNaN(giveaway.pauseOptions.durationAfterPause) || typeof giveaway.pauseOptions.durationAfterPause !== 'number')
+                ) {
+                    giveaway.options.pauseOptions.durationAfterPause = giveaway.remainingTime;
+                    giveaway.endAt = Infinity;
+                    await this.editGiveaway(giveaway.messageID, giveaway.data);
+                }
+                if (
+                    !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
+                    Date.now() < giveaway.pauseOptions.unPauseAfter
+                ) this.unpause(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
