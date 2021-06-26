@@ -119,6 +119,7 @@ declare module 'discord-giveaways' {
         public startAt: number;
         public winnerCount: number;
         public winnerIDs: Snowflake[];
+        public scheduleAt?: number;
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
