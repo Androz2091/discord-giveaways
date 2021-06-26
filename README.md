@@ -31,9 +31,12 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
+Required Discord Intents: "GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS".  
+Optional Discord Intent for faster rolling: "GUILD_MEMBERS".
+
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -483,7 +486,7 @@ Other examples:
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -562,7 +565,7 @@ To make `discord-giveaways` working with shards, you will need to extend the `Gi
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
