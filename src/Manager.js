@@ -48,7 +48,6 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options);
-        if (new Discord.Intents(client.options.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
 

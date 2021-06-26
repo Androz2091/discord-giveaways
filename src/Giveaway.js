@@ -413,7 +413,7 @@ class Giveaway extends EventEmitter {
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
-        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+        if (new Discord.Intents(this.client.options.intents).has('GUILD_MEMBERS')) await guild.members.fetch();
 
         // Fetch all reaction users
         let userCollection = await reaction.users.fetch();
@@ -425,7 +425,7 @@ class Giveaway extends EventEmitter {
 
         const users = userCollection
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id);
+            .filter((u) => u.id !== this.client.user.id);
         if (!users.size) return [];
 
         // Bonus Entries
