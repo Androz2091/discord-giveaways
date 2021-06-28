@@ -10,7 +10,8 @@ declare module 'discord-giveaways' {
         GuildMember,
         TextChannel,
         MessageReaction,
-        Message
+        Message,
+        MessageMentionOptions
     } from 'discord.js';
 
     export const version: string;
@@ -90,6 +91,7 @@ declare module 'discord-giveaways' {
         extraData?: any;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
+        allowedMentions?: MessageMentionOptions;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -136,6 +138,7 @@ declare module 'discord-giveaways' {
         public startAt: number;
         public winnerCount: number;
         public winnerIDs: Snowflake[];
+        public allowedMentions?: MessageMentionOptions;
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
@@ -204,5 +207,6 @@ declare module 'discord-giveaways' {
         extraData?: any;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
+        allowedMentions?: MessageMentionOptions;
     }
 }

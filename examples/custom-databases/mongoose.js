@@ -68,6 +68,11 @@ const giveawaySchema = new mongoose.Schema({
         unPauseAfter: Number,
         embedColor: mongoose.Mixed,
         durationAfterPause: Number
+    },
+    allowedMentions: {
+        parse: [String],
+        users: [String],
+        roles: [String]
     }
 });
 

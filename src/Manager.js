@@ -242,11 +242,12 @@ class GiveawaysManager extends EventEmitter {
                 embedColorEnd: validateEmbedColor(options.embedColorEnd) ? options.embedColorEnd : undefined,
                 extraData: options.extraData,
                 lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
-                pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined
+                pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined,
+                allowedMentions: (options.allowedMentions && typeof options.allowedMentions === 'object') ? options.allowedMentions : undefined
             });
 
             const embed = this.generateMainEmbed(giveaway);
-            const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
+            const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions });
             message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
@@ -489,14 +490,14 @@ class GiveawaysManager extends EventEmitter {
                 ) this.unpause(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
+            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(() => {
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
+                    giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });

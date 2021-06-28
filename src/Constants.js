@@ -69,6 +69,7 @@ exports.GiveawayMessages = {
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
+ * @property {Discord.MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the giveaway messages content.
  */
 exports.GiveawayStartOptions = {};
 
@@ -209,5 +210,6 @@ exports.GiveawayEditOptions = {};
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
+ * @property {Discord.MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the giveaway messages content.
  */
 exports.GiveawayData = {};

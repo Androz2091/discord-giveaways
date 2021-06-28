@@ -119,6 +119,7 @@ client.on('message', (message) => {
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 -   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
 -   **options.pauseOptions**: the pause system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#pause-options).
+-   **options.allowedMentions**: which mentions should be parsed from the giveaway messages content (see [here](https://discord.com/developers/docs/resources/channel#allowed-mentions-object) for more details).
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
