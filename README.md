@@ -31,8 +31,8 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
-Required Discord Intents: "GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS".  
-Optional Discord Intent for better performance: "GUILD_MEMBERS".
+Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
+Optional Discord Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
 const Discord = require('discord.js'),
