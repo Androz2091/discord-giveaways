@@ -25,7 +25,7 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();

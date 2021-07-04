@@ -82,7 +82,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 ### Start a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
@@ -143,7 +143,7 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 ### Reroll a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -168,7 +168,7 @@ client.on('message', (message) => {
 ### Edit a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -200,7 +200,7 @@ client.on('message', (message) => {
 ### Delete a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -222,7 +222,7 @@ client.on('message', (message) => {
 ### End a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -240,7 +240,7 @@ client.on('message', (message) => {
 ### Pause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -264,7 +264,7 @@ client.on('message', (message) => {
 ### Unpause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
