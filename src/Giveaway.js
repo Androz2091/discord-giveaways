@@ -409,7 +409,9 @@ class Giveaway extends EventEmitter {
         if (!this.message) return [];
         // Pick the winner
         const reactions = this.message.reactions.cache;
-        const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
+        const reaction = reactions.find(
+            (r) => decodeURIComponent(r.emoji.identifier) === decodeURIComponent(this.client.emojis.resolveIdentifier(this.reaction))
+        );
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
