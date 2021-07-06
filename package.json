@@ -37,7 +37,7 @@
   "dependencies": {
     "deepmerge": "^4.2.2",
     "discord.js": "^12.5.3",
-    "serialize-javascript": "^5.0.1"
+    "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.5",

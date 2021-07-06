@@ -4,8 +4,8 @@ const Discord = require('discord.js');
  * The Giveaway messages that are used to display the giveaway content.
  * @typedef GiveawayMessages
  *
- * @property {string} [giveaway='@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
- * @property {string} [giveawayEnded='@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
+ * @property {string} [giveaway='🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
+ * @property {string} [giveawayEnded='🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
  * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below "inviteToParticipate" in the giveaway embed. "{duration}" will be replaced automatically with the time remaining.
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended.
@@ -21,10 +21,9 @@ const Discord = require('discord.js');
  * @property {string} [units.days='days'] The name of the "days" unit.
  * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
-
 exports.GiveawayMessages = {
-    giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
-    giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+    giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
+    giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
     inviteToParticipate: 'React with 🎉 to participate!',
     timeRemaining: 'Time remaining: **{duration}**',
     winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',

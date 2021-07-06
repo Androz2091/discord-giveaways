@@ -88,8 +88,7 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.messages.inviteToParticipate +
                     '\n' +
                     giveaway.remainingTimeText +
-                    '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy : '')
+                    (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             )
             .setThumbnail(giveaway.thumbnail);
         if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
@@ -114,8 +113,7 @@ class GiveawaysManager extends EventEmitter {
 
             return (
                 winnersString +
-                '\n' +
-                (giveaway.hostedBy ? giveaway.messages.hostedBy : '')
+                (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             );
         };
 
@@ -150,8 +148,7 @@ class GiveawaysManager extends EventEmitter {
             .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(
                 giveaway.messages.noWinner +
-                    '\n' +
-                    (giveaway.hostedBy ? giveaway.messages.hostedBy : '')
+                    (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             )
             .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
