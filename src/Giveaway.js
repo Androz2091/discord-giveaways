@@ -204,7 +204,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The exemptMembers function of the giveaway.
-     * @type {Function|null}
+     * @type {?Function}
      */
     get exemptMembersFunction() {
         return this.options.exemptMembers
@@ -300,7 +300,7 @@ class Giveaway extends EventEmitter {
      * @type {GiveawayData}
      */
     get data() {
-        const baseData = {
+        return {
             messageID: this.messageID,
             channelID: this.channelID,
             guildID: this.guildID,
@@ -330,7 +330,6 @@ class Giveaway extends EventEmitter {
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions
         };
-        return baseData;
     }
 
     /**
