@@ -410,8 +410,8 @@ class Giveaway extends EventEmitter {
         // Pick the winner
         const reactions = this.message.reactions.cache;
         const reaction =
-            reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id) ||
-            reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name);
+            reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name) ||
+            reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id);
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
