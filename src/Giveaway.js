@@ -487,10 +487,12 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners.map(async (user) =>
-            this.manager.libraryIsEris
-                ? guild.members.get(user.id) || (await guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
-                : guild.members.cache.get(user.id)
+        return Promise.all(
+            winners.map(async (user) =>
+                this.manager.libraryIsEris
+                    ? guild.members.get(user.id) || (await guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
+                    : guild.members.cache.get(user.id)
+            )
         );
     }
 
