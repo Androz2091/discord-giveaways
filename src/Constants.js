@@ -192,12 +192,12 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway.
  * @property {number} endAt The end date of the giveaway.
  * @property {number} winnerCount The number of winners for the giveaway.
+ * @property {boolean} ended If the giveaway has ended.
  * @property {GiveawayMessages} messages The giveaway messages.
  * @property {string} prize The giveaway prize.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {Discord.Snowflake} channelID The ID of the channel.
  * @property {Discord.Snowflake} guildID The ID of the guild.
- * @property {boolean} [ended] If the giveaway has ended.
  * @property {Discord.Snowflake[]} [winnerIDs] The winner IDs of the giveaway after it ended.
  * @property {Discord.Snowflake} [messageID] The ID of the message.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.

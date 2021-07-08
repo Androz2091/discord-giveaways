@@ -306,7 +306,7 @@ class Giveaway extends EventEmitter {
             guildID: this.guildID,
             startAt: this.startAt,
             endAt: this.endAt,
-            ended: this.ended || undefined,
+            ended: this.ended,
             winnerCount: this.winnerCount,
             prize: this.prize,
             messages: this.messages,
