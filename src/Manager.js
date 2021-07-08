@@ -248,7 +248,7 @@ class GiveawaysManager extends EventEmitter {
                 content: giveaway.messages.giveaway,
                 [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
             });
-            this.libraryIsEris ? message.addReaction() : message.react(giveaway.reaction);
+            this.libraryIsEris ? message.addReaction(giveaway.reaction) : message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
