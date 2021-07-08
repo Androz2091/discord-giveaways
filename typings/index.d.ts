@@ -63,7 +63,6 @@ declare module 'discord-giveaways' {
         storage?: string;
         updateCountdownEvery?: number;
         endedGiveawaysLifetime?: number;
-        hasGuildMembersIntent?: boolean;
         default?: {
             botsCanWin?: boolean,
             exemptPermissions?: PermissionResolvable[],

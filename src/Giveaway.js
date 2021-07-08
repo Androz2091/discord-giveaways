@@ -340,7 +340,7 @@ class Giveaway extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             if (!this.messageID) return;
             const message = this.manager.libraryIsEris
-                ? await this.channel.getMessage(this.messageID).catch(() => {})
+                ? this.channel.messages.get(this.messageID) || (await this.channel.getMessage(this.messageID).catch(() => {}))
                 : await this.channel.messages.fetch(this.messageID).catch(() => {});
             if (!message) {
                 this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
@@ -416,7 +416,9 @@ class Giveaway extends EventEmitter {
         // Pick the winner
         if (!this.manager.libraryIsEris) {
             const reactions = this.message.reactions.cache;
-            var reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
+            var reaction =
+                reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name) ||
+                reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id);
             if (!reaction) return [];
         } else {
             var reactionUsers = await this.message.getReaction(this.reaction);
@@ -424,7 +426,7 @@ class Giveaway extends EventEmitter {
         }
         const guild = this.channel.guild;
         // Fetch guild members
-        if (!this.manager.libraryIsEris && this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+        if (!this.manager.libraryIsEris && new Discord.Intents(this.client.options.intents).has('GUILD_MEMBERS')) await guild.members.fetch();
 
         // Fetch all reaction users
         let userCollection = (this.manager.libraryIsEris ? reactionUsers : await reaction.users.fetch());
@@ -522,7 +524,7 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageID).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+                this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
             }
             resolve(this);
         });
@@ -547,9 +549,10 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit(
-                    this.manager.libraryIsEris ? { content: this.messages.giveawayEnded, embed } : this.messages.giveawayEnded, { embed }
-                ).catch(() => {});
+                await this.message.edit({
+                    content: this.messages.giveawayEnded,
+                    [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed],
+                }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = this.messages.winMessage
                     .replace('{winners}', formattedWinners)
@@ -561,7 +564,7 @@ class Giveaway extends EventEmitter {
                         this.messages.winMessage
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
-                            .replace('{messageURL}', this.messageURL)
+                            .replace('{messageURL}', this.messageURL),
                     );
                     while (formattedWinners.length >= 2000) {
                         await this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
@@ -580,9 +583,10 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit(
-                    this.manager.libraryIsEris ? { content: this.messages.giveawayEnded, embed } : this.messages.giveawayEnded, { embed }
-                ).catch(() => {});
+                this.message.edit({
+                    content: this.messages.giveawayEnded,
+                    [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
+                }).catch(() => {});
                 resolve([]);
             }
         });
@@ -608,9 +612,10 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit(
-                    this.manager.libraryIsEris ? { content: this.messages.giveawayEnded, embed } : this.messages.giveawayEnded, { embed }
-                ).catch(() => {});
+                await this.message.edit({
+                    content: this.messages.giveawayEnded,
+                    [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
+                }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = options.messages.congrat
                     .replace('{winners}', formattedWinners)
@@ -686,7 +691,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+            this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
             resolve(this);
         });
     }
@@ -711,7 +716,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+            this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
             resolve(this);
         });
     }

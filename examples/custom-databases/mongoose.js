@@ -1,5 +1,5 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
