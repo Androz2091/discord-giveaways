@@ -246,7 +246,7 @@ class GiveawaysManager extends EventEmitter {
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel[this.libraryIsEris ? 'createMessage' : 'send']({ 
                 content: giveaway.messages.giveaway,
-                [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
+                [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
             });
             this.libraryIsEris ? message.addReaction() : message.react(giveaway.reaction);
             giveaway.messageID = message.id;
@@ -492,7 +492,7 @@ class GiveawaysManager extends EventEmitter {
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit({
                 content: giveaway.messages.giveaway,
-                [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
+                [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
             }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
@@ -502,7 +502,7 @@ class GiveawaysManager extends EventEmitter {
                     const embed = this.generateMainEmbed(giveaway, true);
                     giveaway.message.edit({
                         content: giveaway.messages.giveaway,
-                        [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
+                        [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
                     }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
