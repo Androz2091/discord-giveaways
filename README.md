@@ -229,7 +229,7 @@ client.on('messageCreate', (message) => {
     if (command === 'end') {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
-             message.channel.send('Success! Giveaway ended!');
+            message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
