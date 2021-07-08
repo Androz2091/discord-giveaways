@@ -472,7 +472,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners.map((user) => guild.members.cache.get(user.id) || user);
+        return winners.map((user) => guild.members.cache.get(user.id));
     }
 
     /**
