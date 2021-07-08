@@ -13,15 +13,15 @@ const giveawayDB = new Enmap({ name: 'giveaways' });
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaways stored in the database.
+    // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaway in the database
+        // Get all giveaways from the database
         return giveawayDB.fetchEverything().array();
     }
 
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
+    // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
-        // Add the new one
+        // Add the new giveaway to the database
         giveawayDB.set(messageID, giveawayData);
         // Don't forget to return something!
         return true;
@@ -29,6 +29,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
+        // Replace the unedited giveaway with the edited giveaway
         giveawayDB.set(messageID, giveawayData);
         // Don't forget to return something!
         return true;
@@ -36,6 +37,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
+        // Remove the giveaway from the database
         giveawayDB.delete(messageID);
         // Don't forget to return something!
         return true;
@@ -47,7 +49,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'

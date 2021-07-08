@@ -1,5 +1,6 @@
 ---
 name: Bug report
+about: Report incorrect or unexpected behavior
 title: ''
 labels: bug
 assignees: ''
@@ -38,7 +39,7 @@ If applicable, add screenshots to help explain your problem.
 **Additional context**
 
 * `discord-giveaways` version:
-* Discord.js version:
+* `discord.js` version:
 * Custom Database (if you use one):
 
 Add any other context about the problem here.

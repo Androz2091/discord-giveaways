@@ -1,8 +1,9 @@
 # Discord Giveaways
 
+[![discordBadge](https://img.shields.io/badge/Chat-Click%20here-7289d9?style=for-the-badge&logo=discord)](https://discord.gg/r5mb9r5WXv)
 [![downloadsBadge](https://img.shields.io/npm/dt/discord-giveaways?style=for-the-badge)](https://npmjs.com/discord-giveaways)
 [![versionBadge](https://img.shields.io/npm/v/discord-giveaways?style=for-the-badge)](https://npmjs.com/discord-giveaways)
-[![doc](https://img.shields.io/badge/Documentation-Click%20here-blue?style=for-the-badge)](https://discord-giveaways.js.org)
+[![documentationBadge](https://img.shields.io/badge/Documentation-Click%20here-blue?style=for-the-badge)](https://discord-giveaways.js.org)
 
 Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows you to easily create giveaways!
 
@@ -12,8 +13,8 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   🔄 Automatic restart after bot crash!
 -   🇫🇷 Support for translations: adapt the strings for your own language!
 -   📁 Support for all databases! (default is json)
--   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries etc...)
--   🚀 Super powerful: start, edit, reroll, end, delete giveaways!
+-   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, etc...)
+-   🚀 Super powerful: start, edit, reroll, end, delete and pause giveaways!
 -   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
 -   🕸️ Support for shards!
 -   ✅ Support for [Eris](https://www.npmjs.com/package/eris)
@@ -48,7 +49,6 @@ const manager = new GiveawaysManager(client, {
     hasGuildMembersIntent: false,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -70,12 +70,12 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **client**: the discord client (your discord bot instance).
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
--   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended.
--   **options.hasGuildMembersIntent**: whether the bot has access to the GUILD_MEMBERS intent. It works without, but it will be faster with.
--   **options.default.botsCanWin**: whether bots can win a giveaway.
+-   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
+-   **options.hasGuildMembersIntent**: if the bot has access to the "GUILD_MEMBERS" intent. It works without, but it will be faster with.
+-   **options.default.botsCanWin**: if bots can win giveaways.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways.
--   **options.default.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
+-   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways when they are running.
+-   **options.default.embedColorEnd**: a hexadecimal color for the embeds of giveaways when they have ended.
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
 
@@ -105,17 +105,20 @@ client.on('message', (message) => {
 
 -   **options.time**: the giveaway duration.
 -   **options.prize**: the giveaway prize.
--   **options.hostedBy**: the user who hosts the giveaway.
 -   **options.winnerCount**: the number of giveaway winners.
--   **options.winnerIDs**: the IDs of the giveaway winners. ⚠ You do not have to and would not even be able to set this as a start option! The array only gets filled when a giveaway ends or is rerolled!
--   **options.botsCanWin**: whether bots can win the giveaway.
+-   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
+-   **options.thumbnail**: the giveaway thumbnail url.
+-   **options.hostedBy**: the user who hosts the giveaway.
+-   **options.botsCanWin**: if bots can win the giveaway.
 -   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
+-   **options.exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
 -   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
--   **options.embedColor**: a hexadecimal color for the embeds of giveaways.
--   **options.embedColorEnd**: a hexadecimal color the embeds of giveaways when they are ended.
+-   **options.embedColor**: a hexadecimal color for the embed of the giveaway when it is running.
+-   **options.embedColorEnd**: a hexadecimal color for the embed of the giveaway when is has ended.
 -   **options.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
 -   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
+-   **options.pauseOptions**: the pause system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#pause-options).
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
@@ -149,7 +152,7 @@ client.on('message', (message) => {
         client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -176,11 +179,9 @@ client.on('message', (message) => {
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            // Here, we can calculate the time after which we are sure that the lib will update the giveaway
-            const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
-            message.channel.send('Success! Giveaway will updated in less than ' + numberOfSecondsMax + ' seconds.');
+            message.channel.send('Success! Giveaway updated!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -208,13 +209,15 @@ client.on('message', (message) => {
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
 ```
 
-When you use the delete function, the giveaway data and the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
+-   **doNotDeleteMessage**: whether the giveaway message shouldn't be deleted.
+
+⚠️ **Note**: when you use the delete function, the giveaway data and per default the message of the giveaway are deleted. You cannot restore a giveaway once you have deleted it!
 
 ### End a giveaway
 
@@ -228,7 +231,49 @@ client.on('message', (message) => {
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
+### Pause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+});
+```
+
+-   **options.content**: the text of the embed when the giveaway is paused.
+-   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **options.embedColor**: the color of the embed when the giveaway is paused.
+
+⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
+
+### Unpause a giveaway
+
+```js
+client.on('message', (message) => {
+    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway unpaused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -247,6 +292,32 @@ const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '19
 const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 ```
 
+### Exempt Members
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Free Steam Key',
+    // Only members who have the "Nitro Boost" role are able to win
+    exemptMembers: (member) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
+});
+```
+
+⚠️ **Note**: If the function should be customizable
+
+```js
+const roleName = 'Nitro Boost';
+
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Free Steam Key',
+    // Only members who have the the role which is assigned to "roleName" are able to win
+    exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
+});
+```
+
 ### Last Chance
 
 ```js
@@ -257,14 +328,34 @@ client.giveawaysManager.start(message.channel, {
     lastChance: {
         enabled: true,
         content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-        secondsBeforeLastChance: 5000,
+        threshold: 5000,
         embedColor: '#FF0000'
     }
-})
+});
 ```
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
+</a>
+
+### Pause Options
+
+```js
+client.giveawaysManager.start(message.channel, {
+    time: 60000,
+    winnerCount: 1,
+    prize: 'Discord Nitro!',
+    pauseOptions: {
+        isPaused: true,
+        content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
+        unPauseAfter: null,
+        embedColor: '#FFFF00'
+    }
+});
+```
+
+<a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
+    <img src="https://zupimages.net/up/21/24/dxhk.png"/>
 </a>
 
 ### Bonus Entries
@@ -274,17 +365,19 @@ client.giveawaysManager.start(message.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
-    bonusEntries: [
-        // Members who have the "Nitro Boost" role get 2 bonus entries
+    bonusEntries: [  
         {
+            // Members who have the "Nitro Boost" role get 2 bonus entries
             bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
+            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false
         }
     ]
-})
+});
 ```
 
-⚠️ **Note**: If it should be customizable
+⚠️ **Note**: If the `bonus` function should be customizable
+
 ```js
 const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
@@ -294,13 +387,14 @@ client.giveawaysManager.start(message.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     bonusEntries: [
-        // Members who have the role which is assigned to "roleName" get the amount of bonus entries which are assigned to "roleBonusEntries"
         {   
+            // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
             bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
+            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false 
         }
     ]
-})
+});
 ```
 
 ## 🇫🇷 Translation
@@ -312,7 +406,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
--   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.
+-   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
@@ -331,12 +425,12 @@ client.giveawaysManager.start(message.channel, {
     winnerCount: parseInt(args[1]),
     prize: args.slice(2).join(' '),
     messages: {
-        giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
-        giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
-        timeRemaining: 'Time remaining: **{duration}**!',
+        giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
+        giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+        timeRemaining: 'Time remaining: **{duration}**',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
-        embedFooter: 'Giveaways',
+        embedFooter: 'Powered by the discord-giveaways package',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {user}',
         winners: 'winner(s)',
@@ -360,8 +454,6 @@ client.giveawaysManager.reroll(messageID, {
             congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
         }
-    }).catch((err) => {
-        message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
     });
 ```
 
@@ -377,16 +469,20 @@ You can use your custom database to save giveaways, instead of the json files (t
 -   `editGiveaway`: this method edits a giveaway already stored in the database.
 -   `deleteGiveaway`: this method deletes a giveaway from the database (permanently).
 
-**All the methods should be asynchronous to return a promise.**
+**⚠️ All the methods should be asynchronous to return a promise!**
 
 Here is an example, using `quick.db`, a SQLite database. The comments in the code below are very important to understand how it works!
 
 Other examples:
 
-- [MySQL example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- [MongoDB (Mongoose) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
-- [MongoDB (QuickMongo) example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
-- [Enmap example](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
+- [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+- MongoDB
+  - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
+  - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
+- [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
+- Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
+  - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
+  - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickreplit.js)
 
 ```js
 const Discord = require('discord.js'),
@@ -398,19 +494,19 @@ const Discord = require('discord.js'),
 
 // Load quick.db - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
 const db = require('quick.db');
-if (!db.get('giveaways')) db.set('giveaways', []);
+if (!Array.isArray(db.get('giveaways'))) db.set('giveaways', []);
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all the giveaways stored in the database.
+    // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
-        // Get all the giveaways in the database
+        // Get all giveaways from the database
         return db.get('giveaways');
     }
 
-    // This function is called when a giveaway needs to be saved in the database (when a giveaway is created or when a giveaway is edited).
+    // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
-        // Add the new one
+        // Add the new giveaway to the database
         db.push('giveaways', giveawayData);
         // Don't forget to return something!
         return true;
@@ -418,11 +514,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
-        // Gets all the current giveaways
+        // Get all giveaways from the database
         const giveaways = db.get('giveaways');
-        // Remove the old giveaway from the current giveaways ID
+        // Remove the unedited giveaway from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Push the new giveaway to the array
+        // Push the edited giveaway into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
         db.set('giveaways', newGiveawaysArray);
@@ -432,8 +528,10 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageID) {
+        // Get all giveaways from the database
+        const giveaways = db.get('giveaways');
         // Remove the giveaway from the array
-        const newGiveawaysArray = db.get('giveaways').filter((giveaway) => giveaway.messageID !== messageID);
+        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
         // Save the updated array
         db.set('giveaways', newGiveawaysArray);
         // Don't forget to return something!
@@ -446,7 +544,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -490,7 +587,6 @@ const manager = new GiveawayManagerWithShardSupport(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'

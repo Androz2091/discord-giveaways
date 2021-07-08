@@ -7,13 +7,12 @@ const Discord = require('discord.js'),
 
 // Requires Manager from discord-giveaways
 const { GiveawaysManager } = require('discord-giveaways');
-// Starts updating currents giveaways
+// Create a new instance of the manager class
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
@@ -49,8 +48,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.reroll(messageID).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -61,11 +60,9 @@ client.on('message', (message) => {
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            // Here, we can calculate the time after which we are sure that the lib will update the giveaway
-            const numberOfSecondsMax = client.giveawaysManager.options.updateCountdownEvery / 1000;
-            message.channel.send('Success! Giveaway will updated in less than ' + numberOfSecondsMax + ' seconds.');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+            message.channel.send('Success! Giveaway updated!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -73,8 +70,8 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.delete(messageID).then(() => {
             message.channel.send('Success! Giveaway deleted!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
     
@@ -82,11 +79,28 @@ client.on('message', (message) => {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
             message.channel.send('Success! Giveaway ended!');
-        }).catch(() => {
-            message.channel.send('No giveaway found for ' + messageID + ', please check and try again');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
+    if (command === 'pause') {
+        const messageID = args[0];
+        client.giveawaysManager.pause(messageID).then(() => {
+            message.channel.send('Success! Giveaway paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
+
+    if (command === 'unpause') {
+        const messageID = args[0];
+        client.giveawaysManager.unpause(messageID).then(() => {
+            message.channel.send('Success! Giveaway un paused!');
+        }).catch((err) => {
+            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
+    }
 });
 
 client.login(settings.token);
