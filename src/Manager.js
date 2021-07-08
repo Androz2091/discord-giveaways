@@ -532,7 +532,7 @@ class GiveawaysManager extends EventEmitter {
             : channel.messages.cache.get(packet.d.message_id) || (await channel.messages.fetch(packet.d.message_id));
         if (!message) return;
         const reaction = this.libraryIsEris
-            ? message.reactions[Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name]
+            ? message.reactions[giveaway.reaction]
             : message.reactions.cache.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name) ||
               message.reactions.get(Discord.Util.resolvePartialEmoji(giveaway.reaction)?.id);
         if (!reaction) return;
