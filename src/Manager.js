@@ -531,13 +531,14 @@ class GiveawaysManager extends EventEmitter {
             ? await this.client.getMessage(channel.id, packet.d.message_id)
             : channel.messages.cache.get(packet.d.message_id) || (await channel.messages.fetch(packet.d.message_id));
         if (!message) return;
+        const rawEmoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
         const reaction = this.libraryIsEris
             ? message.reactions[giveaway.reaction]
-            : message.reactions.cache.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name) ||
-              message.reactions.get(Discord.Util.resolvePartialEmoji(giveaway.reaction)?.id);
+            : message.reactions.cache.find((r) => r.emoji.name ===  rawEmoji?.name) ||
+              message.reactions.get(rawEmoji?.id);
         if (!reaction) return;
-        if (reaction.emoji.name !== packet.d.emoji.name) return;
-        if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
+        if ((this.libraryIsEris ? rawEmoji?.name : reaction.emoji.name) !== packet.d.emoji.name) return;
+        if ((this.libraryIsEris ? rawEmoji?.id : reaction.emoji.id) && (this.libraryIsEris ? rawEmoji?.id : reaction.emoji.id) !== packet.d.emoji.id) return;
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
