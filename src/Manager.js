@@ -516,7 +516,7 @@ class GiveawaysManager extends EventEmitter {
         const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
         if (!giveaway) return;
         if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-        const guild = this.libraryIsEris ? this.client.guilds.find(g => g.id === packet.d.guild_id) : this.client.guilds.cache.get(packet.d.guild_id);
+        const guild = this.libraryIsEris ? this.client.guilds.get(packet.d.guild_id) : this.client.guilds.cache.get(packet.d.guild_id);
         if (!guild) return;
         if (packet.d.user_id === this.client.user.id) return;
         const member = this.libraryIsEris
