@@ -414,15 +414,15 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
         // Pick the winner
-        if (!this.manager.libraryIsEris) {
+        if (this.manager.libraryIsEris) {
+            var reactionUsers = await this.message.getReaction(this.reaction);
+            if (!reactionUsers.length) return []; 
+        } else {
             const reactions = this.message.reactions.cache;
             var reaction =
                 reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name) ||
                 reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id);
             if (!reaction) return [];
-        } else {
-            var reactionUsers = await this.message.getReaction(this.reaction);
-            if (!reactionUsers.length) return [];
         }
         const guild = this.channel.guild;
         // Fetch guild members
