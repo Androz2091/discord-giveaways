@@ -549,10 +549,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({
-                    content: this.messages.giveawayEnded,
-                    [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed],
-                }).catch(() => {});
+                await this.message.edit({ content: this.messages.giveawayEnded, embeds : [embed] }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = this.messages.winMessage
                     .replace('{winners}', formattedWinners)
@@ -583,10 +580,7 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit({
-                    content: this.messages.giveawayEnded,
-                    [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
-                }).catch(() => {});
+                this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
                 resolve([]);
             }
         });
@@ -612,10 +606,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({
-                    content: this.messages.giveawayEnded,
-                    [this.manager.libraryIsEris ? 'embed' : 'embeds']: this.manager.libraryIsEris ? embed : [embed]
-                }).catch(() => {});
+                await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = options.messages.congrat
                     .replace('{winners}', formattedWinners)

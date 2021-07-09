@@ -244,10 +244,7 @@ class GiveawaysManager extends EventEmitter {
             });
 
             const embed = this.generateMainEmbed(giveaway);
-            const message = await channel[this.libraryIsEris ? 'createMessage' : 'send']({ 
-                content: giveaway.messages.giveaway,
-                [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
-            });
+            const message = await channel[this.libraryIsEris ? 'createMessage' : 'send']({ content: giveaway.messages.giveaway, embeds: [embed] });
             this.libraryIsEris ? message.addReaction(giveaway.reaction) : message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
@@ -490,20 +487,14 @@ class GiveawaysManager extends EventEmitter {
                 ) this.unpause(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit({
-                content: giveaway.messages.giveaway,
-                [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
-            }).catch(() => {});
+            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(() => {
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message.edit({
-                        content: giveaway.messages.giveaway,
-                        [this.libraryIsEris ? 'embed' : 'embeds']: this.libraryIsEris ? embed : [embed]
-                    }).catch(() => {});
+                    giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
