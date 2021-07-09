@@ -430,23 +430,23 @@ class Giveaway extends EventEmitter {
 
         // Fetch all reaction users
         let userCollection = (this.manager.libraryIsEris ? reactionUsers : await reaction.users.fetch());
-        while ((this.manager.libraryIsEris ? userCollection.length : userCollection.size) % 100 === 0) {
+        while (userCollection[this.manager.libraryIsEris ? 'length' : 'size'] % 100 === 0) {
             const newUsers = this.manager.libraryIsEris
                 ? await this.message.getReaction(this.reaction, { after: userCollection[userCollection.length - 1] })
                 : await reaction.users.fetch({ after: userCollection.lastKey() });
-            if ((this.manager.libraryIsEris ? newUsers.length : newUsers.size) === 0) break;
+            if (newUsers[this.manager.libraryIsEris ? 'length' : 'size'] === 0) break;
             userCollection = userCollection.concat(newUsers);
         }
 
         const users = userCollection
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.client.user.id);
-        if (this.manager.libraryIsEris ? !users.length : !users.size) return [];
+        if (!users[this.manager.libraryIsEris ? 'length' : 'size']) return [];
 
         // Bonus Entries
         let userArray;
         if (this.bonusEntries.length) {
-            userArray = this.manager.libraryIsEris ? users.slice() : users.array(); // Copy all users once
+            userArray = this.manager.libraryIsEris ? users : users.array(); // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);
                 if (!isUserValidEntry) continue;
@@ -467,8 +467,8 @@ class Giveaway extends EventEmitter {
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
             if (this.manager.libraryIsEris) userArray = userArray?.length > users.length ? userArray : users;
-            rolledWinners = Array.from({
-                length: Math.min(winnerCount, this.manager.libraryIsEris ? users.length : users.size)
+            rolledWinners = Array.from({    
+                length: Math.min(winnerCount, users[this.manager.libraryIsEris ? 'length' : 'size'])
             }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
         }
 
@@ -636,7 +636,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
-                this.manager.libraryIsEris ? this.channel.createMessage(options.messages.error) : this.channel.send(options.messages.error);
+                this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](options.messages.error);
                 resolve([]);
             }
         });

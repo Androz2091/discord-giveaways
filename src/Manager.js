@@ -245,7 +245,7 @@ class GiveawaysManager extends EventEmitter {
 
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel[this.libraryIsEris ? 'createMessage' : 'send']({ content: giveaway.messages.giveaway, embeds: [embed] });
-            this.libraryIsEris ? message.addReaction(giveaway.reaction) : message.react(giveaway.reaction);
+            message[this.libraryIsEris ? 'addReaction' : 'react'](giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
@@ -545,7 +545,7 @@ class GiveawaysManager extends EventEmitter {
         const rawGiveaways = await this.getAllGiveaways();
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
         setInterval(() => {
-            if (this.libraryIsEris ? this.client.startTime : this.client.readyAt) this._checkGiveaway.call(this);
+            if (this.client[this.libraryIsEris ? 'startTime' : 'readyAt']) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
 
