@@ -260,7 +260,7 @@ class GiveawaysManager extends EventEmitter {
                     { maxUsers: giveaway.winnerCount }
                 )
                 .then((collected) => this.end(giveaway.messageID).catch(() => {}))
-                .catch((err) => console.error(err));
+                .catch(() => {});
         });
     }
 
