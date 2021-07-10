@@ -293,6 +293,8 @@ const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 
 ### Exempt Members
 
+Function to filter members. If true is returned, the member will not be able to win the giveaway.
+
 ```js
 client.giveawaysManager.start(message.channel, {
     time: 60000,
@@ -303,7 +305,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-⚠️ **Note**: If the function should be customizable
+⚠️ **Note**: If the function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -333,7 +335,10 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in `lastChance.content`.
+-   **lastChance.enabled**: if the last chance system is enabled.
+-   **lastChance.content**: the text of the embed when the last chance system is enabled. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
+-   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
@@ -355,6 +360,11 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
+-   **pauseOptions.isPaused**: if the giveaway is paused.
+-   **pauseOptions.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **pauseOptions.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
+
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
     <img src="https://zupimages.net/up/21/24/dxhk.png"/>
 </a>
@@ -370,14 +380,16 @@ client.giveawaysManager.start(message.channel, {
         {
             // Members who have the "Nitro Boost" role get 2 bonus entries
             bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
-            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false
         }
     ]
 });
 ```
 
-⚠️ **Note**: If the `bonus` function should be customizable
+-   **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
+-   **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
+
+⚠️ **Note**: If the `bonus` function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -391,7 +403,6 @@ client.giveawaysManager.start(message.channel, {
         {   
             // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
             bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
-            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false 
         }
     ]

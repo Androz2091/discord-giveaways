@@ -47,7 +47,7 @@ class GiveawaysManager extends EventEmitter {
          * The manager options
          * @type {GiveawaysManagerOptions}
          */
-        this.options = merge(GiveawaysManagerOptions, options);
+        this.options = merge(GiveawaysManagerOptions, options || {});
         if (new Discord.Intents(client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
@@ -200,7 +200,7 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) return reject('The manager is not ready yet.');
-            if (!channel || !channel.id) return reject(`channel is not a valid guildchannel. (val=${channel})`);
+            if (!channel?.id) return reject(`channel is not a valid text based channel. (val=${channel})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
                 return reject(`options.time is not a positive number. (val=${options.time})`);
             }
@@ -509,18 +509,14 @@ class GiveawaysManager extends EventEmitter {
         const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
         if (!giveaway) return;
         if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-        const guild = this.client.guilds.cache.get(packet.d.guild_id);
-        if (!guild) return;
+        const guild = this.client.guilds.cache.get(packet.d.guild_id) || (await this.client.guilds.fetch(packet.d.guild_id).catch(() => {}));
+        if (!guild || !guild.available) return;
         if (packet.d.user_id === this.client.user.id) return;
-        const member =
-            guild.members.cache.get(packet.d.user_id) ||
-            (await guild.members.fetch(packet.d.user_id).catch(() => {}));
+        const member = guild.members.cache.get(packet.d.user_id) || (await guild.members.fetch(packet.d.user_id).catch(() => {}));
         if (!member) return;
-        const channel = guild.channels.cache.get(packet.d.channel_id);
+        const channel = guild.channels.cache.get(packet.d.channel_id) || (await this.client.channels.fetch(packet.d.channel_id).catch(() => {}));
         if (!channel) return;
-        const message =
-            channel.messages.cache.get(packet.d.message_id) ||
-            (await channel.messages.fetch(packet.d.message_id));
+        const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
         const reaction = message.reactions.cache.get(giveaway.reaction);
         if (!reaction) return;
@@ -529,9 +525,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
-        } else {
-            this.emit('giveawayReactionRemoved', giveaway, member, reaction);
-        }
+        } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);
     }
 
     /**
@@ -541,13 +535,12 @@ class GiveawaysManager extends EventEmitter {
      */
     async _init() {
         const rawGiveaways = await this.getAllGiveaways();
-        rawGiveaways.forEach((giveaway) => {
-            this.giveaways.push(new Giveaway(this, giveaway));
-        });
+        rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
         this.ready = true;
+
         if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {
             const endedGiveaways = this.giveaways.filter(
                 (g) => g.ended && g.endAt + this.options.endedGiveawaysLifetime <= Date.now()

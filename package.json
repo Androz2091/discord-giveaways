@@ -45,5 +45,8 @@
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
     "typescript": "^4.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
