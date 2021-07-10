@@ -500,7 +500,7 @@ class GiveawaysManager extends EventEmitter {
             if (
                 giveaway.isDrop &&
                 ((giveaway.duration - giveaway.remainingTime) > this.client.uptime ||
-                giveaway.message.reactions.cache.get(giveaway.reaction).count - 1 >= giveaway.winnerCount)
+                    giveaway.message.reactions.cache.get(giveaway.reaction).count - 1 >= giveaway.winnerCount)
             ) return this.end(giveaway.messageID).catch(() => {});
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
@@ -544,7 +544,7 @@ class GiveawaysManager extends EventEmitter {
             if (
                 giveaway.isDrop &&
                 ((giveaway.giveawayDuration - giveaway.remainingTime) > this.client.uptime ||
-                reaction.count >= giveaway.winnerCount)
+                    reaction.count >= giveaway.winnerCount)
             ) this.end(giveaway.messageID).catch(() => {});
         } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);
     }
