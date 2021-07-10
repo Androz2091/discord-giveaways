@@ -509,14 +509,14 @@ class GiveawaysManager extends EventEmitter {
         const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
         if (!giveaway) return;
         if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-        const guild = this.client.guilds.cache.get(packet.d.guild_id);
-        if (!guild) return;
+        const guild = this.client.guilds.cache.get(packet.d.guild_id) || (await this.client.guilds.fetch(packet.d.guild_id).catch(() => {}));
+        if (!guild || !guild.available) return;
         if (packet.d.user_id === this.client.user.id) return;
         const member = guild.members.cache.get(packet.d.user_id) || (await guild.members.fetch(packet.d.user_id).catch(() => {}));
         if (!member) return;
-        const channel = guild.channels.cache.get(packet.d.channel_id);
+        const channel = guild.channels.cache.get(packet.d.channel_id) || (await this.client.channels.fetch(packet.d.channel_id).catch(() => {}));
         if (!channel) return;
-        const message = channel.messages.cache.get(packet.d.message_id) || (await channel.messages.fetch(packet.d.message_id));
+        const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
         const reaction = message.reactions.cache.get(giveaway.reaction);
         if (!reaction) return;
