@@ -194,7 +194,7 @@ client.on('message', (message) => {
 -   **options.newExtraData**: the new extra data value for the giveaway
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 
-⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
+**Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
 ### Delete a giveaway
 
@@ -305,7 +305,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-⚠️ **Note**: If the function should be customizable:
+**Note**: if the function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -318,6 +318,8 @@ client.giveawaysManager.start(message.channel, {
     exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
 });
 ```
+
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
 
 ### Last Chance
 
@@ -389,7 +391,7 @@ client.giveawaysManager.start(message.channel, {
 -   **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
 -   **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
 
-⚠️ **Note**: If the `bonus` function should be customizable:
+**Note**: if the `bonus` function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -408,6 +410,8 @@ client.giveawaysManager.start(message.channel, {
     ]
 });
 ```
+
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
 
 ## 🇫🇷 Translation
 
