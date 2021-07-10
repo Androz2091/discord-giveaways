@@ -32,7 +32,7 @@ const giveawaySchema = new mongoose.Schema({
         inviteToParticipate: String,
         timeRemaining: String,
         winMessage: String,
-        embedFooter: String,
+        embedFooter: mongoose.Mixed,
         noWinner: String,
         winners: String,
         endedAt: String,
@@ -45,6 +45,7 @@ const giveawaySchema = new mongoose.Schema({
             pluralS: Boolean,
         },
     },
+    thumbnail: String,
     hostedBy: String,
     winnerIDs: [String],
     reaction: mongoose.Mixed,
@@ -60,6 +61,13 @@ const giveawaySchema = new mongoose.Schema({
         content: String,
         threshold: Number,
         embedColor: mongoose.Mixed
+    },
+    pauseOptions: {
+        isPaused: Boolean,
+        content: String,
+        unPauseAfter: Number,
+        embedColor: mongoose.Mixed,
+        durationAfterPause: Number
     },
     isDrop: Boolean
 });
@@ -86,7 +94,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Find by messageID and update it
-        await giveawayModel.findOneAndUpdate({ messageID: messageID }, giveawayData).exec();
+        await giveawayModel.findOneAndUpdate({ messageID: messageID }, giveawayData, { omitUndefined: true }).exec();
         // Don't forget to return something!
         return true;
     }
@@ -105,7 +113,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
     updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
-        exemptPermissions: ['MANAGE_MESSAGES', 'ADMINISTRATOR'],
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉'
