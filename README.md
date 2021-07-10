@@ -416,12 +416,12 @@ You can send an embed instead of, or with the normal message for the following m
 
 The format looks like this: `message: { content: '', embed: new Discord.MessageEmbed() }`
 
-You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed string properties.
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
 
 
 ### Access giveaway properties in messages
 
-You can access any giveaway property or function inside of giveaway messages with the format: `{this.}`.  
+You can access any giveaway property inside of giveaway messages with the format: `{this.<property>}`.  
 For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }`.
 
 Also, you can write javascript code inside of the `{}`.  

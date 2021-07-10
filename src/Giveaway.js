@@ -637,7 +637,7 @@ class Giveaway extends EventEmitter {
                 const embed = this.manager.generateEndEmbed(this, winners);
                 await this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-                let congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
+                const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
                 const message = congratMessage.replace('{winners}', formattedWinners);
                 if (message.length && message.length <= 2000) this.message.channel.send(message);
                 else if (message.length && message.length > 2000) {
