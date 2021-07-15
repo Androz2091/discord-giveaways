@@ -119,7 +119,7 @@ class GiveawaysManager extends EventEmitter {
 
         for (
             let i = 1;
-            descriptionString(formattedWinners).length > 2048 ||
+            descriptionString(formattedWinners).length > 4096 ||
             giveaway.prize.length + giveaway.messages.endedAt.length + descriptionString(formattedWinners).length > 6000;
             i++
         ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
@@ -204,7 +204,9 @@ class GiveawaysManager extends EventEmitter {
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
                 return reject(`options.time is not a positive number. (val=${options.time})`);
             }
-            if (typeof options.prize !== 'string') return reject(`options.prize is not a string. (val=${options.prize})`);
+            if (typeof options.prize !== 'string' || options.prize.length > 256) {
+                return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
+            }
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
