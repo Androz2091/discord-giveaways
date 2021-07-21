@@ -418,7 +418,7 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
-            if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
+            if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery > 0) {
                 setTimeout(() => {
                     const embed = this.generateMainEmbed(giveaway, true);
                     giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
