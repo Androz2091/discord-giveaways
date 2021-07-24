@@ -23,11 +23,12 @@ const Giveaway = require('./Giveaway.js');
 class GiveawaysManager extends EventEmitter {
     /**
      * @param {Discord.Client} client The Discord Client
-     * @param {GiveawaysManagerOptions} options The manager options
+     * @param {GiveawaysManagerOptions} [options] The manager options
+     * @param {Boolean} [init=true] If the manager should start automatically. If set to "false", for example to create a delay, the manager can be started manually with "manager._init()".
      */
     constructor(client, options, init = true) {
         super();
-        if (!client) throw new Error('Client is a required option.');
+        if (!client?.user) throw new Error(`Client is a required option. (val=${client})`);
         /**
          * The Discord Client
          * @type {Discord.Client}
