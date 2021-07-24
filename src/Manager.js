@@ -28,7 +28,7 @@ class GiveawaysManager extends EventEmitter {
      */
     constructor(client, options, init = true) {
         super();
-        if (!(client instanceof Discord.Client)) throw new Error(`Client is a required option. (val=${client})`);
+        if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
         /**
          * The Discord Client
          * @type {Discord.Client}
