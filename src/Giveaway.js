@@ -102,7 +102,7 @@ class Giveaway extends EventEmitter {
          * The schedule date of the giveaway
          * @type {Number}
          */
-         this.scheduleAt = options.scheduleAt;
+        this.scheduleAt = options.scheduleAt;
         /**
          * The giveaway data.
          * @type {GiveawayData}
@@ -501,7 +501,7 @@ class Giveaway extends EventEmitter {
             if (!this.message && !isNaN(options.newScheduleAt) && typeof options.newScheduleAt === 'number') {
                 this.scheduleAt = options.newScheduleAt;
                 this.startAt = options.newScheduleAt;
-                this.endAt = options.newScheduleAt + giveawayDuration;
+                this.endAt = options.newScheduleAt + this.duration;
             }
             if (options.newMessages && typeof options.newMessages === 'object') this.messages = merge(this.messages, options.newMessages);
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
