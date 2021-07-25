@@ -31,9 +31,12 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
+Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
+Optional Discord Intent for better performance: `GUILD_MEMBERS`.
+
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -45,7 +48,6 @@ const { GiveawaysManager } = require('discord-giveaways');
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     updateCountdownEvery: 10000,
-    hasGuildMembersIntent: false,
     default: {
         botsCanWin: false,
         embedColor: '#FF0000',
@@ -70,7 +72,6 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
 -   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
--   **options.hasGuildMembersIntent**: if the bot has access to the "GUILD_MEMBERS" intent. It works without, but it will be faster with.
 -   **options.default.botsCanWin**: if bots can win giveaways.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways when they are running.
@@ -81,7 +82,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 ### Start a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
@@ -142,7 +143,7 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 ### Reroll a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -167,7 +168,7 @@ client.on('message', (message) => {
 ### Edit a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -194,12 +195,12 @@ client.on('message', (message) => {
 -   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 
-⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
+**Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
 ### Delete a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -221,7 +222,7 @@ client.on('message', (message) => {
 ### End a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -239,7 +240,7 @@ client.on('message', (message) => {
 ### Pause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -263,7 +264,7 @@ client.on('message', (message) => {
 ### Unpause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -305,7 +306,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-⚠️ **Note**: If the function should be customizable:
+**Note**: if the function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -318,6 +319,8 @@ client.giveawaysManager.start(message.channel, {
     exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
 });
 ```
+
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
 
 ### Last Chance
 
@@ -389,7 +392,7 @@ client.giveawaysManager.start(message.channel, {
 -   **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
 -   **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
 
-⚠️ **Note**: If the `bonus` function should be customizable:
+**Note**: if the `bonus` function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -409,6 +412,8 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
+
 ### Send embed as message
 
 You can send an embed instead of, or with the normal message for the following messages:  
@@ -417,7 +422,6 @@ You can send an embed instead of, or with the normal message for the following m
 The format looks like this: `message: { content: '', embed: new Discord.MessageEmbed() }`
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
-
 
 ### Access giveaway properties in messages
 
@@ -523,7 +527,7 @@ Other examples:
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -602,7 +606,7 @@ To make `discord-giveaways` working with shards, you will need to extend the `Gi
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'

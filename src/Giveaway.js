@@ -237,7 +237,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The channel of the giveaway.
-     * @type {Discord.TextChannel}
+     * @type {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel}
      * @readonly
      */
     get channel() {
@@ -452,11 +452,13 @@ class Giveaway extends EventEmitter {
         if (!this.message) return [];
         // Pick the winner
         const reactions = this.message.reactions.cache;
-        const reaction = reactions.get(this.reaction) || reactions.find((r) => r.emoji.name === this.reaction);
+        const reaction =
+            reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name) ||
+            reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id);
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
-        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+        if (new Discord.Intents(this.client.options.intents).has('GUILD_MEMBERS')) await guild.members.fetch();
 
         // Fetch all reaction users
         let userCollection = await reaction.users.fetch();
@@ -468,7 +470,7 @@ class Giveaway extends EventEmitter {
 
         const users = userCollection
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.message.client.user.id);
+            .filter((u) => u.id !== this.client.user.id);
         if (!users.size) return [];
 
         // Bonus Entries
@@ -545,7 +547,7 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageID).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+                this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
             }
             resolve(this);
         });
@@ -570,46 +572,58 @@ class Giveaway extends EventEmitter {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit(this.fillInString(this.messages.giveawayEnded), { embed }).catch(() => {});
+                await this.message.edit({ content: this.fillInString(this.messages.giveawayEnded), embeds: [embed] }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage.replace('{winners}', formattedWinners);
-                if (message.length && message.length <= 2000) this.message.channel.send(message);
+                const channel =
+                    (this.message.channel.isThread() && !this.message.channel.sendable &&
+                    !this.message.channel.permissionsFor(this.client.user)?.has([
+                        this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                        this.message.channel.type === 'GUILD_PRIVATE_THREAD'
+                            ? 'USE_PRIVATE_THREADS'
+                            : 'USE_PUBLIC_THREADS',
+                    ]))
+                        ? this.message.channel.parent
+                        : this.message.channel;
+
+                if (message.length && message.length <= 2000) channel.send(message);
                 else if (message.length && message.length > 2000) {
-                    this.message.channel.send(winMessage.substr(0, winMessage.indexOf('{winners}')));
+                    channel.send(winMessage.substr(0, winMessage.indexOf('{winners}')));
                     while (formattedWinners.length >= 2000) {
-                        await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
+                        await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    this.message.channel.send(formattedWinners);
-                    this.message.channel.send(winMessage.substr(winMessage.indexOf('{winners}') + 9));
+                    channel.send(formattedWinners);
+                    channel.send(winMessage.substr(winMessage.indexOf('{winners}') + 9));
                 }
-                if (this.messages.winMessage.embed?.type) {
+
+                if (this.messages.winMessage.embed && typeof this.messages.winMessage.embed === 'object') {
                     if (message.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(new Discord.MessageEmbed(this.messages.winMessage.embed));
                     const embedDescription = embed.description.replace('{winners}', formattedWinners);
-                    if (embedDescription.length <= 2048) this.message.channel.send(embed.setDescription(embedDescription));
+                    if (embedDescription.length <= 4096) channel.send({ embeds: [embed.setDescription(embedDescription)] });
                     else {
-                        this.message.channel.send(
-                            new Discord.MessageEmbed(embed).setDescription(embed.description.substr(0, embed.description.indexOf('{winners}')))
-                        );
+                        channel.send({
+                            embeds: [new Discord.MessageEmbed(embed).setDescription(embed.description.substr(0, embed.description.indexOf('{winners}')))]
+                        });
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
-                        while (formattedWinners.length >= 2048) {
-                            await this.message.channel.send(
-                                tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2047)) + ',')
-                            );
-                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2047) + 2).length);
+                        while (formattedWinners.length >= 4096) {
+                            await channel.send({
+                                embeds: [tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ',')]
+                            });
+                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length);
                         }
-                        this.message.channel.send(tempEmbed.setDescription(formattedWinners));
-                        this.message.channel.send(
-                            tempEmbed.setDescription(embed.description.substr(embed.description.indexOf('{winners}') + 9))
-                        );
+                        channel.send({ embeds: [tempEmbed.setDescription(formattedWinners)] });
+                        channel.send({
+                            embeds: [tempEmbed.setDescription(embed.description.substr(embed.description.indexOf('{winners}') + 9))]
+                        });
                     }
                 }
                 resolve(winners);
             } else {
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit(this.fillInString(this.messages.giveawayEnded), { embed }).catch(() => {});
+                this.message.edit({ content: this.fillInString(this.messages.giveawayEnded), embeds: [embed] }).catch(() => {});
                 resolve([]);
             }
         });
@@ -631,50 +645,64 @@ class Giveaway extends EventEmitter {
             }
 
             const winners = await this.roll(options.winnerCount || undefined);
+            const channel =
+                (this.message.channel.isThread() && !this.message.channel.sendable &&
+                !this.message.channel.permissionsFor(this.client.user)?.has([
+                    this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                    this.message.channel.type === 'GUILD_PRIVATE_THREAD'
+                        ? 'USE_PRIVATE_THREADS'
+                        : 'USE_PUBLIC_THREADS',
+                ]))
+                    ? this.message.channel.parent
+                    : this.message.channel;
+                    
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit(this.messages.giveawayEnded, { embed }).catch(() => {});
+                await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
                 const message = congratMessage.replace('{winners}', formattedWinners);
-                if (message.length && message.length <= 2000) this.message.channel.send(message);
+
+                if (message.length && message.length <= 2000) channel.send(message);
                 else if (message.length && message.length > 2000) {
-                    this.message.channel.send(congratMessage.substr(0, congratMessage.indexOf('{winners}')));
+                    channel.send(congratMessage.substr(0, congratMessage.indexOf('{winners}')));
                     while (formattedWinners.length >= 2000) {
-                        await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
+                        await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',' );
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    this.message.channel.send(formattedWinners);
-                    this.message.channel.send(congratMessage.substr(congratMessage.indexOf('{winners}') + 9));
+                    channel.send(formattedWinners);
+                    channel.send(congratMessage.substr(congratMessage.indexOf('{winners}') + 9));
                 }
-                if (options.messages.congrat.embed?.type) {
+
+                if (options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object') {
                     if (message.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(new Discord.MessageEmbed(options.messages.congrat.embed));
                     const embedDescription = embed.description.replace('{winners}', formattedWinners);
-                    if (embedDescription.length <= 2048) this.message.channel.send(embed.setDescription(embedDescription));
+                    if (embedDescription.length <= 4096) this.message.channel.send({ embeds: [embed.setDescription(embedDescription)] });
                     else {
-                        this.message.channel.send(
-                            new Discord.MessageEmbed(embed).setDescription(embed.description.substr(0, embed.description.indexOf('{winners}')))
-                        );
+                        this.message.channel.send({
+                            embeds: [new Discord.MessageEmbed(embed).setDescription(embed.description.substr(0, embed.description.indexOf('{winners}')))]
+                        });
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
-                        while (formattedWinners.length >= 2048) {
-                            await this.message.channel.send(
-                                tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2047)) + ',')
-                            );
-                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 2047) + 2).length);
+                        while (formattedWinners.length >= 4096) {
+                            await channel.send({
+                                embeds: [tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ',')]
+                            });
+                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length);
                         }
-                        this.message.channel.send(tempEmbed.setDescription(formattedWinners));
-                        this.message.channel.send(
-                            tempEmbed.setDescription(embed.description.substr(embed.description.indexOf('{winners}') + 9))
-                        );
+                        channel.send({ embeds: [tempEmbed.setDescription(formattedWinners)] });
+                        channel.send({
+                            embeds: [tempEmbed.setDescription(embed.description.substr(embed.description.indexOf('{winners}') + 9))]
+                        });
                     }
                 }
                 resolve(winners);
             } else {
-                this.channel.send(this.fillInString(options.messages.error.content || options.messages.error), {
-                    embed: this.fillInEmbed(options.messages.error.embed),
+                channel.send({ 
+                    content: this.fillInString(options.messages.error.content || options.messages.error),
+                    embeds: [this.fillInEmbed(options.messages.error.embed)]
                 });
                 resolve([]);
             }
@@ -721,7 +749,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+            this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
             resolve(this);
         });
     }
@@ -746,7 +774,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageID, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit(this.messages.giveaway, { embed }).catch(() => {});
+            this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
             resolve(this);
         });
     }

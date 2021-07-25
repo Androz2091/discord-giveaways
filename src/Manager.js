@@ -23,11 +23,12 @@ const Giveaway = require('./Giveaway.js');
 class GiveawaysManager extends EventEmitter {
     /**
      * @param {Discord.Client} client The Discord Client
-     * @param {GiveawaysManagerOptions} options The manager options
+     * @param {GiveawaysManagerOptions} [options] The manager options
+     * @param {Boolean} [init=true] If the manager should start automatically. If set to "false", for example to create a delay, the manager can be started manually with "manager._init()".
      */
     constructor(client, options, init = true) {
         super();
-        if (!client) throw new Error('Client is a required option.');
+        if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
         /**
          * The Discord Client
          * @type {Discord.Client}
@@ -48,7 +49,6 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options || {});
-        if (new Discord.Intents(client.options.ws.intents).has('GUILD_MEMBERS')) this.options.hasGuildMemberIntent = true;
         if (init) this._init();
     }
 
@@ -119,7 +119,7 @@ class GiveawaysManager extends EventEmitter {
 
         for (
             let i = 1;
-            descriptionString(formattedWinners).length > 2048 ||
+            descriptionString(formattedWinners).length > 4096 ||
             giveaway.prize.length + giveaway.messages.endedAt.length + descriptionString(formattedWinners).length > 6000;
             i++
         ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
@@ -200,11 +200,22 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) return reject('The manager is not ready yet.');
-            if (!channel?.id) return reject(`channel is not a valid text based channel. (val=${channel})`);
+            if (!channel?.id || !channel.isText() || channel.deleted) {
+                return reject(`channel is not a valid text based channel. (val=${channel})`);
+            }
+            if (
+                channel.isThread() && !channel.sendable &&
+                !channel.permissionsFor(this.client.user)?.has([
+                    channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                    channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                ])
+            ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
                 return reject(`options.time is not a positive number. (val=${options.time})`);
             }
-            if (typeof options.prize !== 'string') return reject(`options.prize is not a string. (val=${options.prize})`);
+            if (typeof options.prize !== 'string' || options.prize.length > 256) {
+                return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
+            }
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
@@ -223,7 +234,7 @@ class GiveawaysManager extends EventEmitter {
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
                 channelID: channel.id,
-                guildID: channel.guild.id,
+                guildID: channel.guildId,
                 prize: options.prize,
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
@@ -244,7 +255,7 @@ class GiveawaysManager extends EventEmitter {
             });
 
             const embed = this.generateMainEmbed(giveaway);
-            const message = await channel.send(giveaway.messages.giveaway, { embed });
+            const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
             message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
@@ -487,14 +498,14 @@ class GiveawaysManager extends EventEmitter {
                 ) this.unpause(giveaway.messageID).catch(() => {});
             }
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageID), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(() => {
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message.edit(giveaway.messages.giveaway, { embed }).catch(() => {});
+                    giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
@@ -518,7 +529,10 @@ class GiveawaysManager extends EventEmitter {
         if (!channel) return;
         const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
-        const reaction = message.reactions.cache.get(giveaway.reaction);
+        const reactions = message.reactions.cache;
+        const reaction =
+            reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name) ||
+            reactions.get(Discord.Util.resolvePartialEmoji(giveaway.reaction)?.id);
         if (!reaction) return;
         if (reaction.emoji.name !== packet.d.emoji.name) return;
         if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
@@ -536,6 +550,11 @@ class GiveawaysManager extends EventEmitter {
     async _init() {
         const rawGiveaways = await this.getAllGiveaways();
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
+        const cacheAllGiveawayChannels = async () => {
+            if (!this.client.readyAt) return setTimeout(cacheAllGiveawayChannels, 100);
+            for (const giveaway of this.giveaways) await this.client.channels.fetch(giveaway.channelID).catch(() => {});
+        };
+        await cacheAllGiveawayChannels();
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
