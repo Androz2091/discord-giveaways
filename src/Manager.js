@@ -207,7 +207,7 @@ class GiveawaysManager extends EventEmitter {
             }
             if (
                 channel.isThread() && !channel.sendable &&
-                !channel.permissionsFor(this.client.user)?.any([
+                !channel.permissionsFor(this.client.user)?.has([
                     channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
                     channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
                 ])

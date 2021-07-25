@@ -537,7 +537,7 @@ class Giveaway extends EventEmitter {
                     .replace('{messageURL}', this.messageURL);
                 const channel =
                     (this.message.channel.isThread() && !this.message.channel.sendable &&
-                    !this.message.channel.permissionsFor(this.client.user)?.any([
+                    !this.message.channel.permissionsFor(this.client.user)?.has([
                         this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
                         this.message.channel.type === 'GUILD_PRIVATE_THREAD'
                             ? 'USE_PRIVATE_THREADS'
@@ -592,7 +592,7 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
                 (this.message.channel.isThread() && !this.message.channel.sendable &&
-                !this.message.channel.permissionsFor(this.client.user)?.any([
+                !this.message.channel.permissionsFor(this.client.user)?.has([
                     this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
                     this.message.channel.type === 'GUILD_PRIVATE_THREAD'
                         ? 'USE_PRIVATE_THREADS'
