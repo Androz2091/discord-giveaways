@@ -31,9 +31,12 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
+Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
+Optional Discord Intent for better performance: `GUILD_MEMBERS`.
+
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -45,7 +48,6 @@ const { GiveawaysManager } = require('discord-giveaways');
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     updateCountdownEvery: 10000,
-    hasGuildMembersIntent: false,
     default: {
         botsCanWin: false,
         embedColor: '#FF0000',
@@ -70,7 +72,6 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.storage**: the json file that will be used to store giveaways.
 -   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
 -   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
--   **options.hasGuildMembersIntent**: if the bot has access to the "GUILD_MEMBERS" intent. It works without, but it will be faster with.
 -   **options.default.botsCanWin**: if bots can win giveaways.
 -   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
 -   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways when they are running.
@@ -81,7 +82,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 ### Start a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
@@ -143,7 +144,7 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 ### Reroll a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -168,7 +169,7 @@ client.on('message', (message) => {
 ### Edit a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -200,7 +201,7 @@ client.on('message', (message) => {
 ### Delete a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -222,7 +223,7 @@ client.on('message', (message) => {
 ### End a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -240,7 +241,7 @@ client.on('message', (message) => {
 ### Pause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -264,7 +265,7 @@ client.on('message', (message) => {
 ### Unpause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -486,7 +487,7 @@ Other examples:
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -565,7 +566,7 @@ To make `discord-giveaways` working with shards, you will need to extend the `Gi
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
