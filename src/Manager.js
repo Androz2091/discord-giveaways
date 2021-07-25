@@ -181,7 +181,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Starts a new giveaway
      *
-     * @param {Discord.TextChannel} channel The channel in which the giveaway will be created
+     * @param {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      *
      * @returns {Promise<Giveaway>} The created giveaway.
