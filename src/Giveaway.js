@@ -204,7 +204,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The exemptMembers function of the giveaway.
-     * @type {Function|null}
+     * @type {?Function}
      */
     get exemptMembersFunction() {
         return this.options.exemptMembers
@@ -300,13 +300,13 @@ class Giveaway extends EventEmitter {
      * @type {GiveawayData}
      */
     get data() {
-        const baseData = {
+        return {
             messageID: this.messageID,
             channelID: this.channelID,
             guildID: this.guildID,
             startAt: this.startAt,
             endAt: this.endAt,
-            ended: this.ended || undefined,
+            ended: this.ended,
             winnerCount: this.winnerCount,
             prize: this.prize,
             messages: this.messages,
@@ -330,7 +330,6 @@ class Giveaway extends EventEmitter {
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions
         };
-        return baseData;
     }
 
     /**
@@ -475,7 +474,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners.map((user) => guild.members.cache.get(user.id) || user);
+        return winners.map((user) => guild.members.cache.get(user.id));
     }
 
     /**
