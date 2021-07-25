@@ -237,7 +237,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The channel of the giveaway.
-     * @type {Discord.TextChannel}
+     * @type {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel}
      * @readonly
      */
     get channel() {
@@ -535,20 +535,30 @@ class Giveaway extends EventEmitter {
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
-                if (messageString.length <= 2000) this.message.channel.send(messageString);
+                const channel =
+                    (this.message.channel.isThread() && !this.message.channel.sendable &&
+                    !this.message.channel.permissionsFor(this.client.user)?.any([
+                        this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                        this.message.channel.type === 'GUILD_PRIVATE_THREAD'
+                            ? 'USE_PRIVATE_THREADS'
+                            : 'USE_PUBLIC_THREADS',
+                    ]))
+                        ? this.message.channel.parent
+                        : this.message.channel;
+                if (messageString.length <= 2000) channel.send(messageString);
                 else {
-                    this.message.channel.send(
+                    channel.send(
                         this.messages.winMessage
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL),
                     );
                     while (formattedWinners.length >= 2000) {
-                        await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
+                        await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    this.message.channel.send(formattedWinners);
-                    this.message.channel.send(
+                    channel.send(formattedWinners);
+                    channel.send(
                         this.messages.winMessage
                             .substr(this.messages.winMessage.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
@@ -580,6 +590,16 @@ class Giveaway extends EventEmitter {
             }
 
             const winners = await this.roll(options.winnerCount || undefined);
+            const channel =
+                (this.message.channel.isThread() && !this.message.channel.sendable &&
+                !this.message.channel.permissionsFor(this.client.user)?.any([
+                    this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                    this.message.channel.type === 'GUILD_PRIVATE_THREAD'
+                        ? 'USE_PRIVATE_THREADS'
+                        : 'USE_PUBLIC_THREADS',
+                ]))
+                    ? this.message.channel.parent
+                    : this.message.channel;
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
@@ -590,20 +610,20 @@ class Giveaway extends EventEmitter {
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
-                if (messageString.length <= 2000) this.message.channel.send(messageString);
+                if (messageString.length <= 2000) channel.send(messageString);
                 else {
-                    this.message.channel.send(
+                    channel.send(
                         options.messages.congrat
                             .substr(0, options.messages.congrat.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL)
                     );
                     while (formattedWinners.length >= 2000) {
-                        await this.message.channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',' );
+                        await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',' );
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    this.message.channel.send(formattedWinners);
-                    this.message.channel.send(
+                    channel.send(formattedWinners);
+                    channel.send(
                         options.messages.congrat
                             .substr(options.messages.congrat.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
@@ -612,7 +632,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
-                this.channel.send(options.messages.error);
+                channel.send(options.messages.error);
                 resolve([]);
             }
         });

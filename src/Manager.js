@@ -202,7 +202,16 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) return reject('The manager is not ready yet.');
-            if (!channel?.id || !channel.isText()) return reject(`channel is not a valid text based channel. (val=${channel})`);
+            if (!channel?.id || !channel.isText() || channel.deleted) {
+                return reject(`channel is not a valid text based channel. (val=${channel})`);
+            }
+            if (
+                channel.isThread() && !channel.sendable &&
+                !channel.permissionsFor(this.client.user)?.any([
+                    channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                    channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                ])
+            ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
                 return reject(`options.time is not a positive number. (val=${options.time})`);
             }
@@ -225,7 +234,7 @@ class GiveawaysManager extends EventEmitter {
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
                 channelID: channel.id,
-                guildID: channel.guild.id,
+                guildID: channel.guildId,
                 prize: options.prize,
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
@@ -549,6 +558,11 @@ class GiveawaysManager extends EventEmitter {
         rawGiveaways.forEach((giveaway) => {
             this.giveaways.push(new Giveaway(this, giveaway));
         });
+        const cacheAllGiveawayChannels = async () => {
+            if (!this.client.readyAt) return setTimeout(cacheAllGiveawayChannels, 100);
+            for (const giveaway of this.giveaways) await this.client.channels.fetch(giveaway.channelID).catch(() => {});
+        };
+        await cacheAllGiveawayChannels();
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
