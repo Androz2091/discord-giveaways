@@ -426,8 +426,8 @@ client.giveawaysManager.start(message.channel, {
     winnerCount: parseInt(args[1]),
     prize: args.slice(2).join(' '),
     messages: {
-        giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
-        giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+        giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
+        giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         timeRemaining: 'Time remaining: **{duration}**',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',

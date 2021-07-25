@@ -195,7 +195,7 @@ declare module 'discord-giveaways' {
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
-        ended?: boolean;
+        ended: boolean;
         winnerIDs?: Snowflake[];
         messageID?: Snowflake;
         reaction?: EmojiIdentifierResolvable;
