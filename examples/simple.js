@@ -1,5 +1,5 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -25,7 +25,7 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
