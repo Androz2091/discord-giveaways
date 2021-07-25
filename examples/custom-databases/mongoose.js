@@ -98,7 +98,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         // Find by messageID and update it
-        await giveawayModel.findOneAndUpdate({ messageID: messageID }, giveawayData).exec();
+        await giveawayModel.findOneAndUpdate({ messageID: messageID }, giveawayData, { omitUndefined: true }).exec();
         // Don't forget to return something!
         return true;
     }

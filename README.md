@@ -31,8 +31,8 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
-Required Discord Intents: "GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS".  
-Optional Discord Intent for better performance: "GUILD_MEMBERS".
+Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
+Optional Discord Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
 const Discord = require('discord.js'),
@@ -82,7 +82,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 ### Start a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
@@ -144,7 +144,7 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 ### Reroll a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -169,7 +169,7 @@ client.on('message', (message) => {
 ### Edit a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -196,12 +196,12 @@ client.on('message', (message) => {
 -   **options.newExtraData**: the new extra data value for the giveaway
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 
-⚠️ **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
+**Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
 ### Delete a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -223,14 +223,14 @@ client.on('message', (message) => {
 ### End a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
     if (command === 'end') {
         const messageID = args[0];
         client.giveawaysManager.end(messageID).then(() => {
-             message.channel.send('Success! Giveaway ended!');
+            message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
@@ -241,7 +241,7 @@ client.on('message', (message) => {
 ### Pause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -265,7 +265,7 @@ client.on('message', (message) => {
 ### Unpause a giveaway
 
 ```js
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -295,6 +295,8 @@ const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 
 ### Exempt Members
 
+Function to filter members. If true is returned, the member will not be able to win the giveaway.
+
 ```js
 client.giveawaysManager.start(message.channel, {
     time: 60000,
@@ -305,7 +307,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-⚠️ **Note**: If the function should be customizable
+**Note**: if the function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -318,6 +320,8 @@ client.giveawaysManager.start(message.channel, {
     exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
 });
 ```
+
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
 
 ### Last Chance
 
@@ -334,6 +338,11 @@ client.giveawaysManager.start(message.channel, {
     }
 });
 ```
+
+-   **lastChance.enabled**: if the last chance system is enabled.
+-   **lastChance.content**: the text of the embed when the last chance system is enabled.
+-   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
+-   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
@@ -355,6 +364,11 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
+-   **pauseOptions.isPaused**: if the giveaway is paused.
+-   **pauseOptions.content**: the text of the embed when the giveaway is paused.
+-   **pauseOptions.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
+
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
     <img src="https://zupimages.net/up/21/24/dxhk.png"/>
 </a>
@@ -370,14 +384,16 @@ client.giveawaysManager.start(message.channel, {
         {
             // Members who have the "Nitro Boost" role get 2 bonus entries
             bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
-            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false
         }
     ]
 });
 ```
 
-⚠️ **Note**: If the `bonus` function should be customizable
+-   **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
+-   **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
+
+**Note**: if the `bonus` function should be customizable:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -391,12 +407,13 @@ client.giveawaysManager.start(message.channel, {
         {   
             // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
             bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
-            // Whether the amount of entries from the function can get summed with other amounts of entries
             cumulative: false 
         }
     ]
 });
 ```
+
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
 
 ## 🇫🇷 Translation
 
@@ -426,8 +443,8 @@ client.giveawaysManager.start(message.channel, {
     winnerCount: parseInt(args[1]),
     prize: args.slice(2).join(' '),
     messages: {
-        giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
-        giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+        giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
+        giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         timeRemaining: 'Time remaining: **{duration}**',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
