@@ -492,7 +492,7 @@ class GiveawaysManager extends EventEmitter {
                         }
                         giveaway.endAt = Date.now() + giveaway.duration;
                         const embed = this.generateMainEmbed(giveaway);
-                        const message = await giveaway.channel.send(giveaway.messages.giveaway, { embed });
+                        const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
                         message.react(giveaway.reaction);
                         giveaway.messageID = message.id;
                         giveaway.scheduleAt = undefined;
