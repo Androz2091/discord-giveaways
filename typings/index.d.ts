@@ -15,7 +15,7 @@ declare module 'discord-giveaways' {
 
     export const version: string;
     export class GiveawaysManager extends EventEmitter {
-        constructor(client: Client, options?: GiveawaysManagerOptions);
+        constructor(client: Client, options?: GiveawaysManagerOptions, init?: boolean);
 
         public client: Client;
         public giveaways: Giveaway[];
@@ -191,7 +191,7 @@ declare module 'discord-giveaways' {
         prize: string;
         channelID: Snowflake;
         guildID: Snowflake;
-        ended?: boolean;
+        ended: boolean;
         winnerIDs?: Snowflake[];
         messageID?: Snowflake;
         reaction?: EmojiIdentifierResolvable;

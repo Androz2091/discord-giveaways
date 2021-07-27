@@ -37,7 +37,7 @@
   "dependencies": {
     "deepmerge": "^4.2.2",
     "discord.js": "^12.5.3",
-    "serialize-javascript": "^5.0.1"
+    "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.5",
@@ -45,5 +45,8 @@
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
     "typescript": "^4.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

@@ -4,12 +4,12 @@ const Discord = require('discord.js');
  * The Giveaway messages that are used to display the giveaway content.
  * @typedef GiveawayMessages
  *
- * @property {string} [giveaway='@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
- * @property {string} [giveawayEnded='@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
+ * @property {string} [giveaway='🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
+ * @property {string} [giveawayEnded='🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
  * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below "inviteToParticipate" in the giveaway embed. "{duration}" will be replaced automatically with the time remaining.
  * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
- * @property {string|embedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
+ * @property {string|EmbedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
@@ -21,10 +21,9 @@ const Discord = require('discord.js');
  * @property {string} [units.days='days'] The name of the "days" unit.
  * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
-
 exports.GiveawayMessages = {
-    giveaway: '@everyone\n\n🎉🎉 **GIVEAWAY** 🎉🎉',
-    giveawayEnded: '@everyone\n\n🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+    giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
+    giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
     inviteToParticipate: 'React with 🎉 to participate!',
     timeRemaining: 'Time remaining: **{duration}**',
     winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
@@ -44,9 +43,9 @@ exports.GiveawayMessages = {
 
 /**
  * Embed Footer object.
- * @typedef embedFooterObject
+ * @typedef EmbedFooterObject
  *
- * @property {string} [text] The text of the footer. If the value is a empty string then embedFooter will not show up in the giveaway embed.
+ * @property {string} [text] The text of the footer. If the value is a empty string then "embedFooter" will not show up in the giveaway embed.
  * @property {string} [iconURL] The icon URL of the footer.
  */
 
@@ -193,12 +192,12 @@ exports.GiveawayEditOptions = {};
  * @property {number} startAt The start date of the giveaway.
  * @property {number} endAt The end date of the giveaway.
  * @property {number} winnerCount The number of winners for the giveaway.
+ * @property {boolean} ended If the giveaway has ended.
  * @property {GiveawayMessages} messages The giveaway messages.
  * @property {string} prize The giveaway prize.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {Discord.Snowflake} channelID The ID of the channel.
  * @property {Discord.Snowflake} guildID The ID of the guild.
- * @property {boolean} [ended] If the giveaway has ended.
  * @property {Discord.Snowflake[]} [winnerIDs] The winner IDs of the giveaway after it ended.
  * @property {Discord.Snowflake} [messageID] The ID of the message.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
