@@ -237,7 +237,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The channel of the giveaway.
-     * @type {Discord.TextChannel}
+     * @type {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel}
      * @readonly
      */
     get channel() {
@@ -306,7 +306,7 @@ class Giveaway extends EventEmitter {
             guildID: this.guildID,
             startAt: this.startAt,
             endAt: this.endAt,
-            ended: this.ended || undefined,
+            ended: this.ended,
             winnerCount: this.winnerCount,
             prize: this.prize,
             messages: this.messages,
@@ -555,22 +555,41 @@ class Giveaway extends EventEmitter {
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
-                if (messageString.length <= 2000) this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](messageString);
+                    
+                const channel = 
+                    (
+                        (this.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.isThread()) &&
+                        (this.libraryIsEris ? 
+                            !(!this.message.channel.threadMetadata.archived && 
+                                (this.message.channel.type !== 12 || this.message.channel.member || this.message.channel.permissionsOf(this.client.user.id).has('MANAGE_THREADS')) &&
+                                this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.threadMetadata.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES') &&
+                                this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.type === 12 ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS')
+                            )
+                            : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
+                                this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                                this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                            ]))
+                    ) ? this.libraryIsEris
+                            ? await this.message.channel.guild.channels.find(async (c) => [0, 5].includes(c.type) && (await c.getMessage(this.message.channel.parentID)))
+                            : this.message.channel.parent
+                        : this.message.channel;
+
+                if (messageString.length <= 2000) channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](messageString);
                 else {
-                    this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
+                    channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
                         this.messages.winMessage
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL),
                     );
                     while (formattedWinners.length >= 2000) {
-                        await this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
+                        await channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
                             formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ','
                         );
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](formattedWinners);
-                    this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
+                    channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](formattedWinners);
+                    channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
                         this.messages.winMessage
                             .substr(this.messages.winMessage.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
@@ -602,6 +621,24 @@ class Giveaway extends EventEmitter {
             }
 
             const winners = await this.roll(options.winnerCount || undefined);
+            const channel =
+                (
+                    (this.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.isThread()) &&
+                    (this.libraryIsEris ? 
+                        !(!this.message.channel.threadMetadata.archived && 
+                            (this.message.channel.type !== 12 || this.message.channel.member || this.message.channel.permissionsOf(this.client.user.id).has('MANAGE_THREADS')) &&
+                            this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.threadMetadata.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES') &&
+                            this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.type === 12 ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS')
+                        )
+                        : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
+                            this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                            this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                        ]))
+                ) ? this.libraryIsEris
+                        ? await this.message.channel.guild.channels.find(async (c) => [0, 5].includes(c.type) && (await c.getMessage(this.message.channel.parentID)))
+                        : this.message.channel.parent
+                    : this.message.channel;
+
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageID, this.data);
@@ -612,22 +649,22 @@ class Giveaway extends EventEmitter {
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
-                if (messageString.length <= 2000) this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](messageString);
+                if (messageString.length <= 2000) channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](messageString);
                 else {
-                    this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
+                    channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
                         options.messages.congrat
                             .substr(0, options.messages.congrat.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL)
                     );
                     while (formattedWinners.length >= 2000) {
-                        await this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
+                        await channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
                             formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ','
                         );
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](formattedWinners);
-                    this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
+                    channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](formattedWinners);
+                    channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
                         options.messages.congrat
                             .substr(options.messages.congrat.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
@@ -636,7 +673,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
-                this.message.channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](options.messages.error);
+                channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](options.messages.error);
                 resolve([]);
             }
         });
