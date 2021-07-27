@@ -313,7 +313,6 @@ class Giveaway extends EventEmitter {
             endAt: this.endAt,
             scheduleAt: this.scheduleAt,
             ended: this.ended,
-            ended: this.ended,
             winnerCount: this.winnerCount,
             prize: this.prize,
             messages: this.messages,
@@ -546,13 +545,10 @@ class Giveaway extends EventEmitter {
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
                 const channel =
-                    (this.message.channel.isThread() && !this.message.channel.sendable &&
-                    !this.message.channel.permissionsFor(this.client.user)?.has([
+                    this.message.channel.isThread() && !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                         this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                        this.message.channel.type === 'GUILD_PRIVATE_THREAD'
-                            ? 'USE_PRIVATE_THREADS'
-                            : 'USE_PUBLIC_THREADS',
-                    ]))
+                        this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                    ])
                         ? this.message.channel.parent
                         : this.message.channel;
                 if (messageString.length <= 2000) channel.send(messageString);
@@ -601,13 +597,10 @@ class Giveaway extends EventEmitter {
 
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
-                (this.message.channel.isThread() && !this.message.channel.sendable &&
-                !this.message.channel.permissionsFor(this.client.user)?.has([
+                this.message.channel.isThread() && !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                     this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                    this.message.channel.type === 'GUILD_PRIVATE_THREAD'
-                        ? 'USE_PRIVATE_THREADS'
-                        : 'USE_PUBLIC_THREADS',
-                ]))
+                    this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                ])
                     ? this.message.channel.parent
                     : this.message.channel;
             if (winners.length > 0) {

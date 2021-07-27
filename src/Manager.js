@@ -23,11 +23,12 @@ const Giveaway = require('./Giveaway.js');
 class GiveawaysManager extends EventEmitter {
     /**
      * @param {Discord.Client} client The Discord Client
-     * @param {GiveawaysManagerOptions} options The manager options
+     * @param {GiveawaysManagerOptions} [options] The manager options
+     * @param {Boolean} [init=true] If the manager should start automatically. If set to "false", for example to create a delay, the manager can be started manually with "manager._init()".
      */
     constructor(client, options, init = true) {
         super();
-        if (!client) throw new Error('Client is a required option.');
+        if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
         /**
          * The Discord Client
          * @type {Discord.Client}
@@ -118,7 +119,7 @@ class GiveawaysManager extends EventEmitter {
 
         for (
             let i = 1;
-            descriptionString(formattedWinners).length > 2048 ||
+            descriptionString(formattedWinners).length > 4096 ||
             giveaway.prize.length + giveaway.messages.endedAt.length + descriptionString(formattedWinners).length > 6000;
             i++
         ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
@@ -180,7 +181,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Starts a new giveaway
      *
-     * @param {Discord.TextChannel} channel The channel in which the giveaway will be created
+     * @param {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      *
      * @returns {Promise<Giveaway>} The created giveaway.
@@ -203,16 +204,17 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (
-                channel.isThread() && !channel.sendable &&
-                !channel.permissionsFor(this.client.user)?.has([
+                channel.isThread() && !channel.sendable && !channel.permissionsFor(this.client.user)?.has([
                     channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                    channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                    channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
                 return reject(`options.time is not a positive number. (val=${options.time})`);
             }
-            if (typeof options.prize !== 'string') return reject(`options.prize is not a string. (val=${options.prize})`);
+            if (typeof options.prize !== 'string' || options.prize.length > 256) {
+                return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
+            }
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
@@ -544,14 +546,14 @@ class GiveawaysManager extends EventEmitter {
         const giveaway = this.giveaways.find((g) => g.messageID === packet.d.message_id);
         if (!giveaway) return;
         if (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
-        const guild = this.client.guilds.cache.get(packet.d.guild_id);
-        if (!guild) return;
+        const guild = this.client.guilds.cache.get(packet.d.guild_id) || (await this.client.guilds.fetch(packet.d.guild_id).catch(() => {}));
+        if (!guild || !guild.available) return;
         if (packet.d.user_id === this.client.user.id) return;
         const member = guild.members.cache.get(packet.d.user_id) || (await guild.members.fetch(packet.d.user_id).catch(() => {}));
         if (!member) return;
-        const channel = guild.channels.cache.get(packet.d.channel_id);
+        const channel = guild.channels.cache.get(packet.d.channel_id) || (await this.client.channels.fetch(packet.d.channel_id).catch(() => {}));
         if (!channel) return;
-        const message = channel.messages.cache.get(packet.d.message_id) || (await channel.messages.fetch(packet.d.message_id));
+        const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
         const reactions = message.reactions.cache;
         const reaction =
