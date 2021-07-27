@@ -571,8 +571,9 @@ class GiveawaysManager extends EventEmitter {
             if (!this.client[this.libraryIsEris ? 'startTime' : 'readyAt']) return setTimeout(cacheAllGiveawayChannels, 100);
             for (const giveaway of this.giveaways) {
                 if (this.libraryIsEris) {
-                    const channel =
-                        this.client.getChannel(giveaway.channelID) ||
+                    let channel = this.client.getChannel(giveaway.channelID);
+                    if (channel) return;
+                    channel =
                         (await this.client.getRESTChannel(giveaway.channelID).catch(() => {})) ||
                         (await this.client.getMessage(giveaway.channelID, giveaway.messageID).catch(() => {}))?.channel;
                     if (!channel) return;
