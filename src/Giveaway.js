@@ -174,7 +174,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.PermissionResolvable[]}
      */
     get exemptPermissions() {
-        return this.options.exemptPermissions?.length ? this.options.exemptPermissions : this.manager.options.default.exemptPermissions;
+        return this.options.exemptPermissions || this.manager.options.default.exemptPermissions;
     }
 
     /**
