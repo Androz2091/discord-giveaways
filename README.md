@@ -319,7 +319,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
 ### Last Chance
 
@@ -411,7 +411,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
 ## 🇫🇷 Translation
 
