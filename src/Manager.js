@@ -167,7 +167,7 @@ class GiveawaysManager extends EventEmitter {
     end(messageID) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
 
             giveaway
                 .end()
@@ -269,7 +269,7 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             options = merge(GiveawayRerollOptions, options);
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
 
             giveaway
                 .reroll(options)
@@ -330,7 +330,7 @@ class GiveawaysManager extends EventEmitter {
     edit(messageID, options = {}) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
             giveaway.edit(options).then(resolve).catch(reject);
         });
     }
@@ -339,12 +339,12 @@ class GiveawaysManager extends EventEmitter {
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {Discord.Snowflake} messageID  The message ID of the giveaway
      * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
-     * @returns {Promise<boolean>}
+     * @returns {Promise<Giveaway>}
      */
     delete(messageID, doNotDeleteMessage = false) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
+            if (!giveaway) return reject('No giveaway found with message ID ' + messageID + '.');
             if (!giveaway.channel && !doNotDeleteMessage) {
                 return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
             }
@@ -356,7 +356,7 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways = this.giveaways.filter((g) => g.messageID !== messageID);
             await this.deleteGiveaway(messageID);
             this.emit('giveawayDeleted', giveaway);
-            resolve(true);
+            resolve(giveaway);
         });
     }
 
@@ -568,7 +568,7 @@ class GiveawaysManager extends EventEmitter {
  * // This can be used to add features such as a congratulatory message in DM
  * manager.on('giveawayEnded', (giveaway, winners) => {
  *      winners.forEach((member) => {
- *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
+ *          member.send('Congratulations, ' + member.user.username + ', you won: ' + giveaway.prize);
  *      });
  * });
  */
@@ -629,8 +629,20 @@ class GiveawaysManager extends EventEmitter {
  * // This can be used to add features such as a congratulatory message per DM
  * manager.on('giveawayRerolled', (giveaway, winners) => {
  *      winners.forEach((member) => {
- *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
+ *          member.send('Congratulations, ' + member.user.username + ', you won: ' + giveaway.prize);
  *      });
+ * });
+ */
+
+/**
+ * Emitted when a giveaway was deleted.
+ * @event GiveawaysManager#giveawayDeleted
+ * @param {Giveaway} giveaway The giveaway instance
+ *
+ * @example
+ * // This can be used to add logs
+ * manager.on('giveawayDeleted', (giveaway) => {
+ *      console.log('Giveaway with message ID ' + giveaway.messageID + ' was deleted.')
  * });
  */
 
