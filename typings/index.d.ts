@@ -112,6 +112,7 @@ declare module 'discord-giveaways' {
         };
     }
     interface GiveawaysManagerEvents {
+        giveawayDeleted: [Giveaway];
         giveawayEnded: [Giveaway, GuildMember[]];
         giveawayRerolled: [Giveaway, GuildMember[]];
         giveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
