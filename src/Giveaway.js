@@ -571,7 +571,7 @@ class Giveaway extends EventEmitter {
             if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
-            if (!options || typeof options !== 'object') return reject(`Options is not an object (val=${options})`);
+            if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
             options = merge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
