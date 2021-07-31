@@ -166,7 +166,7 @@ class Giveaway extends EventEmitter {
      * @type {Boolean}
      */
     get botsCanWin() {
-        return this.options.botsCanWin || this.manager.options.default.botsCanWin;
+        return typeof this.options.botsCanWin === 'boolean' ? this.options.botsCanWin : this.manager.options.default.botsCanWin;
     }
 
     /**
@@ -198,8 +198,7 @@ class Giveaway extends EventEmitter {
      * @type {BonusEntry[]}
      */
     get bonusEntries() {
-        const validBonusEntries = eval(this.options.bonusEntries);
-        return validBonusEntries?.length ? validBonusEntries : [];
+        return eval(this.options.bonusEntries) || [];
     }
 
     /**
