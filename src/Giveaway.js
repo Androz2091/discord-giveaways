@@ -562,15 +562,17 @@ class Giveaway extends EventEmitter {
 
     /**
      * Rerolls the giveaway.
-     * @param {GiveawayRerollOptions} The reroll options.
+     * @param {GiveawayRerollOptions} [options] The reroll options.
      * @returns {Promise<Discord.GuildMember[]>}
      */
-    reroll(options) {
+    reroll(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (!this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is not ended.');
             if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
+            if (!options || typeof options !== 'object') return reject(`Options is not an object (val=${options})`);
+            options = merge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
@@ -616,7 +618,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Pauses the giveaway.
-     * @param {PauseOptions} options The pause.
+     * @param {PauseOptions} options The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      */  
     pause(options = {}) {

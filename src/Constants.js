@@ -157,7 +157,7 @@ exports.GiveawaysManagerOptions = {
  * The reroll method options.
  * @typedef GiveawayRerollOptions
  *
- * @property {number} [winnerCount=this.winnerCount] The number of winners to pick.
+ * @property {number} [winnerCount=giveaway.winnerCount] The number of winners to pick.
  * @property {Object} [messages] The messages used in this method.
  * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are new winners.
  * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
