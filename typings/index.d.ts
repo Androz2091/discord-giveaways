@@ -92,6 +92,7 @@ declare module 'discord-giveaways' {
         extraData?: any;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
+        messageID?: Snowflake;
     }
     interface GiveawaysMessages {
         giveaway?: string;
