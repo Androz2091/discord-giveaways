@@ -283,7 +283,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Pauses a giveaway.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to pause.
-     * @param {PauseOptions} [options] The pause options.
+     * @param {PauseOptions} [options=giveaway.pauseOptions] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      *
      * @example

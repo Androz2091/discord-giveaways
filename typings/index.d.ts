@@ -28,7 +28,7 @@ declare module 'discord-giveaways' {
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel, options: GiveawayStartOptions): Promise<Giveaway>;
-        public pause(messageID: Snowflake, options: PauseOptions): Promise<Giveaway>;
+        public pause(messageID: Snowflake, options?: PauseOptions): Promise<Giveaway>;
         public unpause(messageID: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
             event: K,
@@ -164,7 +164,7 @@ declare module 'discord-giveaways' {
         public fetchMessage(): Promise<Message>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
-        public pause(options: PauseOptions): Promise<Giveaway>;
+        public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
     }
     interface GiveawayEditOptions {

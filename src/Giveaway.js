@@ -618,7 +618,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Pauses the giveaway.
-     * @param {PauseOptions} options The pause options.
+     * @param {PauseOptions} [options=giveaway.pauseOptions] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      */  
     pause(options = {}) {
