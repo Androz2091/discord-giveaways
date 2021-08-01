@@ -302,26 +302,36 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway) {
                 if (!forceOptions?.force) return reject('No giveaway found with message ID ' + messageID + '.');
 
+                const channel = forceOptions.channel;
+                delete forceOptions.channel;
                 forceOptions = merge(GiveawayForceOptions, forceOptions);
+                forceOptions.channel = channel;
 
                 if ((!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                     return reject(`options.winnerCount is not provided (required value) or is not a positive integer. (val=${options.winnerCount})`);
                 }
 
-                const message = await this.client.channels.cache.find(
-                    async (c) =>
-                        ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'].includes(c.type) &&
-                        (await c.messages.fetch(messageID).catch(() => {}))
-                );
+                if (!forceOptions.channel?.id || !forceOptions.channel.isText() || forceOptions.channel.deleted) {
+                    return reject(`forceOptions.channel is not a valid text based channel. (val=${forceOptions.channel})`);
+                }
+                if (
+                    forceOptions.channel.isThread() && !forceOptions.channel.sendable &&
+                    !forceOptions.channel.permissionsFor(this.client.user)?.has([
+                        forceOptions.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                        forceOptions.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                    ])
+                ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
+
+                const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
                 if (!message) return reject('Not message found with ID ' + messageID + '.');
-                if (!message.author || message.author.bot) return reject('The message author is not a bot.');
+                if (!message.author?.bot) return reject('The message author is not a bot.');
                 if (!message.content?.length) return reject(`The message does not contain any content (val=${message.content})`);
                 if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
 
                 const closestGiveaway = this.giveaways
                     .filter((g) => g.guildID === message.channel.guildId)
                     .reduce((prev, curr) =>
-                        Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev
+                        Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev, {}
                     );
 
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
@@ -338,7 +348,7 @@ class GiveawaysManager extends EventEmitter {
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: closestGiveaway?.messages || GiveawayMessages,
                     thumbnail: message.embeds[0].thumbnail?.url,
-                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev),
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, {})?.emoji,
                     embedColor: closestGiveaway?.embedColor,
                     embedColorEnd: message.embeds[0].hexColor
                 });
