@@ -199,7 +199,7 @@ class GiveawaysManager extends EventEmitter {
 
             let message;
             if (typeof options.messageID === 'string') {
-                if (this.giveaways.find((g) => g.messageID === options.messageID)) return reject(`Giveaway is already in database. (val=${options.messageID})`);
+                if (this.giveaways.find((g) => g.messageID === options.messageID)) return reject(`Giveaway already exists in database. (val=${options.messageID})`);
                 message = await channel.messages.fetch(options.messageID).catch(() => {});
                 if (!message) return reject(`options.messageID was not found inside of the provided channel. (val=${options.messageID})`);
                 else if (message.author?.id !== this.client.user.id) {
@@ -291,8 +291,9 @@ class GiveawaysManager extends EventEmitter {
                 const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
                 if (!message) return reject('No message found with ID ' + messageID + '.');
                 if (!message.author?.bot) return reject('The message author is not a bot.');
-                if (!message.content?.length) return reject(`The message does not contain any content (val=${message.content})`);
-                if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
+                if (!message.content?.length) return reject(`The message does not contain any content. (val=${message.content})`);
+                if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageID})`);
+                if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageID})`);
 
                 const closestGiveaway = this.giveaways
                     .filter(g => g.guildID === message.channel.guildId)
@@ -392,8 +393,9 @@ class GiveawaysManager extends EventEmitter {
                 const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
                 if (!message) return reject('No message found with ID ' + messageID + '.');
                 if (!message.author?.bot) return reject('The message author is not a bot.');
-                if (!message.content?.length) return reject(`The message does not contain any content (val=${message.content})`);
-                if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
+                if (!message.content?.length) return reject(`The message does not contain any content. (val=${message.content})`);
+                if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageID})`);
+                if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageID})`);
 
                 const closestGiveaway = this.giveaways
                     .filter((g) => g.guildID === message.channel.guildId)
