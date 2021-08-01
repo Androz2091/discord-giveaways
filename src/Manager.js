@@ -295,8 +295,11 @@ class GiveawaysManager extends EventEmitter {
                 if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
 
                 const closestGiveaway = this.giveaways
-                    .filter((g) => g.guildID === message.channel.guildId)
-                    .reduce((prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev, {});
+                    .filter(g => g.guildID === message.channel.guildId)
+                    .reduce(
+                        (prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev,
+                        { startAt: 0 }
+                    );
 
                 if ([GiveawayMessages.giveawayEnded, closestGiveaway?.messages?.giveawayEnded].includes(message.content)) {
                     return reject('The giveaway is already ended. Use "manager.reroll(messageID, { winnerCount: 1 }, { force: true, channel: message.channel })" instead.');
@@ -394,7 +397,10 @@ class GiveawaysManager extends EventEmitter {
 
                 const closestGiveaway = this.giveaways
                     .filter((g) => g.guildID === message.channel.guildId)
-                    .reduce((prev, curr) => Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev, {});
+                    .reduce(
+                        (prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev,
+                        { startAt: 0 }
+                    );
 
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
                     return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true, channel: message.channel })" instead.');
