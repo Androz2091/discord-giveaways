@@ -69,7 +69,7 @@ exports.GiveawayMessages = {
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
- * @property {Discord.Snowflake} [messageID] The message ID of the giveaway that should get resumed (in case it was deleted from the database). 
+ * @property {Discord.Snowflake} [messageID] The message ID of a giveaway that should get resumed (in case it was deleted from the database).
  */
 exports.GiveawayStartOptions = {};
 
