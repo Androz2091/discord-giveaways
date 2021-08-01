@@ -523,10 +523,10 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
 
             const winners = await this.roll();
-            await this.manager.editGiveaway(this.messageID, this.data);
+            if (this.saveGiveawayInDatabase !== false) await this.manager.editGiveaway(this.messageID, this.data);
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageID, this.data);
+                if (this.saveGiveawayInDatabase !== false) await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
@@ -595,7 +595,7 @@ class Giveaway extends EventEmitter {
                     : this.message.channel;
             if (winners.length > 0) {
                 this.winnerIDs = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageID, this.data);
+                if (options.saveGiveawayInDB !== false) await this.manager.editGiveaway(this.messageID, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');

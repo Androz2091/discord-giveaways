@@ -69,6 +69,7 @@ exports.GiveawayMessages = {
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
+ * @property {Discord.Snowflake} [messageID] The message ID of the giveaway that should get resumed (in case it was deleted from the database). 
  */
 exports.GiveawayStartOptions = {};
 
@@ -149,6 +150,21 @@ exports.GiveawaysManagerOptions = {
             embedColor: '#FF0000'
         }
     }
+};
+
+/**
+ * The options for a forced ending or reroll of a giveaway.
+ * The manager attempts to get "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" (depending on "end or reroll"), from the giveaway that was started closest to the giveaway that is forced (in the same server).
+ * @typedef GiveawayForceOptions
+ *
+ * @property {boolean} [force=false] If the ending or reroll should be forced, when the giveaway is not found.
+ * @property {boolean} [saveGiveawayInDatabase=true] If the giveaway should be saved in the runtime giveaway array and the database.
+ * @property {number} [closestGiveawayThreshold=86400000] How big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages). 
+ */
+exports.GiveawayForceOptions = {
+    force: false,
+    saveGiveawayInDatabase: true,
+    closestGiveawayThreshold: 86400000
 };
 
 /**

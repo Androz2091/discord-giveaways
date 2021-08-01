@@ -13,7 +13,8 @@ const {
     GiveawayRerollOptions,
     GiveawaysManagerOptions,
     GiveawayStartOptions,
-    PauseOptions
+    PauseOptions,
+    GiveawayForceOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 
@@ -156,29 +157,6 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
-     * Ends a giveaway. This method is automatically called when a giveaway ends.
-     * @param {Discord.Snowflake} messageID The message ID of the giveaway
-     * @returns {Promise<Discord.GuildMember[]>} The winners
-     *
-     * @example
-     * manager.end('664900661003157510');
-     */
-    end(messageID) {
-        return new Promise(async (resolve, reject) => {
-            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
-
-            giveaway
-                .end()
-                .then((winners) => {
-                    this.emit('giveawayEnded', giveaway, winners);
-                    resolve(winners);
-                })
-                .catch(reject);
-        });
-    }
-
-    /**
      * Starts a new giveaway
      *
      * @param {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway will be created
@@ -219,6 +197,16 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
 
+            let message;
+            if (options.messageID === 'string') {
+                if (this.giveaways.find((g) => g.messageID === options.messageID)) return reject(`Giveaway is already in database. (val=${options.messageID})`);
+                message = await channel.messages.fetch(options.messageID).catch(() => {});
+                if (!message) return reject(`options.messageID was not found inside of the provided channel. (val=${options.messageID})`);
+                else if (message.author?.id !== this.client.user.id) {
+                    return reject(`The manager is unable to resume a giveaway created by another user. (val=${options.messageID})`);
+                }
+            }
+
             const validateEmbedColor = async (embedColor) => {
                 try { 
                     embedColor = Discord.Util.resolveColor(embedColor);
@@ -253,9 +241,11 @@ class GiveawaysManager extends EventEmitter {
                 pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined
             });
 
-            const embed = this.generateMainEmbed(giveaway);
-            const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
-            message.react(giveaway.reaction);
+            if (typeof options.messageID !== 'string') {
+                const embed = this.generateMainEmbed(giveaway);
+                message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
+                message.react(giveaway.reaction);
+            }
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
@@ -264,19 +254,103 @@ class GiveawaysManager extends EventEmitter {
     }
 
     /**
+     * Ends a giveaway. This method is automatically called when a giveaway ends.
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway
+     * @returns {Promise<Discord.GuildMember[]>} The winners
+     *
+     * @example
+     * manager.end('664900661003157510');
+     */
+    end(messageID, options = {}) {
+        return new Promise(async (resolve, reject) => {
+            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) {
+                if (!options.force) return reject('No giveaway found with ID ' + messageID + '.');
+
+                // if (!winnerCount && message.embeds[0].footer?.text?.length) {
+                //     winnerCount = parseInt(message.embeds[0].footer.text.split(' ')[0]);
+                //     if (isNaN(winnerCount)) {
+                //         message.embeds[0].footer.text.split(' ').indexOf(GiveawayMessages.winners);
+                //     }
+                // }
+            }
+
+            giveaway
+                .end()
+                .then((winners) => {
+                    this.emit('giveawayEnded', giveaway, winners);
+                    resolve(winners);
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
      * Choose new winner(s) for the giveaway
      * @param {Discord.Snowflake} messageID The message ID of the giveaway to reroll
      * @param {GiveawayRerollOptions} [options] The reroll options
+     * @param {GiveawayForceOptions} [forceOptions] The options for forcing the reroll
      * @returns {Promise<Discord.GuildMember[]>} The new winners
      *
      * @example
      * manager.reroll('664900661003157510');
      */
-    reroll(messageID, options = {}) {
+    reroll(messageID, options = {}, forceOptions = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(GiveawayRerollOptions, options);
-            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
-            if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
+            let giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            if (!giveaway) {
+                if (!forceOptions?.force) return reject('No giveaway found with message ID ' + messageID + '.');
+
+                forceOptions = merge(GiveawayForceOptions, forceOptions);
+
+                if ((!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
+                    return reject(`options.winnerCount is not provided (required value) or is not a positive integer. (val=${options.winnerCount})`);
+                }
+
+                const message = await this.client.channels.cache.find(
+                    async (c) =>
+                        ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'].includes(c.type) &&
+                        (await c.messages.fetch(messageID).catch(() => {}))
+                );
+                if (!message) return reject('Not message found with ID ' + messageID + '.');
+                if (!message.author || message.author.bot) return reject('The message author is not a bot.');
+                if (!message.content?.length) return reject(`The message does not contain any content (val=${message.content})`);
+                if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
+
+                const closestGiveaway = this.giveaways
+                    .filter((g) => g.guildID === message.channel.guildId)
+                    .reduce((prev, curr) =>
+                        Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev
+                    );
+
+                if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
+                    return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true })" instead.');
+                }     
+                
+                giveaway = new Giveaway(this, {
+                    ended: true,
+                    startAt: message.createdTimestamp,
+                    endAt: message.embeds[0].timestamp || Date.now(),
+                    winnerCount: options.winnerCount,
+                    channelID: message.channel.id,
+                    guildID: message.channel.guildId,
+                    prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
+                    messages: closestGiveaway?.messages || GiveawayMessages,
+                    thumbnail: message.embeds[0].thumbnail?.url,
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev),
+                    embedColor: closestGiveaway?.embedColor,
+                    embedColorEnd: message.embeds[0].hexColor
+                });
+                giveaway.messageID = message.id;
+
+                if (forceOptions.saveGiveawayInDatabase) {
+                    this.giveaways.push(giveaway);
+                    await this.saveGiveaway(giveaway.messageID, giveaway.data);
+                }
+                // Change name to avoid developers providing "saveGiveawayInDatabase" in "options"
+                options.saveGiveawayInDB = forceOptions.saveGiveawayInDatabase === false ? false : true;
+            }
 
             giveaway
                 .reroll(options)
