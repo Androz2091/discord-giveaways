@@ -27,8 +27,8 @@ declare module 'discord-giveaways' {
         public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<boolean>;
         public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageID: Snowflake): Promise<GuildMember[]>;
-        public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
+        public end(messageID: Snowflake, forceOptions?: GiveawayForceOptions): Promise<GuildMember[]>;
+        public reroll(messageID: Snowflake, options?: GiveawayRerollOptions, forceOptions?: GiveawayForceOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
         public pause(messageID: Snowflake, options: PauseOptions): Promise<Giveaway>;
         public unpause(messageID: Snowflake): Promise<Giveaway>;
@@ -183,6 +183,12 @@ declare module 'discord-giveaways' {
             congrat?: string;
             error?: string;
         };
+    }
+    interface GiveawayForceOptions {
+        force?: boolean;
+        channel: TextChannel | NewsChannel | ThreadChannel;
+        saveGiveawayInDatabase?: boolean;
+        closestGiveawayThreshold?: number;
     }
     interface GiveawayData {
         startAt: number;

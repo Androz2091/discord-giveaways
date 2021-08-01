@@ -158,8 +158,12 @@ client.on('messageCreate', (message) => {
 });
 ```
 
--   **options.winnerCount**: the number of winners to pick.
+-   **options.winnerCount**: the number of winners to pick. (Required when the reroll is forced)
 -   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation)
+-   **forceOptions.force**: if the reroll should be forced, when the giveaway is not found.
+-   **forceOptions.channel**: the channel in which the giveaway that is forced is. (Required when the reroll is forced)
+-   **forceOptions.saveGiveawayInDatabase**: if the giveaway that is forced should be saved in the runtime giveaway array and the database.
+-   **forceOptions.closestGiveawayThreshold**: how big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is considered invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages). 
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -236,6 +240,12 @@ client.on('messageCreate', (message) => {
     }
 });
 ```
+
+-   **forceOptions.force**: if the ending should be forced, when the giveaway is not found.
+-   **forceOptions.channel**: the channel in which the giveaway that is forced is. (Required when the ending is forced)
+-   **forceOptions.winnerCount**: the number of winners to pick. The manager attempts to get this value from "embed.footer.text", but that might fail.
+-   **forceOptions.saveGiveawayInDatabase**: if the giveaway that is forced should be saved in the runtime giveaway array and the database.
+-   **forceOptions.closestGiveawayThreshold**: how big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is considered invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages). 
 
 ### Pause a giveaway
 

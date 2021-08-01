@@ -256,28 +256,92 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway
+     * @param {GiveawayForceOptions} [forceOptions] The options for forcing the ending
+     * @param {number} [forceOptions.winnerCount=giveaway.winnerCount] The number of winners to pick. The manager attempts to get this value from "embed.footer.text", but that might fail.
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
      * manager.end('664900661003157510');
      */
-    end(messageID, options = {}) {
+    end(messageID, forceOptions = {}) {
         return new Promise(async (resolve, reject) => {
-            const giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            let giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) {
-                if (!options.force) return reject('No giveaway found with ID ' + messageID + '.');
+                if (!forceOptions?.force) return reject('No giveaway found with ID ' + messageID + '.');
 
-                // if (!winnerCount && message.embeds[0].footer?.text?.length) {
-                //     winnerCount = parseInt(message.embeds[0].footer.text.split(' ')[0]);
-                //     if (isNaN(winnerCount)) {
-                //         message.embeds[0].footer.text.split(' ').indexOf(GiveawayMessages.winners);
-                //     }
-                // }
+                const channel = forceOptions.channel;
+                delete forceOptions.channel;
+                forceOptions = merge(GiveawayForceOptions, forceOptions);
+                forceOptions.channel = channel;
+
+                if (forceOptions.winnerCount && (!Number.isInteger(forceOptions.winnerCount) || forceOptions.winnerCount < 1)) {
+                    return reject(`forceOptions.winnerCount is not a positive integer. (val=${forceOptions.winnerCount})`);
+                }
+                
+                if (!forceOptions.channel?.id || !forceOptions.channel.isText() || forceOptions.channel.deleted) {
+                    return reject(`forceOptions.channel is not a valid text based channel. (val=${forceOptions.channel})`);
+                }
+                if (
+                    forceOptions.channel.isThread() && !forceOptions.channel.sendable && !forceOptions.channel.permissionsFor(this.client.user)?.has([
+                        forceOptions.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                        forceOptions.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                    ])
+                ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
+
+                const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
+                if (!message) return reject('No message found with ID ' + messageID + '.');
+                if (!message.author?.bot) return reject('The message author is not a bot.');
+                if (!message.content?.length) return reject(`The message does not contain any content (val=${message.content})`);
+                if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
+
+                const closestGiveaway = this.giveaways
+                    .filter((g) => g.guildID === message.channel.guildId)
+                    .reduce((prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev, {});
+
+                if ([GiveawayMessages.giveawayEnded, closestGiveaway?.messages?.giveawayEnded].includes(message.content)) {
+                    return reject('The giveaway is already ended. Use "manager.reroll(messageID, {}, { force: true })" instead.');
+                }
+                
+                let winnerCount = forceOptions.winnerCount;
+                if (!winnerCount) {
+                    if (message.embeds[0].footer?.text?.length) {
+                        const args = message.embeds[0].footer.text.split(' ');
+                        winnerCount =
+                            parseInt(args[0]) ||
+                            parseInt(args[args.indexOf(GiveawayMessages.winners) - 1]) ||
+                            parseInt(args[args.indexOf(GiveawayMessages.winners) + 1]) ||
+                            parseInt(args[args.indexOf(closestGiveaway?.messages?.winners) - 1]) ||
+                            parseInt(args[args.indexOf(closestGiveaway?.messages?.winners) + 1]);
+                    }
+                    if (isNaN(winnerCount)) return reject('The manager is unable to get "winnerCount" from the embed footer. Please provide "forceOptions.winnerCount".');
+                }
+                
+                giveaway = new Giveaway(this, {
+                    startAt: message.createdTimestamp,
+                    endAt: message.embeds[0].timestamp || Date.now(),
+                    winnerCount,
+                    channelID: message.channel.id,
+                    guildID: message.channel.guildId,
+                    prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
+                    messages: closestGiveaway?.messages || GiveawayMessages,
+                    thumbnail: message.embeds[0].thumbnail?.url,
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, {})?.emoji,
+                    embedColor: message.embeds[0].hexColor,
+                    embedColorEnd: closestGiveaway?.embedColor
+                });
+                giveaway.messageID = message.id;
+
+                if (forceOptions.saveGiveawayInDatabase) {
+                    this.giveaways.push(giveaway);
+                    await this.saveGiveaway(giveaway.messageID, giveaway.data);
+                }
+                giveaway.saveGiveawayInDatabase = forceOptions.saveGiveawayInDatabase === false ? false : true;
             }
 
             giveaway
                 .end()
                 .then((winners) => {
+                    delete giveaway.saveGiveawayInDatabase;
                     this.emit('giveawayEnded', giveaway, winners);
                     resolve(winners);
                 })
@@ -323,16 +387,14 @@ class GiveawaysManager extends EventEmitter {
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
                 const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
-                if (!message) return reject('Not message found with ID ' + messageID + '.');
+                if (!message) return reject('No message found with ID ' + messageID + '.');
                 if (!message.author?.bot) return reject('The message author is not a bot.');
                 if (!message.content?.length) return reject(`The message does not contain any content (val=${message.content})`);
                 if (!message.embeds.length) return reject(`The message does not contain any embeds (id=${messageID})`);
 
                 const closestGiveaway = this.giveaways
                     .filter((g) => g.guildID === message.channel.guildId)
-                    .reduce((prev, curr) =>
-                        Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev, {}
-                    );
+                    .reduce((prev, curr) => Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev, {});
 
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
                     return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true })" instead.');
@@ -358,7 +420,6 @@ class GiveawaysManager extends EventEmitter {
                     this.giveaways.push(giveaway);
                     await this.saveGiveaway(giveaway.messageID, giveaway.data);
                 }
-                // Change name to avoid developers providing "saveGiveawayInDatabase" in "options"
                 options.saveGiveawayInDB = forceOptions.saveGiveawayInDatabase === false ? false : true;
             }
 

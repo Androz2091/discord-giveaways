@@ -159,8 +159,8 @@ exports.GiveawaysManagerOptions = {
  *
  * @property {boolean} [force=false] If the ending or reroll should be forced, when the giveaway is not found.
  * @property {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway that is forced is.
- * @property {boolean} [saveGiveawayInDatabase=true] If the giveaway should be saved in the runtime giveaway array and the database.
- * @property {number} [closestGiveawayThreshold=86400000] How big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages). 
+ * @property {boolean} [saveGiveawayInDatabase=true] If the giveaway that is forced should be saved in the runtime giveaway array and the database.
+ * @property {number} [closestGiveawayThreshold=86400000] How big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is considered invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages). 
  */
 exports.GiveawayForceOptions = {
     force: false,
@@ -173,7 +173,7 @@ exports.GiveawayForceOptions = {
  * The reroll method options.
  * @typedef GiveawayRerollOptions
  *
- * @property {number} [winnerCount=this.winnerCount] The number of winners to pick.
+ * @property {number} [winnerCount=this.winnerCount] The number of winners to pick. (Required when the reroll is forced)
  * @property {Object} [messages] The messages used in this method.
  * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are new winners.
  * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
