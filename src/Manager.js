@@ -328,7 +328,7 @@ class GiveawaysManager extends EventEmitter {
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveaway: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
-                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, {})?.emoji,
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, { count: 0 })?.emoji,
                     embedColor: message.embeds[0].hexColor,
                     embedColorEnd: closestGiveaway?.embedColor
                 });
@@ -416,7 +416,7 @@ class GiveawaysManager extends EventEmitter {
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveawayEnded: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
-                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, {})?.emoji,
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, { count: 0 })?.emoji,
                     embedColor: closestGiveaway?.embedColor,
                     embedColorEnd: message.embeds[0].hexColor
                 });
