@@ -326,7 +326,7 @@ class GiveawaysManager extends EventEmitter {
                     channelID: message.channel.id,
                     guildID: message.channel.guildId,
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
-                    messages: closestGiveaway?.messages || GiveawayMessages,
+                    messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveaway: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
                     reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, {})?.emoji,
                     embedColor: message.embeds[0].hexColor,
@@ -414,7 +414,7 @@ class GiveawaysManager extends EventEmitter {
                     channelID: message.channel.id,
                     guildID: message.channel.guildId,
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
-                    messages: closestGiveaway?.messages || GiveawayMessages,
+                    messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveawayEnded: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
                     reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, {})?.emoji,
                     embedColor: closestGiveaway?.embedColor,
