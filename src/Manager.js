@@ -299,7 +299,7 @@ class GiveawaysManager extends EventEmitter {
                     .reduce((prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev, {});
 
                 if ([GiveawayMessages.giveawayEnded, closestGiveaway?.messages?.giveawayEnded].includes(message.content)) {
-                    return reject('The giveaway is already ended. Use "manager.reroll(messageID, {}, { force: true })" instead.');
+                    return reject('The giveaway is already ended. Use "manager.reroll(messageID, { winnerCount: 1 }, { force: true, channel: message.channel })" instead.');
                 }
                 
                 let winnerCount = forceOptions.winnerCount;
@@ -397,7 +397,7 @@ class GiveawaysManager extends EventEmitter {
                     .reduce((prev, curr) => Math.abs(curr - message.createdTimestamp) < Math.abs(prev - message.createdTimestamp) ? curr : prev, {});
 
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
-                    return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true })" instead.');
+                    return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true, channel: message.channel })" instead.');
                 }     
                 
                 giveaway = new Giveaway(this, {
