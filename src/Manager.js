@@ -198,7 +198,7 @@ class GiveawaysManager extends EventEmitter {
             }
 
             let message;
-            if (options.messageID === 'string') {
+            if (typeof options.messageID === 'string') {
                 if (this.giveaways.find((g) => g.messageID === options.messageID)) return reject(`Giveaway is already in database. (val=${options.messageID})`);
                 message = await channel.messages.fetch(options.messageID).catch(() => {});
                 if (!message) return reject(`options.messageID was not found inside of the provided channel. (val=${options.messageID})`);
@@ -244,8 +244,8 @@ class GiveawaysManager extends EventEmitter {
             if (typeof options.messageID !== 'string') {
                 const embed = this.generateMainEmbed(giveaway);
                 message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
-                message.react(giveaway.reaction);
             }
+            message.react(giveaway.reaction);
             giveaway.messageID = message.id;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageID, giveaway.data);
