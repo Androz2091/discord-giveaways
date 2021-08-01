@@ -122,7 +122,7 @@ exports.PauseOptions = {
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
  * @property {number} [updateCountdownEvery=5000] The giveaway update interval in milliseconds.
- * @property {number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
+ * @property {number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB.
  * @property {Object} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] If bots can win giveaways.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
