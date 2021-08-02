@@ -295,12 +295,13 @@ class GiveawaysManager extends EventEmitter {
                 if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageID})`);
                 if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageID})`);
 
-                const closestGiveaway = this.giveaways
+                let closestGiveaway = this.giveaways
                     .filter(g => g.guildID === message.channel.guildId)
                     .reduce(
                         (prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev,
                         { startAt: 0 }
                     );
+                if (!closestGiveaway.startAt) closestGiveaway = null;
 
                 if ([GiveawayMessages.giveawayEnded, closestGiveaway?.messages?.giveawayEnded].includes(message.content)) {
                     return reject('The giveaway is already ended. Use "manager.reroll(messageID, { winnerCount: 1 }, { force: true, channel: message.channel })" instead.');
@@ -319,6 +320,8 @@ class GiveawaysManager extends EventEmitter {
                     }
                     if (isNaN(winnerCount)) return reject('The manager is unable to get "winnerCount" from the embed footer. Please provide "forceOptions.winnerCount".');
                 }
+
+                if (Math.abs(message.createdTimestamp - closestGiveaway?.startAt) > forceOptions.closestGiveawayThreshold) closestGiveaway = null;
                 
                 giveaway = new Giveaway(this, {
                     startAt: message.createdTimestamp,
@@ -329,7 +332,7 @@ class GiveawaysManager extends EventEmitter {
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveaway: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
-                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, { count: 0 })?.emoji,
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, { count: 0 }).emoji,
                     embedColor: message.embeds[0].hexColor,
                     embedColorEnd: closestGiveaway?.embedColor
                 });
@@ -397,16 +400,19 @@ class GiveawaysManager extends EventEmitter {
                 if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageID})`);
                 if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageID})`);
 
-                const closestGiveaway = this.giveaways
+                let closestGiveaway = this.giveaways
                     .filter((g) => g.guildID === message.channel.guildId)
                     .reduce(
                         (prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev,
                         { startAt: 0 }
                     );
+                if (!closestGiveaway.startAt) closestGiveaway = null;
 
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
                     return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true, channel: message.channel })" instead.');
-                }     
+                }
+                
+                if (Math.abs(message.createdTimestamp - closestGiveaway?.startAt) > forceOptions.closestGiveawayThreshold) closestGiveaway = null;
                 
                 giveaway = new Giveaway(this, {
                     ended: true,
@@ -418,7 +424,7 @@ class GiveawaysManager extends EventEmitter {
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveawayEnded: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
-                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, { count: 0 })?.emoji,
+                    reaction: message.reactions.cache.reduce((prev, curr) => curr.count > prev.count ? curr : prev, { count: 0 }).emoji,
                     embedColor: closestGiveaway?.embedColor,
                     embedColorEnd: message.embeds[0].hexColor
                 });
