@@ -489,11 +489,10 @@ class Giveaway extends EventEmitter {
         }
 
         let rolledWinners;
-        if (!userArray || userArray.length <= winnerCount)
-            rolledWinners = users.random(Math.min(winnerCount, users.size));
+        if (!userArray || userArray.length <= winnerCount) rolledWinners = users.random(winnerCount);
         else {
             /** 
-             * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts#L193
+             * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
             rolledWinners = Array.from({
@@ -577,13 +576,10 @@ class Giveaway extends EventEmitter {
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage.replace('{winners}', formattedWinners);
                 const channel =
-                    (this.message.channel.isThread() && !this.message.channel.sendable &&
-                    !this.message.channel.permissionsFor(this.client.user)?.has([
+                    this.message.channel.isThread() && !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                         this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                        this.message.channel.type === 'GUILD_PRIVATE_THREAD'
-                            ? 'USE_PRIVATE_THREADS'
-                            : 'USE_PUBLIC_THREADS',
-                    ]))
+                        this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                    ])
                         ? this.message.channel.parent
                         : this.message.channel;
 
@@ -646,13 +642,10 @@ class Giveaway extends EventEmitter {
 
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
-                (this.message.channel.isThread() && !this.message.channel.sendable &&
-                !this.message.channel.permissionsFor(this.client.user)?.has([
+                this.message.channel.isThread() && !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                     this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                    this.message.channel.type === 'GUILD_PRIVATE_THREAD'
-                        ? 'USE_PRIVATE_THREADS'
-                        : 'USE_PUBLIC_THREADS',
-                ]))
+                    this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                ])
                     ? this.message.channel.parent
                     : this.message.channel;
                     

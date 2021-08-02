@@ -30,7 +30,7 @@ declare module 'discord-giveaways' {
         public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageID: Snowflake): Promise<GuildMember[]>;
         public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
-        public start(channel: TextChannel|NewsChannel|ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
+        public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
         public pause(messageID: Snowflake, options: PauseOptions): Promise<Giveaway>;
         public unpause(messageID: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
@@ -157,7 +157,7 @@ declare module 'discord-giveaways' {
         readonly duration: number;
         readonly messageURL: string;
         readonly remainingTimeText: string;
-        readonly channel: TextChannel|NewsChannel|ThreadChannel;
+        readonly channel: TextChannel | NewsChannel | ThreadChannel;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
