@@ -242,7 +242,7 @@ class GiveawaysManager extends EventEmitter {
                 endAt: Date.now() + options.time,
                 winnerCount: options.winnerCount,
                 channelID: channel.id,
-                guildID: channel.guildId,
+                guildID: channel.guild.id,
                 prize: options.prize,
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
