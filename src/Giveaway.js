@@ -570,7 +570,7 @@ class Giveaway extends EventEmitter {
                                 this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
                             ]))
                     ) ? this.libraryIsEris
-                            ? await this.message.channel.guild.channels.find(async (c) => [0, 5].includes(c.type) && (await c.getMessage(this.message.channel.parentID)))
+                            ? this.message.channel.guild.channels.get(this.message.channel.parentID)
                             : this.message.channel.parent
                         : this.message.channel;
 
@@ -635,7 +635,7 @@ class Giveaway extends EventEmitter {
                             this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
                         ]))
                 ) ? this.libraryIsEris
-                        ? await this.message.channel.guild.channels.find(async (c) => [0, 5].includes(c.type) && (await c.getMessage(this.message.channel.parentID)))
+                        ? this.message.channel.guild.channels.get(this.message.channel.parentID)
                         : this.message.channel.parent
                     : this.message.channel;
 
