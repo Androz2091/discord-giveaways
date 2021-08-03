@@ -560,11 +560,14 @@ class Giveaway extends EventEmitter {
                         (this.manager.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
                         (this.manager.libraryIsEris ? 
                             !this.message.channel.permissionsOf(this.client.user.id).has(
-                                (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12) ? 'manageThreads' : 'sendMessages'
+                                (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12)
+                                    ? 'manageThreads'
+                                    : 'sendMessages'
                             )
-                            : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
-                                this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                                this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                            : !this.message.channel.permissionsFor(this.client.user)?.has([
+                                (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
+                                    ? 'MANAGE_THREADS'
+                                    : 'SEND_MESSAGES',
                             ]))
                     ) ? this.manager.libraryIsEris
                             ? this.message.channel.guild.channels.get(this.message.channel.parentID)
@@ -623,11 +626,14 @@ class Giveaway extends EventEmitter {
                     (this.manager.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
                     (this.manager.libraryIsEris ? 
                         !this.message.channel.permissionsOf(this.client.user.id).has(
-                            (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12) ? 'manageThreads' : 'sendMessages'
+                            (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12)
+                                ? 'manageThreads'
+                                : 'sendMessages'
                         )
                         : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
-                            this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                            this.message.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                            (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
+                                ? 'MANAGE_THREADS'
+                                : 'SEND_MESSAGES',
                         ]))
                 ) ? this.manager.libraryIsEris
                         ? this.message.channel.guild.channels.get(this.message.channel.parentID)
