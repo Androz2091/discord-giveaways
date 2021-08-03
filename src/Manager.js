@@ -204,9 +204,8 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (
-                channel.isThread() && !channel.sendable && !channel.permissionsFor(this.client.user)?.has([
-                    channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                    channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                channel.isThread() && !channel .permissionsFor(this.client.user)?.has([
+                    (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD') ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
