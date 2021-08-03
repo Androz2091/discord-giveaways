@@ -207,11 +207,8 @@ class GiveawaysManager extends EventEmitter {
             if (
                 (this.libraryIsEris ? [10, 11, 12].includes(channel.type) : channel.isThread()) &&
                 (this.libraryIsEris
-                    ? !(
-                        !channel.threadMetadata.archived &&
-                        (channel.type !== 12 || channel.member || channel.permissionsOf(this.client.user.id).has('manageThreads')) &&
-                        channel.permissionsOf(this.client.user.id).has(channel.threadMetadata.locked ? 'manageThreads' : 'sendMessages') &&
-                        channel.permissionsOf(this.client.user.id).has(channel.type === 12 ? 'usePrivateThreads' : 'usePublicThreads')
+                    ? !channel.permissionsOf(this.client.user.id).has(
+                        (channel.threadMetadata.locked || !channel.member && channel.type === 12) ? 'manageThreads' : 'sendMessages'
                     )
                     : !channel.sendable && !channel.permissionsFor(this.client.user)?.has([
                         channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',

@@ -559,10 +559,8 @@ class Giveaway extends EventEmitter {
                     (
                         (this.manager.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
                         (this.manager.libraryIsEris ? 
-                            !(!this.message.channel.threadMetadata.archived && 
-                                (this.message.channel.type !== 12 || this.message.channel.member || this.message.channel.permissionsOf(this.client.user.id).has('manageThreads')) &&
-                                this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.threadMetadata.locked ? 'manageThreads' : 'sendMessages') &&
-                                this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.type === 12 ? 'usePrivateThreads' : 'usePublicThreads')
+                            !this.message.channel.permissionsOf(this.client.user.id).has(
+                                (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12) ? 'manageThreads' : 'sendMessages'
                             )
                             : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                                 this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
@@ -624,10 +622,8 @@ class Giveaway extends EventEmitter {
                 (
                     (this.manager.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
                     (this.manager.libraryIsEris ? 
-                        !(!this.message.channel.threadMetadata.archived && 
-                            (this.message.channel.type !== 12 || this.message.channel.member || this.message.channel.permissionsOf(this.client.user.id).has('manageThreads')) &&
-                            this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.threadMetadata.locked ? 'manageThreads' : 'sendMessages') &&
-                            this.message.channel.permissionsOf(this.client.user.id).has(this.message.channel.type === 12 ? 'usePrivateThreads' : 'usePublicThreads')
+                        !this.message.channel.permissionsOf(this.client.user.id).has(
+                            (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12) ? 'manageThreads' : 'sendMessages'
                         )
                         : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                             this.message.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
