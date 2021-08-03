@@ -572,15 +572,22 @@ class GiveawaysManager extends EventEmitter {
             for (const giveaway of this.giveaways) {
                 if (this.libraryIsEris) {
                     let channel = this.client.getChannel(giveaway.channelID);
-                    if (channel) return;
+                    if (channel) continue;
                     channel =
                         (await this.client.getRESTChannel(giveaway.channelID).catch(() => {})) ||
                         (await this.client.getMessage(giveaway.channelID, giveaway.messageID).catch(() => {}))?.channel;
-                    if (!channel) return;
+                    if (!channel?.id) continue;
+                    if (!channel.name) {
+                        try {
+                            channel = require('../../eris/lib/structures/Channel').from(await this.client.requestHandler.request('GET', `/channels/${channel.id}`, true), this.client);
+                        } catch {
+                            channel = null;
+                        }
+                    }
+                    if (!channel) continue;
                     channel.guild.channels.add(channel, this.client);
-                    return (this.client.channelGuildMap[channel.id] = channel.guild.id);
-                }
-                await this.client.channels.fetch(giveaway.channelID).catch(() => {});
+                    this.client.channelGuildMap[channel.id] = channel.guild.id;
+                } else await this.client.channels.fetch(giveaway.channelID).catch(() => {});
             }
         };
         await cacheAllGiveawayChannels();
