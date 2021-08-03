@@ -459,11 +459,10 @@ class Giveaway extends EventEmitter {
         }
 
         let rolledWinners;
-        if (!this.manager.libraryIsEris && (!userArray || userArray.length <= winnerCount))
-            rolledWinners = users.random(Math.min(winnerCount, users.size));
+        if (!userArray || userArray.length <= winnerCount) rolledWinners = users.random(winnerCount);
         else {
             /** 
-             * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts#L193
+             * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
             if (this.manager.libraryIsEris) userArray = userArray?.length > users.length ? userArray : users;
@@ -558,7 +557,7 @@ class Giveaway extends EventEmitter {
                     
                 const channel = 
                     (
-                        (this.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.isThread()) &&
+                        (this.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
                         (this.libraryIsEris ? 
                             !(!this.message.channel.threadMetadata.archived && 
                                 (this.message.channel.type !== 12 || this.message.channel.member || this.message.channel.permissionsOf(this.client.user.id).has('MANAGE_THREADS')) &&
@@ -623,7 +622,7 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
                 (
-                    (this.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.isThread()) &&
+                    (this.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
                     (this.libraryIsEris ? 
                         !(!this.message.channel.threadMetadata.archived && 
                             (this.message.channel.type !== 12 || this.message.channel.member || this.message.channel.permissionsOf(this.client.user.id).has('MANAGE_THREADS')) &&
