@@ -282,9 +282,10 @@ class GiveawaysManager extends EventEmitter {
                     return reject(`forceOptions.channel is not a valid text based channel. (val=${forceOptions.channel})`);
                 }
                 if (
-                    forceOptions.channel.isThread() && !forceOptions.channel.sendable && !forceOptions.channel.permissionsFor(this.client.user)?.has([
-                        forceOptions.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                        forceOptions.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS'
+                    forceOptions.channel.isThread() && !forceOptions.channel.permissionsFor(this.client.user)?.has([
+                        (forceOptions.channel.locked || !forceOptions.channel.joined && forceOptions.channel.type === 'GUILD_PRIVATE_THREAD')
+                            ? 'MANAGE_THREADS'
+                            : 'SEND_MESSAGES',
                     ])
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
@@ -386,10 +387,10 @@ class GiveawaysManager extends EventEmitter {
                     return reject(`forceOptions.channel is not a valid text based channel. (val=${forceOptions.channel})`);
                 }
                 if (
-                    forceOptions.channel.isThread() && !forceOptions.channel.sendable &&
-                    !forceOptions.channel.permissionsFor(this.client.user)?.has([
-                        forceOptions.channel.locked ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
-                        forceOptions.channel.type === 'GUILD_PRIVATE_THREAD' ? 'USE_PRIVATE_THREADS' : 'USE_PUBLIC_THREADS',
+                    forceOptions.channel.isThread() && !forceOptions.channel.permissionsFor(this.client.user)?.has([
+                        (forceOptions.channel.locked || !forceOptions.channel.joined && forceOptions.channel.type === 'GUILD_PRIVATE_THREAD')
+                            ? 'MANAGE_THREADS'
+                            : 'SEND_MESSAGES',
                     ])
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
