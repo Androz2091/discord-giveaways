@@ -332,17 +332,17 @@ class Giveaway extends EventEmitter {
             if (!this.messageID) return;
             let tryLater = false;
             const channel = await this.client.channels.fetch(this.channelID).catch((err) => {
-                if ((err.code).toString().startsWith('5') || err.code === 429) tryLater = true;
+                if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
             });
             const message = await channel.messages.fetch(this.messageID).catch((err) => {
-                if ((err.code).toString().startsWith('5') || err.code === 429) tryLater = true;
+                if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
             });
             if (!message) {
                 if (!tryLater) {
                     this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
                     await this.manager.deleteGiveaway(this.messageID);
                 }
-                return reject('Unable to fetch message with ID ' + this.messageID + '.');
+                return reject('Unable to fetch message with ID ' + this.messageID + '.' + tryLater ? ' Try later!' : '');
             }
             this.message = message;
             resolve(message);
