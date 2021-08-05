@@ -334,7 +334,7 @@ class Giveaway extends EventEmitter {
             const channel = await this.client.channels.fetch(this.channelID).catch((err) => {
                 if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
             });
-            const message = await channel.messages.fetch(this.messageID).catch((err) => {
+            const message = await channel?.messages.fetch(this.messageID).catch((err) => {
                 if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
             });
             if (!message) {
