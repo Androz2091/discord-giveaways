@@ -351,9 +351,6 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
-            if (!giveaway.channel && !doNotDeleteMessage) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
-            }
             
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
@@ -473,14 +470,9 @@ class GiveawaysManager extends EventEmitter {
                 }
                 return;
             }
-            if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageID).catch(() => {});
             await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) {
-                giveaway.ended = true;
-                await this.editGiveaway(giveaway.messageID, giveaway.data);
-                return;
-            }
+            if (!giveaway.message) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -521,9 +513,9 @@ class GiveawaysManager extends EventEmitter {
         const guild = this.client.guilds.cache.get(packet.d.guild_id) || (await this.client.guilds.fetch(packet.d.guild_id).catch(() => {}));
         if (!guild || !guild.available) return;
         if (packet.d.user_id === this.client.user.id) return;
-        const member = guild.members.cache.get(packet.d.user_id) || (await guild.members.fetch(packet.d.user_id).catch(() => {}));
+        const member = await guild.members.fetch(packet.d.user_id).catch(() => {});
         if (!member) return;
-        const channel = guild.channels.cache.get(packet.d.channel_id) || (await this.client.channels.fetch(packet.d.channel_id).catch(() => {}));
+        const channel = await this.client.channels.fetch(packet.d.channel_id).catch(() => {});
         if (!channel) return;
         const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
@@ -548,11 +540,6 @@ class GiveawaysManager extends EventEmitter {
     async _init() {
         const rawGiveaways = await this.getAllGiveaways();
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
-        const cacheAllGiveawayChannels = async () => {
-            if (!this.client.readyAt) return setTimeout(cacheAllGiveawayChannels, 100);
-            for (const giveaway of this.giveaways) await this.client.channels.fetch(giveaway.channelID).catch(() => {});
-        };
-        await cacheAllGiveawayChannels();
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);

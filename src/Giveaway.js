@@ -236,15 +236,6 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * The channel of the giveaway.
-     * @type {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel}
-     * @readonly
-     */
-    get channel() {
-        return this.client.channels.cache.get(this.channelID);
-    }
-
-    /**
      * Gets the content of the giveaway.
      * @type {string}
      * @readonly
@@ -339,10 +330,18 @@ class Giveaway extends EventEmitter {
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
             if (!this.messageID) return;
-            const message = await this.channel.messages.fetch(this.messageID).catch(() => {});
+            let tryLater = false;
+            const channel = await this.client.channels.fetch(this.channelID).catch((err) => {
+                if ((err.code).toString().startsWith('5') || err.code === 429) tryLater = true;
+            });
+            const message = await channel.messages.fetch(this.messageID).catch((err) => {
+                if ((err.code).toString().startsWith('5') || err.code === 429) tryLater = true;
+            });
             if (!message) {
-                this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
-                await this.manager.deleteGiveaway(this.messageID);
+                if (!tryLater) {
+                    this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageID !== this.messageID);
+                    await this.manager.deleteGiveaway(this.messageID);
+                }
                 return reject('Unable to fetch message with ID ' + this.messageID + '.');
             }
             this.message = message;
@@ -356,8 +355,8 @@ class Giveaway extends EventEmitter {
      */
     async checkWinnerEntry(user) {
         if (this.winnerIDs.includes(user.id)) return false;
-        const guild = this.channel.guild;
-        const member = guild.members.cache.get(user.id) || (await guild.members.fetch(user.id).catch(() => {}));
+        const guild = this.message.guild;
+        const member = await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
@@ -371,7 +370,7 @@ class Giveaway extends EventEmitter {
      * @returns {Promise<number|boolean>} The highest bonus entries the user should get or false.
      */
     async checkBonusEntries(user) {
-        const member = this.channel.guild.members.cache.get(user.id);
+        const member = this.message.guild.members.cache.get(user.id);
         const entries = [];
         const cumulativeEntries = [];
 
@@ -412,7 +411,7 @@ class Giveaway extends EventEmitter {
             reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name) ||
             reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id);
         if (!reaction) return [];
-        const guild = this.channel.guild;
+        const guild = this.message.guild;
         // Fetch guild members
         if (new Discord.Intents(this.client.options.intents).has('GUILD_MEMBERS')) await guild.members.fetch();
 
@@ -484,7 +483,6 @@ class Giveaway extends EventEmitter {
     edit(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
-            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
 
@@ -515,7 +513,6 @@ class Giveaway extends EventEmitter {
     end() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended');
-            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             this.ended = true;
             this.endAt = Date.now();
             await this.fetchMessage().catch(() => {});
@@ -578,7 +575,6 @@ class Giveaway extends EventEmitter {
     reroll(options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is not ended.');
-            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
@@ -640,7 +636,6 @@ class Giveaway extends EventEmitter {
     pause(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
-            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
             if (this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is already paused.');
@@ -684,7 +679,6 @@ class Giveaway extends EventEmitter {
     unpause() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message ID ' + this.messageID + ' is already ended.');
-            if (!this.channel) return reject('Unable to get the channel of the giveaway with message ID ' + this.messageID + '.');
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with ID ' + this.messageID + '.');
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message ID ' + this.messageID + ' is not paused.');

@@ -152,7 +152,6 @@ declare module 'discord-giveaways' {
         readonly duration: number;
         readonly messageURL: string;
         readonly remainingTimeText: string;
-        readonly channel: TextChannel | NewsChannel | ThreadChannel;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
