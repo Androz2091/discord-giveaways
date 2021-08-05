@@ -357,9 +357,6 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageID === messageID);
             if (!giveaway) return reject('No giveaway found with ID ' + messageID + '.');
-            if (!giveaway.channel && !doNotDeleteMessage) {
-                return reject('Unable to get the channel of the giveaway with message ID ' + giveaway.messageID + '.');
-            }
             
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
@@ -479,14 +476,9 @@ class GiveawaysManager extends EventEmitter {
                 }
                 return;
             }
-            if (!giveaway.channel) return;
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageID).catch(() => {});
             await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) {
-                giveaway.ended = true;
-                await this.editGiveaway(giveaway.messageID, giveaway.data);
-                return;
-            }
+            if (!giveaway.message) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -531,11 +523,11 @@ class GiveawaysManager extends EventEmitter {
         if (packet.d.user_id === this.client.user.id) return;
         const member = this.libraryIsEris
             ? guild.members.get(packet.d.user_id) || (await guild.fetchMembers({ userIDs: [packet.d.user_id] }).catch(() => {}))[0]
-            : guild.members.cache.get(packet.d.user_id) || (await guild.members.fetch(packet.d.user_id).catch(() => {}));
+            : await guild.members.fetch(packet.d.user_id).catch(() => {});
         if (!member) return;
         const channel = this.libraryIsEris
             ? this.client.getChannel(packet.d.channel_id)
-            : guild.channels.cache.get(packet.d.channel_id) || (await this.client.channels.fetch(packet.d.channel_id).catch(() => {}));
+            : await this.client.channels.fetch(packet.d.channel_id).catch(() => {});
         if (!channel) return;
         const message = this.libraryIsEris
             ? await this.client.getMessage(channel.id, packet.d.message_id)
@@ -564,29 +556,27 @@ class GiveawaysManager extends EventEmitter {
         const rawGiveaways = await this.getAllGiveaways();
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
         const cacheAllGiveawayChannels = async () => {
-            if (!this.client[this.libraryIsEris ? 'startTime' : 'readyAt']) return setTimeout(cacheAllGiveawayChannels, 100);
+            if (!this.client.startTime) return setTimeout(cacheAllGiveawayChannels, 100);
             for (const giveaway of this.giveaways) {
-                if (this.libraryIsEris) {
-                    let channel = this.client.getChannel(giveaway.channelID);
-                    if (channel) continue;
-                    channel =
-                        (await this.client.getRESTChannel(giveaway.channelID).catch(() => {})) ||
-                        (await this.client.getMessage(giveaway.channelID, giveaway.messageID).catch(() => {}))?.channel;
-                    if (!channel?.id) continue;
-                    if (!channel.name) {
-                        try {
-                            channel = require('../../eris/lib/structures/Channel').from(await this.client.requestHandler.request('GET', `/channels/${channel.id}`, true), this.client);
-                        } catch {
-                            channel = null;
-                        }
+                let channel = this.client.getChannel(giveaway.channelID);
+                if (channel) continue;
+                channel =
+                    (await this.client.getRESTChannel(giveaway.channelID).catch(() => {})) ||
+                    (await this.client.getMessage(giveaway.channelID, giveaway.messageID).catch(() => {}))?.channel;
+                if (!channel?.id) continue;
+                if (!channel.name) {
+                    try {
+                        channel = require('../../eris/lib/structures/Channel').from(await this.client.requestHandler.request('GET', `/channels/${channel.id}`, true), this.client);
+                    } catch {
+                        channel = null;
                     }
-                    if (!channel) continue;
-                    channel.guild.channels.add(channel, this.client);
-                    this.client.channelGuildMap[channel.id] = channel.guild.id;
-                } else await this.client.channels.fetch(giveaway.channelID).catch(() => {});
+                }
+                if (!channel) continue;
+                channel.guild.channels.add(channel, this.client);
+                this.client.channelGuildMap[channel.id] = channel.guild.id;
             }
         };
-        await cacheAllGiveawayChannels();
+        if (this.libraryIsEris) await cacheAllGiveawayChannels();
         setInterval(() => {
             if (this.client[this.libraryIsEris ? 'startTime' : 'readyAt']) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
