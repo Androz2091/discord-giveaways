@@ -354,8 +354,7 @@ class Giveaway extends EventEmitter {
      */
     async checkWinnerEntry(user) {
         if (this.winnerIDs.includes(user.id)) return false;
-        const guild = this.message.guild;
-        const member = await guild.members.fetch(user.id).catch(() => {});
+        const member = await this.message.guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
@@ -369,7 +368,7 @@ class Giveaway extends EventEmitter {
      * @returns {Promise<number|boolean>} The highest bonus entries the user should get or false.
      */
     async checkBonusEntries(user) {
-        const member = this.message.guild.members.cache.get(user.id);
+        const member = await this.message.guild.members.fetch(user.id).catch(() => {});
         const entries = [];
         const cumulativeEntries = [];
 
@@ -379,11 +378,8 @@ class Giveaway extends EventEmitter {
                     try {
                         const result = await obj.bonus(member);
                         if (Number.isInteger(result) && result > 0) {
-                            if (obj.cumulative) {
-                                cumulativeEntries.push(result);
-                            } else {
-                                entries.push(result);
-                            }
+                            if (obj.cumulative) cumulativeEntries.push(result);
+                            else entries.push(result);
                         }
                     } catch (err) {
                         console.error(`Giveaway message ID: ${this.messageID}\n${serialize(obj.bonus)}\n${err}`);
@@ -471,7 +467,7 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        return winners.map((user) => guild.members.cache.get(user.id));
+        return await Promise.all(winners.map(async (user) => await guild.members.fetch(user.id).catch(() => {})));
     }
 
     /**

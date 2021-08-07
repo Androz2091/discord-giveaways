@@ -36,7 +36,7 @@
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "discord.js": "^13.0.0",
+    "discord.js": "^13.0.1",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
