@@ -490,6 +490,7 @@ class Giveaway extends EventEmitter {
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
             if (Array.isArray(options.newBonusEntries)) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             if (options.newExtraData) this.extraData = options.newExtraData;
+            if (options.newLastChance && typeof options.newLastChance === 'object') this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
             
             await this.manager.editGiveaway(this.messageID, this.data);
             if (this.remainingTime <= 0) this.manager.end(this.messageID).catch(() => {});

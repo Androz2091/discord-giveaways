@@ -176,10 +176,11 @@ exports.GiveawayRerollOptions = {
  * @property {string} [newPrize] The new giveaway prize.
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration.
  * @property {number} [setEndTimestamp] The timestamp of the new end date.
- * @property {GiveawayMessages} [newMessages] The new giveaway messages.
+ * @property {GiveawayMessages} [newMessages] The new giveaway messages. Will get merged with the existing object, if there.
  * @property {string} [newThumbnail] The new thumbnail url.
  * @property {any} [newExtraData] The new extra data for this giveaway.
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
+ * @property {LastChanceOptions} [newLastChance] The new options for the last chance system. Will get merged with the existing object, if there.
  */
 exports.GiveawayEditOptions = {};
 

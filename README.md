@@ -191,9 +191,10 @@ client.on('messageCreate', (message) => {
 -   **options.newPrize**: the new prize.  
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages
+-   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.
 -   **options.newExtraData**: the new extra data value for the giveaway
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
+-   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
 **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 

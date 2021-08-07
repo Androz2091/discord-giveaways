@@ -176,6 +176,7 @@ declare module 'discord-giveaways' {
         newThumbnail?: string;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
+        newLastChance?: LastChanceOptions;
     }
     interface GiveawayRerollOptions {
         winnerCount?: number;
