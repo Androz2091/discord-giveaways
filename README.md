@@ -96,7 +96,7 @@ client.on('messageCreate', (message) => {
             winnerCount: parseInt(args[1]),
             prize: args.slice(2).join(' ')
         }).then((gData) => {
-            console.log(gData); // {...} (messageID, end date and more)
+            console.log(gData); // {...} (messageId, end date and more)
         });
         // And the giveaway has started!
     }
@@ -127,14 +127,14 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 </a>
 
 #### ⚠ ATTENTION!
-The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageID`of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageID` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
+The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageId`of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageId` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
 
 ```js
 let giveaway = 
 // Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildID === message.guild.id && g.prize === args.join(' ')) ||
-// Search with messageID
-client.giveawaysManager.giveaways.find((g) => g.guildID === message.guild.id && g.messageID === args[0]);
+client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.prize === args.join(' ')) ||
+// Search with messageId
+client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.messageId === args[0]);
 
 // If no giveaway was found
 if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
@@ -148,8 +148,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'reroll') {
-        const messageID = args[0];
-        client.giveawaysManager.reroll(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.reroll(messageId).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -173,8 +173,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'edit') {
-        const messageID = args[0];
-        client.giveawaysManager.edit(messageID, {
+        const messageId = args[0];
+        client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
@@ -206,8 +206,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'delete') {
-        const messageID = args[0];
-        client.giveawaysManager.delete(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.delete(messageId).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -228,8 +228,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'end') {
-        const messageID = args[0];
-        client.giveawaysManager.end(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.end(messageId).then(() => {
             message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -246,8 +246,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'pause') {
-        const messageID = args[0];
-        client.giveawaysManager.pause(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.pause(messageId).then(() => {
             message.channel.send('Success! Giveaway paused!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -270,8 +270,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'unpause') {
-        const messageID = args[0];
-        client.giveawaysManager.unpause(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.unpause(messageId).then(() => {
             message.channel.send('Success! Giveaway unpaused!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -286,8 +286,8 @@ client.on('messageCreate', (message) => {
 // A list of all the giveaways
 const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
-// A list of all the giveaways on the server with ID "1909282092"
-const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '1909282092');
+// A list of all the giveaways on the server with Id "1909282092"
+const onServer = client.giveawaysManager.giveaways.filter(g => g.guildId === '1909282092');
 
 // A list of the current active giveaways (not ended)
 const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
@@ -467,7 +467,7 @@ client.giveawaysManager.start(message.channel, {
 And for the `reroll()` function:
 
 ```js
-client.giveawaysManager.reroll(messageID, {
+client.giveawaysManager.reroll(messageId, {
         messages: {
             congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
