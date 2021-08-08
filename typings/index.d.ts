@@ -24,14 +24,14 @@ declare module 'discord-giveaways' {
         public options: GiveawaysManagerOptions;
         public ready: boolean;
 
-        public delete(messageID: Snowflake, doNotDeleteMessage?: boolean): Promise<boolean>;
-        public deleteGiveaway(messageID: Snowflake): Promise<boolean>;
-        public edit(messageID: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageID: Snowflake): Promise<GuildMember[]>;
-        public reroll(messageID: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
+        public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway>;
+        public deleteGiveaway(messageId: Snowflake): Promise<boolean>;
+        public edit(messageId: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
+        public end(messageId: Snowflake): Promise<GuildMember[]>;
+        public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
-        public pause(messageID: Snowflake, options: PauseOptions): Promise<Giveaway>;
-        public unpause(messageID: Snowflake): Promise<Giveaway>;
+        public pause(messageId: Snowflake, options: PauseOptions): Promise<Giveaway>;
+        public unpause(messageId: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
             event: K,
             listener: (...args: GiveawaysManagerEvents[K]) => void
@@ -114,6 +114,7 @@ declare module 'discord-giveaways' {
         };
     }
     interface GiveawaysManagerEvents {
+        giveawayDeleted: [Giveaway];
         giveawayEnded: [Giveaway, GuildMember[]];
         giveawayRerolled: [Giveaway, GuildMember[]];
         giveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
@@ -123,22 +124,22 @@ declare module 'discord-giveaways' {
     class Giveaway extends EventEmitter {
         constructor(manager: GiveawaysManager, options: GiveawayData);
 
-        public channelID: Snowflake;
+        public channelId: Snowflake;
         public client: Client;
         public endAt: number;
         public ended: boolean;
-        public guildID: Snowflake;
+        public guildId: Snowflake;
         public hostedBy?: User;
         public manager: GiveawaysManager;
         public message: Message | null;
-        public messageID?: Snowflake;
+        public messageId?: Snowflake;
         public messages: GiveawaysMessages;
         public thumbnail?: string;
         public options: GiveawayData;
         public prize: string;
         public startAt: number;
         public winnerCount: number;
-        public winnerIDs: Snowflake[];
+        public winnerIds: Snowflake[];
         public scheduleAt?: number;
 
         // getters calculated using default manager options
@@ -154,7 +155,6 @@ declare module 'discord-giveaways' {
         readonly duration: number;
         readonly messageURL: string;
         readonly remainingTimeText: string;
-        readonly channel: TextChannel | NewsChannel | ThreadChannel;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
@@ -166,7 +166,7 @@ declare module 'discord-giveaways' {
         public fetchMessage(): Promise<Message>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
-        public pause(options: PauseOptions): Promise<Giveaway>;
+        public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
     }
     interface GiveawayEditOptions {
@@ -178,6 +178,7 @@ declare module 'discord-giveaways' {
         newThumbnail?: string;
         newBonusEntries?: BonusEntry[];
         newExtraData?: any;
+        newLastChance?: LastChanceOptions;
         newScheduleAt?: number;
     }
     interface GiveawayRerollOptions {
@@ -193,11 +194,11 @@ declare module 'discord-giveaways' {
         winnerCount: number;
         messages: Required<GiveawaysMessages>;
         prize: string;
-        channelID: Snowflake;
-        guildID: Snowflake;
+        channelId: Snowflake;
+        guildId: Snowflake;
         ended: boolean;
-        winnerIDs?: Snowflake[];
-        messageID?: Snowflake;
+        winnerIds?: Snowflake[];
+        messageId?: Snowflake;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: string;
