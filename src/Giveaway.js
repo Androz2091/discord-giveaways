@@ -426,7 +426,7 @@ class Giveaway extends EventEmitter {
         // Bonus Entries
         let userArray;
         if (this.bonusEntries.length) {
-            userArray = users.array(); // Copy all users once
+            userArray = [...users.values()]; // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);
                 if (!isUserValidEntry) continue;
@@ -457,7 +457,7 @@ class Giveaway extends EventEmitter {
             if (isValidEntry) winners.push(u);
             else {
                 // Find a new winner
-                for (const user of userArray || users.array()) {
+                for (const user of userArray || [...users.values()]) {
                     const isUserValidEntry = !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
                         winners.push(user);
