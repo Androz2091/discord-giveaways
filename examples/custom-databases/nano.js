@@ -18,17 +18,17 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
+    async saveGiveaway(messageId, giveawayData) {
         // Add the new giveaway to the database
-        await giveawayDB.insert(giveawayData, messageID);
+        await giveawayDB.insert(giveawayData, messageId);
         // Don't forget to return something!
         return true;
     }
 
     // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
+    async editGiveaway(messageId, giveawayData) {
         // Get the unedited giveaway from the database
-        const giveaway = await giveawayDB.get(messageID);
+        const giveaway = await giveawayDB.get(messageId);
         // Edit the giveaway
         await giveawayDB.insert({ ...giveaway, ...giveawayData });
         // Don't forget to return something!
@@ -36,11 +36,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
+    async deleteGiveaway(messageId) {
         // Get the giveaway from the database
-        const giveaway = await giveawayDB.get(messageID);
+        const giveaway = await giveawayDB.get(messageId);
         // Remove the giveaway from the database
-        await giveawayDB.destroy(messageID, giveaway._rev);
+        await giveawayDB.destroy(messageId, giveaway._rev);
         // Don't forget to return something!
         return true;
     }
