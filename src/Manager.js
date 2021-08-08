@@ -1,10 +1,6 @@
 const { EventEmitter } = require('events');
 const merge = require('deepmerge');
-const { writeFile, readFile, exists } = require('fs');
-const { promisify } = require('util');
-const writeFileAsync = promisify(writeFile);
-const existsAsync = promisify(exists);
-const readFileAsync = promisify(readFile);
+const { writeFile, readFile, access } = require('fs/promises');
 const Discord = require('discord.js');
 const {
     GiveawayMessages,
@@ -167,7 +163,7 @@ class GiveawaysManager extends EventEmitter {
     end(messageId) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
-            if (!giveaway) return reject('No giveaway found with Id ' + messageId + '.');
+            if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
 
             giveaway
                 .end()
@@ -279,9 +275,8 @@ class GiveawaysManager extends EventEmitter {
      */
     reroll(messageId, options = {}) {
         return new Promise(async (resolve, reject) => {
-            options = merge(GiveawayRerollOptions, options);
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
-            if (!giveaway) return reject('No giveaway found with Id ' + messageId + '.');
+            if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
 
             giveaway
                 .reroll(options)
@@ -296,7 +291,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Pauses a giveaway.
      * @param {Discord.Snowflake} messageId The message Id of the giveaway to pause.
-     * @param {PauseOptions} [options] The pause options.
+     * @param {PauseOptions} [options=giveaway.pauseOptions] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      *
      * @example
@@ -342,7 +337,7 @@ class GiveawaysManager extends EventEmitter {
     edit(messageId, options = {}) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
-            if (!giveaway) return reject('No giveaway found with Id ' + messageId + '.');
+            if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
             giveaway.edit(options).then(resolve).catch(reject);
         });
     }
@@ -351,12 +346,12 @@ class GiveawaysManager extends EventEmitter {
      * Deletes a giveaway. It will delete the message and all the giveaway data.
      * @param {Discord.Snowflake} messageId  The message Id of the giveaway
      * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
-     * @returns {Promise<boolean>}
+     * @returns {Promise<Giveaway>}
      */
     delete(messageId, doNotDeleteMessage = false) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
-            if (!giveaway) return reject('No giveaway found with Id ' + messageId + '.');
+            if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
             
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
@@ -365,7 +360,7 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways = this.giveaways.filter((g) => g.messageId !== messageId);
             await this.deleteGiveaway(messageId);
             this.emit('giveawayDeleted', giveaway);
-            resolve(true);
+            resolve(giveaway);
         });
     }
 
@@ -375,7 +370,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<boolean>}
      */
     async deleteGiveaway(messageId) {
-        await writeFileAsync(
+        await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
             'utf-8'
@@ -399,15 +394,15 @@ class GiveawaysManager extends EventEmitter {
      */
     async getAllGiveaways() {
         // Whether the storage file exists, or not
-        const storageExists = await existsAsync(this.options.storage);
+        const storageExists = await access(this.options.storage).then(() => true).catch(() => false);
         // If it doesn't exists
         if (!storageExists) {
             // Create the file with an empty array
-            await writeFileAsync(this.options.storage, '[]', 'utf-8');
+            await writeFile(this.options.storage, '[]', 'utf-8');
             return [];
         } else {
             // If the file exists, read it
-            const storageContent = await readFileAsync(this.options.storage);
+            const storageContent = await readFile(this.options.storage);
             try {
                 const giveaways = await JSON.parse(storageContent.toString());
                 if (Array.isArray(giveaways)) {
@@ -433,7 +428,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async editGiveaway(_messageId, _giveawayData) {
-        await writeFileAsync(
+        await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
             'utf-8'
@@ -449,7 +444,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async saveGiveaway(messageId, giveawayData) {
-        await writeFileAsync(
+        await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
             'utf-8'
@@ -606,7 +601,7 @@ class GiveawaysManager extends EventEmitter {
  * // This can be used to add features such as a congratulatory message in DM
  * manager.on('giveawayEnded', (giveaway, winners) => {
  *      winners.forEach((member) => {
- *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
+ *          member.send('Congratulations, ' + member.user.username + ', you won: ' + giveaway.prize);
  *      });
  * });
  */
@@ -667,8 +662,20 @@ class GiveawaysManager extends EventEmitter {
  * // This can be used to add features such as a congratulatory message per DM
  * manager.on('giveawayRerolled', (giveaway, winners) => {
  *      winners.forEach((member) => {
- *          member.send('Congratulations, '+member.user.username+', you won: '+giveaway.prize);
+ *          member.send('Congratulations, ' + member.user.username + ', you won: ' + giveaway.prize);
  *      });
+ * });
+ */
+
+/**
+ * Emitted when a giveaway was deleted.
+ * @event GiveawaysManager#giveawayDeleted
+ * @param {Giveaway} giveaway The giveaway instance
+ *
+ * @example
+ * // This can be used to add logs
+ * manager.on('giveawayDeleted', (giveaway) => {
+ *      console.log('Giveaway with message Id ' + giveaway.messageId + ' was deleted.')
  * });
  */
 
