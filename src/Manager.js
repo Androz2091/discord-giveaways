@@ -193,12 +193,12 @@ class GiveawaysManager extends EventEmitter {
             }
 
             let message;
-            if (typeof options.messageID === 'string') {
-                if (this.giveaways.find((g) => g.messageID === options.messageID)) return reject(`Giveaway already exists in database. (val=${options.messageID})`);
-                message = await channel.messages.fetch(options.messageID).catch(() => {});
-                if (!message) return reject(`options.messageID was not found inside of the provided channel. (val=${options.messageID})`);
+            if (typeof options.messageId === 'string') {
+                if (this.giveaways.find((g) => g.messageId === options.messageId)) return reject(`Giveaway already exists in database. (val=${options.messageId})`);
+                message = await channel.messages.fetch(options.messageId).catch(() => {});
+                if (!message) return reject(`options.messageId was not found inside of the provided channel. (val=${options.messageId})`);
                 else if (message.author?.id !== this.client.user.id) {
-                    return reject(`The manager is unable to resume a giveaway created by another user. (val=${options.messageID})`);
+                    return reject(`The manager is unable to resume a giveaway created by another user. (val=${options.messageId})`);
                 }
             }
 
@@ -236,7 +236,7 @@ class GiveawaysManager extends EventEmitter {
                 pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined
             });
 
-            if (typeof options.messageID !== 'string') {
+            if (typeof options.messageId !== 'string') {
                 const embed = this.generateMainEmbed(giveaway);
                 message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
             }
@@ -250,7 +250,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
-     * @param {Discord.Snowflake} messageID The message ID of the giveaway
+     * @param {Discord.Snowflake} messageId The message Id of the giveaway
      * @param {GiveawayForceOptions} [forceOptions] The options for forcing the ending
      * @param {number} [forceOptions.winnerCount=giveaway.winnerCount] The number of winners to pick. The manager attempts to get this value from "embed.footer.text", but that might fail.
      * @returns {Promise<Discord.GuildMember[]>} The winners
@@ -258,11 +258,11 @@ class GiveawaysManager extends EventEmitter {
      * @example
      * manager.end('664900661003157510');
      */
-    end(messageID, forceOptions = {}) {
+    end(messageId, forceOptions = {}) {
         return new Promise(async (resolve, reject) => {
-            let giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            let giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) {
-                if (!forceOptions?.force) return reject('No giveaway found with ID ' + messageID + '.');
+                if (!forceOptions?.force) return reject('No giveaway found with Id ' + messageId + '.');
 
                 const channel = forceOptions.channel;
                 delete forceOptions.channel;
@@ -284,15 +284,15 @@ class GiveawaysManager extends EventEmitter {
                     ])
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
-                const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
-                if (!message) return reject('No message found with ID ' + messageID + '.');
+                const message = await forceOptions.channel.messages.fetch(messageId).catch(() => {});
+                if (!message) return reject('No message found with Id ' + messageId + '.');
                 if (!message.author?.bot) return reject('The message author is not a bot.');
                 if (!message.content?.length) return reject(`The message does not contain any content. (val=${message.content})`);
-                if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageID})`);
-                if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageID})`);
+                if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageId})`);
+                if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageId})`);
 
                 let closestGiveaway = this.giveaways
-                    .filter(g => g.guildID === message.channel.guildId)
+                    .filter(g => g.guildId === message.channel.guildId)
                     .reduce(
                         (prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev,
                         { startAt: 0 }
@@ -300,7 +300,7 @@ class GiveawaysManager extends EventEmitter {
                 if (!closestGiveaway.startAt) closestGiveaway = null;
 
                 if ([GiveawayMessages.giveawayEnded, closestGiveaway?.messages?.giveawayEnded].includes(message.content)) {
-                    return reject('The giveaway is already ended. Use "manager.reroll(messageID, { winnerCount: 1 }, { force: true, channel: message.channel })" instead.');
+                    return reject('The giveaway is already ended. Use "manager.reroll(messageId, { winnerCount: 1 }, { force: true, channel: message.channel })" instead.');
                 }
                 
                 let winnerCount = forceOptions.winnerCount;
@@ -323,8 +323,8 @@ class GiveawaysManager extends EventEmitter {
                     startAt: message.createdTimestamp,
                     endAt: message.embeds[0].timestamp || Date.now(),
                     winnerCount,
-                    channelID: message.channel.id,
-                    guildID: message.channel.guildId,
+                    channelId: message.channel.id,
+                    guildId: message.channel.guildId,
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveaway: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
@@ -332,11 +332,11 @@ class GiveawaysManager extends EventEmitter {
                     embedColor: message.embeds[0].hexColor,
                     embedColorEnd: closestGiveaway?.embedColor
                 });
-                giveaway.messageID = message.id;
+                giveaway.messageId = message.id;
 
                 if (forceOptions.saveGiveawayInDatabase) {
                     this.giveaways.push(giveaway);
-                    await this.saveGiveaway(giveaway.messageID, giveaway.data);
+                    await this.saveGiveaway(giveaway.messageId, giveaway.data);
                 }
                 giveaway.saveGiveawayInDatabase = forceOptions.saveGiveawayInDatabase === false ? false : true;
             }
@@ -362,12 +362,12 @@ class GiveawaysManager extends EventEmitter {
      * @example
      * manager.reroll('664900661003157510');
      */
-    reroll(messageID, options = {}, forceOptions = {}) {
+    reroll(messageId, options = {}, forceOptions = {}) {
         return new Promise(async (resolve, reject) => {
             options = merge(GiveawayRerollOptions, options);
-            let giveaway = this.giveaways.find((g) => g.messageID === messageID);
+            let giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) {
-                if (!forceOptions?.force) return reject('No giveaway found with message ID ' + messageID + '.');
+                if (!forceOptions?.force) return reject('No giveaway found with message Id ' + messageId + '.');
 
                 const channel = forceOptions.channel;
                 delete forceOptions.channel;
@@ -389,15 +389,15 @@ class GiveawaysManager extends EventEmitter {
                     ])
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
-                const message = await forceOptions.channel.messages.fetch(messageID).catch(() => {});
-                if (!message) return reject('No message found with ID ' + messageID + '.');
+                const message = await forceOptions.channel.messages.fetch(messageId).catch(() => {});
+                if (!message) return reject('No message found with Id ' + messageId + '.');
                 if (!message.author?.bot) return reject('The message author is not a bot.');
                 if (!message.content?.length) return reject(`The message does not contain any content. (val=${message.content})`);
-                if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageID})`);
-                if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageID})`);
+                if (!message.embeds.length) return reject(`The message does not contain any embeds. (id=${messageId})`);
+                if (!message.reactions.cache.size) return reject(`The message does not contain any reactions. (id=${messageId})`);
 
                 let closestGiveaway = this.giveaways
-                    .filter((g) => g.guildID === message.channel.guildId)
+                    .filter((g) => g.guildId === message.channel.guildId)
                     .reduce(
                         (prev, curr) => Math.abs(curr.startAt - message.createdTimestamp) < Math.abs(prev.startAt - message.createdTimestamp) ? curr : prev,
                         { startAt: 0 }
@@ -405,7 +405,7 @@ class GiveawaysManager extends EventEmitter {
                 if (!closestGiveaway.startAt) closestGiveaway = null;
 
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
-                    return reject('The giveaway is not ended. Use "manager.end(messageID, { force: true, channel: message.channel })" instead.');
+                    return reject('The giveaway is not ended. Use "manager.end(messageId, { force: true, channel: message.channel })" instead.');
                 }
                 
                 if (Math.abs(message.createdTimestamp - closestGiveaway?.startAt) > forceOptions.closestGiveawayThreshold) closestGiveaway = null;
@@ -415,8 +415,8 @@ class GiveawaysManager extends EventEmitter {
                     startAt: message.createdTimestamp,
                     endAt: message.embeds[0].timestamp || Date.now(),
                     winnerCount: options.winnerCount,
-                    channelID: message.channel.id,
-                    guildID: message.channel.guildId,
+                    channelId: message.channel.id,
+                    guildId: message.channel.guildId,
                     prize: message.embeds[0].title || message.embeds[0]?.author?.name, // Author because of old giveaways. Deprecated.
                     messages: merge(closestGiveaway?.messages || GiveawayMessages, { giveawayEnded: message.content }),
                     thumbnail: message.embeds[0].thumbnail?.url,
@@ -424,11 +424,11 @@ class GiveawaysManager extends EventEmitter {
                     embedColor: closestGiveaway?.embedColor,
                     embedColorEnd: message.embeds[0].hexColor
                 });
-                giveaway.messageID = message.id;
+                giveaway.messageId = message.id;
 
                 if (forceOptions.saveGiveawayInDatabase) {
                     this.giveaways.push(giveaway);
-                    await this.saveGiveaway(giveaway.messageID, giveaway.data);
+                    await this.saveGiveaway(giveaway.messageId, giveaway.data);
                 }
                 options.saveGiveawayInDB = forceOptions.saveGiveawayInDatabase === false ? false : true;
             }
