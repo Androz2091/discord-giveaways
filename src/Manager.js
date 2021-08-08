@@ -1,10 +1,6 @@
 const { EventEmitter } = require('events');
 const merge = require('deepmerge');
-const { writeFile, readFile, exists } = require('fs');
-const { promisify } = require('util');
-const writeFileAsync = promisify(writeFile);
-const existsAsync = promisify(exists);
-const readFileAsync = promisify(readFile);
+const { writeFile, readFile, access } = require('fs/promises');
 const Discord = require('discord.js');
 const {
     GiveawayMessages,
@@ -368,7 +364,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<boolean>}
      */
     async deleteGiveaway(messageID) {
-        await writeFileAsync(
+        await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
             'utf-8'
@@ -392,15 +388,15 @@ class GiveawaysManager extends EventEmitter {
      */
     async getAllGiveaways() {
         // Whether the storage file exists, or not
-        const storageExists = await existsAsync(this.options.storage);
+        const storageExists = await access(this.options.storage).then(() => true).catch(() => false);
         // If it doesn't exists
         if (!storageExists) {
             // Create the file with an empty array
-            await writeFileAsync(this.options.storage, '[]', 'utf-8');
+            await writeFile(this.options.storage, '[]', 'utf-8');
             return [];
         } else {
             // If the file exists, read it
-            const storageContent = await readFileAsync(this.options.storage);
+            const storageContent = await readFile(this.options.storage);
             try {
                 const giveaways = await JSON.parse(storageContent.toString());
                 if (Array.isArray(giveaways)) {
@@ -426,7 +422,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async editGiveaway(_messageID, _giveawayData) {
-        await writeFileAsync(
+        await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
             'utf-8'
@@ -442,7 +438,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async saveGiveaway(messageID, giveawayData) {
-        await writeFileAsync(
+        await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
             'utf-8'
