@@ -19,7 +19,7 @@ sql.connect((err) => {
         console.error('Impossible to connect to MySQL server. Code: ' + err.code);
         process.exit(99); // Stop the process if we can't connect to the MySQL server
     } else {
-        console.log('[SQL] Connected to the MySQL server! Connection ID: ' + sql.threadId);
+        console.log('[SQL] Connected to the MySQL server! Connection Id: ' + sql.threadId);
     }
 });
 
@@ -54,9 +54,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
+    async saveGiveaway(messageId, giveawayData) {
         return new Promise((resolve, reject) => {
-            sql.query('INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)', [messageID, JSON.stringify(giveawayData)], (err, res) => {
+            sql.query('INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)', [messageId, JSON.stringify(giveawayData)], (err, res) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
@@ -67,9 +67,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
+    async editGiveaway(messageId, giveawayData) {
         return new Promise((resolve, reject) => {
-            sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
+            sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageId], (err, res) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
@@ -80,9 +80,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
+    async deleteGiveaway(messageId) {
         return new Promise((resolve, reject) => {
-            sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageID, (err, res) => {
+            sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageId, (err, res) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
