@@ -517,7 +517,7 @@ class GiveawaysManager extends EventEmitter {
         if (!guild || this.libraryIsEris ? false : !guild.available) return;
         if (packet.d.user_id === this.client.user.id) return;
         const member = this.libraryIsEris
-            ? guild.members.get(packet.d.user_id) || (await guild.fetchMembers({ userIds: [packet.d.user_id] }).catch(() => {}))[0]
+            ? guild.members.get(packet.d.user_id) || (await guild.fetchMembers({ userIDs: [packet.d.user_id] }).catch(() => {}))[0]
             : await guild.members.fetch(packet.d.user_id).catch(() => {});
         if (!member) return;
         const channel = this.libraryIsEris

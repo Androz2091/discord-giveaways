@@ -362,7 +362,7 @@ class Giveaway extends EventEmitter {
         if (this.winnerIds.includes(user.id)) return false;
         const guild = this.manager.libraryIsEris ? this.message.channel.guild : this.message.guild;
         const member = this.manager.libraryIsEris
-            ? guild.members.get(user.id) || (await guild.fetchMembers({ userIds: [user.id] }).catch(() => {}))[0]
+            ? guild.members.get(user.id) || (await guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
             : await guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
@@ -379,7 +379,7 @@ class Giveaway extends EventEmitter {
     async checkBonusEntries(user) {
         const guild =  this.manager.libraryIsEris ? this.message.channel.guild : this.message.guild;
         const member = this.manager.libraryIsEris
-            ? guild.members.get(user.id) || (await guild.fetchMembers({ userIds: [user.id] }).catch(() => {}))[0]
+            ? guild.members.get(user.id) || (await guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
             : guild.members.cache.get(user.id);
         const entries = [];
         const cumulativeEntries = [];
@@ -490,7 +490,7 @@ class Giveaway extends EventEmitter {
         return Promise.all(
             winners.map(async (user) =>
                 this.manager.libraryIsEris
-                    ? guild.members.get(user.id) || (await guild.fetchMembers({ userIds: [user.id] }).catch(() => {}))[0]
+                    ? guild.members.get(user.id) || (await guild.fetchMembers({ userIDs: [user.id] }).catch(() => {}))[0]
                     : await guild.members.fetch(user.id).catch(() => {})
             )
         );
