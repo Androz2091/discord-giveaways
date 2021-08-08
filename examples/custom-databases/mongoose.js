@@ -18,9 +18,9 @@ db.once('open', () => {
 
 // Create the schema for giveaways
 const giveawaySchema = new mongoose.Schema({
-    messageID: String,
-    channelID: String,
-    guildID: String,
+    messageId: String,
+    channelId: String,
+    guildId: String,
     startAt: Number,
     endAt: Number,
     ended: Boolean,
@@ -47,7 +47,7 @@ const giveawaySchema = new mongoose.Schema({
     },
     thumbnail: String,
     hostedBy: String,
-    winnerIDs: [String],
+    winnerIds: [String],
     reaction: mongoose.Mixed,
     botsCanWin: Boolean,
     embedColor: mongoose.Mixed,
@@ -84,7 +84,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
+    async saveGiveaway(messageId, giveawayData) {
         // Add the new giveaway to the database
         await giveawayModel.create(giveawayData);
         // Don't forget to return something!
@@ -92,17 +92,17 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
-        // Find by messageID and update it
-        await giveawayModel.findOneAndUpdate({ messageID: messageID }, giveawayData, { omitUndefined: true }).exec();
+    async editGiveaway(messageId, giveawayData) {
+        // Find by messageId and update it
+        await giveawayModel.findOneAndUpdate({ messageId: messageId }, giveawayData, { omitUndefined: true }).exec();
         // Don't forget to return something!
         return true;
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
-        // Find by messageID and delete it
-        await giveawayModel.findOneAndDelete({ messageID: messageID }).exec();
+    async deleteGiveaway(messageId) {
+        // Find by messageId and delete it
+        await giveawayModel.findOneAndDelete({ messageId: messageId }).exec();
         // Don't forget to return something!
         return true;
     }
