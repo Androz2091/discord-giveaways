@@ -514,8 +514,8 @@ class Giveaway extends EventEmitter {
             
             this.ended = true;
             if (this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
-            const winners = await this.roll();
             await this.manager.editGiveaway(this.messageId, this.data);
+            const winners = await this.roll();
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
@@ -536,7 +536,7 @@ class Giveaway extends EventEmitter {
                     ])
                         ? this.message.channel.parent
                         : this.message.channel;
-                        
+
                 if (messageString.length <= 2000) channel.send(messageString);
                 else {
                     channel.send(
@@ -591,6 +591,7 @@ class Giveaway extends EventEmitter {
                 ])
                     ? this.message.channel.parent
                     : this.message.channel;
+                    
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
