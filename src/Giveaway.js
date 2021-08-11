@@ -509,13 +509,14 @@ class Giveaway extends EventEmitter {
     end() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
-            this.ended = true;
-            this.endAt = Date.now();
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-
+            
+            this.ended = true;
+            if (this.endAt < this.client.readyTimestamp && this.saveGiveawayInDatabase !== false) this.endAt = Date.now();
+            await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
-            if (this.saveGiveawayInDatabase !== false) await this.manager.editGiveaway(this.messageId, this.data);
+
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 if (this.saveGiveawayInDatabase !== false) await this.manager.editGiveaway(this.messageId, this.data);
@@ -526,6 +527,7 @@ class Giveaway extends EventEmitter {
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
+
                 const channel =
                     this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
                         (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
@@ -534,6 +536,7 @@ class Giveaway extends EventEmitter {
                     ])
                         ? this.message.channel.parent
                         : this.message.channel;
+
                 if (messageString.length <= 2000) channel.send(messageString);
                 else {
                     channel.send(
@@ -588,6 +591,7 @@ class Giveaway extends EventEmitter {
                 ])
                     ? this.message.channel.parent
                     : this.message.channel;
+                    
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 if (options.saveGiveawayInDB !== false) await this.manager.editGiveaway(this.messageId, this.data);
