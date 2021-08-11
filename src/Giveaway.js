@@ -535,13 +535,14 @@ class Giveaway extends EventEmitter {
     end() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
-            this.ended = true;
-            this.endAt = Date.now();
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-
-            const winners = await this.roll();
+            
+            this.ended = true;
+            if (this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
+            const winners = await this.roll();
+
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
@@ -638,7 +639,7 @@ class Giveaway extends EventEmitter {
                         ? this.message.channel.guild.channels.get(this.message.channel.parentId)
                         : this.message.channel.parent
                     : this.message.channel;
-
+          
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
