@@ -28,7 +28,7 @@ sql.query(`
 	CREATE TABLE IF NOT EXISTS \`giveaways\`
 	(
 		\`id\` INT(1) NOT NULL AUTO_INCREMENT,
-		\`message_id\` VARCHAR(64) NOT NULL,
+		\`message_id\` VARCHAR(20) NOT NULL,
 		\`data\` JSON NOT NULL,
 		PRIMARY KEY (\`id\`)
 	);
