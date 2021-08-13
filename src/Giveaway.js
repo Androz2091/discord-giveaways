@@ -509,10 +509,10 @@ class Giveaway extends EventEmitter {
     end() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
-            await this.fetchMessage().catch(() => {});
+            this.ended = true;
+            await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             
-            this.ended = true;
             if (this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
