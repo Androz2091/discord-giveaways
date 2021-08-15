@@ -469,7 +469,7 @@ class GiveawaysManager extends EventEmitter {
             }
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
             await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) return;
+            if (!giveaway.message?.channel) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
