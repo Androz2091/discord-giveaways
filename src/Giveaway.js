@@ -425,7 +425,7 @@ class Giveaway extends EventEmitter {
         }
         const guild = this.manager.libraryIsEris ? this.message.channel.guild : this.message.guild;
         // Fetch guild members
-        if (!this.manager.libraryIsEris && new Discord.Intents(this.client.options.intents).has('GUILD_MEMBERS')) await guild.members.fetch();
+        if (!this.manager.libraryIsEris && new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) await guild.members.fetch();
 
         // Fetch all reaction users
         let userCollection = (this.manager.libraryIsEris ? reactionUsers : await reaction.users.fetch());
@@ -535,11 +535,11 @@ class Giveaway extends EventEmitter {
     end() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
-            await this.fetchMessage().catch(() => {});
+            this.ended = true;
+            await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             
-            this.ended = true;
-            if (this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+            if (this.endAt < this.client[this.manager.libraryIsEris ? 'startTime' : 'readyTimestamp']) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
 
@@ -565,8 +565,8 @@ class Giveaway extends EventEmitter {
                             )
                             : !this.message.channel.permissionsFor(this.client.user)?.has([
                                 (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
-                                    ? 'MANAGE_THREADS'
-                                    : 'SEND_MESSAGES',
+                                    ? Discord.Permissions.FLAGS.MANAGE_THREADS
+                                    : Discord.Permissions.FLAGS.SEND_MESSAGES,
                             ]))
                     ) ? this.manager.libraryIsEris
                             ? this.message.channel.guild.channels.get(this.message.channel.parentId)
@@ -632,8 +632,8 @@ class Giveaway extends EventEmitter {
                         )
                         : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                             (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
-                                ? 'MANAGE_THREADS'
-                                : 'SEND_MESSAGES',
+                                ? Discord.Permissions.FLAGS.MANAGE_THREADS
+                                : Discord.Permissions.FLAGS.SEND_MESSAGES,
                         ]))
                 ) ? this.manager.libraryIsEris
                         ? this.message.channel.guild.channels.get(this.message.channel.parentId)
