@@ -201,7 +201,9 @@ class GiveawaysManager extends EventEmitter {
             }
             if (
                 channel.isThread() && !channel .permissionsFor(this.client.user)?.has([
-                    (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD') ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                    (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
+                        ? Discord.Permissions.FLAGS.MANAGE_THREADS
+                        : Discord.Permissions.FLAGS.SEND_MESSAGES,
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
