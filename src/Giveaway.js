@@ -330,15 +330,15 @@ class Giveaway extends EventEmitter {
     fillInString(string) {
         if (typeof string !== 'string') return '';
         [...new Set(string.match(/\{[^{}]*(?:[^{}]*)*\}/g))]
-            .filter((v) => v?.slice(1, -1).trim() !== '')
-            .forEach((v) => {
+            .filter((match) => match?.slice(1, -1).trim() !== '')
+            .forEach((match) => {
                 let replacer;
                 try {
-                    replacer = eval(v.slice(1, -1));
+                    replacer = eval(match.slice(1, -1));
                 } catch {
-                    replacer = v;
+                    replacer = match;
                 }
-                string = string.replace(new RegExp(v, 'g'), replacer);
+                string = string.replaceAll(match, replacer);
             });
         return string;
     }
