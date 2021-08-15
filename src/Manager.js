@@ -83,10 +83,7 @@ class GiveawaysManager extends EventEmitter {
                         : '') +
                     giveaway.messages.inviteToParticipate +
                     '\n' +
-                    giveaway.message.drawing.replace(
-                        '{timestamp}',
-                        giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.remainingTime / 1000)}:R>`
-                    ) +
+                    giveaway.remainingTimeText +
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
             .setThumbnail(giveaway.thumbnail);
@@ -471,6 +468,8 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
+            await giveaway.fetchMessage().catch(() => {});
+            if (!giveaway.message?.channel) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -485,8 +484,10 @@ class GiveawaysManager extends EventEmitter {
                     Date.now() < giveaway.pauseOptions.unPauseAfter
                 ) this.unpause(giveaway.messageId).catch(() => {});
             }
+            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
+            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
-                setTimeout(() => this.end.call(this, giveaway.messageId).catch(() => {}), giveaway.remainingTime);
+                setTimeout(() => this.end.call(this, giveaway.messageId), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(() => {
