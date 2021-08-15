@@ -427,7 +427,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
--   **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
+-   **options.messages.drawing**: the message that displays the drawing timestamp (the timer).
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
@@ -451,7 +451,7 @@ client.giveawaysManager.start(message.channel, {
     messages: {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
-        timeRemaining: 'Time remaining: **{duration}**',
+        drawing: 'Drawing: {timestamp}',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
         embedFooter: 'Powered by the discord-giveaways package',
