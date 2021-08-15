@@ -85,28 +85,124 @@ You can pass an options object to customize the giveaways. Here is a list of the
 -   **options.default.reaction**: the reaction that users will have to react to in order to participate.
 -   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
 
+### Slash commands
+
+Slash commands are used for the command examles of `discord-giveaways`.
+
+The commands themselve are assumed to be in a "commands" folder.
+
+```
+discord-bot/
+├── commands/
+    ├── command1.js
+    ├── command2.js
+    ├── command3.js
+├── node_modules
+├── index.js
+├── package-lock.json
+└── package.json
+```
+
+The assumed registering and handling processes for the commands are shown below.
+
+<ins>Registering</ins>
+
+```js
+    const { REST } = require('@discordjs/rest'); // npm install @discordjs/rest
+    const { Routes } = require('discord-api-types/v9'); // npm install discord-api-types
+    const fs = require('fs');
+
+    const token = 'Your Discord Bot Token';
+
+    // Place your client and guild ids here
+    const clientId = '123456789012345678';
+    const guildId = '876543210987654321'; // Only needed for guild commands. For globabl commands this can be removed.
+
+    const commands = [];
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+        const command = require(`./commands/${file}`);
+        commands.push(command.data.toJSON());
+    }
+
+    const rest = new REST({ version: '9' }).setToken(token);
+
+    (async () => {
+        try {
+            console.log('Started refreshing application (/) commands.');
+
+            await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
+
+            console.log('Successfully reloaded application (/) commands.');
+        } catch (err) {
+            console.error(err);
+        }
+    })();
+```
+
+<ins>Handling</ins>
+
+```js
+client.on('interactionCreate', async (interaction) => {
+	if (!interaction.isCommand()) return;
+
+    try {
+        const command = require(`./commands/${interaction.commandName}`);
+		await command.run(interaction);
+	} catch (err) {
+		console.error(err);
+		await interaction.reply({
+            content: `There was an error while executing this command! Please check and try again.\n\`${err.message}\``,
+            ephemeral: true
+        });
+	}
+}
+```
+
 ### Start a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const ms = require('ms'); // npm install ms
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+module.exports = {
+    data: { 
+        name: 'start'
+        description: 'Start a new giveaway'
+        options: [ 
+            {
+                name: 'duration',
+                description: 'How long the giveaway should last for. Example values: 1m, 1h, 1d',
+                type: 'STRING',
+                required: true
+            },
+            {
+                name: 'amount of winners',
+                description: 'How many winners the giveaway should have',
+                type: 'INTEGER',
+                required: true
+            },
+            {
+                name: 'prize',
+                description: 'What the prize of the giveaway should be',
+                type: 'STRING',
+                required: true
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const ms = require('ms'); // npm install ms
 
-    if (command === 'start-giveaway') {
-        // g!start-giveaway 2d 1 Awesome prize!
+        // /start | duration: 2d | winners: 1 | prize: Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
-
-        client.giveawaysManager.start(message.channel, {
-            time: ms(args[0]),
-            winnerCount: parseInt(args[1]),
-            prize: args.slice(2).join(' ')
-        }).then((gData) => {
-            console.log(gData); // {...} (messageId, end date and more)
+        interaction.client.giveawaysManager.start(interaction.channel, {
+            time: ms(interaction.options.getString('duration')),
+            winnerCount: interaction.options.getInteger('amount of winners'),
+            prize: interaction.options.getString('prize')
+        }).then((giveaway) => {
+            console.log(giveaway); // {...} (messageId, end date and more)
         });
         // And the giveaway has started!
     }
-});
+};
 ```
 
 -   **options.time**: the giveaway duration.
@@ -149,19 +245,26 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 ### Reroll a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'reroll') {
-        const messageId = args[0];
+module.exports = {
+    data: { 
+        name: 'reroll'
+        description: 'Reroll a ended giveaway'
+        options: [ 
+            {
+                name: 'message Id',
+                description: 'The message Id of the giveaway to reroll',
+                type: 'STRING',
+                required: true
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.reroll(messageId).then(() => {
-            message.channel.send('Success! Giveaway rerolled!');
-        }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply('Success! Giveaway rerolled!');
         });
     }
-});
+};
 ```
 
 -   **options.winnerCount**: the number of winners to pick.
@@ -174,23 +277,47 @@ client.on('messageCreate', (message) => {
 ### Edit a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+module.exports = {
+    data: { 
+        name: 'edit'
+        description: 'Edit a giveaway'
+        options: [ 
+            {
+                name: 'message Id',
+                description: 'The message Id of the giveaway to edit',
+                type: 'STRING',
+                required: true
+            },
+            {
+                name: 'additional duration',
+                description: 'The amount of time that should get added to the giveaway duration. Example values: 1m, 1h, 1d',
+                type: 'STRING',
+            },
+            {
+                name: 'new amount of winners',
+                description: 'The new amount of winners the giveaway should have',
+                type: 'INTEGER',
+            },
+            {
+                name: 'new prize',
+                description: 'The new prize the giveaway should have',
+                type: 'STRING',
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const ms = require('ms'); // npm install ms
+        const messageId = interaction.options.getString('message Id');
 
-    if (command === 'edit') {
-        const messageId = args[0];
         client.giveawaysManager.edit(messageId, {
-            addTime: 5000,
-            newWinnerCount: 3,
-            newPrize: 'New Prize!'
+            addTime: ms(interaction.options.getString('additional duration')),
+            newWinnerCount: interaction.options.getInteger('new amount of winners'),
+            newPrize: interaction.options.getString('new prize')
         }).then(() => {
-            message.channel.send('Success! Giveaway updated!');
-        }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply('Success! Giveaway updated!')
         });
     }
-});
+};
 ```
 
 -   **options.newWinnerCount**: the new number of winners.  
@@ -207,19 +334,26 @@ client.on('messageCreate', (message) => {
 ### Delete a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'delete') {
-        const messageId = args[0];
+module.exports = {
+    data: { 
+        name: 'delete'
+        description: 'Delete a giveaway'
+        options: [ 
+            {
+                name: 'message Id',
+                description: 'The message Id of the giveaway to delete',
+                type: 'STRING',
+                required: true
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.delete(messageId).then(() => {
-            message.channel.send('Success! Giveaway deleted!');
-        }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply('Success! Giveaway deleted!');
         });
     }
-});
+};
 ```
 
 -   **doNotDeleteMessage**: whether the giveaway message shouldn't be deleted.
@@ -229,35 +363,49 @@ client.on('messageCreate', (message) => {
 ### End a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'end') {
-        const messageId = args[0];
+module.exports = {
+    data: { 
+        name: 'end'
+        description: 'End a giveaway'
+        options: [ 
+            {
+                name: 'message Id',
+                description: 'The message Id of the giveaway to end',
+                type: 'STRING',
+                required: true
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.end(messageId).then(() => {
-            message.channel.send('Success! Giveaway ended!');
-        }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply('Success! Giveaway ended!');
         });
     }
-});
+};
 ```
 
 ### Pause a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'pause') {
-        const messageId = args[0];
+module.exports = {
+    data: { 
+        name: 'pause'
+        description: 'Pause a giveaway'
+        options: [ 
+            {
+                name: 'message Id',
+                description: 'The message Id of the giveaway to pause',
+                type: 'STRING',
+                required: true
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.pause(messageId).then(() => {
-            message.channel.send('Success! Giveaway paused!');
-        }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+            interaction.reply('Success! Giveaway paused!');
+        })
     }
 });
 ```
@@ -279,9 +427,7 @@ client.on('messageCreate', (message) => {
         const messageId = args[0];
         client.giveawaysManager.unpause(messageId).then(() => {
             message.channel.send('Success! Giveaway unpaused!');
-        }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        })
     }
 });
 ```
