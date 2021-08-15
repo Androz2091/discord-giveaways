@@ -83,7 +83,7 @@ class GiveawaysManager extends EventEmitter {
                         : '') +
                     giveaway.messages.inviteToParticipate +
                     '\n' +
-                    giveaway.message.drawing.replace(
+                    giveaway.messages.drawing.replace(
                         '{timestamp}',
                         giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.remainingTime / 1000)}:R>`
                     ) +
