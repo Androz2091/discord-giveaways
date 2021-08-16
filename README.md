@@ -87,7 +87,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 
 ### Slash commands
 
-Slash commands are used for the command examles of `discord-giveaways`.
+Slash commands are used for the command examples of `discord-giveaways`.
 
 The commands themselve are assumed to be in a "commands" folder.
 
@@ -145,18 +145,18 @@ The assumed registering and handling processes for the commands are shown below.
 
 ```js
 client.on('interactionCreate', async (interaction) => {
-	if (!interaction.isCommand()) return;
+    if (!interaction.isCommand()) return;
 
     try {
         const command = require(`./commands/${interaction.commandName}`);
-		await command.run(interaction);
+	    await command.run(interaction);
 	} catch (err) {
 		console.error(err);
-		await interaction.reply({
+	    await interaction.reply({
             content: `There was an error while executing this command! Please check and try again.\n\`${err.message}\``,
             ephemeral: true
         });
-	}
+    }
 }
 ```
 
