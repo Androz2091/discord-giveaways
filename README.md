@@ -164,10 +164,10 @@ client.on('interactionCreate', async (interaction) => {
 
 ```js
 module.exports = {
-    data: { 
-        name: 'start'
-        description: 'Start a new giveaway'
-        options: [ 
+    data: {
+        name: 'start',
+        description: 'Start a new giveaway',
+        options: [
             {
                 name: 'duration',
                 description: 'How long the giveaway should last for. Example values: 1m, 1h, 1d',
@@ -246,10 +246,10 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 
 ```js
 module.exports = {
-    data: { 
-        name: 'reroll'
-        description: 'Reroll a ended giveaway'
-        options: [ 
+    data: {
+        name: 'reroll',
+        description: 'Reroll a ended giveaway',
+        options: [
             {
                 name: 'message Id',
                 description: 'The message Id of the giveaway to reroll',
@@ -278,41 +278,24 @@ module.exports = {
 
 ```js
 module.exports = {
-    data: { 
-        name: 'edit'
-        description: 'Edit a giveaway'
-        options: [ 
+    data: {
+        name: 'edit',
+        description: 'Edit a giveaway',
+        options: [
             {
                 name: 'message Id',
                 description: 'The message Id of the giveaway to edit',
                 type: 'STRING',
                 required: true
-            },
-            {
-                name: 'additional duration',
-                description: 'The amount of time that should get added to the giveaway duration. Example values: 1m, 1h, 1d',
-                type: 'STRING',
-            },
-            {
-                name: 'new amount of winners',
-                description: 'The new amount of winners the giveaway should have',
-                type: 'INTEGER',
-            },
-            {
-                name: 'new prize',
-                description: 'The new prize the giveaway should have',
-                type: 'STRING',
             }
         ]
     },
     run: async (interaction) => {
-        const ms = require('ms'); // npm install ms
         const messageId = interaction.options.getString('message Id');
-
         client.giveawaysManager.edit(messageId, {
-            addTime: ms(interaction.options.getString('additional duration')),
-            newWinnerCount: interaction.options.getInteger('new amount of winners'),
-            newPrize: interaction.options.getString('new prize')
+            addTime: 5000,
+            newWinnerCount: 3,
+            newPrize: 'New Prize!'
         }).then(() => {
             interaction.reply('Success! Giveaway updated!')
         });
@@ -335,10 +318,10 @@ module.exports = {
 
 ```js
 module.exports = {
-    data: { 
-        name: 'delete'
-        description: 'Delete a giveaway'
-        options: [ 
+    data: {
+        name: 'delete',
+        description: 'Delete a giveaway',
+        options: [
             {
                 name: 'message Id',
                 description: 'The message Id of the giveaway to delete',
@@ -364,10 +347,10 @@ module.exports = {
 
 ```js
 module.exports = {
-    data: { 
-        name: 'end'
-        description: 'End a giveaway'
-        options: [ 
+    data: {
+        name: 'end',
+        description: 'End a giveaway',
+        options: [
             {
                 name: 'message Id',
                 description: 'The message Id of the giveaway to end',
@@ -389,10 +372,10 @@ module.exports = {
 
 ```js
 module.exports = {
-    data: { 
-        name: 'pause'
-        description: 'Pause a giveaway'
-        options: [ 
+    data: {
+        name: 'pause',
+        description: 'Pause a giveaway',
+        options: [
             {
                 name: 'message Id',
                 description: 'The message Id of the giveaway to pause',
@@ -419,14 +402,23 @@ module.exports = {
 ### Unpause a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'unpause') {
-        const messageId = args[0];
+module.exports = {
+    data: {
+        name: 'unpause',
+        description: 'Unpause a giveaway',
+        options: [ 
+            {
+                name: 'message Id',
+                description: 'The message Id of the giveaway to unpause',
+                type: 'STRING',
+                required: true
+            }
+        ]
+    },
+    run: async (interaction) => {
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.unpause(messageId).then(() => {
-            message.channel.send('Success! Giveaway unpaused!');
+            interaction.reply('Success! Giveaway unpaused!');
         })
     }
 });
@@ -450,7 +442,7 @@ const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 Function to filter members. If true is returned, the member will not be able to win the giveaway.
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -464,7 +456,7 @@ client.giveawaysManager.start(message.channel, {
 ```js
 const roleName = 'Nitro Boost';
 
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -478,7 +470,7 @@ client.giveawaysManager.start(message.channel, {
 ### Last Chance
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
@@ -503,7 +495,7 @@ client.giveawaysManager.start(message.channel, {
 ### Pause Options
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
@@ -528,7 +520,7 @@ client.giveawaysManager.start(message.channel, {
 ### Bonus Entries
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -551,7 +543,7 @@ client.giveawaysManager.start(message.channel, {
 const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
 
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -590,10 +582,10 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 For example:
 
 ```js
-client.giveawaysManager.start(message.channel, {
-    time: ms(args[0]),
-    winnerCount: parseInt(args[1]),
-    prize: args.slice(2).join(' '),
+client.giveawaysManager.start(interaction.channel, {
+    time: ms(interaction.options.getString('duration')),
+    winnerCount: interaction.options.getInteger('amount of winners'),
+    prize: interaction.options.getString('prize')
     messages: {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',

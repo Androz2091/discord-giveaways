@@ -1,4 +1,4 @@
-require('registerSlash.js');
+require('./registerSlash.js');
 
 const Discord = require('discord.js'),
     client = new Discord.Client({
@@ -35,8 +35,6 @@ client.on('ready', () => {
 
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
-    
-    const args = interaction.content.slice(settings.prefix.length).trim().split(/ +/g);
 
     if (interaction.commandName === 'start') {
         const ms = require('ms'); // npm install ms
@@ -44,70 +42,70 @@ client.on('interactionCreate', async (interaction) => {
         // /start duration: 2d winners: 1 prize: Awesome prize!
         // This will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
         client.giveawaysManager.start(interaction.channel, {
-            time: ms(args[0]),
-            winnerCount: parseInt(args[1]),
-            prize: args.slice(2).join(' ')
+            time: ms(interaction.options.getString('duration')),
+            winnerCount: interaction.options.getInteger('amount of winners'),
+            prize: interaction.options.getString('prize')
         }).then(() => {
-            interaction.channel.send('Giveaway started in the current channel!');
+            interaction.reply('Giveaway started in the current channel!');
         });
         // And the giveaway has started!
     }
 
     if (interaction.commandName === 'reroll') {
-        const messageId = args[0];
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.reroll(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway rerolled!');
+            interaction.reply('Success! Giveaway rerolled!');
         }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err.message}\``);
         });
     }
 
     if (interaction.commandName === 'edit') {
-        const messageId = args[0];
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            interaction.channel.send('Success! Giveaway updated!');
+            interaction.reply('Success! Giveaway updated!');
         }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err.message}\``);
         });
     }
 
     if (interaction.commandName === 'delete') {
-        const messageId = args[0];
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.delete(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway deleted!');
+            interaction.reply('Success! Giveaway deleted!');
         }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err.message}\``);
         });
     }
     
     if (interaction.commandName === 'end') {
-        const messageId = args[0];
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.end(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway ended!');
+            interaction.reply('Success! Giveaway ended!');
         }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err.message}\``);
         });
     }
 
     if (interaction.commandName === 'pause') {
-        const messageId = args[0];
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.pause(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway paused!');
+            interaction.reply('Success! Giveaway paused!');
         }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err.message}\``);
         });
     }
 
     if (interaction.commandName === 'unpause') {
-        const messageId = args[0];
+        const messageId = interaction.options.getString('message Id');
         client.giveawaysManager.unpause(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway unpaused!');
+            interaction.reply('Success! Giveaway unpaused!');
         }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err.message}\``);
         });
     }
 });
