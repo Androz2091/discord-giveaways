@@ -43,7 +43,7 @@ client.on('interactionCreate', async (interaction) => {
         // This will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
         client.giveawaysManager.start(interaction.channel, {
             time: ms(interaction.options.getString('duration')),
-            winnerCount: interaction.options.getInteger('amount of winners'),
+            winnerCount: interaction.options.getInteger('winners'),
             prize: interaction.options.getString('prize')
         }).then(() => {
             interaction.reply('Giveaway started in the current channel!');
@@ -52,7 +52,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (interaction.commandName === 'reroll') {
-        const messageId = interaction.options.getString('message Id');
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.reroll(messageId).then(() => {
             interaction.reply('Success! Giveaway rerolled!');
         }).catch((err) => {
@@ -61,7 +61,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (interaction.commandName === 'edit') {
-        const messageId = interaction.options.getString('message Id');
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
@@ -74,7 +74,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (interaction.commandName === 'delete') {
-        const messageId = interaction.options.getString('message Id');
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.delete(messageId).then(() => {
             interaction.reply('Success! Giveaway deleted!');
         }).catch((err) => {
@@ -83,7 +83,7 @@ client.on('interactionCreate', async (interaction) => {
     }
     
     if (interaction.commandName === 'end') {
-        const messageId = interaction.options.getString('message Id');
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.end(messageId).then(() => {
             interaction.reply('Success! Giveaway ended!');
         }).catch((err) => {
@@ -92,7 +92,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (interaction.commandName === 'pause') {
-        const messageId = interaction.options.getString('message Id');
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.pause(messageId).then(() => {
             interaction.reply('Success! Giveaway paused!');
         }).catch((err) => {
@@ -101,7 +101,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (interaction.commandName === 'unpause') {
-        const messageId = interaction.options.getString('message Id');
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.unpause(messageId).then(() => {
             interaction.reply('Success! Giveaway unpaused!');
         }).catch((err) => {

@@ -171,31 +171,31 @@ module.exports = {
             {
                 name: 'duration',
                 description: 'How long the giveaway should last for. Example values: 1m, 1h, 1d',
-                type: 'STRING',
+                type: 3, // STRING
                 required: true
             },
             {
-                name: 'amount of winners',
+                name: 'winners',
                 description: 'How many winners the giveaway should have',
-                type: 'INTEGER',
+                type: 4, // INTEGER
                 required: true
             },
             {
                 name: 'prize',
                 description: 'What the prize of the giveaway should be',
-                type: 'STRING',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
+    async run(interaction) {
         const ms = require('ms'); // npm install ms
 
         // /start | duration: 2d | winners: 1 | prize: Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
         interaction.client.giveawaysManager.start(interaction.channel, {
             time: ms(interaction.options.getString('duration')),
-            winnerCount: interaction.options.getInteger('amount of winners'),
+            winnerCount: interaction.options.getInteger('winners'),
             prize: interaction.options.getString('prize')
         }).then((giveaway) => {
             console.log(giveaway); // {...} (messageId, end date and more)
@@ -251,15 +251,15 @@ module.exports = {
         description: 'Reroll a ended giveaway',
         options: [
             {
-                name: 'message Id',
-                description: 'The message Id of the giveaway to reroll',
-                type: 'STRING',
+                name: 'messageid',
+                description: 'The message ID of the giveaway to reroll',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
-        const messageId = interaction.options.getString('message Id');
+    async run(interaction) {
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.reroll(messageId).then(() => {
             interaction.reply('Success! Giveaway rerolled!');
         });
@@ -283,15 +283,15 @@ module.exports = {
         description: 'Edit a giveaway',
         options: [
             {
-                name: 'message Id',
-                description: 'The message Id of the giveaway to edit',
-                type: 'STRING',
+                name: 'messageid',
+                description: 'The message ID of the giveaway to edit',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
-        const messageId = interaction.options.getString('message Id');
+    async run(interaction) {
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
@@ -323,15 +323,15 @@ module.exports = {
         description: 'Delete a giveaway',
         options: [
             {
-                name: 'message Id',
-                description: 'The message Id of the giveaway to delete',
-                type: 'STRING',
+                name: 'messageid',
+                description: 'The message ID of the giveaway to delete',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
-        const messageId = interaction.options.getString('message Id');
+    async run(interaction) {
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.delete(messageId).then(() => {
             interaction.reply('Success! Giveaway deleted!');
         });
@@ -352,15 +352,15 @@ module.exports = {
         description: 'End a giveaway',
         options: [
             {
-                name: 'message Id',
-                description: 'The message Id of the giveaway to end',
-                type: 'STRING',
+                name: 'messageid',
+                description: 'The message ID of the giveaway to end',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
-        const messageId = interaction.options.getString('message Id');
+    async run(interaction) {
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.end(messageId).then(() => {
             interaction.reply('Success! Giveaway ended!');
         });
@@ -377,15 +377,15 @@ module.exports = {
         description: 'Pause a giveaway',
         options: [
             {
-                name: 'message Id',
-                description: 'The message Id of the giveaway to pause',
-                type: 'STRING',
+                name: 'messageid',
+                description: 'The message ID of the giveaway to pause',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
-        const messageId = interaction.options.getString('message Id');
+    async run(interaction) {
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.pause(messageId).then(() => {
             interaction.reply('Success! Giveaway paused!');
         })
@@ -408,15 +408,15 @@ module.exports = {
         description: 'Unpause a giveaway',
         options: [ 
             {
-                name: 'message Id',
-                description: 'The message Id of the giveaway to unpause',
-                type: 'STRING',
+                name: 'messageid',
+                description: 'The message ID of the giveaway to unpause',
+                type: 3, // STRING
                 required: true
             }
         ]
     },
-    run: async (interaction) => {
-        const messageId = interaction.options.getString('message Id');
+    async run(interaction) {
+        const messageId = interaction.options.getString('messageid');
         client.giveawaysManager.unpause(messageId).then(() => {
             interaction.reply('Success! Giveaway unpaused!');
         })
