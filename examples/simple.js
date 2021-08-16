@@ -1,3 +1,4 @@
+// Register slash commands
 require('./registerSlash.js');
 
 const Discord = require('discord.js'),
