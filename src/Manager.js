@@ -25,6 +25,10 @@ class GiveawaysManager extends EventEmitter {
     constructor(client, options, init = true) {
         super();
         if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
+        if (!new Discord.Intents(client.options.intents).has(Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
+            throw new Error('Client is missing the "GUILD_MESSAGE_REACTIONS" intent.');
+        }
+
         /**
          * The Discord Client
          * @type {Discord.Client}
@@ -45,6 +49,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options || {});
+        
         if (init) this._init();
     }
 
@@ -351,7 +356,7 @@ class GiveawaysManager extends EventEmitter {
             
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
-                if (giveaway.message) giveaway.message.delete();
+                giveaway.message?.delete();
             }
             this.giveaways = this.giveaways.filter((g) => g.messageId !== messageId);
             await this.deleteGiveaway(messageId);
