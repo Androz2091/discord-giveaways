@@ -1,5 +1,5 @@
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+const { REST } = require('@discordjs/rest'); // npm install @discordjs/rest
+const { Routes } = require('discord-api-types/v9'); // npm install discord-api-types
 const fs = require('fs');
 
 const token = 'Your Discord Bot Token';
