@@ -234,12 +234,16 @@ The command examples below (reroll, edit delete, end) can be executed on any ser
 ```js
 let giveaway = 
 // Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.prize === args.join(' ')) ||
+interaction.client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('prize')) ||
 // Search with messageId
-client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.messageId === args[0]);
+interaction.client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.messageId === interaction.options.getString('messageid'));
 
 // If no giveaway was found
-if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
+if (!giveaway) {
+    return interaction.reply(
+        'Unable to find a giveaway for `'+ (interaction.options.getString('prize') || interaction.options.getString('messageid')) +'`.'
+    );
+}
 ```
 
 ### Reroll a giveaway
@@ -260,7 +264,7 @@ module.exports = {
     },
     async run(interaction) {
         const messageId = interaction.options.getString('messageid');
-        client.giveawaysManager.reroll(messageId).then(() => {
+        interaction.client.giveawaysManager.reroll(messageId).then(() => {
             interaction.reply('Success! Giveaway rerolled!');
         });
     }
@@ -292,7 +296,7 @@ module.exports = {
     },
     async run(interaction) {
         const messageId = interaction.options.getString('messageid');
-        client.giveawaysManager.edit(messageId, {
+        interaction.client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
@@ -332,7 +336,7 @@ module.exports = {
     },
     async run(interaction) {
         const messageId = interaction.options.getString('messageid');
-        client.giveawaysManager.delete(messageId).then(() => {
+        interaction.client.giveawaysManager.delete(messageId).then(() => {
             interaction.reply('Success! Giveaway deleted!');
         });
     }
@@ -361,7 +365,7 @@ module.exports = {
     },
     async run(interaction) {
         const messageId = interaction.options.getString('messageid');
-        client.giveawaysManager.end(messageId).then(() => {
+        interaction.client.giveawaysManager.end(messageId).then(() => {
             interaction.reply('Success! Giveaway ended!');
         });
     }
@@ -386,7 +390,7 @@ module.exports = {
     },
     async run(interaction) {
         const messageId = interaction.options.getString('messageid');
-        client.giveawaysManager.pause(messageId).then(() => {
+        interaction.client.giveawaysManager.pause(messageId).then(() => {
             interaction.reply('Success! Giveaway paused!');
         })
     }
@@ -417,7 +421,7 @@ module.exports = {
     },
     async run(interaction) {
         const messageId = interaction.options.getString('messageid');
-        client.giveawaysManager.unpause(messageId).then(() => {
+        interaction.client.giveawaysManager.unpause(messageId).then(() => {
             interaction.reply('Success! Giveaway unpaused!');
         })
     }
@@ -442,7 +446,7 @@ const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
 Function to filter members. If true is returned, the member will not be able to win the giveaway.
 
 ```js
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -456,7 +460,7 @@ client.giveawaysManager.start(interaction.channel, {
 ```js
 const roleName = 'Nitro Boost';
 
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -470,7 +474,7 @@ client.giveawaysManager.start(interaction.channel, {
 ### Last Chance
 
 ```js
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
@@ -495,7 +499,7 @@ client.giveawaysManager.start(interaction.channel, {
 ### Pause Options
 
 ```js
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
@@ -520,7 +524,7 @@ client.giveawaysManager.start(interaction.channel, {
 ### Bonus Entries
 
 ```js
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -543,7 +547,7 @@ client.giveawaysManager.start(interaction.channel, {
 const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
 
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -582,7 +586,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 For example:
 
 ```js
-client.giveawaysManager.start(interaction.channel, {
+interaction.client.giveawaysManager.start(interaction.channel, {
     time: ms(interaction.options.getString('duration')),
     winnerCount: interaction.options.getInteger('amount of winners'),
     prize: interaction.options.getString('prize')
@@ -611,7 +615,7 @@ client.giveawaysManager.start(interaction.channel, {
 And for the `reroll()` function:
 
 ```js
-client.giveawaysManager.reroll(messageId, {
+interaction.client.giveawaysManager.reroll(messageId, {
         messages: {
             congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
