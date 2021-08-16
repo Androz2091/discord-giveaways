@@ -47,9 +47,11 @@ client.on('interactionCreate', async (interaction) => {
             winnerCount: interaction.options.getInteger('winners'),
             prize: interaction.options.getString('prize')
         }).then(() => {
+            // And the giveaway has started!
             interaction.reply('Giveaway started in the current channel!');
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
-        // And the giveaway has started!
     }
 
     if (interaction.commandName === 'reroll') {
@@ -57,7 +59,7 @@ client.on('interactionCreate', async (interaction) => {
         client.giveawaysManager.reroll(messageId).then(() => {
             interaction.reply('Success! Giveaway rerolled!');
         }).catch((err) => {
-            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err}\``);
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -70,7 +72,7 @@ client.on('interactionCreate', async (interaction) => {
         }).then(() => {
             interaction.reply('Success! Giveaway updated!');
         }).catch((err) => {
-            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err}\``);
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -79,7 +81,7 @@ client.on('interactionCreate', async (interaction) => {
         client.giveawaysManager.delete(messageId).then(() => {
             interaction.reply('Success! Giveaway deleted!');
         }).catch((err) => {
-            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err}\``);
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
     
@@ -88,7 +90,7 @@ client.on('interactionCreate', async (interaction) => {
         client.giveawaysManager.end(messageId).then(() => {
             interaction.reply('Success! Giveaway ended!');
         }).catch((err) => {
-            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err}\``);
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -97,7 +99,7 @@ client.on('interactionCreate', async (interaction) => {
         client.giveawaysManager.pause(messageId).then(() => {
             interaction.reply('Success! Giveaway paused!');
         }).catch((err) => {
-            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err}\``);
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 
@@ -106,7 +108,7 @@ client.on('interactionCreate', async (interaction) => {
         client.giveawaysManager.unpause(messageId).then(() => {
             interaction.reply('Success! Giveaway unpaused!');
         }).catch((err) => {
-            interaction.reply(`There was an error while executing this command! Please check and try again.\n\`${err}\``);
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });

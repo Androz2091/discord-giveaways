@@ -198,9 +198,12 @@ module.exports = {
             winnerCount: interaction.options.getInteger('winners'),
             prize: interaction.options.getString('prize')
         }).then((giveaway) => {
+            // And the giveaway has started!
+            interaction.reply('Giveaway started in the current channel!');
             console.log(giveaway); // {...} (messageId, end date and more)
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
-        // And the giveaway has started!
     }
 };
 ```
@@ -265,6 +268,8 @@ module.exports = {
         const messageId = interaction.options.getString('messageid');
         interaction.client.giveawaysManager.reroll(messageId).then(() => {
             interaction.reply('Success! Giveaway rerolled!');
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 };
@@ -301,6 +306,8 @@ module.exports = {
             newPrize: 'New Prize!'
         }).then(() => {
             interaction.reply('Success! Giveaway updated!')
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 };
@@ -337,6 +344,8 @@ module.exports = {
         const messageId = interaction.options.getString('messageid');
         interaction.client.giveawaysManager.delete(messageId).then(() => {
             interaction.reply('Success! Giveaway deleted!');
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 };
@@ -366,6 +375,8 @@ module.exports = {
         const messageId = interaction.options.getString('messageid');
         interaction.client.giveawaysManager.end(messageId).then(() => {
             interaction.reply('Success! Giveaway ended!');
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 };
@@ -391,7 +402,9 @@ module.exports = {
         const messageId = interaction.options.getString('messageid');
         interaction.client.giveawaysManager.pause(messageId).then(() => {
             interaction.reply('Success! Giveaway paused!');
-        })
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
     }
 });
 ```
@@ -422,7 +435,9 @@ module.exports = {
         const messageId = interaction.options.getString('messageid');
         interaction.client.giveawaysManager.unpause(messageId).then(() => {
             interaction.reply('Success! Giveaway unpaused!');
-        })
+        }).catch((err) => {
+            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
+        });
     }
 });
 ```
