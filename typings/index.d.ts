@@ -104,13 +104,6 @@ declare module 'discord-giveaways' {
         winners?: string;
         endedAt?: string;
         hostedBy?: string;
-        units?: {
-            seconds?: string;
-            minutes?: string;
-            hours?: string;
-            days?: string;
-            pluralS?: false;
-        };
     }
     interface GiveawaysManagerEvents {
         giveawayDeleted: [Giveaway];

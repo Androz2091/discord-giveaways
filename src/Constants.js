@@ -14,12 +14,6 @@ const Discord = require('discord.js');
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {string} [hostedBy='Hosted by: {user}'] Below the "inviteToParticipate" message, in the description of the embed.
- * @property {Object} [units]
- * @property {string} [units.seconds='seconds'] The name of the "seconds" unit.
- * @property {string} [units.minutes='minutes'] The name of the "minutes" unit.
- * @property {string} [units.hours='hours'] The name of the "hours" unit.
- * @property {string} [units.days='days'] The name of the "days" unit.
- * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
 exports.GiveawayMessages = {
     giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
@@ -32,13 +26,6 @@ exports.GiveawayMessages = {
     winners: 'winner(s)',
     endedAt: 'Ended at',
     hostedBy: 'Hosted by: {user}',
-    units: {
-        seconds: 'seconds',
-        minutes: 'minutes',
-        hours: 'hours',
-        days: 'days',
-        pluralS: false
-    }
 };
 
 /**
