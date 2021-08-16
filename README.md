@@ -108,37 +108,37 @@ The assumed registering and handling processes for the commands are shown below.
 <ins>Registering</ins>
 
 ```js
-    const { REST } = require('@discordjs/rest'); // npm install @discordjs/rest
-    const { Routes } = require('discord-api-types/v9'); // npm install discord-api-types
-    const fs = require('fs');
+const { REST } = require('@discordjs/rest'); // npm install @discordjs/rest
+const { Routes } = require('discord-api-types/v9'); // npm install discord-api-types
+const fs = require('fs');
 
-    const token = 'Your Discord Bot Token';
+const token = 'Your Discord Bot Token';
 
-    // Place your client and guild ids here
-    const clientId = '123456789012345678';
-    const guildId = '876543210987654321'; // Only needed for guild commands. For globabl commands this can be removed.
+// Place your client and guild ids here
+const clientId = '123456789012345678';
+const guildId = '876543210987654321'; // Only needed for guild commands. For globabl commands this can be removed.
 
-    const commands = [];
-    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commands = [];
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-    for (const file of commandFiles) {
-        const command = require(`./commands/${file}`);
-        commands.push(command.data.toJSON());
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    commands.push(command.data.toJSON());
+}
+
+const rest = new REST({ version: '9' }).setToken(token);
+
+(async () => {
+    try {
+        console.log('Started refreshing application (/) commands.');
+
+        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
+
+        console.log('Successfully reloaded application (/) commands.');
+    } catch (err) {
+        console.error(err);
     }
-
-    const rest = new REST({ version: '9' }).setToken(token);
-
-    (async () => {
-        try {
-            console.log('Started refreshing application (/) commands.');
-
-            await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
-
-            console.log('Successfully reloaded application (/) commands.');
-        } catch (err) {
-            console.error(err);
-        }
-    })();
+})();
 ```
 
 <ins>Handling</ins>
@@ -149,10 +149,10 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
         const command = require(`./commands/${interaction.commandName}`);
-	    await command.run(interaction);
-	} catch (err) {
-		console.error(err);
-	    await interaction.reply({
+        await command.run(interaction);
+    } catch (err) {
+        console.error(err);
+        await interaction.reply({
             content: `There was an error while executing this command! Please check and try again.\n\`${err.message}\``,
             ephemeral: true
         });
