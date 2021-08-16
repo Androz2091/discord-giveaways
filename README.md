@@ -153,7 +153,7 @@ client.on('interactionCreate', async (interaction) => {
     } catch (err) {
         console.error(err);
         await interaction.reply({
-            content: `There was an error while executing this command! Please check and try again.\n\`${err.message}\``,
+            content: `There was an error while executing this command! Please check and try again.\n\`${err.message || err}\``,
             ephemeral: true
         });
     }
