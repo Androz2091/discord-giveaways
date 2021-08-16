@@ -434,12 +434,6 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
--   **options.messages.units.seconds**: simply the word "seconds" in your language.
--   **options.messages.units.minutes**: simply the word "minutes" in your language.
--   **options.messages.units.hours**: simply the word "hours" in your language.
--   **options.messages.units.days**: simply the word "days" in your language.
-
-**Note**: units should be in the plural.
 
 For example:
 
@@ -459,13 +453,6 @@ client.giveawaysManager.start(message.channel, {
         hostedBy: 'Hosted by: {user}',
         winners: 'winner(s)',
         endedAt: 'Ended at',
-        units: {
-            seconds: 'seconds',
-            minutes: 'minutes',
-            hours: 'hours',
-            days: 'days',
-            pluralS: false // Not needed, because units end with a S so it will automatically removed if the unit value is lower than 2
-        }
     }
 });
 ```
