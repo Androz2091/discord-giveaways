@@ -430,7 +430,7 @@ module.exports = {
 
         await interaction.editReply('Success! Giveaway paused!');
     }
-});
+};
 ```
 
 -   **options.content**: the text of the embed when the giveaway is paused.
@@ -467,7 +467,7 @@ module.exports = {
 
         await interaction.editReply('Success! Giveaway unpaused!');
     }
-});
+};
 ```
 
 ### Fetch giveaways
