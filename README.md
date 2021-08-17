@@ -190,20 +190,24 @@ module.exports = {
     },
     async run(interaction) {
         const ms = require('ms'); // npm install ms
+        await interaction.deferReply();
 
-        // /start | duration: 2d | winners: 1 | prize: Awesome prize!
-        // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
-        interaction.client.giveawaysManager.start(interaction.channel, {
-            time: ms(interaction.options.getString('duration')),
-            winnerCount: interaction.options.getInteger('winners'),
-            prize: interaction.options.getString('prize')
-        }).then((giveaway) => {
-            // And the giveaway has started!
-            interaction.reply('Giveaway started in the current channel!');
-            console.log(giveaway); // {...} (messageId, end date and more)
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            // /start | duration: 2d | winners: 1 | prize: Awesome prize!
+            // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
+            await interaction.client.giveawaysManager.start(interaction.channel, {
+                time: ms(interaction.options.getString('duration')),
+                winnerCount: interaction.options.getInteger('winners'),
+                prize: interaction.options.getString('prize')
+            }).then((giveaway) => {
+                console.log(giveaway); // {...} (messageId, end date and more)
+            });
+        } catch (err) {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        // And the giveaway has started!
+        await interaction.editReply('Giveaway started in the current channel!');
     }
 };
 ```
@@ -265,12 +269,16 @@ module.exports = {
         ]
     },
     async run(interaction) {
+        await interaction.deferReply();
+
         const messageId = interaction.options.getString('messageid');
-        interaction.client.giveawaysManager.reroll(messageId).then(() => {
-            interaction.reply('Success! Giveaway rerolled!');
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            await interaction.client.giveawaysManager.reroll(messageId);
+        } catch (err) {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        await interaction.editReply('Success! Giveaway rerolled!');
     }
 };
 ```
@@ -299,16 +307,20 @@ module.exports = {
         ]
     },
     async run(interaction) {
+        await interaction.deferReply();
+
         const messageId = interaction.options.getString('messageid');
-        interaction.client.giveawaysManager.edit(messageId, {
-            addTime: 5000,
-            newWinnerCount: 3,
-            newPrize: 'New Prize!'
-        }).then(() => {
-            interaction.reply('Success! Giveaway updated!')
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            await interaction.client.giveawaysManager.edit(messageId, {
+                addTime: 5000,
+                newWinnerCount: 3,
+                newPrize: 'New Prize!'
+            });
+        } catch (err) {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        await interaction.editReply('Success! Giveaway updated!')
     }
 };
 ```
@@ -341,12 +353,16 @@ module.exports = {
         ]
     },
     async run(interaction) {
+        await interaction.deferReply();
+
         const messageId = interaction.options.getString('messageid');
-        interaction.client.giveawaysManager.delete(messageId).then(() => {
-            interaction.reply('Success! Giveaway deleted!');
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            await interaction.client.giveawaysManager.delete(messageId);
+        } catch (err) {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        await interaction.editReply('Success! Giveaway deleted!');
     }
 };
 ```
@@ -372,12 +388,16 @@ module.exports = {
         ]
     },
     async run(interaction) {
+        await interaction.deferReply();
+
         const messageId = interaction.options.getString('messageid');
-        interaction.client.giveawaysManager.end(messageId).then(() => {
-            interaction.reply('Success! Giveaway ended!');
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            await interaction.client.giveawaysManager.end(messageId);
+        } catch (err) {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        await interaction.editReply('Success! Giveaway ended!');
     }
 };
 ```
@@ -399,12 +419,16 @@ module.exports = {
         ]
     },
     async run(interaction) {
+        await interaction.deferReply();
+
         const messageId = interaction.options.getString('messageid');
-        interaction.client.giveawaysManager.pause(messageId).then(() => {
-            interaction.reply('Success! Giveaway paused!');
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            await interaction.client.giveawaysManager.pause(messageId);
+        } catch {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        await interaction.editReply('Success! Giveaway paused!');
     }
 });
 ```
@@ -432,12 +456,16 @@ module.exports = {
         ]
     },
     async run(interaction) {
+        await interaction.deferReply();
+
         const messageId = interaction.options.getString('messageid');
-        interaction.client.giveawaysManager.unpause(messageId).then(() => {
-            interaction.reply('Success! Giveaway unpaused!');
-        }).catch((err) => {
-            interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        try {
+            await interaction.client.giveawaysManager.unpause(messageId);
+        } catch (err) {
+            return await interaction.editReply(`An error has occurred, please check and try again.\n\`${err}\``);
+        }
+
+        await interaction.editReply('Success! Giveaway unpaused!');
     }
 });
 ```
