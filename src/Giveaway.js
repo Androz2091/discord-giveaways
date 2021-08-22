@@ -345,12 +345,12 @@ class Giveaway extends EventEmitter {
 
     /**
      * Filles in a embed with giveaway properties.
-     * @param {Discord.MessageEmbed} embed The embed that should get filled in.
+     * @param {Discord.MessageEmbed|Discord.MessageEmbedOptions} embed The embed that should get filled in.
      * @returns {Discord.MessageEmbed|null} The filled in embed.
      */
     fillInEmbed(embed) {
         if (!embed || typeof embed !== 'object') return null;
-        return embed
+        return new Discord.MessageEmbed(embed)
             .setAuthor(this.fillInString(embed.author?.name), embed.author?.iconURL, embed.author?.url)
             .setDescription(this.fillInString(embed.description))
             .setFooter(this.fillInString(embed.footer?.text), embed.footer?.iconURL)
@@ -592,7 +592,7 @@ class Giveaway extends EventEmitter {
 
                 if (this.messages.winMessage.embed && typeof this.messages.winMessage.embed === 'object') {
                     if (message.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-                    const embed = this.fillInEmbed(new Discord.MessageEmbed(this.messages.winMessage.embed));
+                    const embed = this.fillInEmbed(this.messages.winMessage.embed);
                     const embedDescription = embed.description.replace('{winners}', formattedWinners);
                     if (embedDescription.length <= 4096) channel.send({ embeds: [embed.setDescription(embedDescription)] });
                     else {
@@ -669,7 +669,7 @@ class Giveaway extends EventEmitter {
 
                 if (options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object') {
                     if (message.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-                    const embed = this.fillInEmbed(new Discord.MessageEmbed(options.messages.congrat.embed));
+                    const embed = this.fillInEmbed(options.messages.congrat.embed);
                     const embedDescription = embed.description.replace('{winners}', formattedWinners);
                     if (embedDescription.length <= 4096) this.message.channel.send({ embeds: [embed.setDescription(embedDescription)] });
                     else {

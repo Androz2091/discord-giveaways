@@ -54,7 +54,7 @@ exports.GiveawayMessages = {
  * @typedef MessageObject
  * 
  * @property {string} [content] The raw message
- * @property {Discord.MessageEmbed} [embed] The embed
+ * @property {Discord.MessageEmbed|Discord.MessageEmbedOptions} [embed] The embed
  */
 
 /**

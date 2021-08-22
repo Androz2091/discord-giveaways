@@ -12,6 +12,7 @@ declare module 'discord-giveaways' {
         MessageReaction,
         Message,
         MessageEmbed,
+        MessageEmbedOptions,
         NewsChannel,
         ThreadChannel
     } from 'discord.js';
@@ -172,7 +173,7 @@ declare module 'discord-giveaways' {
         public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
         public fillInString(string: string): string;
-        public fillInString(embed: MessageEmbed): MessageEmbed | null;
+        public fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
