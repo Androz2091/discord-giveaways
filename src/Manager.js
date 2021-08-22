@@ -49,7 +49,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options || {});
-        
+
         if (init) this._init();
     }
 
@@ -208,7 +208,7 @@ class GiveawaysManager extends EventEmitter {
                 channel.isThread() && !channel .permissionsFor(this.client.user)?.has([
                     (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
                         ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                        : Discord.Permissions.FLAGS.SEND_MESSAGES,
+                        : Discord.Permissions.FLAGS.SEND_MESSAGES
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
@@ -222,7 +222,7 @@ class GiveawaysManager extends EventEmitter {
             }
 
             const validateEmbedColor = async (embedColor) => {
-                try { 
+                try {
                     embedColor = Discord.Util.resolveColor(embedColor);
                     if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
                 } catch {
@@ -353,7 +353,7 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
-            
+
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
                 giveaway.message?.delete();
@@ -585,7 +585,7 @@ class GiveawaysManager extends EventEmitter {
  *
  * @example
  * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
- * // Best used with the "exemptMembers" property of the giveaways 
+ * // Best used with the "exemptMembers" property of the giveaways
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
