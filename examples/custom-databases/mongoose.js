@@ -48,8 +48,8 @@ const giveawaySchema = new mongoose.Schema({
             minutes: String,
             hours: String,
             days: String,
-            pluralS: Boolean,
-        },
+            pluralS: Boolean
+        }
     },
     thumbnail: String,
     hostedBy: String,

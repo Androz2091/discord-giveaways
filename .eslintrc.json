@@ -9,8 +9,9 @@
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "eol-last": ["error", "always"],
-        "prefer-const": ["warn", "any"],
         "comma-dangle": ["error", "never"],
+        "no-trailing-spaces": "error",
+        "prefer-const": "warn",
         "accessor-pairs": "off",
         "no-async-promise-executor": "off",
         "no-unused-vars": "off"
