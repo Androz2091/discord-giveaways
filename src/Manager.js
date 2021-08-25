@@ -25,6 +25,10 @@ class GiveawaysManager extends EventEmitter {
     constructor(client, options, init = true) {
         super();
         if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
+        if (!new Discord.Intents(client.options.intents).has(Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
+            throw new Error('Client is missing the "GUILD_MESSAGE_REACTIONS" intent.');
+        }
+
         /**
          * The Discord Client
          * @type {Discord.Client}
@@ -45,6 +49,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options || {});
+
         if (init) this._init();
     }
 
@@ -201,7 +206,9 @@ class GiveawaysManager extends EventEmitter {
             }
             if (
                 channel.isThread() && !channel .permissionsFor(this.client.user)?.has([
-                    (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD') ? 'MANAGE_THREADS' : 'SEND_MESSAGES',
+                    (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
+                        ? Discord.Permissions.FLAGS.MANAGE_THREADS
+                        : Discord.Permissions.FLAGS.SEND_MESSAGES
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
@@ -215,7 +222,7 @@ class GiveawaysManager extends EventEmitter {
             }
 
             const validateEmbedColor = async (embedColor) => {
-                try { 
+                try {
                     embedColor = Discord.Util.resolveColor(embedColor);
                     if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
                 } catch {
@@ -346,10 +353,10 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
-            
+
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
-                if (giveaway.message) giveaway.message.delete();
+                giveaway.message?.delete();
             }
             this.giveaways = this.giveaways.filter((g) => g.messageId !== messageId);
             await this.deleteGiveaway(messageId);
@@ -467,7 +474,7 @@ class GiveawaysManager extends EventEmitter {
             }
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
             await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message) return;
+            if (!giveaway.message?.channel) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -578,7 +585,7 @@ class GiveawaysManager extends EventEmitter {
  *
  * @example
  * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
- * // Best used with the "exemptMembers" property of the giveaways 
+ * // Best used with the "exemptMembers" property of the giveaways
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);
