@@ -1,5 +1,6 @@
 const { EventEmitter } = require('events');
 const merge = require('deepmerge');
+const serialize = require('serialize-javascript');
 const { writeFile, readFile, exists } = require('fs');
 const { promisify } = require('util');
 const writeFileAsync = promisify(writeFile);
@@ -367,7 +368,7 @@ class GiveawaysManager extends EventEmitter {
     async deleteGiveaway(messageID) {
         await writeFileAsync(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
             'utf-8'
         );
         this.refreshStorage();
@@ -399,19 +400,16 @@ class GiveawaysManager extends EventEmitter {
             // If the file exists, read it
             const storageContent = await readFileAsync(this.options.storage);
             try {
-                const giveaways = await JSON.parse(storageContent.toString());
-                if (Array.isArray(giveaways)) {
-                    return giveaways;
-                } else {
+                const giveaways = await JSON.parse(storageContent.toString(), (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v);
+                if (Array.isArray(giveaways)) return giveaways;
+                else {
                     console.log(storageContent, giveaways);
                     throw new SyntaxError('The storage file is not properly formatted (giveaways is not an array).');
                 }
-            } catch (e) {
-                if (e.message === 'Unexpected end of JSON input') {
+            } catch (err) {
+                if (err.message === 'Unexpected end of JSON input') {
                     throw new SyntaxError('The storage file is not properly formatted (Unexpected end of JSON input).');
-                } else {
-                    throw e;
-                }
+                } else throw err;
             }
         }
     }
@@ -425,7 +423,7 @@ class GiveawaysManager extends EventEmitter {
     async editGiveaway(_messageID, _giveawayData) {
         await writeFileAsync(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
             'utf-8'
         );
         this.refreshStorage();
@@ -441,7 +439,7 @@ class GiveawaysManager extends EventEmitter {
     async saveGiveaway(messageID, giveawayData) {
         await writeFileAsync(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
             'utf-8'
         );
         this.refreshStorage();
