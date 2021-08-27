@@ -47,7 +47,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
                     console.error(err);
                     return reject(err);
                 }
-                const giveaways = res.map((row) => JSON.parse(row.data));
+                const giveaways = res.map(row =>
+                    JSON.parse(row.data, (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v)
+                );
                 resolve(giveaways);
             });
         });
@@ -56,26 +58,34 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageID, giveawayData) {
         return new Promise((resolve, reject) => {
-            sql.query('INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)', [messageID, JSON.stringify(giveawayData)], (err, res) => {
-                if (err) {
-                    console.error(err);
-                    return reject(err);
+            sql.query(
+                'INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)',
+                [messageID, JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v)],
+                (err, res) => {
+                    if (err) {
+                        console.error(err);
+                        return reject(err);
+                    }
+                    resolve(true);
                 }
-                resolve(true);
-            });
+            );
         });
     }
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageID, giveawayData) {
         return new Promise((resolve, reject) => {
-            sql.query('UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?', [JSON.stringify(giveawayData), messageID], (err, res) => {
-                if (err) {
-                    console.error(err);
-                    return reject(err);
+            sql.query(
+                'UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?',
+                [JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v), messageID],
+                (err, res) => {
+                    if (err) {
+                        console.error(err);
+                        return reject(err);
+                    }
+                    resolve(true);
                 }
-                resolve(true);
-            });
+            );
         });
     }
 
