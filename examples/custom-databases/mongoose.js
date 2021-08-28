@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -7,7 +13,7 @@ const Discord = require('discord.js'),
 
 // Connect to the database
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/giveaways', { useFindAndModify: false });
+mongoose.connect('mongodb://localhost/giveaways'); // If you are not using Mongoose 6, add "{ useFindAndModify: false }" as the second argument.
 const db = mongoose.connection;
 
 // Check the connection
@@ -42,8 +48,8 @@ const giveawaySchema = new mongoose.Schema({
             minutes: String,
             hours: String,
             days: String,
-            pluralS: Boolean,
-        },
+            pluralS: Boolean
+        }
     },
     thumbnail: String,
     hostedBy: String,
