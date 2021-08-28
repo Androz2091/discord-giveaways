@@ -270,7 +270,7 @@ class GiveawaysManager extends EventEmitter {
             message.awaitReactions({
                 filter: (reaction) => reaction.emoji.name === giveaway.reaction || reaction.emoji.id === giveaway.reaction,
                 maxUsers: giveaway.winnerCount
-            }).then(() => this.end(giveaway.messageID)).catch(() => {});
+            }).then(() => this.end(giveaway.messageId)).catch(() => {});
         });
     }
 
@@ -498,7 +498,7 @@ class GiveawaysManager extends EventEmitter {
             if (
                 giveaway.isDrop &&
                 giveaway.message.reactions.cache.get(giveaway.reaction)?.count - 1 >= giveaway.winnerCount
-            ) return this.end(giveaway.messageID).catch(() => {});
+            ) return this.end(giveaway.messageId).catch(() => {});
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
@@ -541,7 +541,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
-            if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount) this.end(giveaway.messageID).catch(() => {});
+            if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount) this.end(giveaway.messageId).catch(() => {});
         } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);
     }
 
