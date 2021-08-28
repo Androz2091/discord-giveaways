@@ -474,7 +474,7 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.scheduleAt) {
                 if (giveaway.scheduleAt < Date.now() || giveaway.scheduleAt - Date.now() < this.options.updateCountdownEvery) {
                     setTimeout(async () => {
-                        const channel = await this.client.channels.fetch(giveaway.channelId).catch(() => {}));
+                        const channel = await this.client.channels.fetch(giveaway.channelId).catch(() => {});
                         if (!channel) {
                             this.giveaways = this.giveaways.filter((g) => g.messageId !==  giveaway.messageId);
                             await this.deleteGiveaway(giveaway.messageId);
