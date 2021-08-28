@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -7,7 +13,7 @@ const Discord = require('discord.js'),
 
 // Connect to the database
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/giveaways', { useFindAndModify: false });
+mongoose.connect('mongodb://localhost/giveaways'); // If you are not using Mongoose 6, add "{ useFindAndModify: false }" as the second argument.
 const db = mongoose.connection;
 
 // Check the connection
@@ -42,8 +48,8 @@ const giveawaySchema = new mongoose.Schema({
             minutes: String,
             hours: String,
             days: String,
-            pluralS: Boolean,
-        },
+            pluralS: Boolean
+        }
     },
     thumbnail: String,
     hostedBy: String,
@@ -94,7 +100,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageId, giveawayData) {
         // Find by messageId and update it
-        await giveawayModel.findOneAndUpdate({ messageId: messageId }, giveawayData, { omitUndefined: true }).exec();
+        await giveawayModel.findOneAndUpdate({ messageId }, giveawayData, { omitUndefined: true }).exec();
         // Don't forget to return something!
         return true;
     }
@@ -102,7 +108,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageId) {
         // Find by messageId and delete it
-        await giveawayModel.findOneAndDelete({ messageId: messageId }).exec();
+        await giveawayModel.findOneAndDelete({ messageId }).exec();
         // Don't forget to return something!
         return true;
     }

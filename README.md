@@ -32,11 +32,17 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 ### Launch of the module
 
 Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
-Optional Discord Intent for better performance: `GUILD_MEMBERS`.
+Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -508,11 +514,17 @@ You can use your custom database to save giveaways, instead of the json files (t
 
 To make `discord-giveaways` working with shards, you will need to extend the `GiveawaysManager` class and update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all `GiveawaysManager` synchronize their cache with the updated database.
 
-⚠️ **Note**: If you are using a [custom database](https://github.com/Androz2091/discord-giveaways#custom-database) then you must call (= add to code) `refreshStorage()` at the end of your extended `saveGiveaway`, `editGiveaway` and `deleteGiveaway` methods.
+⚠️ **Note**: If you are using a [custom database](https://github.com/Androz2091/discord-giveaways#custom-database) then you must call (= add to code) `this.refreshStorage()` at the end of your extended `saveGiveaway`, `editGiveaway` and `deleteGiveaway` methods.
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'

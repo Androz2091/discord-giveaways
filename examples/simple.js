@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -74,7 +80,7 @@ client.on('messageCreate', (message) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
-    
+
     if (command === 'end') {
         const messageId = args[0];
         client.giveawaysManager.end(messageId).then(() => {
