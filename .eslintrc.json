@@ -10,7 +10,7 @@
         "semi": ["error", "always"],
         "eol-last": ["error", "always"],
         "comma-dangle": ["error", "never"],
-        "no-trailing-spaces": "error",
+        "no-trailing-spaces": ["error", { "skipBlankLines": true }],
         "prefer-const": "warn",
         "accessor-pairs": "off",
         "no-async-promise-executor": "off",
