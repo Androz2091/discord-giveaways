@@ -693,7 +693,7 @@ class Giveaway extends EventEmitter {
                 } else if (message?.length <= 2000) channel.send(message);
                 resolve(winners);
             } else {
-                channel.send({ 
+                channel.send({
                     content: this.fillInString(options.messages.error.content || options.messages.error),
                     embeds: [this.fillInEmbed(options.messages.error.embed)]
                 });
