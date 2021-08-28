@@ -329,6 +329,12 @@ client.giveawaysManager.start(message.channel, {
 
 **Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
+⚠️ **Note**: because of the special `new Function()` format, external variables which contain [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes) have to be stored in `giveaway.extraData` and have to be accessed with `this.extraData` inside of the function.  
+The reason for this is that, in JavaScript, all numbers are [IEEE double precision](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) floating point numbers, which means that you only have about 16 digits of precision; the remainder of the 64 bits are reserved for the exponent.  
+But snowflakes can have more than 16 digits, which means that if you would access them like in the example above, the last digits of the snowflake would get messed up.  
+_The special format would "convert" the external string snowflake into a number, that is why we talk about digits here._
+
+
 ### Last Chance
 
 ```js
@@ -420,6 +426,11 @@ client.giveawaysManager.start(message.channel, {
 ```
 
 **Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
+
+⚠️ **Note**: because of the special `new Function()` format, external variables which contain [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes) have to be stored in `giveaway.extraData` and have to be accessed with `this.extraData` inside of the function.  
+The reason for this is that, in JavaScript, all numbers are [IEEE double precision](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) floating point numbers, which means that you only have about 16 digits of precision; the remainder of the 64 bits are reserved for the exponent.  
+But snowflakes can have more than 16 digits, which means that if you would access them like in the example above, the last digits of the snowflake would get messed up.  
+_The special format would "convert" the external string snowflake into a number, that is why we talk about digits here._
 
 ## 🇫🇷 Translation
 
