@@ -540,11 +540,6 @@ class GiveawaysManager extends EventEmitter {
     async _init() {
         const rawGiveaways = await this.getAllGiveaways();
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
-        const cacheAllGiveawayChannels = async () => {
-            if (!this.client.readyAt) return setTimeout(cacheAllGiveawayChannels, 100);
-            for (const giveaway of this.giveaways) await this.client.channels.fetch(giveaway.channelID).catch(() => {});
-        };
-        await cacheAllGiveawayChannels();
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.updateCountdownEvery);
