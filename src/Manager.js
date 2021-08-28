@@ -263,12 +263,12 @@ class GiveawaysManager extends EventEmitter {
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed] });
             giveaway.messageId = message.id;
-            await message.react(giveaway.reaction);
+            const reaction = await message.react(giveaway.reaction);
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
             resolve(giveaway);
             message.awaitReactions({
-                filter: (reaction) => reaction.emoji.name === giveaway.reaction || reaction.emoji.id === giveaway.reaction,
+                filter: (r) => r.emoji.name === reaction.emoji.name || r.emoji.id === reaction.emoji.id,
                 maxUsers: giveaway.winnerCount
             }).then(() => this.end(giveaway.messageId)).catch(() => {});
         });
