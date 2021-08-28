@@ -1,5 +1,6 @@
 const { EventEmitter } = require('events');
 const merge = require('deepmerge');
+const serialize = require('serialize-javascript');
 const { writeFile, readFile, access } = require('fs/promises');
 const Discord = require('discord.js');
 const {
@@ -25,6 +26,10 @@ class GiveawaysManager extends EventEmitter {
     constructor(client, options, init = true) {
         super();
         if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
+        if (!new Discord.Intents(client.options.intents).has(Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
+            throw new Error('Client is missing the "GUILD_MESSAGE_REACTIONS" intent.');
+        }
+
         /**
          * The Discord Client
          * @type {Discord.Client}
@@ -46,6 +51,7 @@ class GiveawaysManager extends EventEmitter {
          * @type {GiveawaysManagerOptions}
          */
         this.options = merge(GiveawaysManagerOptions, options || {});
+
         if (init) this._init();
     }
 
@@ -209,7 +215,7 @@ class GiveawaysManager extends EventEmitter {
                     : !channel.permissionsFor(this.client.user)?.has([
                         (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
                             ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                            : Discord.Permissions.FLAGS.SEND_MESSAGES,
+                            : Discord.Permissions.FLAGS.SEND_MESSAGES
                     ]))
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
@@ -223,7 +229,7 @@ class GiveawaysManager extends EventEmitter {
             }
 
             const validateEmbedColor = async (embedColor) => {
-                try { 
+                try {
                     embedColor = Discord.Util.resolveColor(embedColor);
                     if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
                 } catch {
@@ -354,10 +360,10 @@ class GiveawaysManager extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
-            
+
             if (!doNotDeleteMessage) {
                 await giveaway.fetchMessage().catch(() => {});
-                if (giveaway.message) giveaway.message.delete();
+                giveaway.message?.delete();
             }
             this.giveaways = this.giveaways.filter((g) => g.messageId !== messageId);
             await this.deleteGiveaway(messageId);
@@ -374,7 +380,7 @@ class GiveawaysManager extends EventEmitter {
     async deleteGiveaway(messageId) {
         await writeFile(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
             'utf-8'
         );
         this.refreshStorage();
@@ -406,19 +412,16 @@ class GiveawaysManager extends EventEmitter {
             // If the file exists, read it
             const storageContent = await readFile(this.options.storage);
             try {
-                const giveaways = await JSON.parse(storageContent.toString());
-                if (Array.isArray(giveaways)) {
-                    return giveaways;
-                } else {
+                const giveaways = await JSON.parse(storageContent.toString(), (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v);
+                if (Array.isArray(giveaways)) return giveaways;
+                else {
                     console.log(storageContent, giveaways);
                     throw new SyntaxError('The storage file is not properly formatted (giveaways is not an array).');
                 }
-            } catch (e) {
-                if (e.message === 'Unexpected end of JSON input') {
+            } catch (err) {
+                if (err.message === 'Unexpected end of JSON input') {
                     throw new SyntaxError('The storage file is not properly formatted (Unexpected end of JSON input).');
-                } else {
-                    throw e;
-                }
+                } else throw err;
             }
         }
     }
@@ -432,7 +435,7 @@ class GiveawaysManager extends EventEmitter {
     async editGiveaway(_messageId, _giveawayData) {
         await writeFile(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
             'utf-8'
         );
         this.refreshStorage();
@@ -448,7 +451,7 @@ class GiveawaysManager extends EventEmitter {
     async saveGiveaway(messageId, giveawayData) {
         await writeFile(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data)),
+            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
             'utf-8'
         );
         this.refreshStorage();
@@ -617,7 +620,7 @@ class GiveawaysManager extends EventEmitter {
  *
  * @example
  * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
- * // Best used with the "exemptMembers" property of the giveaways 
+ * // Best used with the "exemptMembers" property of the giveaways
  * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
  *     if (!member.roles.cache.get('123456789')) {
  *          reaction.users.remove(member.user);

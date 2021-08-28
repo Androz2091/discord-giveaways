@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
+    "generate-docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
     "type": "git",
@@ -37,15 +37,15 @@
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "discord.js": "^13.0.1",
+    "discord.js": "^13.1.0",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
-    "@types/node": "^14.0.5",
+    "@types/node": "^16.6.0",
     "eslint": "^7.6.0",
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
-    "typescript": "^4.0.2"
+    "typescript": "^4.3.5"
   },
   "engines": {
     "node": ">=16.6.0"

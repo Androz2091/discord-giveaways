@@ -415,7 +415,7 @@ class Giveaway extends EventEmitter {
         // Pick the winner
         if (this.manager.libraryIsEris) {
             var reactionUsers = await this.message.getReaction(this.reaction);
-            if (!reactionUsers.length) return []; 
+            if (!reactionUsers.length) return [];
         } else {
             const reactions = this.message.reactions.cache;
             var reaction =
@@ -460,12 +460,12 @@ class Giveaway extends EventEmitter {
         let rolledWinners;
         if (!userArray || userArray.length <= winnerCount) rolledWinners = users.random(winnerCount);
         else {
-            /** 
+            /**
              * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
             if (this.manager.libraryIsEris) userArray = userArray?.length > users.length ? userArray : users;
-            rolledWinners = Array.from({    
+            rolledWinners = Array.from({
                 length: Math.min(winnerCount, users[this.manager.libraryIsEris ? 'length' : 'size'])
             }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
         }
@@ -517,7 +517,7 @@ class Giveaway extends EventEmitter {
             if (Array.isArray(options.newBonusEntries)) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             if (options.newExtraData) this.extraData = options.newExtraData;
             if (options.newLastChance && typeof options.newLastChance === 'object') this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
-            
+
             await this.manager.editGiveaway(this.messageId, this.data);
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
@@ -538,7 +538,7 @@ class Giveaway extends EventEmitter {
             this.ended = true;
             await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-            
+
             if (this.endAt < this.client[this.manager.libraryIsEris ? 'startTime' : 'readyTimestamp']) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
@@ -553,11 +553,11 @@ class Giveaway extends EventEmitter {
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
-                    
-                const channel = 
+
+                const channel =
                     (
                         (this.manager.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
-                        (this.manager.libraryIsEris ? 
+                        (this.manager.libraryIsEris ?
                             !this.message.channel.permissionsOf(this.client.user.id).has(
                                 (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12)
                                     ? 'manageThreads'
@@ -566,7 +566,7 @@ class Giveaway extends EventEmitter {
                             : !this.message.channel.permissionsFor(this.client.user)?.has([
                                 (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
                                     ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                                    : Discord.Permissions.FLAGS.SEND_MESSAGES,
+                                    : Discord.Permissions.FLAGS.SEND_MESSAGES
                             ]))
                     ) ? this.manager.libraryIsEris
                             ? this.message.channel.guild.channels.get(this.message.channel.parentId)
@@ -579,7 +579,7 @@ class Giveaway extends EventEmitter {
                         this.messages.winMessage
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
-                            .replace('{messageURL}', this.messageURL),
+                            .replace('{messageURL}', this.messageURL)
                     );
                     while (formattedWinners.length >= 2000) {
                         await channel[this.manager.libraryIsEris ? 'createMessage' : 'send'](
@@ -624,7 +624,7 @@ class Giveaway extends EventEmitter {
             const channel =
                 (
                     (this.manager.libraryIsEris ? [10, 11, 12].includes(this.message.channel.type) : this.message.channel.isThread()) &&
-                    (this.manager.libraryIsEris ? 
+                    (this.manager.libraryIsEris ?
                         !this.message.channel.permissionsOf(this.client.user.id).has(
                             (this.message.channel.threadMetadata.locked || !this.message.channel.member && this.message.channel.type === 12)
                                 ? 'manageThreads'
@@ -633,13 +633,13 @@ class Giveaway extends EventEmitter {
                         : !this.message.channel.sendable && !this.message.channel.permissionsFor(this.client.user)?.has([
                             (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
                                 ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                                : Discord.Permissions.FLAGS.SEND_MESSAGES,
+                                : Discord.Permissions.FLAGS.SEND_MESSAGES
                         ]))
                 ) ? this.manager.libraryIsEris
                         ? this.message.channel.guild.channels.get(this.message.channel.parentId)
                         : this.message.channel.parent
                     : this.message.channel;
-          
+
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
@@ -684,7 +684,7 @@ class Giveaway extends EventEmitter {
      * Pauses the giveaway.
      * @param {PauseOptions} [options=giveaway.pauseOptions] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
-     */  
+     */
     pause(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
@@ -699,7 +699,7 @@ class Giveaway extends EventEmitter {
                 if (options.unPauseAfter < Date.now()) {
                     pauseOptions.unPauseAfter = Date.now() + options.unPauseAfter;
                     this.endAt = this.endAt + options.unPauseAfter;
-                } else { 
+                } else {
                     pauseOptions.unPauseAfter = options.unPauseAfter;
                     this.endAt = this.endAt + options.unPauseAfter - Date.now();
                 }
@@ -734,7 +734,7 @@ class Giveaway extends EventEmitter {
             await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
-            
+
             // Update data
             if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause == 'number') {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
