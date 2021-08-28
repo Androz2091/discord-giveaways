@@ -313,7 +313,6 @@ class Giveaway extends EventEmitter {
             endAt: this.endAt,
             scheduleAt: this.scheduleAt,
             ended: this.ended,
-            ended: this.ended,
             winnerCount: this.winnerCount,
             prize: this.prize,
             messages: this.messages,
