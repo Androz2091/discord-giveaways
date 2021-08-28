@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -19,7 +25,7 @@ sql.connect((err) => {
         console.error('Impossible to connect to MySQL server. Code: ' + err.code);
         process.exit(99); // Stop the process if we can't connect to the MySQL server
     } else {
-        console.log('[SQL] Connected to the MySQL server! Connection ID: ' + sql.threadId);
+        console.log('[SQL] Connected to the MySQL server! Connection Id: ' + sql.threadId);
     }
 });
 
@@ -28,7 +34,7 @@ sql.query(`
 	CREATE TABLE IF NOT EXISTS \`giveaways\`
 	(
 		\`id\` INT(1) NOT NULL AUTO_INCREMENT,
-		\`message_id\` VARCHAR(64) NOT NULL,
+		\`message_id\` VARCHAR(20) NOT NULL,
 		\`data\` JSON NOT NULL,
 		PRIMARY KEY (\`id\`)
 	);
@@ -56,11 +62,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
+    async saveGiveaway(messageId, giveawayData) {
         return new Promise((resolve, reject) => {
             sql.query(
                 'INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)',
-                [messageID, JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v)],
+                [messageId, JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v)],
                 (err, res) => {
                     if (err) {
                         console.error(err);
@@ -73,11 +79,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
+    async editGiveaway(messageId, giveawayData) {
         return new Promise((resolve, reject) => {
             sql.query(
                 'UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?',
-                [JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v), messageID],
+                [JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v), messageId],
                 (err, res) => {
                     if (err) {
                         console.error(err);
@@ -90,9 +96,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
+    async deleteGiveaway(messageId) {
         return new Promise((resolve, reject) => {
-            sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageID, (err, res) => {
+            sql.query('DELETE FROM `giveaways` WHERE `message_id` = ?', messageId, (err, res) => {
                 if (err) {
                     console.error(err);
                     return reject(err);

@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client(),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -25,7 +31,7 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     const ms = require('ms'); // npm install ms
     const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
@@ -45,8 +51,8 @@ client.on('message', (message) => {
     }
 
     if (command === 'reroll') {
-        const messageID = args[0];
-        client.giveawaysManager.reroll(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.reroll(messageId).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -54,8 +60,8 @@ client.on('message', (message) => {
     }
 
     if (command === 'edit') {
-        const messageID = args[0];
-        client.giveawaysManager.edit(messageID, {
+        const messageId = args[0];
+        client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
@@ -67,17 +73,17 @@ client.on('message', (message) => {
     }
 
     if (command === 'delete') {
-        const messageID = args[0];
-        client.giveawaysManager.delete(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.delete(messageId).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
-    
+
     if (command === 'end') {
-        const messageID = args[0];
-        client.giveawaysManager.end(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.end(messageId).then(() => {
             message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -85,8 +91,8 @@ client.on('message', (message) => {
     }
 
     if (command === 'pause') {
-        const messageID = args[0];
-        client.giveawaysManager.pause(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.pause(messageId).then(() => {
             message.channel.send('Success! Giveaway paused!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -94,8 +100,8 @@ client.on('message', (message) => {
     }
 
     if (command === 'unpause') {
-        const messageID = args[0];
-        client.giveawaysManager.unpause(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.unpause(messageId).then(() => {
             message.channel.send('Success! Giveaway un paused!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
