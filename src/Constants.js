@@ -156,7 +156,7 @@ exports.GiveawaysManagerOptions = {
  * The reroll method options.
  * @typedef GiveawayRerollOptions
  *
- * @property {number} [winnerCount=this.winnerCount] The number of winners to pick.
+ * @property {number} [winnerCount=giveaway.winnerCount] The number of winners to pick.
  * @property {Object} [messages] The messages used in this method.
  * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are new winners.
  * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
@@ -177,10 +177,11 @@ exports.GiveawayRerollOptions = {
  * @property {string} [newPrize] The new giveaway prize.
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration.
  * @property {number} [setEndTimestamp] The timestamp of the new end date.
- * @property {GiveawayMessages} [newMessages] The new giveaway messages.
+ * @property {GiveawayMessages} [newMessages] The new giveaway messages. Will get merged with the existing object, if there.
  * @property {string} [newThumbnail] The new thumbnail url.
  * @property {any} [newExtraData] The new extra data for this giveaway.
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
+ * @property {LastChanceOptions} [newLastChance] The new options for the last chance system. Will get merged with the existing object, if there.
  */
 exports.GiveawayEditOptions = {};
 
@@ -195,10 +196,10 @@ exports.GiveawayEditOptions = {};
  * @property {GiveawayMessages} messages The giveaway messages.
  * @property {string} prize The giveaway prize.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
- * @property {Discord.Snowflake} channelID The ID of the channel.
- * @property {Discord.Snowflake} guildID The ID of the guild.
- * @property {Discord.Snowflake[]} [winnerIDs] The winner IDs of the giveaway after it ended.
- * @property {Discord.Snowflake} [messageID] The ID of the message.
+ * @property {Discord.Snowflake} channelId The Id of the channel.
+ * @property {Discord.Snowflake} guildId The Id of the guild.
+ * @property {Discord.Snowflake[]} [winnerIds] The winner Ids of the giveaway after it ended.
+ * @property {Discord.Snowflake} [messageId] The Id of the message.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
  * @property {boolean} [botsCanWin] If bots can win the giveaway.
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.

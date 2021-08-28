@@ -32,11 +32,17 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 ### Launch of the module
 
 Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
-Optional Discord Intent for better performance: `GUILD_MEMBERS`.
+Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -96,7 +102,7 @@ client.on('messageCreate', (message) => {
             winnerCount: parseInt(args[1]),
             prize: args.slice(2).join(' ')
         }).then((gData) => {
-            console.log(gData); // {...} (messageID, end date and more)
+            console.log(gData); // {...} (messageId, end date and more)
         });
         // And the giveaway has started!
     }
@@ -128,14 +134,14 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 </a>
 
 #### ⚠ ATTENTION!
-The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageID`of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageID` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
+The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageId`of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageId` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
 
 ```js
 let giveaway = 
 // Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildID === message.guild.id && g.prize === args.join(' ')) ||
-// Search with messageID
-client.giveawaysManager.giveaways.find((g) => g.guildID === message.guild.id && g.messageID === args[0]);
+client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.prize === args.join(' ')) ||
+// Search with messageId
+client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.messageId === args[0]);
 
 // If no giveaway was found
 if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
@@ -149,8 +155,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'reroll') {
-        const messageID = args[0];
-        client.giveawaysManager.reroll(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.reroll(messageId).then(() => {
             message.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -174,8 +180,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'edit') {
-        const messageID = args[0];
-        client.giveawaysManager.edit(messageID, {
+        const messageId = args[0];
+        client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
@@ -192,9 +198,10 @@ client.on('messageCreate', (message) => {
 -   **options.newPrize**: the new prize.  
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages.
--   **options.newExtraData**: the new extra data value for the giveaway.
+-   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.
+-   **options.newExtraData**: the new extra data value for the giveaway
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
+-   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
 **Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
 
@@ -206,8 +213,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'delete') {
-        const messageID = args[0];
-        client.giveawaysManager.delete(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.delete(messageId).then(() => {
             message.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -228,8 +235,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'end') {
-        const messageID = args[0];
-        client.giveawaysManager.end(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.end(messageId).then(() => {
             message.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -246,8 +253,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'pause') {
-        const messageID = args[0];
-        client.giveawaysManager.pause(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.pause(messageId).then(() => {
             message.channel.send('Success! Giveaway paused!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -270,8 +277,8 @@ client.on('messageCreate', (message) => {
     const command = args.shift().toLowerCase();
 
     if (command === 'unpause') {
-        const messageID = args[0];
-        client.giveawaysManager.unpause(messageID).then(() => {
+        const messageId = args[0];
+        client.giveawaysManager.unpause(messageId).then(() => {
             message.channel.send('Success! Giveaway unpaused!');
         }).catch((err) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
@@ -286,8 +293,8 @@ client.on('messageCreate', (message) => {
 // A list of all the giveaways
 const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
-// A list of all the giveaways on the server with ID "1909282092"
-const onServer = client.giveawaysManager.giveaways.filter(g => g.guildID === '1909282092');
+// A list of all the giveaways on the server with Id "1909282092"
+const onServer = client.giveawaysManager.giveaways.filter(g => g.guildId === '1909282092');
 
 // A list of the current active giveaways (not ended)
 const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
@@ -321,7 +328,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
 ### Last Chance
 
@@ -413,7 +420,7 @@ client.giveawaysManager.start(message.channel, {
 });
 ```
 
-**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway class. For example, `this.extraData` or if you need it `this.client`.
+**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
 ## 🇫🇷 Translation
 
@@ -467,7 +474,7 @@ client.giveawaysManager.start(message.channel, {
 And for the `reroll()` function:
 
 ```js
-client.giveawaysManager.reroll(messageID, {
+client.giveawaysManager.reroll(messageId, {
         messages: {
             congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
@@ -489,101 +496,35 @@ You can use your custom database to save giveaways, instead of the json files (t
 
 **⚠️ All the methods should be asynchronous to return a promise!**
 
-Here is an example, using `quick.db`, a SQLite database. The comments in the code below are very important to understand how it works!
-
-Other examples:
-
+<ins>**SQL examples**</ins>
 - [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+- SQLite
+  - [Quick.db](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.db.js)
+  - [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
+
+<ins>**NoSQL examples**</ins>
 - MongoDB
   - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
   - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
-- [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 - Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
   - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
-  - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickreplit.js)
-
-```js
-const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Bot Token'
-    };
-
-// Load quick.db - it's an example of custom database, you can use MySQL, PostgreSQL, etc...
-const db = require('quick.db');
-if (!Array.isArray(db.get('giveaways'))) db.set('giveaways', []);
-
-const { GiveawaysManager } = require('discord-giveaways');
-const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all giveaways which are stored in the database.
-    async getAllGiveaways() {
-        // Get all giveaways from the database
-        return db.get('giveaways');
-    }
-
-    // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
-        // Add the new giveaway to the database
-        db.push('giveaways', giveawayData);
-        // Don't forget to return something!
-        return true;
-    }
-
-    // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
-        // Get all giveaways from the database
-        const giveaways = db.get('giveaways');
-        // Remove the unedited giveaway from the array
-        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Push the edited giveaway into the array
-        newGiveawaysArray.push(giveawayData);
-        // Save the updated array
-        db.set('giveaways', newGiveawaysArray);
-        // Don't forget to return something!
-        return true;
-    }
-
-    // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
-        // Get all giveaways from the database
-        const giveaways = db.get('giveaways');
-        // Remove the giveaway from the array
-        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
-        // Save the updated array
-        db.set('giveaways', newGiveawaysArray);
-        // Don't forget to return something!
-        return true;
-    }
-};
-
-// Create a new instance of your new class
-const manager = new GiveawayManagerWithOwnDatabase(client, {
-    updateCountdownEvery: 10000,
-    default: {
-        botsCanWin: false,
-        embedColor: '#FF0000',
-        embedColorEnd: '#000000',
-        reaction: '🎉'
-    }
-});
-// We now have a giveawaysManager property to access the manager everywhere!
-client.giveawaysManager = manager;
-
-client.on('ready', () => {
-    console.log('I\'m ready!');
-});
-
-client.login(settings.token);
-```
+  - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.replit.js)
 
 ## Support shards
 
 To make `discord-giveaways` working with shards, you will need to extend the `GiveawaysManager` class and update the `refreshStorage()` method. This method should call the `getAllGiveaways()` method for **every** shard, so all `GiveawaysManager` synchronize their cache with the updated database.
 
+⚠️ **Note**: If you are using a [custom database](https://github.com/Androz2091/discord-giveaways#custom-database) then you must call (= add to code) `this.refreshStorage()` at the end of your extended `saveGiveaway`, `editGiveaway` and `deleteGiveaway` methods.
+
 ```js
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'

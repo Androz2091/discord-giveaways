@@ -1,0 +1,19 @@
+{
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "indent": ["error", 4],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "eol-last": ["error", "always"],
+        "comma-dangle": ["error", "never"],
+        "no-trailing-spaces": "error",
+        "prefer-const": "warn",
+        "accessor-pairs": "off",
+        "no-async-promise-executor": "off",
+        "no-unused-vars": "off"
+    }
+}

@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -20,25 +26,25 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
+    async saveGiveaway(messageId, giveawayData) {
         // Add the new giveaway to the database
-        giveawayDB.set(messageID, giveawayData);
+        giveawayDB.set(messageId, giveawayData);
         // Don't forget to return something!
         return true;
     }
 
     // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
+    async editGiveaway(messageId, giveawayData) {
         // Replace the unedited giveaway with the edited giveaway
-        giveawayDB.set(messageID, giveawayData);
+        giveawayDB.set(messageId, giveawayData);
         // Don't forget to return something!
         return true;
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
+    async deleteGiveaway(messageId) {
         // Remove the giveaway from the database
-        giveawayDB.delete(messageID);
+        giveawayDB.delete(messageId);
         // Don't forget to return something!
         return true;
     }
