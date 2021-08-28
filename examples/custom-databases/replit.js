@@ -1,5 +1,11 @@
 const Discord = require('discord.js'),
-    client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] }),
+    client = new Discord.Client({
+        intents: [
+            Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGES,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        ]
+    }),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
@@ -21,7 +27,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageID, giveawayData) {
+    async saveGiveaway(messageId, giveawayData) {
         // Get all giveaways from the database
         const giveawaysArray = await db.get('giveaways');
         // Push the new giveaway into the array
@@ -33,11 +39,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageID, giveawayData) {
+    async editGiveaway(messageId, giveawayData) {
         // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
         // Remove the unedited giveaway from the array
-        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
+        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageId !== messageId);
         // Push the edited giveaway into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
@@ -47,11 +53,11 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     }
 
     // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageID) {
+    async deleteGiveaway(messageId) {
         // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
         // Remove the giveaway from the array
-        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageID !== messageID);
+        const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageId !== messageId);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
         // Don't forget to return something!
