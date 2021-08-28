@@ -80,7 +80,7 @@ client.on('messageCreate', (message) => {
             message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
-    
+
     if (command === 'end') {
         const messageId = args[0];
         client.giveawaysManager.end(messageId).then(() => {
