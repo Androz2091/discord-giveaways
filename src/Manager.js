@@ -280,7 +280,7 @@ class GiveawaysManager extends EventEmitter {
                 if (forceOptions.winnerCount && (!Number.isInteger(forceOptions.winnerCount) || forceOptions.winnerCount < 1)) {
                     return reject(`forceOptions.winnerCount is not a positive integer. (val=${forceOptions.winnerCount})`);
                 }
-                
+
                 if (!forceOptions.channel?.id || !forceOptions.channel.isText() || forceOptions.channel.deleted) {
                     return reject(`forceOptions.channel is not a valid text based channel. (val=${forceOptions.channel})`);
                 }
@@ -288,7 +288,7 @@ class GiveawaysManager extends EventEmitter {
                     forceOptions.channel.isThread() && !forceOptions.channel.permissionsFor(this.client.user)?.has([
                         (forceOptions.channel.locked || !forceOptions.channel.joined && forceOptions.channel.type === 'GUILD_PRIVATE_THREAD')
                             ? 'MANAGE_THREADS'
-                            : 'SEND_MESSAGES',
+                            : 'SEND_MESSAGES'
                     ])
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
@@ -310,7 +310,7 @@ class GiveawaysManager extends EventEmitter {
                 if ([GiveawayMessages.giveawayEnded, closestGiveaway?.messages?.giveawayEnded].includes(message.content)) {
                     return reject('The giveaway is already ended. Use "manager.reroll(messageId, { winnerCount: 1 }, { force: true, channel: message.channel })" instead.');
                 }
-                
+
                 let winnerCount = forceOptions.winnerCount;
                 if (!winnerCount) {
                     if (message.embeds[0].footer?.text?.length) {
@@ -326,7 +326,7 @@ class GiveawaysManager extends EventEmitter {
                 }
 
                 if (Math.abs(message.createdTimestamp - closestGiveaway?.startAt) > forceOptions.closestGiveawayThreshold) closestGiveaway = null;
-                
+
                 giveaway = new Giveaway(this, {
                     startAt: message.createdTimestamp,
                     endAt: message.embeds[0].timestamp || Date.now(),
@@ -393,7 +393,7 @@ class GiveawaysManager extends EventEmitter {
                     forceOptions.channel.isThread() && !forceOptions.channel.permissionsFor(this.client.user)?.has([
                         (forceOptions.channel.locked || !forceOptions.channel.joined && forceOptions.channel.type === 'GUILD_PRIVATE_THREAD')
                             ? 'MANAGE_THREADS'
-                            : 'SEND_MESSAGES',
+                            : 'SEND_MESSAGES'
                     ])
                 ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${forceOptions.channel.id})`);
 
@@ -415,9 +415,9 @@ class GiveawaysManager extends EventEmitter {
                 if ([GiveawayMessages.giveaway, closestGiveaway?.messages?.giveaway].includes(message.content)) {
                     return reject('The giveaway is not ended. Use "manager.end(messageId, { force: true, channel: message.channel })" instead.');
                 }
-                
+
                 if (Math.abs(message.createdTimestamp - closestGiveaway?.startAt) > forceOptions.closestGiveawayThreshold) closestGiveaway = null;
-                
+
                 giveaway = new Giveaway(this, {
                     ended: true,
                     startAt: message.createdTimestamp,

@@ -160,7 +160,7 @@ exports.GiveawaysManagerOptions = {
  * @property {boolean} [force=false] If the ending or reroll should be forced, when the giveaway is not found.
  * @property {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway that is forced is.
  * @property {boolean} [saveGiveawayInDatabase=true] If the giveaway that is forced should be saved in the runtime giveaway array and the database.
- * @property {number} [closestGiveawayThreshold=86400000] How big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is considered invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages). 
+ * @property {number} [closestGiveawayThreshold=86400000] How big the "giveaway.startAt" difference to the closest giveaway can be, before the closest giveaway is considered invalid. Default is 1 day. If there is no valid closest giveaway then "giveaway.messages" and "giveaway.embedColor|giveaway.embedColorEnd" will have default values (Set this property to "0" to always use default messages).
  */
 exports.GiveawayForceOptions = {
     force: false,
