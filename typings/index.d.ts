@@ -70,7 +70,7 @@ declare module 'discord-giveaways' {
         default?: {
             botsCanWin?: boolean,
             exemptPermissions?: PermissionResolvable[],
-            exemptMembers?: (member?: GuildMember) => boolean | Promise<boolean>,
+            exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>,
             embedColor?: ColorResolvable,
             embedColorEnd?: ColorResolvable,
             reaction?: EmojiIdentifierResolvable,
@@ -84,7 +84,7 @@ declare module 'discord-giveaways' {
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: (member?: GuildMember) => boolean | Promise<boolean>;
+        exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
         bonusEntries?: BonusEntry[];
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
