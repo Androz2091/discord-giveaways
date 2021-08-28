@@ -543,7 +543,7 @@ class Giveaway extends EventEmitter {
                         this.messages.winMessage
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
-                            .replace('{messageURL}', this.messageURL),
+                            .replace('{messageURL}', this.messageURL)
                     );
                     while (formattedWinners.length >= 2000) {
                         await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
