@@ -505,6 +505,7 @@ You can use your custom database to save giveaways, instead of the json files (t
 - MongoDB
   - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
   - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
+- [Apache CouchDB - Nano](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/nano.js)
 - Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
   - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
   - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.replit.js)
