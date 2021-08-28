@@ -293,10 +293,10 @@ client.on('messageCreate', (message) => {
 const allGiveaways = client.giveawaysManager.giveaways; // [ {Giveaway}, {Giveaway} ]
 
 // A list of all the giveaways on the server with Id "1909282092"
-const onServer = client.giveawaysManager.giveaways.filter(g => g.guildId === '1909282092');
+const onServer = client.giveawaysManager.giveaways.filter((g) => g.guildId === '1909282092');
 
 // A list of the current active giveaways (not ended)
-const notEnded = client.giveawaysManager.giveaways.filter(g => !g.ended);
+const notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 ```
 
 ### Exempt Members

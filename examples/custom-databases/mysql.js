@@ -53,7 +53,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
                     console.error(err);
                     return reject(err);
                 }
-                const giveaways = res.map(row =>
+                const giveaways = res.map((row) =>
                     JSON.parse(row.data, (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v)
                 );
                 resolve(giveaways);
