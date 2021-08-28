@@ -234,7 +234,7 @@ class GiveawaysManager extends EventEmitter {
             const giveaway = new Giveaway(this, {
                 startAt: options.scheduleAt || Date.now(),
                 endAt: (options.scheduleAt || Date.now()) + options.time,
-                scheduleAt: 
+                scheduleAt:
                     (!isNaN(options.scheduleAt) && typeof options.scheduleAt === 'number' && options.scheduleAt > Date.now())
                         ? options.scheduleAt
                         : undefined,
