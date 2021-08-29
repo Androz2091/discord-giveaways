@@ -476,7 +476,8 @@ class GiveawaysManager extends EventEmitter {
             // second case: the giveaway is a drop and has already one reaction
             if (giveaway.isDrop) {
                 giveaway.message = await giveaway.fetchMessage().catch(() => {});
-                const reaction = giveaway.message?.reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name) ||
+                const reaction =
+                    giveaway.message?.reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name) ||
                     giveaway.message?.reactions.get(Discord.Util.resolvePartialEmoji(giveaway.reaction)?.id);
                 if (reaction?.count - 1 >= giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
             }
