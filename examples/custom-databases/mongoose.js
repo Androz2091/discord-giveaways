@@ -37,7 +37,7 @@ const giveawaySchema = new mongoose.Schema({
         giveawayEnded: String,
         inviteToParticipate: String,
         timeRemaining: String,
-        winMessage: String,
+        winMessage: mongoose.Mixed,
         embedFooter: mongoose.Mixed,
         noWinner: String,
         winners: String,
@@ -75,7 +75,12 @@ const giveawaySchema = new mongoose.Schema({
         embedColor: mongoose.Mixed,
         durationAfterPause: Number
     },
-    isDrop: Boolean
+    isDrop: Boolean,
+    allowedMentions: {
+        parse: [String],
+        users: [String],
+        roles: [String]
+    }
 });
 
 // Create the model

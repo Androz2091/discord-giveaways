@@ -7,38 +7,26 @@ const Discord = require('discord.js');
  * @property {string} [giveaway='🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
  * @property {string} [giveawayEnded='🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
- * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below "inviteToParticipate" in the giveaway embed. "{duration}" will be replaced automatically with the time remaining.
+ * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended.
+ * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
  * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
  * @property {string|EmbedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
- * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there is no valid winner for the giveaway.
+ * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
- * @property {string} [hostedBy='Hosted by: {user}'] Below the "inviteToParticipate" message, in the description of the embed.
- * @property {Object} [units]
- * @property {string} [units.seconds='seconds'] The name of the "seconds" unit.
- * @property {string} [units.minutes='minutes'] The name of the "minutes" unit.
- * @property {string} [units.hours='hours'] The name of the "hours" unit.
- * @property {string} [units.days='days'] The name of the "days" unit.
- * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
+ * @property {string} [hostedBy='Hosted by: {this.hostedBy}'] Below the "inviteToParticipate" message, in the description of the embed.
  */
 exports.GiveawayMessages = {
     giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
     giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
     inviteToParticipate: 'React with 🎉 to participate!',
-    timeRemaining: 'Time remaining: **{duration}**',
-    winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
+    winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
+    drawing: 'Drawing: {timestamp}',
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'winner(s)',
     endedAt: 'Ended at',
-    hostedBy: 'Hosted by: {user}',
-    units: {
-        seconds: 'seconds',
-        minutes: 'minutes',
-        hours: 'hours',
-        days: 'days',
-        pluralS: false
-    }
+    hostedBy: 'Hosted by: {this.hostedBy}'
 };
 
 /**
@@ -47,6 +35,14 @@ exports.GiveawayMessages = {
  *
  * @property {string} [text] The text of the footer. If the value is a empty string then "embedFooter" will not show up in the giveaway embed.
  * @property {string} [iconURL] The icon URL of the footer.
+ */
+
+/**
+ * Message object.
+ * @typedef MessageObject
+ *
+ * @property {string} [content] The raw message
+ * @property {Discord.MessageEmbed|Discord.MessageEmbedOptions} [embed] The embed
  */
 
 /**
@@ -70,6 +66,7 @@ exports.GiveawayMessages = {
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
  * @property {Boolean} [isDrop] If the giveaway is a drop, or not. Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
+ * @property {Discord.MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the giveaway messages content.
  */
 exports.GiveawayStartOptions = {};
 
@@ -158,13 +155,13 @@ exports.GiveawaysManagerOptions = {
  *
  * @property {number} [winnerCount=giveaway.winnerCount] The number of winners to pick.
  * @property {Object} [messages] The messages used in this method.
- * @property {string} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}'] The message used if there are new winners.
- * @property {string} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
+ * @property {string|MessageObject} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}'] The message used if there are new winners.
+ * @property {string|MessageObject} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
  */
 exports.GiveawayRerollOptions = {
     winnerCount: null,
     messages: {
-        congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
+        congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
         error: 'No valid participations, no new winner(s) can be chosen!'
     }
 };
@@ -212,5 +209,6 @@ exports.GiveawayEditOptions = {};
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
  * @property {Boolean} [isDrop] If the giveaway is a drop, or not. Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
+ * @property {Discord.MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the giveaway messages content.
  */
 exports.GiveawayData = {};

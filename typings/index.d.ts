@@ -11,6 +11,9 @@ declare module 'discord-giveaways' {
         TextChannel,
         MessageReaction,
         Message,
+        MessageEmbed,
+        MessageEmbedOptions,
+        MessageMentionOptions,
         NewsChannel,
         ThreadChannel
     } from 'discord.js';
@@ -27,7 +30,7 @@ declare module 'discord-giveaways' {
         public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway>;
         public deleteGiveaway(messageId: Snowflake): Promise<boolean>;
         public edit(messageId: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageId: Snowflake): Promise<GuildMember[]>;
+        public end(messageID: Snowflake, noWinnerMessage?: string): Promise<GuildMember[]>;
         public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
         public pause(messageId: Snowflake, options: PauseOptions): Promise<Giveaway>;
@@ -93,25 +96,24 @@ declare module 'discord-giveaways' {
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
         isDrop?: boolean;
+        allowedMentions?: MessageMentionOptions;
     }
     interface GiveawaysMessages {
         giveaway?: string;
         giveawayEnded?: string;
         inviteToParticipate?: string;
         timeRemaining?: string;
-        winMessage?: string;
+        winMessage?: string | MessageObject;
+        drawing?: string;
         embedFooter?: string | { text?: string; iconURL?: string; };
         noWinner?: string;
         winners?: string;
         endedAt?: string;
         hostedBy?: string;
-        units?: {
-            seconds?: string;
-            minutes?: string;
-            hours?: string;
-            days?: string;
-            pluralS?: false;
-        };
+    }
+    interface MessageObject {
+        content?: string;
+        embed?: MessageEmbed;
     }
     interface GiveawaysManagerEvents {
         giveawayDeleted: [Giveaway];
@@ -140,6 +142,7 @@ declare module 'discord-giveaways' {
         public startAt: number;
         public winnerCount: number;
         public winnerIds: Snowflake[];
+        public allowedMentions?: MessageMentionOptions;
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
@@ -153,7 +156,6 @@ declare module 'discord-giveaways' {
         readonly remainingTime: number;
         readonly duration: number;
         readonly messageURL: string;
-        readonly remainingTimeText: string;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
@@ -162,12 +164,14 @@ declare module 'discord-giveaways' {
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(): Promise<GuildMember[]>;
+        public end(noWinnerMessage?: string): Promise<GuildMember[]>;
         public fetchMessage(): Promise<Message>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
         public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
+        public fillInString(string: string): string;
+        public fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
@@ -183,8 +187,8 @@ declare module 'discord-giveaways' {
     interface GiveawayRerollOptions {
         winnerCount?: number;
         messages?: {
-            congrat?: string;
-            error?: string;
+            congrat?: string | MessageObject;
+            error?: string | MessageObject;
         };
     }
     interface GiveawayData {
@@ -210,5 +214,6 @@ declare module 'discord-giveaways' {
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
         isDrop?: boolean;
+        allowedMentions?: MessageMentionOptions;
     }
 }
