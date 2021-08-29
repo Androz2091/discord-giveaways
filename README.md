@@ -463,7 +463,7 @@ client.giveawaysManager.start(interaction.channel, {
 });
 ```
 
-You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all these messages (except for the "units" object).
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all these messages.
 
 And for the `reroll()` function:
 

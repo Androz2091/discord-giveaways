@@ -48,7 +48,7 @@ class Giveaway extends EventEmitter {
          * The end date of the giveaway.
          * @type {Number}
          */
-        this.endAt = options.endAt === null ? Infinity : options.endAt;
+        this.endAt = options.endAt ??= Infinity;
         /**
          * Whether the giveaway is ended.
          * @type {Boolean}

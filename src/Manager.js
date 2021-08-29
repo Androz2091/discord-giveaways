@@ -519,7 +519,7 @@ class GiveawaysManager extends EventEmitter {
 
             if (needUpdate || this.options.forceUpdateEvery) {
                 giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
-                const embed = this.generateMainEmbed(giveaway, );
+                const embed = this.generateMainEmbed(giveaway);
                 giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
             }
         });
