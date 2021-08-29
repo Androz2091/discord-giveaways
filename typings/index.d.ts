@@ -79,7 +79,7 @@ declare module 'discord-giveaways' {
         };
     }
     interface GiveawayStartOptions {
-        time: number;
+        duration: number;
         winnerCount: number;
         prize: string;
         hostedBy?: User;
