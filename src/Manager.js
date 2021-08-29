@@ -256,10 +256,12 @@ class GiveawaysManager extends EventEmitter {
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
             resolve(giveaway);
-            message.awaitReactions({
-                filter: (r) => r.emoji.name === reaction.emoji.name || r.emoji.id === reaction.emoji.id,
-                maxUsers: giveaway.winnerCount
-            }).then(() => this.end(giveaway.messageId)).catch(() => {});
+            if (giveaway.isDrop) {
+                message.awaitReactions({
+                    filter: (r) => r.emoji.name === reaction.emoji.name || r.emoji.id === reaction.emoji.id,
+                    maxUsers: giveaway.winnerCount
+                }).then(() => this.end(giveaway.messageId)).catch(() => {});
+            }
         });
     }
 
