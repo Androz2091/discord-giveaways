@@ -317,16 +317,16 @@ class Giveaway extends EventEmitter {
     fillInEmbed(embed) {
         if (!embed || typeof embed !== 'object') return null;
         return new Discord.MessageEmbed(embed)
-            .setAuthor(this.fillInString(embed.author?.name), embed.author?.iconURL, embed.author?.url)
-            .setDescription(this.fillInString(embed.description))
-            .setFooter(this.fillInString(embed.footer?.text), embed.footer?.iconURL)
-            .setTitle(this.fillInString(embed.title))
+            .setAuthor(this.fillInString(embed.author?.name) ?? '', embed.author?.iconURL, embed.author?.url)
+            .setDescription(this.fillInString(embed.description) ?? '')
+            .setFooter(this.fillInString(embed.footer?.text) ?? '', embed.footer?.iconURL)
+            .setTitle(this.fillInString(embed.title) ?? '')
             .spliceFields(
                 0,
                 embed.fields?.length || 0,
                 embed.fields?.map((f) => {
-                    f.name = this.fillInString(f.name);
-                    f.value = this.fillInString(f.value);
+                    f.name = this.fillInString(f.name) ?? '';
+                    f.value = this.fillInString(f.value) ?? '';
                     return f;
                 }) || []
             );
@@ -550,8 +550,7 @@ class Giveaway extends EventEmitter {
                 
                 if (message?.length > 2000) {
                     channel.send({
-                        content: this.messages.winMessage
-                            .substr(0, this.messages.winMessage.indexOf('{winners}')),
+                        content: winMessage.substr(0, winMessage.indexOf('{winners}')),
                         allowedMentions: this.allowedMentions
                     });
                     while (formattedWinners.length >= 2000) {
@@ -563,8 +562,7 @@ class Giveaway extends EventEmitter {
                     }
                     channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
                     channel.send({
-                        content: this.messages.winMessage
-                            .substr(this.messages.winMessage.indexOf('{winners}') + 9),
+                        content: winMessage.substr(winMessage.indexOf('{winners}') + 9),
                         allowedMentions: this.allowedMentions
                     });
                 }
