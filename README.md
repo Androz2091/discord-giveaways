@@ -53,7 +53,6 @@ const { GiveawaysManager } = require('discord-giveaways');
 // Starts updating currents giveaways
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
-    updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
         embedColor: '#FF0000',

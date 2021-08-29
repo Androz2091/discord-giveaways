@@ -13,7 +13,7 @@ const {
     PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
-const { validateEmbedColor } = require('./utils.js');
+const { validateEmbedColor, embedEqual } = require('./utils.js');
 
 /**
  * Giveaways Manager
@@ -521,10 +521,16 @@ class GiveawaysManager extends EventEmitter {
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
-            // regular case: the giveaway is not ended and we need to update it. the most common case
-            giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
-            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+            // regular case: the giveaway is not ended and we need to update it
+            const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
+            const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+            const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.messages.giveaway;
+
+            if (needUpdate || this.options.updateCountdownEvery) {
+                giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
+                const embed = this.generateMainEmbed(giveaway, );
+                giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+            }
         });
     }
 
@@ -570,7 +576,7 @@ class GiveawaysManager extends EventEmitter {
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
-        }, this.options.updateCountdownEvery);
+        }, this.options.updateCountdownEvery || 15_000);
         this.ready = true;
 
         if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {
