@@ -51,7 +51,8 @@
   },
   "devDependencies": {
     "@types/node": "^16.6.0",
-    "eslint": "^7.6.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
     "typescript": "^4.4.2"
