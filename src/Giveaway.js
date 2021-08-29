@@ -291,10 +291,10 @@ class Giveaway extends EventEmitter {
     /**
      * Filles in a string with giveaway properties.
      * @param {string} string The string that should get filled in.
-     * @returns {String} The filled in string.
+     * @returns {String|null} The filled in string.
      */
     fillInString(string) {
-        if (typeof string !== 'string') return '';
+        if (typeof string !== 'string') return null;
         [...new Set(string.match(/\{[^{}]*(?:[^{}]*)*\}/g))]
             .filter((match) => match?.slice(1, -1).trim() !== '')
             .forEach((match) => {
@@ -410,10 +410,8 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
         // Pick the winner
-        const reactions = this.message.reactions.cache;
-        const reaction =
-            reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(this.reaction)?.name) ||
-            reactions.get(Discord.Util.resolvePartialEmoji(this.reaction)?.id);
+        let reaction = Discord.Util.resolvePartialEmoji(this.reaction);
+        reaction = this.message.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction?.name || reaction?.id));
         if (!reaction) return [];
         const guild = this.message.guild;
         // Fetch guild members
@@ -548,7 +546,7 @@ class Giveaway extends EventEmitter {
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
-                const message = winMessage.replace('{winners}', formattedWinners) || null;
+                const message = winMessage?.replace('{winners}', formattedWinners);
                 
                 if (message?.length > 2000) {
                     channel.send({
@@ -606,9 +604,9 @@ class Giveaway extends EventEmitter {
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
                 const embed = this.fillInEmbed(noWinnerMessage?.embed);
-                if (message.length || embed !== null) {
+                if (message || embed) {
                     channel.send({
-                        content: message || null,
+                        content: message,
                         embeds: embed ? [embed] : null,
                         allowedMentions: this.allowedMentions
                     });
@@ -662,7 +660,7 @@ class Giveaway extends EventEmitter {
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
-                const message = congratMessage.replace('{winners}', formattedWinners) || null;
+                const message = congratMessage?.replace('{winners}', formattedWinners);
 
                 if (message?.length > 2000) {
                     channel.send({
