@@ -75,15 +75,7 @@ After that, giveaways that are not yet completed will start to be updated again 
 You can pass an options object to customize the giveaways. Here is a list of them:
 
 -   **client**: the discord client (your discord bot instance).
--   **options.storage**: the json file that will be used to store giveaways.
--   **options.updateCountdownEvery**: the number of milliseconds it will take to update the timers.
--   **options.endedGiveawaysLifetime**: duration for which the ended giveaways remain in the database after they are ended. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
--   **options.default.botsCanWin**: if bots can win giveaways.
--   **options.default.exemptPermissions**: an array of discord permissions. Members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.default.embedColor**: a hexadecimal color for the embeds of giveaways when they are running.
--   **options.default.embedColorEnd**: a hexadecimal color for the embeds of giveaways when they have ended.
--   **options.default.reaction**: the reaction that users will have to react to in order to participate.
--   **options.default.lastChance**: the last chance system parameters. [Usage example for the giveaway object](https://github.com/Androz2091/discord-giveaways#last-chance)
+-   **[and many other optional parameters to customize the manager - read documentation](https://discord-giveaways.js.org/global.html#GiveawaysManagerOptions)**
 
 ### Start a giveaway
 
