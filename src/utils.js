@@ -27,7 +27,7 @@ const embedEqual = (embed1, embed2) => {
         if (embed1.fields[i].inline !== embed2.fields[i]?.inline) return false;
     }
     return true;
-}
+};
 
 module.exports = {
     validateEmbedColor,
