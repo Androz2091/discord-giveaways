@@ -146,7 +146,7 @@ client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id
 client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.messageId === interaction.options.getString('query'));
 
 // If no giveaway was found
-if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
+if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
 ```
 
 ### Reroll a giveaway
