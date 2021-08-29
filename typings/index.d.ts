@@ -170,7 +170,7 @@ declare module 'discord-giveaways' {
         public roll(winnerCount?: number): Promise<GuildMember[]>;
         public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
-        public fillInString(string: string): string;
+        public fillInString(string: string): string | null;
         public fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
     }
     interface GiveawayEditOptions {
