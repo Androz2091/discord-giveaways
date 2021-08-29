@@ -10,7 +10,8 @@ const {
     LastChanceOptions,
     BonusEntry,
     PauseOptions,
-    MessageObject
+    MessageObject,
+    DEFAULT_CHECK_INTERVAL
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 const { validateEmbedColor } = require('./utils.js');
@@ -30,6 +31,11 @@ class Giveaway extends EventEmitter {
          * @type {GiveawaysManager}
          */
         this.manager = manager;
+        /**
+         * The end timeout for this giveaway
+         * @type {NodeJS.Timeout?}
+         */
+        this.endTimeout = null;
         /**
          * The Discord client.
          * @type {Discord.Client}
@@ -289,6 +295,17 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Ensure that an end timeout is created for this giveaway
+     * if it will end soon
+     * @returns {NodeJS.Timeout}
+     */
+    ensureEndTimeout () {
+        if (this.endTimeout) return;
+        if (!(this.remainingTime < (this.manager.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL))) return;
+        this.endTimeout = setTimeout(() => this.manager.end.call(this.manager, this.messageId).catch(() => {}), this.remainingTime)
+    }
+
+    /**
      * Filles in a string with giveaway properties.
      * @param {string} string The string that should get filled in.
      * @returns {String|null} The filled in string.
@@ -495,7 +512,11 @@ class Giveaway extends EventEmitter {
             if (options.newExtraData) this.extraData = options.newExtraData;
 
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop) this.winnerCount = options.newWinnerCount;
-            if (!isNaN(options.addTime) && typeof options.addTime === 'number' && !this.isDrop) this.endAt = this.endAt + options.addTime;
+            if (!isNaN(options.addTime) && typeof options.addTime === 'number' && !this.isDrop) {
+                this.endAt = this.endAt + options.addTime;
+                if (this.endTimeout) clearTimeout(this.endTimeout);
+                this.ensureEndTimeout();
+            }
             if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number' && !this.isDrop) this.endAt = options.setEndTimestamp;
             if (Array.isArray(options.newBonusEntries) && !this.isDrop) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
@@ -742,6 +763,7 @@ class Giveaway extends EventEmitter {
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is already paused.');
+            if (this.endTimeout) clearTimeout(this.endTimeout);
 
             // Update data
             const pauseOptions = this.options.pauseOptions || {};
@@ -786,8 +808,10 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
 
+            this.ensureEndTimeout();
+
             // Update data
-            if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause == 'number') {
+            if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause === 'number') {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
             this.options.pauseOptions.isPaused = false;

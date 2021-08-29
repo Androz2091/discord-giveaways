@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 
+exports.DEFAULT_CHECK_INTERVAL = 15_000;
+
 /**
  * The Giveaway messages that are used to display the giveaway content.
  * @typedef GiveawayMessages

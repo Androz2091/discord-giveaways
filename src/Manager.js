@@ -11,12 +11,11 @@ const {
     GiveawaysManagerOptions,
     GiveawayStartOptions,
     PauseOptions,
-    MessageObject
+    MessageObject,
+    DEFAULT_CHECK_INTERVAL
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 const { validateEmbedColor, embedEqual } = require('./utils.js');
-
-const DEFAULT_CHECK_INTERVAL = 15_000;
 
 /**
  * Giveaways Manager
@@ -515,9 +514,7 @@ class GiveawaysManager extends EventEmitter {
 
             // fifth case: the giveaway will be ended soon, we add a timeout so it ends at the right time
             // and it does not need to wait for _checkGiveaway to be called again
-            if (giveaway.remainingTime < (this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) {
-                setTimeout(() => this.end.call(this, giveaway.messageId).catch(() => {}), giveaway.remainingTime);
-            }
+            giveaway.ensureEndTimeout();
 
             // sixth case: the giveaway will be in the last chance state soon, we add a timeout so it's updated at the right time
             // and it does not need to wait for _checkGiveaway to be called again

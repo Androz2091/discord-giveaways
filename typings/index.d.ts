@@ -144,6 +144,7 @@ declare module 'discord-giveaways' {
         public winnerCount: number;
         public winnerIds: Snowflake[];
         public allowedMentions?: MessageMentionOptions;
+        private endTimeout?: NodeJS.Timeout;
 
         // getters calculated using default manager options
         readonly exemptPermissions: PermissionResolvable[];
@@ -163,6 +164,9 @@ declare module 'discord-giveaways' {
         readonly pauseOptions: PauseOptions;
         readonly isDrop: boolean;
 
+        private ensureEndTimeout(): void;
+        private fillInString(string: string): string | null;
+        private fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
@@ -171,8 +175,6 @@ declare module 'discord-giveaways' {
         public roll(winnerCount?: number): Promise<GuildMember[]>;
         public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
-        public fillInString(string: string): string | null;
-        public fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
