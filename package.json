@@ -3,6 +3,17 @@
   "version": "5.0.0",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
+  "exports": {
+    ".": [
+      {
+        "require": "./index.js",
+        "import": "./esm.mjs"
+      },
+      "./index.js"
+    ],
+    "./": "./",
+    "./esm": "./esm.mjs"
+  },
   "types": "typings/index.d.ts",
   "files": [
     "src/",

@@ -1,21 +1,18 @@
 {
     "compilerOptions": {
-      "strict": true,
-      "moduleResolution": "node",
-      "declaration": false,
-      "removeComments": false,
-      "alwaysStrict": true,
-      "pretty": false,
-      "module": "commonjs",
-      "target": "es2019",
-      "lib": [
-        "esnext",
-        "esnext.array",
-        "esnext.asynciterable",
-        "esnext.intl",
-        "esnext.symbol"
-      ],
-      "sourceMap": false,
-      "skipDefaultLibCheck": true
-    }
-  }
+        "target": "es2020",
+        "module": "commonjs",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "moduleResolution": "node",
+        "lib": ["es2020"]
+    },
+    "files": ["./typings/index.d.ts"]
+}
