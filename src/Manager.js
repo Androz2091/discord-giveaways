@@ -13,6 +13,7 @@ const {
     PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
+const { validateEmbedColor } = require('./utils.js');
 
 /**
  * Giveaways Manager
@@ -206,7 +207,7 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (
-                channel.isThread() && !channel .permissionsFor(this.client.user)?.has([
+                channel.isThread() && !channel.permissionsFor(this.client.user)?.has([
                     (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
                         ? Discord.Permissions.FLAGS.MANAGE_THREADS
                         : Discord.Permissions.FLAGS.SEND_MESSAGES
@@ -221,15 +222,6 @@ class GiveawaysManager extends EventEmitter {
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
-
-            const validateEmbedColor = async (embedColor) => {
-                try {
-                    embedColor = Discord.Util.resolveColor(embedColor);
-                    if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
-                } catch {
-                    return false;
-                }
-            };
 
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),

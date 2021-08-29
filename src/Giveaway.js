@@ -12,6 +12,7 @@ const {
     PauseOptions
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
+const { validateEmbedColor } = require('./utils.js');
 
 /**
  * Represents a Giveaway.
@@ -657,13 +658,9 @@ class Giveaway extends EventEmitter {
                 pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
-            let embedColor;
-            try {
-                embedColor = Discord.Util.resolveColor(options.embedColor);
-            } catch {
-                embedColor = null;
+            if (validateEmbedColor(options.embedColor)) {
+                pauseOptions.embedColor = options.embedColor;
             }
-            if (!isNaN(embedColor) && typeof embedColor === 'number') pauseOptions.embedColor = options.embedColor;
             pauseOptions.isPaused = true;
             this.options.pauseOptions = pauseOptions;
 
