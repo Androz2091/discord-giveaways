@@ -84,21 +84,29 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.messages.embedFooter.iconURL
             )
             .setDescription(
-                (giveaway.pauseOptions.isPaused
-                    ? giveaway.pauseOptions.content + '\n\n'
-                    : lastChanceEnabled
-                        ? giveaway.lastChance.content + '\n\n'
-                        : '') +
-                    giveaway.messages.inviteToParticipate +
-                    '\n' +
-                    giveaway.messages.drawing.replace(
-                        '{timestamp}',
-                        giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
+                giveaway.isDrop
+                ? giveaway.messages.dropMessage
+                : (
+                    (
+                        giveaway.pauseOptions.isPaused
+                            ? giveaway.pauseOptions.content + '\n\n'
+                            : (
+                                lastChanceEnabled
+                                    ? giveaway.lastChance.content + '\n\n'
+                                    : ''
+                            )
                     ) +
+                        giveaway.messages.inviteToParticipate +
+                        '\n' +
+                        giveaway.messages.drawing.replace(
+                            '{timestamp}',
+                            giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
+                        )
+                ) +
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             )
             .setThumbnail(giveaway.thumbnail);
-        if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
+        if (giveaway.endAt !== Infinity && giveaway.endAt) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
         return giveaway.fillInEmbed(embed);
     }
 
@@ -209,17 +217,17 @@ class GiveawaysManager extends EventEmitter {
                         : Discord.Permissions.FLAGS.SEND_MESSAGES
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
-            if (isNaN(options.duration) || typeof options.duration !== 'number' || options.duration < 1) {
-                return reject(`options.duration is not a positive number. (val=${options.duration})`);
-            }
             if (typeof options.prize !== 'string' || options.prize.length > 256) {
                 return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
             }
-            if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
-                return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
-            }
             if (options.isDrop && typeof options.isDrop !== 'boolean') {
                 return reject(`options.isDrop is not a boolean. (val=${options.isDrop})`);
+            }
+            if (!options.isDrop && (isNaN(options.duration) || typeof options.duration !== 'number' || options.duration < 1)) {
+                return reject(`options.duration is not a positive number. (val=${options.duration})`);
+            }
+            if (!options.isDrop && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
+                return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
 
             const giveaway = new Giveaway(this, {

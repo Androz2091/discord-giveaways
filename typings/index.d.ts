@@ -79,9 +79,9 @@ declare module 'discord-giveaways' {
         };
     }
     interface GiveawayStartOptions {
-        duration: number;
-        winnerCount: number;
         prize: string;
+        winnerCount: number;
+        duration?: number; // can be null for drops
         hostedBy?: User;
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
@@ -105,6 +105,7 @@ declare module 'discord-giveaways' {
         timeRemaining?: string;
         winMessage?: string | MessageObject;
         drawing?: string;
+        dropMessage?: string;
         embedFooter?: string | { text?: string; iconURL?: string; };
         noWinner?: string;
         winners?: string;
