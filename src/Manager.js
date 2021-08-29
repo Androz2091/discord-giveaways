@@ -253,6 +253,7 @@ class GiveawaysManager extends EventEmitter {
                 extraData: options.extraData,
                 lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
                 pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined,
+                allowedMentions: (options.allowedMentions && typeof options.allowedMentions === 'object') ? options.allowedMentions : undefined,
                 isDrop: options.isDrop
             });
 
