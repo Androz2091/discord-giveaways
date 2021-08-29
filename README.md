@@ -88,19 +88,18 @@ You can pass an options object to customize the giveaways. Here is a list of the
 ### Start a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const ms = require('ms'); // npm install ms
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'start-giveaway') {
-        // g!start-giveaway 2d 1 Awesome prize!
+    const ms = require('ms');
+
+    if (interaction.isCommand() && interaction.commandName === 'start-giveaway') {
+        // /start-giveaway 2d 1 Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
-        client.giveawaysManager.start(message.channel, {
-            time: ms(args[0]),
-            winnerCount: parseInt(args[1]),
-            prize: args.slice(2).join(' ')
+        client.giveawaysManager.start(interaction.channel, {
+            time: ms(interaction.options.getString('duration')),
+            winnerCount: parseInt(interaction.options.getInteger('winner_count')),
+            prize: interaction.options.getString('prize')
         }).then((gData) => {
             console.log(gData); // {...} (messageId, end date and more)
         });
@@ -138,9 +137,9 @@ The command examples below (reroll, edit delete, end) can be executed on any ser
 ```js
 let giveaway = 
 // Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.prize === args.join(' ')) ||
+client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.prize === interaction.options.getString('query')) ||
 // Search with messageId
-client.giveawaysManager.giveaways.find((g) => g.guildId === message.guild.id && g.messageId === args[0]);
+client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.messageId === interaction.options.getString('query'));
 
 // If no giveaway was found
 if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
@@ -149,16 +148,14 @@ if (!giveaway) return message.channel.send('Unable to find a giveaway for `'+ ar
 ### Reroll a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'reroll') {
-        const messageId = args[0];
+    if (interaction.isCommand() && interaction.commandName === 'reroll') {
+        const messageId = interaction.options.getString('message_id');
         client.giveawaysManager.reroll(messageId).then(() => {
-            message.channel.send('Success! Giveaway rerolled!');
+            interaction.channel.send('Success! Giveaway rerolled!');
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -174,20 +171,18 @@ client.on('messageCreate', (message) => {
 ### Edit a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'edit') {
-        const messageId = args[0];
+    if (interaction.isCommand() && interaction.commandName === 'edit') {
+        const messageId = interaction.options.getString('message_id');
         client.giveawaysManager.edit(messageId, {
             addTime: 5000,
             newWinnerCount: 3,
             newPrize: 'New Prize!'
         }).then(() => {
-            message.channel.send('Success! Giveaway updated!');
+            interaction.channel.send('Success! Giveaway updated!');
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -207,16 +202,14 @@ client.on('messageCreate', (message) => {
 ### Delete a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'delete') {
-        const messageId = args[0];
+    if (interaction.isCommand() && interaction.commandName === 'delete') {
+        const messageId = interaction.options.getString('message_id');
         client.giveawaysManager.delete(messageId).then(() => {
-            message.channel.send('Success! Giveaway deleted!');
+            interaction.channel.send('Success! Giveaway deleted!');
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -229,16 +222,14 @@ client.on('messageCreate', (message) => {
 ### End a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'end') {
-        const messageId = args[0];
+    if (interaction.isCommand() && interaction.commandName === 'end') {
+        const messageId = interaction.options.getString('message_id');
         client.giveawaysManager.end(messageId).then(() => {
-            message.channel.send('Success! Giveaway ended!');
+            interaction.channel.send('Success! Giveaway ended!');
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -247,16 +238,14 @@ client.on('messageCreate', (message) => {
 ### Pause a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'pause') {
-        const messageId = args[0];
+    if (interaction.isCommand() && interaction.commandName === 'pause') {
+        const messageId = interaction.options.getString('message_id');
         client.giveawaysManager.pause(messageId).then(() => {
-            message.channel.send('Success! Giveaway paused!');
+            interaction.channel.send('Success! Giveaway paused!');
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -271,16 +260,14 @@ client.on('messageCreate', (message) => {
 ### Unpause a giveaway
 
 ```js
-client.on('messageCreate', (message) => {
-    const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+client.on('interactionCreate', (interaction) => {
 
-    if (command === 'unpause') {
-        const messageId = args[0];
+    if (interaction.isCommand() && interaction.commandName === 'unpause') {
+        const messageId = interaction.options.getString('message_id');
         client.giveawaysManager.unpause(messageId).then(() => {
-            message.channel.send('Success! Giveaway unpaused!');
+            interaction.channel.send('Success! Giveaway unpaused!');
         }).catch((err) => {
-            message.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
         });
     }
 });
@@ -306,7 +293,7 @@ const notEnded = client.giveawaysManager.giveaways.filter((g) => !g.ended);
 Function to filter members. If true is returned, the member will not be able to win the giveaway.
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -320,7 +307,7 @@ client.giveawaysManager.start(message.channel, {
 ```js
 const roleName = 'Nitro Boost';
 
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -340,7 +327,7 @@ _The special format would "convert" the external string snowflake into a number,
 ### Last Chance
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
@@ -365,7 +352,7 @@ client.giveawaysManager.start(message.channel, {
 ### Pause Options
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
@@ -390,7 +377,7 @@ client.giveawaysManager.start(message.channel, {
 ### Bonus Entries
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -413,7 +400,7 @@ client.giveawaysManager.start(message.channel, {
 const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
 
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
@@ -457,7 +444,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 For example:
 
 ```js
-client.giveawaysManager.start(message.channel, {
+client.giveawaysManager.start(interaction.channel, {
     time: ms(args[0]),
     winnerCount: parseInt(args[1]),
     prize: args.slice(2).join(' '),
