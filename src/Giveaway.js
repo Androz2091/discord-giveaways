@@ -352,7 +352,6 @@ class Giveaway extends EventEmitter {
                 }
                 return reject('Unable to fetch message with Id ' + this.messageId + '.' + tryLater ? ' Try later!' : '');
             }
-            this.message = message;
             resolve(message);
         });
     }
@@ -487,7 +486,7 @@ class Giveaway extends EventEmitter {
     edit(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
-            await this.fetchMessage().catch(() => {});
+            this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
 
             // Update data
@@ -520,7 +519,7 @@ class Giveaway extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
             this.ended = true;
-            await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
+            this.message ??= await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
 
             if (this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
@@ -610,7 +609,7 @@ class Giveaway extends EventEmitter {
     reroll(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (!this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is not ended.');
-            await this.fetchMessage().catch(() => {});
+            this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
             options = merge(GiveawayRerollOptions, options);
@@ -703,7 +702,7 @@ class Giveaway extends EventEmitter {
     pause(options = {}) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
-            await this.fetchMessage().catch(() => {});
+            this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is already paused.');
 
@@ -742,7 +741,7 @@ class Giveaway extends EventEmitter {
     unpause() {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
-            await this.fetchMessage().catch(() => {});
+            this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
 

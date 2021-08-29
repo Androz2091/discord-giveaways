@@ -362,7 +362,7 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
 
             if (!doNotDeleteMessage) {
-                await giveaway.fetchMessage().catch(() => {});
+                giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                 giveaway.message?.delete();
             }
             this.giveaways = this.giveaways.filter((g) => g.messageId !== messageId);
@@ -515,16 +515,16 @@ class GiveawaysManager extends EventEmitter {
             // and it does not need to wait for _checkGiveaway to be called again
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(async () => {
-                    await giveaway.fetchMessage().catch(() => {});
+                    giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
                     giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
             // regular case: the giveaway is not ended and we need to update it. the most common case
-            if (!giveaway.message) await giveaway.fetchMessage().catch(() => {});
+            giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+            giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
         });
     }
 
