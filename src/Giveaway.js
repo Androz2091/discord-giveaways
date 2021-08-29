@@ -505,9 +505,10 @@ class Giveaway extends EventEmitter {
 
     /**
      * Ends the giveaway.
+     * @param {string} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winner(s).
      */
-    end() {
+    end(noWinnerMessage = null) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
             this.ended = true;
@@ -560,6 +561,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
+                if (typeof noWinnerMessage === 'string') this.channel.send(noWinnerMessage);
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
                 this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
                 resolve([]);

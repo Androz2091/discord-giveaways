@@ -160,19 +160,20 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway
+     * @param {string} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
      * manager.end('664900661003157510');
      */
-    end(messageId) {
+    end(messageID, noWinnerMessage = null) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
 
             giveaway
-                .end()
+                .end(noWinnerMessage)
                 .then((winners) => {
                     this.emit('giveawayEnded', giveaway, winners);
                     resolve(winners);

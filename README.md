@@ -286,6 +286,8 @@ client.on('messageCreate', (message) => {
 });
 ```
 
+- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.
+
 ### Fetch giveaways
 
 ```js
