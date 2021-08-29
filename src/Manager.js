@@ -13,7 +13,9 @@ const {
     PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
-const { validateEmbedColor } = require('./utils.js');
+const { validateEmbedColor, embedEqual } = require('./utils.js');
+
+const DEFAULT_CHECK_INTERVAL = 15_000;
 
 /**
  * Giveaways Manager
@@ -496,13 +498,13 @@ class GiveawaysManager extends EventEmitter {
 
             // fifth case: the giveaway will be ended soon, we add a timeout so it ends at the right time
             // and it does not need to wait for _checkGiveaway to be called again
-            if (giveaway.remainingTime < this.options.updateCountdownEvery) {
+            if (giveaway.remainingTime < (this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) {
                 setTimeout(() => this.end.call(this, giveaway.messageId).catch(() => {}), giveaway.remainingTime);
             }
 
             // sixth case: the giveaway will be in the last chance state soon, we add a timeout so it's updated at the right time
             // and it does not need to wait for _checkGiveaway to be called again
-            if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
+            if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < (this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) {
                 setTimeout(async () => {
                     giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
@@ -510,10 +512,16 @@ class GiveawaysManager extends EventEmitter {
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
-            // regular case: the giveaway is not ended and we need to update it. the most common case
-            giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
-            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+            // regular case: the giveaway is not ended and we need to update it
+            const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
+            const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
+            const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.messages.giveaway;
+
+            if (needUpdate || this.options.forceUpdateEvery) {
+                giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
+                const embed = this.generateMainEmbed(giveaway, );
+                giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+            }
         });
     }
 
@@ -559,7 +567,7 @@ class GiveawaysManager extends EventEmitter {
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
-        }, this.options.updateCountdownEvery);
+        }, this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL);
         this.ready = true;
 
         if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {

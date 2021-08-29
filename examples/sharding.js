@@ -24,7 +24,6 @@ const GiveawayManagerWithShardSupport = class extends GiveawaysManager {
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithShardSupport(client, {
     storage: './storage.json',
-    updateCountdownEvery: 10000,
     default: {
         botsCanWin: false,
         embedColor: '#FF0000',

@@ -66,7 +66,7 @@ declare module 'discord-giveaways' {
     }
     interface GiveawaysManagerOptions {
         storage?: string;
-        updateCountdownEvery?: number;
+        forceUpdateEvery?: number;
         endedGiveawaysLifetime?: number;
         default?: {
             botsCanWin?: boolean,
