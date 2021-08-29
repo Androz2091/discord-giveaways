@@ -7,12 +7,11 @@ const Discord = require('discord.js');
  * @property {string} [giveaway='🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
  * @property {string} [giveawayEnded='🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
- * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended.
+ * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended. "{winners}" will be replaced automatically with the mentions of the giveaway winners.
  * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
- * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
- * @property {string|EmbedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
+ * @property {string|EmbedFooterObject} [embedFooter='{this.winnerCount} winner(s) • Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
- * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
+ * @property {string} [winners='Winner(s):'] Displayed in the giveaway embed before the winners.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {string} [hostedBy='Hosted by: {this.hostedBy}'] Below the "inviteToParticipate" message, in the description of the embed.
  */
@@ -22,9 +21,9 @@ exports.GiveawayMessages = {
     inviteToParticipate: 'React with 🎉 to participate!',
     winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
     drawing: 'Drawing: {timestamp}',
-    embedFooter: 'Powered by the discord-giveaways package',
+    embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
-    winners: 'winner(s)',
+    winners: 'Winner(s):',
     endedAt: 'Ended at',
     hostedBy: 'Hosted by: {this.hostedBy}'
 };

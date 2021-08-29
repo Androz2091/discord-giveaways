@@ -434,7 +434,8 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
--   **options.messages.winners**: simply the word "winner" in your language.
+-   **options.messages.hostedBy**: the message to display the host of the giveaway.
+-   **options.messages.winners**: simply the expression "winner(s):" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
 
 For example:
@@ -454,10 +455,10 @@ client.giveawaysManager.start(interaction.channel, {
         drawing: 'Drawing: {timestamp}',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
-        embedFooter: 'Powered by the discord-giveaways package',
+        embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {this.hostedBy}',
-        winners: 'winner(s)',
+        winners: 'Winner(s):',
         endedAt: 'Ended at',
     }
 });

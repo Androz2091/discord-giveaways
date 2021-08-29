@@ -73,13 +73,11 @@ class GiveawaysManager extends EventEmitter {
                         : giveaway.embedColor
             )
             .setFooter(
-                `${giveaway.winnerCount} ${giveaway.messages.winners}${
-                    typeof giveaway.messages.embedFooter === 'object'
-                        ? giveaway.messages.embedFooter.text?.length > 0
-                            ? ' • ' + giveaway.messages.embedFooter.text
-                            : ''
-                        : ' • ' + giveaway.messages.embedFooter
-                }`,
+                typeof giveaway.messages.embedFooter === 'object'
+                    ? giveaway.messages.embedFooter.text?.length > 0
+                        ? giveaway.messages.embedFooter.text
+                        : ''
+                    : giveaway.messages.embedFooter,
                 giveaway.messages.embedFooter.iconURL
             )
             .setDescription(
@@ -111,16 +109,7 @@ class GiveawaysManager extends EventEmitter {
         let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
 
         const descriptionString = (formattedWinners) => {
-            const winnersString =
-                giveaway.messages.winners.substr(0, 1).toUpperCase() +
-                giveaway.messages.winners.substr(1, giveaway.messages.winners.length) +
-                ': ' +
-                formattedWinners;
-
-            return (
-                winnersString +
-                (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
-            );
+            return giveaway.messages.winners + formattedWinners + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '');
         };
 
         for (
