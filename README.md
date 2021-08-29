@@ -181,7 +181,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 -   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
-**Note**: to reduce giveaway duration, define `addDuration` with a negative number! For example `addDuration: -5000` will reduce giveaway duration by 5 seconds!
+**Note**: to reduce giveaway duration, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway duration by 5 seconds!
 
 ### Delete a giveaway
 
