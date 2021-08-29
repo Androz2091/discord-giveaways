@@ -75,6 +75,7 @@ const giveawaySchema = new mongoose.Schema({
         embedColor: mongoose.Mixed,
         durationAfterPause: Number
     },
+    isDrop: Boolean,
     allowedMentions: {
         parse: [String],
         users: [String],

@@ -95,6 +95,7 @@ declare module 'discord-giveaways' {
         extraData?: any;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
+        isDrop?: boolean;
         allowedMentions?: MessageMentionOptions;
     }
     interface GiveawaysMessages {
@@ -159,6 +160,7 @@ declare module 'discord-giveaways' {
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
         readonly pauseOptions: PauseOptions;
+        readonly isDrop: boolean;
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -211,6 +213,7 @@ declare module 'discord-giveaways' {
         extraData?: any;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
+        isDrop?: boolean;
         allowedMentions?: MessageMentionOptions;
     }
 }

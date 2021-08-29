@@ -226,6 +226,9 @@ class GiveawaysManager extends EventEmitter {
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
+            if (options.isDrop && typeof options.isDrop !== 'boolean') {
+                return reject(`options.isDrop is not a boolean. (val=${options.isDrop})`);
+            }
 
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
@@ -250,16 +253,21 @@ class GiveawaysManager extends EventEmitter {
                 extraData: options.extraData,
                 lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
                 pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined,
-                allowedMentions: (options.allowedMentions && typeof options.allowedMentions === 'object') ? options.allowedMentions : undefined
+                isDrop: options.isDrop
             });
 
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions });
             message.react(giveaway.reaction);
             giveaway.messageId = message.id;
+            const reaction = await message.react(giveaway.reaction);
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
             resolve(giveaway);
+            message.awaitReactions({
+                filter: (r) => r.emoji.name === reaction.emoji.name || r.emoji.id === reaction.emoji.id,
+                maxUsers: giveaway.winnerCount
+            }).then(() => this.end(giveaway.messageId)).catch(() => {});
         });
     }
 
@@ -482,6 +490,10 @@ class GiveawaysManager extends EventEmitter {
                     Date.now() < giveaway.pauseOptions.unPauseAfter
                 ) this.unpause(giveaway.messageId).catch(() => {});
             }
+            if (
+                giveaway.isDrop &&
+                giveaway.message.reactions.cache.get(giveaway.reaction)?.count - 1 >= giveaway.winnerCount
+            ) return this.end(giveaway.messageId).catch(() => {});
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
@@ -525,6 +537,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
+            if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount) this.end(giveaway.messageId).catch(() => {});
         } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);
     }
 

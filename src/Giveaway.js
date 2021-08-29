@@ -208,6 +208,14 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * If the giveaway is a drop, or not. Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
+     * @type {Boolean}
+     */
+    get isDrop() {
+        return this.options.isDrop || false;
+    }
+
+    /**
      * The exemptMembers function of the giveaway.
      * @type {?Function}
      */
@@ -274,6 +282,7 @@ class Giveaway extends EventEmitter {
             extraData: this.extraData,
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions,
+            isDrop: this.options.isDrop || undefined,
             allowedMentions: this.allowedMentions
         };
     }
@@ -425,7 +434,7 @@ class Giveaway extends EventEmitter {
 
         // Bonus Entries
         let userArray;
-        if (this.bonusEntries.length) {
+        if (!this.isDrop && this.bonusEntries.length) {
             userArray = [...users.values()]; // Copy all users once
             for (const user of userArray.slice()) {
                 const isUserValidEntry = await this.checkWinnerEntry(user);
