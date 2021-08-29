@@ -532,10 +532,7 @@ class Giveaway extends EventEmitter {
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 await this.message.edit({ content: this.fillInString(this.messages.giveawayEnded), embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
-                let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
-                const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
-                const message = winMessage.replace('{winners}', formattedWinners) || null;
-
+                
                 const channel =
                     this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
                         (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
@@ -545,7 +542,11 @@ class Giveaway extends EventEmitter {
                         ? this.message.channel.parent
                         : this.message.channel;
 
-                if (messageString.length <= 2000) channel.send({ content: messageString, allowedMentions: this.allowedMentions });
+                let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+                const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
+                const message = winMessage.replace('{winners}', formattedWinners) || null;
+                
+                if (message.length <= 2000) channel.send({ content: message, allowedMentions: this.allowedMentions });
                 else {
                     channel.send({
                         content: this.messages.winMessage
