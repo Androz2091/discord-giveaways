@@ -194,7 +194,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<Giveaway>} The created giveaway.
      *
      * @example
-     * manager.start(message.channel, {
+     * manager.start(interaction.channel, {
      *      prize: 'Free Steam Key',
      *      // Giveaway will last 10 seconds
      *      duration: 10000,

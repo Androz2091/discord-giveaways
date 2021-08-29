@@ -31,7 +31,7 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
-Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
+Required Discord Intents: `GUILDS` and `GUILD_MESSAGE_REACTIONS`.  
 Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
@@ -39,8 +39,8 @@ const Discord = require('discord.js'),
     client = new Discord.Client({
         intents: [
             Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGES,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Discord.Intents.FLAGS.GUILD_MEMBERS // optional, for better performance
         ]
     }),
     settings = {
@@ -519,8 +519,9 @@ const Discord = require('discord.js'),
     client = new Discord.Client({
         intents: [
             Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
             Discord.Intents.FLAGS.GUILD_MESSAGES,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+            Discord.Intents.FLAGS.GUILD_MEMBERS // not required, but recommended
         ]
     }),
     settings = {
