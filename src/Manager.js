@@ -465,6 +465,8 @@ class GiveawaysManager extends EventEmitter {
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
         this.giveaways.forEach(async (giveaway) => {
+
+            // first case: giveaway is ended and we need to check if it should be deleted
             if (giveaway.ended) {
                 if (
                     !isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number' &&
@@ -475,7 +477,14 @@ class GiveawaysManager extends EventEmitter {
                 }
                 return;
             }
-            if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
+
+            // second case: the giveaway is a drop and has already one reaction
+            if (
+                giveaway.isDrop &&
+                giveaway.message.reactions.cache.get(giveaway.reaction)?.count - 1 >= giveaway.winnerCount
+            ) return this.end(giveaway.messageId).catch(() => {});
+
+            // third case: the giveawat is paused and we should check whether it should be unpaused
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -488,17 +497,21 @@ class GiveawaysManager extends EventEmitter {
                 if (
                     !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
                     Date.now() < giveaway.pauseOptions.unPauseAfter
-                ) this.unpause(giveaway.messageId).catch(() => {});
+                ) return this.unpause(giveaway.messageId).catch(() => {});
             }
-            if (
-                giveaway.isDrop &&
-                giveaway.message.reactions.cache.get(giveaway.reaction)?.count - 1 >= giveaway.winnerCount
-            ) return this.end(giveaway.messageId).catch(() => {});
-            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+
+            // fourth case: giveaway should be ended right now. this case should only happen after a restart
+            // because otherwise, the giveaway would have been ended already (using the next case)
+            if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
+
+            // fifth case: the giveaway will be ended soon, we add a timeout so it ends at the right time
+            // and it does not need to wait for _checkGiveaway to be called again
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
                 setTimeout(() => this.end.call(this, giveaway.messageId).catch(() => {}), giveaway.remainingTime);
             }
+
+            // sixth case: the giveaway will be in the last chance state soon, we add a timeout so it's updated at the right time
+            // and it does not need to wait for _checkGiveaway to be called again
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
                 setTimeout(async () => {
                     await giveaway.fetchMessage().catch(() => {});
@@ -506,6 +519,11 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
+
+            // regular case: the giveaway is not ended and we need to update it. the most common case
+            if (!giveaway.message) await giveaway.fetchMessage().catch(() => {});
+            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
+            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
         });
     }
 
