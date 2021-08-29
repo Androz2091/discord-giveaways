@@ -503,7 +503,11 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message.edit({ content: this.messages.giveaway, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
+                this.message.edit({
+                    content: this.fillInString(this.messages.giveaway),
+                    embeds: [embed],
+                    allowedMentions: this.allowedMentions
+                }).catch(() => {});
             }
             resolve(this);
         });
@@ -651,7 +655,7 @@ class Giveaway extends EventEmitter {
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 await this.message.edit({
-                    content: this.messages.giveawayEnded,
+                    content: this.fillInString(this.messages.giveawayEnded),
                     embeds: [embed],
                     allowedMentions: this.allowedMentions
                 }).catch(() => {});
@@ -758,7 +762,11 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({ content: this.messages.giveaway, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
+            this.message.edit({
+                content: this.fillInString(this.messages.giveaway),
+                embeds: [embed],
+                allowedMentions: this.allowedMentions
+            }).catch(() => {});
             resolve(this);
         });
     }
@@ -782,7 +790,11 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({ content: this.messages.giveaway, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
+            this.message.edit({
+                content: this.fillInString(this.messages.giveaway),
+                embeds: [embed],
+                allowedMentions: this.allowedMentions
+            }).catch(() => {});
             resolve(this);
         });
     }

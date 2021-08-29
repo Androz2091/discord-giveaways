@@ -250,7 +250,11 @@ class GiveawaysManager extends EventEmitter {
             });
 
             const embed = this.generateMainEmbed(giveaway);
-            const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions });
+            const message = await channel.send({
+                content: giveaway.fillInString(giveaway.messages.giveaway),
+                embeds: [embed],
+                allowedMentions: giveaway.allowedMentions
+            });
             giveaway.messageId = message.id;
             const reaction = await message.react(giveaway.reaction);
             giveaway.message = reaction.message;
@@ -513,7 +517,11 @@ class GiveawaysManager extends EventEmitter {
                 setTimeout(async () => {
                     giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+                    giveaway.message?.edit({
+                        content: giveaway.fillInString(giveaway.messages.giveaway),
+                        embeds: [embed],
+                        allowedMentions: giveaway.allowedMentions
+                    }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
@@ -521,10 +529,14 @@ class GiveawaysManager extends EventEmitter {
             const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
-            const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.messages.giveaway;
+            const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
-                giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [updatedEmbed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+                giveaway.message?.edit({
+                    content: giveaway.fillInString(giveaway.messages.giveaway),
+                    embeds: [updatedEmbed],
+                    allowedMentions: giveaway.allowedMentions
+                }).catch(() => {});
             }
         });
     }
