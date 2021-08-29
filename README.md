@@ -96,10 +96,14 @@ client.on('interactionCreate', (interaction) => {
         // /start-giveaway 2d 1 Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
+        const time = interaction.options.getString('time');
+        const winnerCount = interaction.options.getInteger('winner_count');
+        const prize = interaction.options.getString('prize');
+
         client.giveawaysManager.start(interaction.channel, {
-            time: ms(interaction.options.getString('duration')),
-            winnerCount: parseInt(interaction.options.getInteger('winner_count')),
-            prize: interaction.options.getString('prize')
+            time: ms(time),
+            winnerCount,
+            prize
         }).then((gData) => {
             console.log(gData); // {...} (messageId, end date and more)
         });
