@@ -25,7 +25,7 @@ sql.connect((err) => {
         console.error('Impossible to connect to MySQL server. Code: ' + err.code);
         process.exit(99); // Stop the process if we can't connect to the MySQL server
     } else {
-        console.log('[SQL] Connected to the MySQL server! Connection Id: ' + sql.threadId);
+        console.log('[SQL] Connected to the MySQL server! Connection ID: ' + sql.threadId);
     }
 });
 
@@ -53,7 +53,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
                     console.error(err);
                     return reject(err);
                 }
-                const giveaways = res.map(row =>
+                const giveaways = res.map((row) =>
                     JSON.parse(row.data, (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v)
                 );
                 resolve(giveaways);
