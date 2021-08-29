@@ -12,6 +12,7 @@ const {
     PauseOptions
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
+const { validateEmbedColor } = require('./utils.js');
 
 /**
  * Represents a Giveaway.
@@ -240,57 +241,6 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * Gets the content of the giveaway.
-     * @type {string}
-     * @readonly
-     */
-    get remainingTimeText() {
-        if (this.endAt === Infinity) return this.messages.timeRemaining.replace('{duration}', 'Infinity');
-        const roundTowardsZero = this.remainingTime > 0 ? Math.floor : Math.ceil;
-        // Gets days, hours, minutes and seconds
-        const days = roundTowardsZero(this.remainingTime / 86400000),
-            hours = roundTowardsZero(this.remainingTime / 3600000) % 24,
-            minutes = roundTowardsZero(this.remainingTime / 60000) % 60;
-        let seconds = roundTowardsZero(this.remainingTime / 1000) % 60;
-        // Increment seconds if equal to zero
-        if (seconds === 0) seconds++;
-        // Whether values are inferior to zero
-        const isDay = days > 0,
-            isHour = hours > 0,
-            isMinute = minutes > 0;
-        const dayUnit =
-                days < 2 && (this.messages.units.pluralS || this.messages.units.days.endsWith('s'))
-                    ? this.messages.units.days.substr(0, this.messages.units.days.length - 1)
-                    : this.messages.units.days,
-            hourUnit =
-                hours < 2 && (this.messages.units.pluralS || this.messages.units.hours.endsWith('s'))
-                    ? this.messages.units.hours.substr(0, this.messages.units.hours.length - 1)
-                    : this.messages.units.hours,
-            minuteUnit =
-                minutes < 2 && (this.messages.units.pluralS || this.messages.units.minutes.endsWith('s'))
-                    ? this.messages.units.minutes.substr(0, this.messages.units.minutes.length - 1)
-                    : this.messages.units.minutes,
-            secondUnit =
-                seconds < 2 && (this.messages.units.pluralS || this.messages.units.seconds.endsWith('s'))
-                    ? this.messages.units.seconds.substr(0, this.messages.units.seconds.length - 1)
-                    : this.messages.units.seconds;
-        // Generates a first pattern
-        const pattern =
-            (!isDay ? '' : `{days} ${dayUnit}, `) +
-            (!isHour ? '' : `{hours} ${hourUnit}, `) +
-            (!isMinute ? '' : `{minutes} ${minuteUnit}, `) +
-            `{seconds} ${secondUnit}`;
-        // Format the pattern with the right values
-        const content = this.messages.timeRemaining
-            .replace('{duration}', pattern)
-            .replace('{days}', days.toString())
-            .replace('{hours}', hours.toString())
-            .replace('{minutes}', minutes.toString())
-            .replace('{seconds}', seconds.toString());
-        return content;
-    }
-
-    /**
      * The raw giveaway object for this giveaway.
      * @type {GiveawayData}
      */
@@ -510,9 +460,10 @@ class Giveaway extends EventEmitter {
 
     /**
      * Ends the giveaway.
+     * @param {string} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winner(s).
      */
-    end() {
+    end(noWinnerMessage = null) {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
             this.ended = true;
@@ -570,6 +521,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
+                if (typeof noWinnerMessage === 'string') this.channel.send(noWinnerMessage);
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
                 this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
                 resolve([]);
@@ -673,13 +625,9 @@ class Giveaway extends EventEmitter {
                 pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
-            let embedColor;
-            try {
-                embedColor = Discord.Util.resolveColor(options.embedColor);
-            } catch {
-                embedColor = null;
+            if (validateEmbedColor(options.embedColor)) {
+                pauseOptions.embedColor = options.embedColor;
             }
-            if (!isNaN(embedColor) && typeof embedColor === 'number') pauseOptions.embedColor = options.embedColor;
             pauseOptions.isPaused = true;
             this.options.pauseOptions = pauseOptions;
 

@@ -13,6 +13,7 @@ const {
     PauseOptions
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
+const { validateEmbedColor } = require('./utils.js');
 
 /**
  * Giveaways Manager
@@ -89,7 +90,10 @@ class GiveawaysManager extends EventEmitter {
                         : '') +
                     giveaway.messages.inviteToParticipate +
                     '\n' +
-                    giveaway.remainingTimeText +
+                    giveaway.messages.drawing.replace(
+                        '{timestamp}',
+                        giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
+                    ) +
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
             .setThumbnail(giveaway.thumbnail);
@@ -159,19 +163,20 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway
+     * @param {Discord.Snowflake} messageID The message ID of the giveaway
+     * @param {string} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
      * manager.end('664900661003157510');
      */
-    end(messageId) {
+    end(messageID, noWinnerMessage = null) {
         return new Promise(async (resolve, reject) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
 
             giveaway
-                .end()
+                .end(noWinnerMessage)
                 .then((winners) => {
                     this.emit('giveawayEnded', giveaway, winners);
                     resolve(winners);
@@ -206,7 +211,7 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (
-                channel.isThread() && !channel .permissionsFor(this.client.user)?.has([
+                channel.isThread() && !channel.permissionsFor(this.client.user)?.has([
                     (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
                         ? Discord.Permissions.FLAGS.MANAGE_THREADS
                         : Discord.Permissions.FLAGS.SEND_MESSAGES
@@ -221,15 +226,6 @@ class GiveawaysManager extends EventEmitter {
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
-
-            const validateEmbedColor = async (embedColor) => {
-                try {
-                    embedColor = Discord.Util.resolveColor(embedColor);
-                    if (!isNaN(embedColor) && typeof embedColor === 'number') return true;
-                } catch {
-                    return false;
-                }
-            };
 
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
@@ -472,8 +468,6 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
-            await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message?.channel) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -491,12 +485,13 @@ class GiveawaysManager extends EventEmitter {
             const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
             giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
-                setTimeout(() => this.end.call(this, giveaway.messageId), giveaway.remainingTime);
+                setTimeout(() => this.end.call(this, giveaway.messageId).catch(() => {}), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
-                setTimeout(() => {
+                setTimeout(async () => {
+                    await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
+                    giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });

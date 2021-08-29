@@ -7,38 +7,25 @@ const Discord = require('discord.js');
  * @property {string} [giveaway='🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
  * @property {string} [giveawayEnded='🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
- * @property {string} [timeRemaining='Time remaining: **{duration}**'] Displayed below "inviteToParticipate" in the giveaway embed. "{duration}" will be replaced automatically with the time remaining.
+ * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
  * @property {string} [winMessage='Congratulations, {winners}! You won **{prize}**!\n{messageURL}'] Sent in the channel when the giveaway is ended.
  * @property {string|EmbedFooterObject} [embedFooter='Powered by the discord-giveaways package'] The footer of the giveaway embed.
- * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Sent in the channel if there is no valid winner for the giveaway.
+ * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
  * @property {string} [winners='winner(s)'] Displayed next to the embed footer, used to display the number of winners of the giveaways.
  * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
  * @property {string} [hostedBy='Hosted by: {user}'] Below the "inviteToParticipate" message, in the description of the embed.
- * @property {Object} [units]
- * @property {string} [units.seconds='seconds'] The name of the "seconds" unit.
- * @property {string} [units.minutes='minutes'] The name of the "minutes" unit.
- * @property {string} [units.hours='hours'] The name of the "hours" unit.
- * @property {string} [units.days='days'] The name of the "days" unit.
- * @property {Boolean} [units.pluralS='false'] Whether to force the removal of "S" which marks the plural when the value is lower than two.
  */
 exports.GiveawayMessages = {
     giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
     giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
     inviteToParticipate: 'React with 🎉 to participate!',
-    timeRemaining: 'Time remaining: **{duration}**',
+    drawing: 'Drawing: {timestamp}',
     winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
     embedFooter: 'Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'winner(s)',
     endedAt: 'Ended at',
     hostedBy: 'Hosted by: {user}',
-    units: {
-        seconds: 'seconds',
-        minutes: 'minutes',
-        hours: 'hours',
-        days: 'days',
-        pluralS: false
-    }
 };
 
 /**
