@@ -30,7 +30,7 @@ declare module 'discord-giveaways' {
         public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway>;
         public deleteGiveaway(messageId: Snowflake): Promise<boolean>;
         public edit(messageId: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageId: Snowflake, noWinnerMessage?: string): Promise<GuildMember[]>;
+        public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
         public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
         public pause(messageId: Snowflake, options: PauseOptions): Promise<Giveaway>;
@@ -113,7 +113,7 @@ declare module 'discord-giveaways' {
     }
     interface MessageObject {
         content?: string;
-        embed?: MessageEmbed;
+        embed?: MessageEmbed | MessageEmbedOptions;
     }
     interface GiveawaysManagerEvents {
         giveawayDeleted: [Giveaway];
@@ -164,7 +164,7 @@ declare module 'discord-giveaways' {
 
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(noWinnerMessage?: string): Promise<GuildMember[]>;
+        public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
         public fetchMessage(): Promise<Message>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;

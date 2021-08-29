@@ -218,6 +218,8 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
+- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+
 ### Pause a giveaway
 
 ```js
@@ -255,8 +257,6 @@ client.on('interactionCreate', (interaction) => {
     }
 });
 ```
-
-- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.
 
 ### Fetch giveaways
 
