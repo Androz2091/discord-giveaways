@@ -680,7 +680,7 @@ class Giveaway extends EventEmitter {
                 }
 
                 if (options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object') {
-                    if (message.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+                    if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(options.messages.congrat.embed);
                     const embedDescription = embed.description.replace('{winners}', formattedWinners);
                     if (embedDescription.length <= 4096) {
