@@ -118,7 +118,7 @@ exports.PauseOptions = {
  * @typedef GiveawaysManagerOptions
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
- * @property {number} [updateCountdownEvery=5000] The giveaway update interval in milliseconds.
+ * @property {number} [forceUpdateEvery=5000] Force the giveaway messages to be updated at a specific interval.
  * @property {number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB. ⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {Object} [default] The default options for new giveaways.
  * @property {Boolean} [default.botsCanWin=false] If bots can win giveaways.
@@ -131,7 +131,7 @@ exports.PauseOptions = {
  */
 exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
-    updateCountdownEvery: 5000,
+    forceUpdateEvery: null,
     endedGiveawaysLifetime: null,
     default: {
         botsCanWin: false,
