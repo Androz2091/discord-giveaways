@@ -97,20 +97,13 @@ declare module 'discord-giveaways' {
         giveaway?: string;
         giveawayEnded?: string;
         inviteToParticipate?: string;
-        timeRemaining?: string;
+        drawing?: string;
         winMessage?: string;
         embedFooter?: string | { text?: string; iconURL?: string; };
         noWinner?: string;
         winners?: string;
         endedAt?: string;
         hostedBy?: string;
-        units?: {
-            seconds?: string;
-            minutes?: string;
-            hours?: string;
-            days?: string;
-            pluralS?: false;
-        };
     }
     interface GiveawaysManagerEvents {
         giveawayDeleted: [Giveaway];
@@ -152,7 +145,6 @@ declare module 'discord-giveaways' {
         readonly remainingTime: number;
         readonly duration: number;
         readonly messageURL: string;
-        readonly remainingTimeText: string;
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;

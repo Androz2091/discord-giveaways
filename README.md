@@ -431,19 +431,13 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
--   **options.messages.timeRemaining**: the message that displays the remaining time (the timer).
+-   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
--   **options.messages.units.seconds**: simply the word "seconds" in your language.
--   **options.messages.units.minutes**: simply the word "minutes" in your language.
--   **options.messages.units.hours**: simply the word "hours" in your language.
--   **options.messages.units.days**: simply the word "days" in your language.
-
-**Note**: units should be in the plural.
 
 For example:
 
@@ -455,7 +449,7 @@ client.giveawaysManager.start(interaction.channel, {
     messages: {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
-        timeRemaining: 'Time remaining: **{duration}**',
+        drawing: 'Drawing: {timestamp}',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
         embedFooter: 'Powered by the discord-giveaways package',
@@ -463,13 +457,6 @@ client.giveawaysManager.start(interaction.channel, {
         hostedBy: 'Hosted by: {user}',
         winners: 'winner(s)',
         endedAt: 'Ended at',
-        units: {
-            seconds: 'seconds',
-            minutes: 'minutes',
-            hours: 'hours',
-            days: 'days',
-            pluralS: false // Not needed, because units end with a S so it will automatically removed if the unit value is lower than 2
-        }
     }
 });
 ```

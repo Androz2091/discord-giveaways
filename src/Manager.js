@@ -90,7 +90,10 @@ class GiveawaysManager extends EventEmitter {
                         : '') +
                     giveaway.messages.inviteToParticipate +
                     '\n' +
-                    giveaway.remainingTimeText +
+                    giveaway.messages.drawing.replace(
+                        '{timestamp}',
+                        giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
+                    ) +
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy.replace('{user}', giveaway.hostedBy) : '')
             )
             .setThumbnail(giveaway.thumbnail);
@@ -464,8 +467,6 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
-            await giveaway.fetchMessage().catch(() => {});
-            if (!giveaway.message?.channel) return;
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -480,15 +481,14 @@ class GiveawaysManager extends EventEmitter {
                     Date.now() < giveaway.pauseOptions.unPauseAfter
                 ) this.unpause(giveaway.messageId).catch(() => {});
             }
-            const embed = this.generateMainEmbed(giveaway, giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold);
-            giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
             if (giveaway.remainingTime < this.options.updateCountdownEvery) {
-                setTimeout(() => this.end.call(this, giveaway.messageId), giveaway.remainingTime);
+                setTimeout(() => this.end.call(this, giveaway.messageId).catch(() => {}), giveaway.remainingTime);
             }
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < this.options.updateCountdownEvery) {
-                setTimeout(() => {
+                setTimeout(async () => {
+                    await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
+                    giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed] }).catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
         });
