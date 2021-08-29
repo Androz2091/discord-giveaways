@@ -489,15 +489,16 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
 
             // Update data
-            if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0) this.winnerCount = options.newWinnerCount;
-            if (typeof options.newPrize === 'string') this.prize = options.newPrize;
-            if (!isNaN(options.addTime) && typeof options.addTime === 'number') this.endAt = this.endAt + options.addTime;
-            if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number') this.endAt = options.setEndTimestamp;
             if (options.newMessages && typeof options.newMessages === 'object') this.messages = merge(this.messages, options.newMessages);
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
-            if (Array.isArray(options.newBonusEntries)) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
+            if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (options.newExtraData) this.extraData = options.newExtraData;
-            if (options.newLastChance && typeof options.newLastChance === 'object') this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
+
+            if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop) this.winnerCount = options.newWinnerCount;
+            if (!isNaN(options.addTime) && typeof options.addTime === 'number' && !this.isDrop) this.endAt = this.endAt + options.addTime;
+            if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number' && !this.isDrop) this.endAt = options.setEndTimestamp;
+            if (Array.isArray(options.newBonusEntries) && !this.isDrop) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
+            if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
 
             await this.manager.editGiveaway(this.messageId, this.data);
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
@@ -525,7 +526,7 @@ class Giveaway extends EventEmitter {
             this.message ??= await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
 
-            if (this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+            if (!this.endAt || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
             
@@ -638,6 +639,9 @@ class Giveaway extends EventEmitter {
             options = merge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
+            }
+            if (this.isDrop) {
+                return reject(`Cannot reroll a drop giveaway.`);
             }
 
             const winners = await this.roll(options.winnerCount || undefined);

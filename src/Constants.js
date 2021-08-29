@@ -9,6 +9,7 @@ const Discord = require('discord.js');
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended. "{winners}" will be replaced automatically with the mentions of the giveaway winners.
  * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
+ * @property {string} [dropMessage='Be the first to react with 🎉'] Displayed in the giveaway embed for drop giveaways.
  * @property {string|EmbedFooterObject} [embedFooter='{this.winnerCount} winner(s) • Powered by the discord-giveaways package'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
  * @property {string} [winners='Winner(s):'] Displayed in the giveaway embed before the winners.
@@ -21,6 +22,7 @@ exports.GiveawayMessages = {
     inviteToParticipate: 'React with 🎉 to participate!',
     winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
     drawing: 'Drawing: {timestamp}',
+    dropMessage: 'Be the first to react with 🎉 !',
     embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'Winner(s):',
