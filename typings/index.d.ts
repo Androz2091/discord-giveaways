@@ -30,7 +30,7 @@ declare module 'discord-giveaways' {
         public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway>;
         public deleteGiveaway(messageId: Snowflake): Promise<boolean>;
         public edit(messageId: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
-        public end(messageID: Snowflake, noWinnerMessage?: string): Promise<GuildMember[]>;
+        public end(messageId: Snowflake, noWinnerMessage?: string): Promise<GuildMember[]>;
         public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
         public pause(messageId: Snowflake, options: PauseOptions): Promise<Giveaway>;
