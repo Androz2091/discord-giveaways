@@ -31,7 +31,7 @@ You can read this example bot on GitHub: [giveaways-bot](https://github.com/Andr
 
 ### Launch of the module
 
-Required Discord Intents: `GUILDS`, `GUILD_MESSAGES`, `GUILD_MESSAGE_REACTIONS`.  
+Required Discord Intents: `GUILDS` and `GUILD_MESSAGE_REACTIONS`.  
 Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
@@ -39,8 +39,8 @@ const Discord = require('discord.js'),
     client = new Discord.Client({
         intents: [
             Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGES,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Discord.Intents.FLAGS.GUILD_MEMBERS // optional, for better performance
         ]
     }),
     settings = {
@@ -88,12 +88,12 @@ client.on('interactionCreate', (interaction) => {
         // /start-giveaway 2d 1 Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
-        const time = interaction.options.getString('time');
+        const duration = interaction.options.getString('duration');
         const winnerCount = interaction.options.getInteger('winner_count');
         const prize = interaction.options.getString('prize');
 
         client.giveawaysManager.start(interaction.channel, {
-            time: ms(time),
+            duration: ms(duration),
             winnerCount,
             prize
         }).then((gData) => {
@@ -104,7 +104,7 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
--   **options.time**: the giveaway duration.
+-   **options.duration**: the giveaway duration.
 -   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.winnerCount**: the number of giveaway winners.
 -   **[and many other optional parameters to customize the giveaway - read documentation](https://discord-giveaways.js.org/global.html#GiveawayStartOptions)**
@@ -181,7 +181,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 -   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
-**Note**: to reduce giveaway time, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway time by 5 seconds!
+**Note**: to reduce giveaway duration, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway duration by 5 seconds!
 
 ### Delete a giveaway
 
@@ -278,7 +278,7 @@ Function to filter members. If true is returned, the member will not be able to 
 
 ```js
 client.giveawaysManager.start(interaction.channel, {
-    time: 60000,
+    duration: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
     // Only members who have the "Nitro Boost" role are able to win
@@ -292,7 +292,7 @@ client.giveawaysManager.start(interaction.channel, {
 const roleName = 'Nitro Boost';
 
 client.giveawaysManager.start(interaction.channel, {
-    time: 60000,
+    duration: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
     // Only members who have the the role which is assigned to "roleName" are able to win
@@ -311,7 +311,7 @@ _The special format would "convert" the external string snowflake into a number,
 
 ```js
 client.giveawaysManager.start(interaction.channel, {
-    time: 60000,
+    duration: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
     lastChance: {
@@ -336,7 +336,7 @@ client.giveawaysManager.start(interaction.channel, {
 
 ```js
 client.giveawaysManager.start(interaction.channel, {
-    time: 60000,
+    duration: 60000,
     winnerCount: 1,
     prize: 'Discord Nitro!',
     pauseOptions: {
@@ -361,7 +361,7 @@ client.giveawaysManager.start(interaction.channel, {
 
 ```js
 client.giveawaysManager.start(interaction.channel, {
-    time: 60000,
+    duration: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
     bonusEntries: [  
@@ -384,7 +384,7 @@ const roleName = 'Nitro Boost';
 const roleBonusEntries = 2;
 
 client.giveawaysManager.start(interaction.channel, {
-    time: 60000,
+    duration: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
     bonusEntries: [
@@ -440,10 +440,14 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 For example:
 
 ```js
+const duration = interaction.options.getString('duration');
+const winnerCount = interaction.options.getInteger('winnerCount');
+const prize = interaction.options.getString('prize');
+
 client.giveawaysManager.start(interaction.channel, {
-    time: ms(args[0]),
-    winnerCount: parseInt(args[1]),
-    prize: args.slice(2).join(' '),
+    duration: ms(duration),
+    winnerCount,
+    prize,
     messages: {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
@@ -515,8 +519,9 @@ const Discord = require('discord.js'),
     client = new Discord.Client({
         intents: [
             Discord.Intents.FLAGS.GUILDS,
+            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
             Discord.Intents.FLAGS.GUILD_MESSAGES,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+            Discord.Intents.FLAGS.GUILD_MEMBERS // not required, but recommended
         ]
     }),
     settings = {

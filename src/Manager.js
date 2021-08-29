@@ -194,10 +194,10 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Promise<Giveaway>} The created giveaway.
      *
      * @example
-     * manager.start(message.channel, {
+     * manager.start(interaction.channel, {
      *      prize: 'Free Steam Key',
      *      // Giveaway will last 10 seconds
-     *      time: 10000,
+     *      duration: 10000,
      *      // One winner
      *      winnerCount: 1,
      *      // Limit the giveaway to members who have the "Nitro Boost" role
@@ -217,8 +217,8 @@ class GiveawaysManager extends EventEmitter {
                         : Discord.Permissions.FLAGS.SEND_MESSAGES
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
-            if (isNaN(options.time) || typeof options.time !== 'number' || options.time < 1) {
-                return reject(`options.time is not a positive number. (val=${options.time})`);
+            if (isNaN(options.duration) || typeof options.duration !== 'number' || options.duration < 1) {
+                return reject(`options.duration is not a positive number. (val=${options.duration})`);
             }
             if (typeof options.prize !== 'string' || options.prize.length > 256) {
                 return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
@@ -232,7 +232,7 @@ class GiveawaysManager extends EventEmitter {
 
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
-                endAt: Date.now() + options.time,
+                endAt: Date.now() + options.duration,
                 winnerCount: options.winnerCount,
                 channelId: channel.id,
                 guildId: channel.guildId,

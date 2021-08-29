@@ -49,7 +49,7 @@ exports.GiveawayMessages = {
  * The start options for new giveaways.
  * @typedef GiveawayStartOptions
  *
- * @property {number} time The giveaway duration.
+ * @property {number} duration The giveaway duration (milliseconds).
  * @property {number} winnerCount The number of winners for the giveaway.
  * @property {string} prize The giveaway prize.
  * @property {Discord.User} [hostedBy] The user who hosts the giveaway.
