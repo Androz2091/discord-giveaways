@@ -250,14 +250,14 @@ class GiveawaysManager extends EventEmitter {
 
             const embed = this.generateMainEmbed(giveaway);
             const message = await channel.send({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions });
-            message.react(giveaway.reaction);
             giveaway.messageId = message.id;
             const reaction = await message.react(giveaway.reaction);
+            giveaway.message = reaction.message;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
             resolve(giveaway);
             if (giveaway.isDrop) {
-                message.awaitReactions({
+                reaction.message.awaitReactions({
                     filter: (r) => r.emoji.name === reaction.emoji.name || r.emoji.id === reaction.emoji.id,
                     maxUsers: giveaway.winnerCount
                 }).then(() => this.end(giveaway.messageId)).catch(() => {});
@@ -474,13 +474,13 @@ class GiveawaysManager extends EventEmitter {
 
             // second case: the giveaway is a drop and has already one reaction
             if (giveaway.isDrop) {
-                giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
+                giveaway.message = await giveaway.fetchMessage().catch(() => {});
                 const reaction = giveaway.message?.reactions.find((r) => r.emoji.name === Discord.Util.resolvePartialEmoji(giveaway.reaction)?.name) ||
                     giveaway.message?.reactions.get(Discord.Util.resolvePartialEmoji(giveaway.reaction)?.id);
                 if (reaction?.count - 1 >= giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
             }
 
-            // third case: the giveawat is paused and we should check whether it should be unpaused
+            // third case: the giveaway is paused and we should check whether it should be unpaused
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -522,8 +522,8 @@ class GiveawaysManager extends EventEmitter {
             const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.messages.giveaway;
 
             if (needUpdate || this.options.forceUpdateEvery) {
-                giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
-                const embed = this.generateMainEmbed(giveaway);
+                giveaway.message = (await giveaway.fetchMessage().catch(() => {})) ?? giveaway.message;
+                const embed = this.generateMainEmbed(giveaway, lastChanceEnabled);
                 giveaway.message?.edit({ content: giveaway.messages.giveaway, embeds: [embed], allowedMentions: giveaway.allowedMentions }).catch(() => {});
             }
         });
