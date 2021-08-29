@@ -808,13 +808,13 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
 
-            this.ensureEndTimeout();
-
             // Update data
             if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause === 'number') {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
             this.options.pauseOptions.isPaused = false;
+
+            this.ensureEndTimeout();
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
