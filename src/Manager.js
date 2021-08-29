@@ -160,7 +160,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
      * @param {Discord.Snowflake} messageID The message ID of the giveaway
-     * @param {string} [noWinnerMessage=null] The reroll options
+     * @param {string} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
