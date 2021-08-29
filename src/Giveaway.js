@@ -100,6 +100,11 @@ class Giveaway extends EventEmitter {
          */
         this.extraData = options.extraData;
         /**
+         * Which mentions should be parsed from the giveaway messages content.
+         * @type {Discord.MessageMentionOptions}
+         */
+        this.allowedMentions = options.allowedMentions;
+        /**
          * The giveaway data.
          * @type {GiveawayData}
          */
@@ -268,7 +273,8 @@ class Giveaway extends EventEmitter {
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance,
-            pauseOptions: this.options.pauseOptions
+            pauseOptions: this.options.pauseOptions,
+            allowedMentions: this.allowedMentions
         };
     }
 
@@ -446,7 +452,7 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
+                this.message.edit({ content: this.messages.giveaway, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
             }
             resolve(this);
         });
@@ -472,7 +478,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
+                await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = this.messages.winMessage
                     .replace('{winners}', formattedWinners)
@@ -488,31 +494,36 @@ class Giveaway extends EventEmitter {
                         ? this.message.channel.parent
                         : this.message.channel;
 
-                if (messageString.length <= 2000) channel.send(messageString);
+                if (messageString.length <= 2000) channel.send({ content: messageString, allowedMentions: this.allowedMentions });
                 else {
-                    channel.send(
-                        this.messages.winMessage
+                    channel.send({
+                        content: this.messages.winMessage
                             .substr(0, this.messages.winMessage.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
                             .replace('{messageURL}', this.messageURL),
-                    );
+                        allowedMentions: this.allowedMentions
+                    });
                     while (formattedWinners.length >= 2000) {
-                        await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
+                        await channel.send({
+                            content: formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
+                            allowedMentions: this.allowedMentions
+                        });
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    channel.send(formattedWinners);
-                    channel.send(
-                        this.messages.winMessage
+                    channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
+                    channel.send({
+                        content: this.messages.winMessage
                             .substr(this.messages.winMessage.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
-                            .replace('{messageURL}', this.messageURL)
-                    );
+                            .replace('{messageURL}', this.messageURL),
+                        allowedMentions: this.allowedMentions
+                    });
                 }
                 resolve(winners);
             } else {
                 if (typeof noWinnerMessage === 'string') this.channel.send(noWinnerMessage);
                 const embed = this.manager.generateNoValidParticipantsEndEmbed(this);
-                this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
+                this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
                 resolve([]);
             }
         });
@@ -548,35 +559,40 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed] }).catch(() => {});
+                await this.message.edit({ content: this.messages.giveawayEnded, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const messageString = options.messages.congrat
                     .replace('{winners}', formattedWinners)
                     .replace('{prize}', this.prize)
                     .replace('{messageURL}', this.messageURL);
-                if (messageString.length <= 2000) channel.send(messageString);
+                if (messageString.length <= 2000) channel.send({ content: messageString, allowedMentions: this.allowedMentions });
                 else {
-                    channel.send(
-                        options.messages.congrat
+                    channel.send({
+                        content: options.messages.congrat
                             .substr(0, options.messages.congrat.indexOf('{winners}'))
                             .replace('{prize}', this.prize)
-                            .replace('{messageURL}', this.messageURL)
-                    );
+                            .replace('{messageURL}', this.messageURL),
+                        allowedMentions: this.allowedMentions
+                    });
                     while (formattedWinners.length >= 2000) {
-                        await channel.send(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',');
+                        await channel.send({
+                            content: formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
+                            allowedMentions: this.allowedMentions
+                        });
                         formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length);
                     }
-                    channel.send(formattedWinners);
-                    channel.send(
-                        options.messages.congrat
+                    channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
+                    channel.send({
+                        content: options.messages.congrat
                             .substr(options.messages.congrat.indexOf('{winners}') + 9)
                             .replace('{prize}', this.prize)
-                            .replace('{messageURL}', this.messageURL)
-                    );
+                            .replace('{messageURL}', this.messageURL),
+                        allowedMentions: this.allowedMentions
+                    });
                 }
                 resolve(winners);
             } else {
-                channel.send(options.messages.error);
+                channel.send({ content: options.messages.error, allowedMentions: this.allowedMentions });
                 resolve([]);
             }
         });
@@ -617,7 +633,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
+            this.message.edit({ content: this.messages.giveaway, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
             resolve(this);
         });
     }
@@ -641,7 +657,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({ content: this.messages.giveaway, embeds: [embed] }).catch(() => {});
+            this.message.edit({ content: this.messages.giveaway, embeds: [embed], allowedMentions: this.allowedMentions }).catch(() => {});
             resolve(this);
         });
     }
