@@ -105,7 +105,7 @@ client.on('interactionCreate', (interaction) => {
 ```
 
 -   **options.time**: the giveaway duration.
--   **options.prize**: the giveaway prize.
+-   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.winnerCount**: the number of giveaway winners.
 -   **[and many other optional parameters to customize the giveaway - read documentation](https://discord-giveaways.js.org/global.html#GiveawayStartOptions)**
 
@@ -146,7 +146,7 @@ client.on('interactionCreate', (interaction) => {
 ```
 
 -   **options.winnerCount**: the number of winners to pick.
--   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation)
+-   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -172,12 +172,12 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
--   **options.newWinnerCount**: the new number of winners.  
--   **options.newPrize**: the new prize.  
+-   **options.newWinnerCount**: the new number of winners.
+-   **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.
--   **options.newExtraData**: the new extra data value for the giveaway
+-   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 -   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
@@ -307,7 +307,6 @@ The reason for this is that, in JavaScript, all numbers are [IEEE double precisi
 But snowflakes can have more than 16 digits, which means that if you would access them like in the example above, the last digits of the snowflake would get messed up.  
 _The special format would "convert" the external string snowflake into a number, that is why we talk about digits here._
 
-
 ### Last Chance
 
 ```js
@@ -325,7 +324,7 @@ client.giveawaysManager.start(interaction.channel, {
 ```
 
 -   **lastChance.enabled**: if the last chance system is enabled.
--   **lastChance.content**: the text of the embed when the last chance system is enabled.
+-   **lastChance.content**: the text of the embed when the last chance system is enabled. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
 -   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
@@ -350,7 +349,7 @@ client.giveawaysManager.start(interaction.channel, {
 ```
 
 -   **pauseOptions.isPaused**: if the giveaway is paused.
--   **pauseOptions.content**: the text of the embed when the giveaway is paused.
+-   **pauseOptions.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **pauseOptions.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
 
@@ -405,6 +404,25 @@ The reason for this is that, in JavaScript, all numbers are [IEEE double precisi
 But snowflakes can have more than 16 digits, which means that if you would access them like in the example above, the last digits of the snowflake would get messed up.  
 _The special format would "convert" the external string snowflake into a number, that is why we talk about digits here._
 
+### Send embed as message
+
+You can send an embed instead of, or with the normal message for the following messages:  
+`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error`.
+
+The format looks like this: `message: { content: '', embed: new Discord.MessageEmbed() }`
+
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
+
+### Access giveaway properties in messages
+
+You can access any giveaway property inside of giveaway messages with the format: `{this.<property>}`.  
+For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }`.
+
+Also, you can write javascript code inside of the `{}`.  
+For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }`.
+
+If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
+
 ## 🇫🇷 Translation
 
 You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text:
@@ -413,7 +431,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.winners**: simply the word "winner" in your language.
@@ -431,29 +449,34 @@ client.giveawaysManager.start(interaction.channel, {
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         drawing: 'Drawing: {timestamp}',
         inviteToParticipate: 'React with 🎉 to participate!',
-        winMessage: 'Congratulations, {winners}! You won **{prize}**!\n{messageURL}',
+        winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
         embedFooter: 'Powered by the discord-giveaways package',
         noWinner: 'Giveaway cancelled, no valid participations.',
-        hostedBy: 'Hosted by: {user}',
+        hostedBy: 'Hosted by: {this.hostedBy}',
         winners: 'winner(s)',
         endedAt: 'Ended at',
     }
 });
 ```
 
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all these messages (except for the "units" object).
+
 And for the `reroll()` function:
 
 ```js
 client.giveawaysManager.reroll(messageId, {
         messages: {
-            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{prize}**!\n{messageURL}',
+            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
             error: 'No valid participations, no new winner(s) can be chosen!'
         }
     });
 ```
 
--   **options.messages.congrat**: the congratulatory message.  
+-   **options.messages.congrat**: the congratulatory message.
 -   **options.messages.error**: the error message if there is no valid participant.
+
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
+You can [send embeds instead of, or with the normal messages](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 
 ## Custom Database
 

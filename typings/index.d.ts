@@ -11,6 +11,8 @@ declare module 'discord-giveaways' {
         TextChannel,
         MessageReaction,
         Message,
+        MessageEmbed,
+        MessageEmbedOptions,
         MessageMentionOptions,
         NewsChannel,
         ThreadChannel
@@ -99,13 +101,18 @@ declare module 'discord-giveaways' {
         giveaway?: string;
         giveawayEnded?: string;
         inviteToParticipate?: string;
+        timeRemaining?: string;
+        winMessage?: string | MessageObject;
         drawing?: string;
-        winMessage?: string;
         embedFooter?: string | { text?: string; iconURL?: string; };
         noWinner?: string;
         winners?: string;
         endedAt?: string;
         hostedBy?: string;
+    }
+    interface MessageObject {
+        content?: string;
+        embed?: MessageEmbed;
     }
     interface GiveawaysManagerEvents {
         giveawayDeleted: [Giveaway];
@@ -161,6 +168,8 @@ declare module 'discord-giveaways' {
         public roll(winnerCount?: number): Promise<GuildMember[]>;
         public pause(options?: PauseOptions): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
+        public fillInString(string: string): string;
+        public fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
     }
     interface GiveawayEditOptions {
         newWinnerCount?: number;
@@ -176,8 +185,8 @@ declare module 'discord-giveaways' {
     interface GiveawayRerollOptions {
         winnerCount?: number;
         messages?: {
-            congrat?: string;
-            error?: string;
+            congrat?: string | MessageObject;
+            error?: string | MessageObject;
         };
     }
     interface GiveawayData {
