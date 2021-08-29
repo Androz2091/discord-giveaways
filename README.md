@@ -115,19 +115,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.time**: the giveaway duration.
 -   **options.prize**: the giveaway prize.
 -   **options.winnerCount**: the number of giveaway winners.
--   **options.messages**: an object with the giveaway messages. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
--   **options.thumbnail**: the giveaway thumbnail url.
--   **options.hostedBy**: the user who hosts the giveaway.
--   **options.botsCanWin**: if bots can win the giveaway.
--   **options.exemptPermissions**: an array of discord permissions. Server members who have at least one of these permissions will not be able to win a giveaway even if they react to it.
--   **options.exemptMembers**: function to filter members. If true is returned, the member won't be able to win the giveaway. [Usage example](https://github.com/Androz2091/discord-giveaways#exempt-members)
--   **options.bonusEntries**: an array of BonusEntry objects. [Usage example](https://github.com/Androz2091/discord-giveaways#bonus-entries)
--   **options.embedColor**: a hexadecimal color for the embed of the giveaway when it is running.
--   **options.embedColorEnd**: a hexadecimal color for the embed of the giveaway when is has ended.
--   **options.reaction**: the reaction that users will have to react to in order to participate.
--   **options.extraData**: Extra data which you want to save regarding this giveaway. You can access it from the giveaway object using `giveaway.extraData`.
--   **options.lastChance**: the last chance system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#last-chance)
--   **options.pauseOptions**: the pause system parameters. [Usage example](https://github.com/Androz2091/discord-giveaways#pause-options).
+-   **[and many other optional parameters to customize the giveaway - read documentation](https://discord-giveaways.js.org/global.html#GiveawayStartOptions)**
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
