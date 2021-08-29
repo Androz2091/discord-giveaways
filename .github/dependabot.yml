@@ -9,4 +9,3 @@ updates:
   target-branch: develop
   ignore:
   - dependency-name: "@types/node"
-    versions: "^17.0.0"
