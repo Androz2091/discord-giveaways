@@ -10,7 +10,8 @@ const {
     GiveawayRerollOptions,
     GiveawaysManagerOptions,
     GiveawayStartOptions,
-    PauseOptions
+    PauseOptions,
+    MessageObject
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 const { validateEmbedColor, embedEqual } = require('./utils.js');
@@ -155,7 +156,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
      * @param {Discord.Snowflake} messageId The message id of the giveaway
-     * @param {string} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
+     * @param {string|MessageObject} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example

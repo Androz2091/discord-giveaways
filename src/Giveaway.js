@@ -606,7 +606,7 @@ class Giveaway extends EventEmitter {
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
                 const embed = this.fillInEmbed(noWinnerMessage?.embed);
-                if (message.length || embed && typeof embed === 'object') {
+                if (message.length || embed !== null) {
                     channel.send({
                         content: message || null,
                         embeds: embed ? [embed] : null,
