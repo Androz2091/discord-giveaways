@@ -323,12 +323,12 @@ class Giveaway extends EventEmitter {
             .setTitle(this.fillInString(embed.title))
             .spliceFields(
                 0,
-                embed.fields?.length,
+                embed.fields?.length || 0,
                 embed.fields?.map((f) => {
                     f.name = this.fillInString(f.name);
                     f.value = this.fillInString(f.value);
                     return f;
-                })
+                }) || []
             );
     }
 
