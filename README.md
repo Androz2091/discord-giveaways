@@ -321,7 +321,7 @@ client.giveawaysManager.start(interaction.channel, {
 
 -   **lastChance.enabled**: if the last chance system is enabled.
 -   **lastChance.content**: the text of the embed when the last chance system is enabled.  
-^^^You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
 -   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
