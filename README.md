@@ -343,7 +343,8 @@ client.giveawaysManager.start(interaction.channel, {
 ```
 
 -   **pauseOptions.isPaused**: if the giveaway is paused.
--   **pauseOptions.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **pauseOptions.content**: the text of the embed when the giveaway is paused.  
+^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **pauseOptions.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
 
@@ -396,19 +397,30 @@ client.giveawaysManager.start(interaction.channel, {
 ### Send embed as message
 
 You can send an embed instead of, or with the normal message for the following messages:  
-`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error`.
+`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
 
-The format looks like this: `message: { content: '', embed: new Discord.MessageEmbed() }`
+The format looks like this:
+```js
+message: { content: '', embed: new Discord.MessageEmbed() }
+```
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
 
 ### Access giveaway properties in messages
 
 You can access any giveaway property inside of giveaway messages with the format: `{this.<property>}`.  
-For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }`.
+For example:
+
+```js
+messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }
+```
 
 Also, you can write javascript code inside of the `{}`.  
-For example: `messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }`.
+For example:
+
+```js
+messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }
+```
 
 If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
 
@@ -421,8 +433,10 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
--   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.  
+^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+-   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.  
+^^^ [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.hostedBy**: the message to display the host of the giveaway.
 -   **options.messages.winners**: simply the expression "winner(s):" in your language.

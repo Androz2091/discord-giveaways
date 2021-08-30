@@ -84,24 +84,24 @@ class GiveawaysManager extends EventEmitter {
             )
             .setDescription(
                 giveaway.isDrop
-                ? giveaway.messages.dropMessage
-                : (
-                    (
-                        giveaway.pauseOptions.isPaused
-                            ? giveaway.pauseOptions.content + '\n\n'
-                            : (
-                                lastChanceEnabled
-                                    ? giveaway.lastChance.content + '\n\n'
-                                    : ''
-                            )
-                    ) +
+                    ? giveaway.messages.dropMessage
+                    : (
+                        (
+                            giveaway.pauseOptions.isPaused
+                                ? giveaway.pauseOptions.content + '\n\n'
+                                : (
+                                    lastChanceEnabled
+                                        ? giveaway.lastChance.content + '\n\n'
+                                        : ''
+                                )
+                        ) +
                         giveaway.messages.inviteToParticipate +
                         '\n' +
                         giveaway.messages.drawing.replace(
                             '{timestamp}',
                             giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
                         )
-                ) +
+                    ) +
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             )
             .setThumbnail(giveaway.thumbnail);

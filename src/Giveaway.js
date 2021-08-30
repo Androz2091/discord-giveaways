@@ -657,15 +657,13 @@ class Giveaway extends EventEmitter {
             if (!this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is not ended.');
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
+            if (this.isDrop) return reject('Cannot reroll a drop giveaway.');
             if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
             options = merge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
-            if (this.isDrop) {
-                return reject(`Cannot reroll a drop giveaway.`);
-            }
-
+            
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
                 this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
