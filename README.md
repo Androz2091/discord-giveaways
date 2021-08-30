@@ -175,7 +175,8 @@ client.on('interactionCreate', (interaction) => {
 -   **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
+^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 -   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
@@ -218,7 +219,8 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
-- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.  
+^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 
 ### Pause a giveaway
 
@@ -236,7 +238,7 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
--   **options.content**: the text of the embed when the giveaway is paused.
+-   **options.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **options.embedColor**: the color of the embed when the giveaway is paused.
 
@@ -318,7 +320,8 @@ client.giveawaysManager.start(interaction.channel, {
 ```
 
 -   **lastChance.enabled**: if the last chance system is enabled.
--   **lastChance.content**: the text of the embed when the last chance system is enabled. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **lastChance.content**: the text of the embed when the last chance system is enabled.  
+^^^You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
 -   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
@@ -415,7 +418,7 @@ For example:
 messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }
 ```
 
-Also, you can write javascript code inside of the `{}`.  
+Also, you can write JavaScript code inside of the `{}`.  
 For example:
 
 ```js
