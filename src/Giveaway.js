@@ -548,7 +548,7 @@ class Giveaway extends EventEmitter {
             this.message ??= await this.fetchMessage().catch((err) => (err.includes('Try later!') ? (this.ended = false) : undefined));
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
 
-            if (!this.endAt || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+            if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
             
