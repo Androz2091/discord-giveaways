@@ -216,14 +216,14 @@ class GiveawaysManager extends EventEmitter {
             if (typeof options.prize !== 'string' || options.prize.length > 256) {
                 return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
             }
+            if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
+                return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
+            }
             if (options.isDrop && typeof options.isDrop !== 'boolean') {
                 return reject(`options.isDrop is not a boolean. (val=${options.isDrop})`);
             }
             if (!options.isDrop && (isNaN(options.duration) || typeof options.duration !== 'number' || options.duration < 1)) {
                 return reject(`options.duration is not a positive number. (val=${options.duration})`);
-            }
-            if (!options.isDrop && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
-                return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
 
             const giveaway = new Giveaway(this, {
