@@ -308,7 +308,7 @@ class Giveaway extends EventEmitter {
     /**
      * Filles in a string with giveaway properties.
      * @param {string} string The string that should get filled in.
-     * @returns {String|null} The filled in string.
+     * @returns {?string} The filled in string.
      */
     fillInString(string) {
         if (typeof string !== 'string') return null;
