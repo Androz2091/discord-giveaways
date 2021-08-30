@@ -27,7 +27,7 @@ npm install --save discord-giveaways
 
 ## Examples
 
-You can read this example bot on GitHub: [giveaways-bot](https://github.com/Androz2091/giveaways-bot)
+You can read this example bot on GitHub: [discord-giveaways-bot](https://github.com/Androz2091/discord-giveaways-bot)
 
 ### Launch of the module
 
