@@ -228,7 +228,7 @@ class GiveawaysManager extends EventEmitter {
 
             const giveaway = new Giveaway(this, {
                 startAt: Date.now(),
-                endAt: Date.now() + options.duration,
+                endAt: options.isDrop ? Infinity : Date.now() + options.duration,
                 winnerCount: options.winnerCount,
                 channelId: channel.id,
                 guildId: channel.guildId,
