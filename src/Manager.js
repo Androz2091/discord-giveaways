@@ -151,10 +151,7 @@ class GiveawaysManager extends EventEmitter {
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
-            .setDescription(
-                giveaway.messages.noWinner +
-                    (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
-            )
+            .setDescription(giveaway.messages.noWinner + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : ''))
             .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
         return giveaway.fillInEmbed(embed);
@@ -270,7 +267,7 @@ class GiveawaysManager extends EventEmitter {
             resolve(giveaway);
             if (giveaway.isDrop) {
                 reaction.message.awaitReactions({
-                    filter: (r) => r.emoji.name === reaction.emoji.name || r.emoji.id === reaction.emoji.id,
+                    filter: (r, u) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction.emoji.name || reaction.emoji.id) && u.id !== this.client.user.id,
                     maxUsers: giveaway.winnerCount
                 }).then(() => this.end(giveaway.messageId)).catch(() => {});
             }
@@ -437,7 +434,7 @@ class GiveawaysManager extends EventEmitter {
      * @param {Discord.Snowflake} messageId The message Id identifying the giveaway
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
-    async editGiveaway(_messageId, _giveawayData) {
+    async editGiveaway(messageId, giveawayData) {
         await writeFile(
             this.options.storage,
             JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
@@ -472,7 +469,7 @@ class GiveawaysManager extends EventEmitter {
         if (this.giveaways.length <= 0) return;
         this.giveaways.forEach(async (giveaway) => {
 
-            // first case: giveaway is ended and we need to check if it should be deleted
+            // First case: giveaway is ended and we need to check if it should be deleted
             if (giveaway.ended) {
                 if (
                     !isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number' &&
@@ -484,7 +481,7 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
 
-            // second case: the giveaway is a drop and has already one reaction
+            // Second case: the giveaway is a drop and has already one reaction
             if (giveaway.isDrop) {
                 giveaway.message = await giveaway.fetchMessage().catch(() => {});
                 let reaction = Discord.Util.resolvePartialEmoji(giveaway.reaction);
@@ -492,7 +489,7 @@ class GiveawaysManager extends EventEmitter {
                 if (reaction?.count - 1 >= giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
             }
 
-            // third case: the giveaway is paused and we should check whether it should be unpaused
+            // Third case: the giveaway is paused and we should check whether it should be unpaused
             if (giveaway.pauseOptions.isPaused) {
                 if (
                     (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
@@ -508,16 +505,16 @@ class GiveawaysManager extends EventEmitter {
                 ) return this.unpause(giveaway.messageId).catch(() => {});
             }
 
-            // fourth case: giveaway should be ended right now. this case should only happen after a restart
-            // because otherwise, the giveaway would have been ended already (using the next case)
+            // Fourth case: giveaway should be ended right now. this case should only happen after a restart
+            // Because otherwise, the giveaway would have been ended already (using the next case)
             if (giveaway.remainingTime <= 0) return this.end(giveaway.messageId).catch(() => {});
 
-            // fifth case: the giveaway will be ended soon, we add a timeout so it ends at the right time
-            // and it does not need to wait for _checkGiveaway to be called again
+            // Fifth case: the giveaway will be ended soon, we add a timeout so it ends at the right time
+            // And it does not need to wait for _checkGiveaway to be called again
             giveaway.ensureEndTimeout();
 
-            // sixth case: the giveaway will be in the last chance state soon, we add a timeout so it's updated at the right time
-            // and it does not need to wait for _checkGiveaway to be called again
+            // Sixth case: the giveaway will be in the last chance state soon, we add a timeout so it's updated at the right time
+            // And it does not need to wait for _checkGiveaway to be called again
             if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < (this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) {
                 setTimeout(async () => {
                     giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
@@ -530,7 +527,7 @@ class GiveawaysManager extends EventEmitter {
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
-            // regular case: the giveaway is not ended and we need to update it
+            // Regular case: the giveaway is not ended and we need to update it
             const lastChanceEnabled = giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             giveaway.message ??= await giveaway.fetchMessage().catch(() => {});

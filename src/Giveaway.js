@@ -215,7 +215,8 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * If the giveaway is a drop, or not. Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
+     * If the giveaway is a drop, or not.
+     * Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
      * @type {Boolean}
      */
     get isDrop() {
@@ -301,8 +302,8 @@ class Giveaway extends EventEmitter {
      */
     ensureEndTimeout () {
         if (this.endTimeout) return;
-        if (!(this.remainingTime < (this.manager.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL))) return;
-        this.endTimeout = setTimeout(() => this.manager.end.call(this.manager, this.messageId).catch(() => {}), this.remainingTime)
+        if (this.remainingTime > (this.manager.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) return;
+        this.endTimeout = setTimeout(() => this.manager.end.call(this.manager, this.messageId).catch(() => {}), this.remainingTime);
     }
 
     /**
