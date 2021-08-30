@@ -40,7 +40,7 @@ const Discord = require('discord.js'),
         intents: [
             Discord.Intents.FLAGS.GUILDS,
             Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Discord.Intents.FLAGS.GUILD_MEMBERS // optional, for better performance
+            Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
         ]
     }),
     settings = {
@@ -512,8 +512,7 @@ const Discord = require('discord.js'),
         intents: [
             Discord.Intents.FLAGS.GUILDS,
             Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Discord.Intents.FLAGS.GUILD_MESSAGES,
-            Discord.Intents.FLAGS.GUILD_MEMBERS // not required, but recommended
+            Discord.Intents.FLAGS.GUILD_MEMBERS // Not required, but recommended
         ]
     }),
     settings = {
@@ -533,7 +532,7 @@ const GiveawayManagerWithShardSupport = class extends GiveawaysManager {
 
 // Create a new instance of your new class
 const manager = new GiveawayManagerWithShardSupport(client, {
-    storage: './storage.json',
+    storage: './giveaways.json',
     default: {
         botsCanWin: false,
         embedColor: '#FF0000',

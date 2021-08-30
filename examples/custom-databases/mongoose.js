@@ -2,7 +2,6 @@ const Discord = require('discord.js'),
     client = new Discord.Client({
         intents: [
             Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGES,
             Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
         ]
     }),
@@ -42,14 +41,7 @@ const giveawaySchema = new mongoose.Schema({
         noWinner: String,
         winners: String,
         endedAt: String,
-        hostedBy: String,
-        units: {
-            seconds: String,
-            minutes: String,
-            hours: String,
-            days: String,
-            pluralS: Boolean
-        }
+        hostedBy: String
     },
     thumbnail: String,
     hostedBy: String,

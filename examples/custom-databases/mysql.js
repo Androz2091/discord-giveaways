@@ -2,7 +2,6 @@ const Discord = require('discord.js'),
     client = new Discord.Client({
         intents: [
             Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGES,
             Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
         ]
     }),
@@ -22,8 +21,8 @@ const sql = MySQL.createConnection({
 });
 sql.connect((err) => {
     if (err) {
-        console.error('Impossible to connect to MySQL server. Code: ' + err.code);
-        process.exit(99); // Stop the process if we can't connect to the MySQL server
+        // Stop the process if we can't connect to the MySQL server
+        throw new Error('Impossible to connect to MySQL server. Code: ' + err.code);
     } else {
         console.log('[SQL] Connected to the MySQL server! Connection ID: ' + sql.threadId);
     }
