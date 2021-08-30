@@ -105,7 +105,7 @@ class GiveawaysManager extends EventEmitter {
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             )
             .setThumbnail(giveaway.thumbnail);
-        if (giveaway.endAt !== Infinity && giveaway.endAt) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
+        if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
         return giveaway.fillInEmbed(embed);
     }
 
