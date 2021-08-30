@@ -419,6 +419,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
+-   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds. [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
@@ -442,6 +443,7 @@ client.giveawaysManager.start(interaction.channel, {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
         drawing: 'Drawing: {timestamp}',
+        dropMessage: 'Be the first to react with 🎉 !',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
         embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
