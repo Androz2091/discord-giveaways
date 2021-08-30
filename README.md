@@ -442,7 +442,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 ^^^ [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.hostedBy**: the message to display the host of the giveaway.
--   **options.messages.winners**: simply the expression "winner(s):" in your language.
+-   **options.messages.winners**: simply the expression "Winner(s):" in your language.
 -   **options.messages.endedAt**: simply the words "Ended at" in your language.
 
 For example:
