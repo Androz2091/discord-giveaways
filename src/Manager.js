@@ -119,7 +119,7 @@ class GiveawaysManager extends EventEmitter {
         let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
 
         const descriptionString = (formattedWinners) => {
-            return giveaway.messages.winners + formattedWinners + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '');
+            return giveaway.messages.winners + ' ' + formattedWinners + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '');
         };
 
         for (
