@@ -206,7 +206,8 @@ if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'
 <li><strong>options.newPrize</strong>: the new prize. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>options.addTime</strong>: the number of milliseconds to add to the giveaway duration.</li>
 <li><strong>options.setEndTimestamp</strong>: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to <code>Date.now() + 60000</code>).</li>
-<li><strong>options.newMessages</strong>: the new giveaway messages. Will get merged with the existing object, if there. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
+<li><strong>options.newMessages</strong>: the new giveaway messages. Will get merged with the existing object, if there.<br>
+^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>options.newExtraData</strong>: the new extra data value for the giveaway.</li>
 <li><strong>options.newBonusEntries</strong>: the new BonusEntry objects (for example, to change the amount of entries).</li>
 <li><strong>options.newLastChance</strong>: the new options for the last chance system. Will get merged with the existing object, if there.</li>
@@ -243,7 +244,8 @@ if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'
 });
 </code></pre>
 <ul>
-<li><strong>noWinnerMessage</strong>: Sent in the channel if there is no valid winner for the giveaway. You can <a href="https://github.com/Androz2091/discord-giveaways#send-embed-as-message">send an embed instead of, or with the normal message</a>.</li>
+<li><strong>noWinnerMessage</strong>: Sent in the channel if there is no valid winner for the giveaway.<br>
+^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#send-embed-as-message">send an embed instead of, or with the normal message</a>.</li>
 </ul>
 <h3>Pause a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
@@ -259,7 +261,7 @@ if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'
 });
 </code></pre>
 <ul>
-<li><strong>options.content</strong>: the text of the embed when the giveaway is paused.</li>
+<li><strong>options.content</strong>: the text of the embed when the giveaway is paused. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>options.unPauseAfter</strong>: the number of milliseconds after which the giveaway will automatically unpause.</li>
 <li><strong>options.embedColor</strong>: the color of the embed when the giveaway is paused.</li>
 </ul>
@@ -324,7 +326,8 @@ client.giveawaysManager.start(interaction.channel, {
 </code></pre>
 <ul>
 <li><strong>lastChance.enabled</strong>: if the last chance system is enabled.</li>
-<li><strong>lastChance.content</strong>: the text of the embed when the last chance system is enabled. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
+<li><strong>lastChance.content</strong>: the text of the embed when the last chance system is enabled.<br>
+^^^You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>lastChance.threshold</strong>: the number of milliseconds before the giveaway ends when the last chance system will be enabled.</li>
 <li><strong>lastChance.embedColor</strong>: the color of the embed when last chance is enabled.</li>
 </ul>
@@ -346,7 +349,8 @@ client.giveawaysManager.start(interaction.channel, {
 </code></pre>
 <ul>
 <li><strong>pauseOptions.isPaused</strong>: if the giveaway is paused.</li>
-<li><strong>pauseOptions.content</strong>: the text of the embed when the giveaway is paused. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
+<li><strong>pauseOptions.content</strong>: the text of the embed when the giveaway is paused.<br>
+^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>pauseOptions.unPauseAfter</strong>: the number of milliseconds after which the giveaway will automatically unpause.</li>
 <li><strong>pauseOptions.embedColor</strong>: the color of the embed when the giveaway is paused.</li>
 </ul>
@@ -391,14 +395,20 @@ client.giveawaysManager.start(interaction.channel, {
 <p><strong>Note</strong>: because of the special <code>new Function()</code> format, you can use <code>this</code> inside of the function string to access anything from the giveaway instance. For example: <code>this.extraData</code>, or <code>this.client</code>.</p>
 <h3>Send embed as message</h3>
 <p>You can send an embed instead of, or with the normal message for the following messages:<br>
-<code>giveaway.messages.winMessage</code>, <code>GiveawayRerollOptions.messages.congrat</code>, <code>GiveawayRerollOptions.messages.error</code>.</p>
-<p>The format looks like this: <code>message: { content: '', embed: new Discord.MessageEmbed() }</code></p>
+<code>giveaway.messages.winMessage</code>, <code>GiveawayRerollOptions.messages.congrat</code>, <code>GiveawayRerollOptions.messages.error</code> and <code>client.giveawaysManager.end(messageId, noWinnerMessage)</code>.</p>
+<p>The format looks like this:</p>
+<pre class="prettyprint source lang-js"><code>message: { content: '', embed: new Discord.MessageEmbed() }
+</code></pre>
 <p>You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a> in all embed properties that are a string.</p>
 <h3>Access giveaway properties in messages</h3>
 <p>You can access any giveaway property inside of giveaway messages with the format: <code>{this.&lt;property&gt;}</code>.<br>
-For example: <code>messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }</code>.</p>
-<p>Also, you can write javascript code inside of the <code>{}</code>.<br>
-For example: <code>messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }</code>.</p>
+For example:</p>
+<pre class="prettyprint source lang-js"><code>messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }
+</code></pre>
+<p>Also, you can write JavaScript code inside of the <code>{}</code>.<br>
+For example:</p>
+<pre class="prettyprint source lang-js"><code>messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }
+</code></pre>
 <p>If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use <code>giveaway.fillInString(string)</code> for strings and <code>giveaway.fillInEmbed(embed)</code> for embeds.</p>
 <h2>🇫🇷 Translation</h2>
 <p>You can also pass a <code>messages</code> parameter for <code>start()</code> function, if you want to translate the bot text:</p>
@@ -408,8 +418,10 @@ For example: <code>messages: { winMessage: 'Congratulations, {winners}! You won 
 <li><strong>options.messages.drawing</strong>: the message that displays the drawing timestamp.</li>
 <li><strong>options.messages.dropMessage</strong>: the message that will be displayed for drop giveaways.</li>
 <li><strong>options.messages.inviteToParticipate</strong>: the message that invites users to participate.</li>
-<li><strong>options.messages.winMessage</strong>: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. You can <a href="https://github.com/Androz2091/discord-giveaways#send-embed-as-message">send an embed instead of, or with the normal message</a>.</li>
-<li><strong>options.messages.embedFooter</strong>: the message displayed at the bottom of the embeds. <a href="https://discord-giveaways.js.org/global.html#EmbedFooterObject">Can be deactivated and iconURL can be set</a>.</li>
+<li><strong>options.messages.winMessage</strong>: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.<br>
+^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#send-embed-as-message">send an embed instead of, or with the normal message</a>.</li>
+<li><strong>options.messages.embedFooter</strong>: the message displayed at the bottom of the embeds.<br>
+^^^ <a href="https://discord-giveaways.js.org/global.html#EmbedFooterObject">Can be deactivated and iconURL can be set</a>.</li>
 <li><strong>options.messages.noWinner</strong>: the message that is displayed if no winner can be drawn.</li>
 <li><strong>options.messages.hostedBy</strong>: the message to display the host of the giveaway.</li>
 <li><strong>options.messages.winners</strong>: simply the expression &quot;winner(s):&quot; in your language.</li>
