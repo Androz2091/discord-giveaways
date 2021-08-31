@@ -463,7 +463,7 @@ client.giveawaysManager.start(interaction.channel, {
         dropMessage: 'Be the first to react with 🎉 !',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
-        embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
+        embedFooter: '{this.winnerCount} winner(s)',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {this.hostedBy}',
         winners: 'Winner(s):',

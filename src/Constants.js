@@ -12,10 +12,10 @@ exports.DEFAULT_CHECK_INTERVAL = 15_000;
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended. "{winners}" will be replaced automatically with the mentions of the giveaway winners.
  * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
  * @property {string} [dropMessage='Be the first to react with 🎉'] Displayed in the giveaway embed for drop giveaways.
- * @property {string|EmbedFooterObject} [embedFooter='{this.winnerCount} winner(s) • Powered by the discord-giveaways package'] The footer of the giveaway embed.
+ * @property {string|EmbedFooterObject} [embedFooter='{this.winnerCount} winner(s)'] The footer of the giveaway embed.
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
  * @property {string} [winners='Winner(s):'] Displayed in the giveaway embed before the winners.
- * @property {string} [endedAt='Ended at'] Displayed next to the embed footer, used to display the giveaway end date.
+ * @property {string} [endedAt='Ended at'] Displayed as the embed footer, next to the giveaway end date, when the giveaway has ended.
  * @property {string} [hostedBy='Hosted by: {this.hostedBy}'] Below the "inviteToParticipate" message, in the description of the embed.
  */
 exports.GiveawayMessages = {
@@ -25,7 +25,7 @@ exports.GiveawayMessages = {
     winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
     drawing: 'Drawing: {timestamp}',
     dropMessage: 'Be the first to react with 🎉 !',
-    embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
+    embedFooter: '{this.winnerCount} winner(s)',
     noWinner: 'Giveaway cancelled, no valid participations.',
     winners: 'Winner(s):',
     endedAt: 'Ended at',
