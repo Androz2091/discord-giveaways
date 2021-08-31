@@ -46,12 +46,12 @@ const giveawaySchema = new mongoose.Schema({
     },
     thumbnail: String,
     hostedBy: String,
-    winnerIds: [String],
+    winnerIds: { type: [String], default: undefined },
     reaction: mongoose.Mixed,
     botsCanWin: Boolean,
     embedColor: mongoose.Mixed,
     embedColorEnd: mongoose.Mixed,
-    exemptPermissions: [],
+    exemptPermissions: { type: [], default: undefined },
     exemptMembers: String,
     bonusEntries: String,
     extraData: mongoose.Mixed,
@@ -70,11 +70,11 @@ const giveawaySchema = new mongoose.Schema({
     },
     isDrop: Boolean,
     allowedMentions: {
-        parse: [String],
-        users: [String],
-        roles: [String]
+        parse: { type: [String], default: undefined },
+        users: { type: [String], default: undefined },
+        roles: { type: [String], default: undefined }
     }
-});
+}, { id: false });
 
 // Create the model
 const giveawayModel = mongoose.model('giveaways', giveawaySchema);
@@ -84,7 +84,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
         // Get all giveaways from the database. We fetch all documents by passing an empty condition.
-        return await giveawayModel.find({});
+        return await giveawayModel.find({}).lean().exec();
     }
 
     // This function is called when a giveaway needs to be saved in the database.
@@ -98,7 +98,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageId, giveawayData) {
         // Find by messageId and update it
-        await giveawayModel.findOneAndUpdate({ messageId }, giveawayData, { omitUndefined: true }).exec();
+        await giveawayModel.findOneAndUpdate({ messageId }, giveawayData, { omitUndefined: true }).lean().exec();
         // Don't forget to return something!
         return true;
     }
@@ -106,7 +106,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageId) {
         // Find by messageId and delete it
-        await giveawayModel.findOneAndDelete({ messageId }).exec();
+        await giveawayModel.findOneAndDelete({ messageId }).lean().exec();
         // Don't forget to return something!
         return true;
     }
