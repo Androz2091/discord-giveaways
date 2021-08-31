@@ -96,7 +96,7 @@ declare module 'discord-giveaways' {
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
         isDrop?: boolean;
-        allowedMentions?: MessageMentionOptions;
+        allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
     }
     interface GiveawaysMessages {
         giveaway?: string;
@@ -143,7 +143,7 @@ declare module 'discord-giveaways' {
         public startAt: number;
         public winnerCount: number;
         public winnerIds: Snowflake[];
-        public allowedMentions?: MessageMentionOptions;
+        public allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
         private endTimeout?: NodeJS.Timeout;
 
         // getters calculated using default manager options
@@ -217,6 +217,6 @@ declare module 'discord-giveaways' {
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
         isDrop?: boolean;
-        allowedMentions?: MessageMentionOptions;
+        allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
     }
 }
