@@ -120,9 +120,9 @@ The command examples below (reroll, edit delete, end) can be executed on any ser
 ```js
 let giveaway = 
 // Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.prize === interaction.options.getString('query')) ||
+client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('query')) ||
 // Search with messageId
-client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.messageId === interaction.options.getString('query'));
+client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.messageId === interaction.options.getString('query'));
 
 // If no giveaway was found
 if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
