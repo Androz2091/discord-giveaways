@@ -33,7 +33,7 @@ class Giveaway extends EventEmitter {
         this.manager = manager;
         /**
          * The end timeout for this giveaway
-         * @type {NodeJS.Timeout?}
+         * @type {?NodeJS.Timeout}
          */
         this.endTimeout = null;
         /**
@@ -55,12 +55,12 @@ class Giveaway extends EventEmitter {
          * The end date of the giveaway.
          * @type {Number}
          */
-        this.endAt = options.endAt ??= Infinity;
+        this.endAt = options.endAt ?? Infinity;
         /**
          * Whether the giveaway is ended.
          * @type {Boolean}
          */
-        this.ended = options.ended || false;
+        this.ended = options.ended ?? false;
         /**
          * The Id of the channel of the giveaway.
          * @type {Discord.Snowflake}
@@ -85,7 +85,7 @@ class Giveaway extends EventEmitter {
          * The winner Ids for this giveaway after it ended.
          * @type {string[]}
          */
-        this.winnerIds = options.winnerIds || [];
+        this.winnerIds = options.winnerIds ?? [];
         /**
          * The mention of the user who hosts this giveaway.
          * @type {string}
@@ -155,7 +155,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.ColorResolvable}
      */
     get embedColor() {
-        return this.options.embedColor || this.manager.options.default.embedColor;
+        return this.options.embedColor ?? this.manager.options.default.embedColor;
     }
 
     /**
@@ -163,7 +163,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.ColorResolvable}
      */
     get embedColorEnd() {
-        return this.options.embedColorEnd || this.manager.options.default.embedColorEnd;
+        return this.options.embedColorEnd ?? this.manager.options.default.embedColorEnd;
     }
 
     /**
@@ -171,7 +171,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
-        return this.options.reaction || this.manager.options.default.reaction;
+        return this.options.reaction ?? this.manager.options.default.reaction;
     }
 
     /**
@@ -187,7 +187,7 @@ class Giveaway extends EventEmitter {
      * @type {Discord.PermissionResolvable[]}
      */
     get exemptPermissions() {
-        return this.options.exemptPermissions || this.manager.options.default.exemptPermissions;
+        return this.options.exemptPermissions ?? this.manager.options.default.exemptPermissions;
     }
 
     /**
@@ -195,7 +195,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return merge(this.manager.options.default.lastChance, this.options.lastChance || {});
+        return merge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
     }
 
     /**
@@ -203,7 +203,7 @@ class Giveaway extends EventEmitter {
      * @type {PauseOptions}
      */
     get pauseOptions() {
-        return merge(PauseOptions, this.options.pauseOptions || {});
+        return merge(PauseOptions, this.options.pauseOptions ?? {});
     }
 
     /**
@@ -211,7 +211,7 @@ class Giveaway extends EventEmitter {
      * @type {BonusEntry[]}
      */
     get bonusEntries() {
-        return eval(this.options.bonusEntries) || [];
+        return eval(this.options.bonusEntries) ?? [];
     }
 
     /**
@@ -220,7 +220,7 @@ class Giveaway extends EventEmitter {
      * @type {Boolean}
      */
     get isDrop() {
-        return this.options.isDrop || false;
+        return this.options.isDrop ?? false;
     }
 
     /**
@@ -334,20 +334,21 @@ class Giveaway extends EventEmitter {
      */
     fillInEmbed(embed) {
         if (!embed || typeof embed !== 'object') return null;
-        return new Discord.MessageEmbed(embed)
-            .setAuthor(this.fillInString(embed.author?.name) ?? '', embed.author?.iconURL, embed.author?.url)
-            .setDescription(this.fillInString(embed.description) ?? '')
-            .setFooter(this.fillInString(embed.footer?.text) ?? '', embed.footer?.iconURL)
-            .setTitle(this.fillInString(embed.title) ?? '')
-            .spliceFields(
-                0,
-                embed.fields?.length || 0,
-                embed.fields?.map((f) => {
-                    f.name = this.fillInString(f.name) ?? '';
-                    f.value = this.fillInString(f.value) ?? '';
-                    return f;
-                }) || []
-            );
+        embed = new Discord.MessageEmbed(embed);
+        embed.title = this.fillInString(embed.title);
+        embed.description = this.fillInString(embed.description);
+        if (typeof embed.author?.name === 'string') embed.author.name = this.fillInString(embed.author.name);
+        if (typeof embed.footer?.text === 'string') embed.footer.text = this.fillInString(embed.footer.text);
+        embed.spliceFields(
+            0,
+            embed.fields.length,
+            embed.fields.map((f) => {
+                f.name = this.fillInString(f.name);
+                f.value = this.fillInString(f.value);
+                return f;
+            })
+        );
+        return embed;
     }
 
     /**

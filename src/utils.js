@@ -11,7 +11,7 @@ const validateEmbedColor = (embedColor) => {
 };
 
 const embedEqual = (embed1, embed2) => {
-    if (embed1.author?.name !== (embed2.author?.name || undefined)) return false;
+    if (embed1.author?.name !== embed2.author?.name) return false;
     if (embed1.author?.iconURL !== embed2.author?.iconURL) return false;
     if (embed1.title !== embed2.title) return false;
     if (embed1.description !== embed2.description) return false;
