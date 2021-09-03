@@ -64,8 +64,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
-        const embed = new Discord.MessageEmbed();
-        embed
+        const embed = new Discord.MessageEmbed()
             .setTitle(giveaway.prize)
             .setColor(
                 giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
@@ -118,26 +117,29 @@ class GiveawaysManager extends EventEmitter {
     generateEndEmbed(giveaway, winners) {
         let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
 
-        const descriptionString = (formattedWinners) => {
-            return giveaway.messages.winners + ' ' + formattedWinners + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '');
+        const strings = {
+            winners: giveaway.fillInString(giveaway.messages.giveaway),
+            hostedBy: giveaway.fillInString(giveaway.messages.hostedBy),
+            prize: giveaway.fillInString(giveaway.prize),
+            endedAt: giveaway.fillInString(giveaway.messages.endedAt)
         };
+
+        const descriptionString = (formattedWinners) => strings.winners + ' ' + formattedWinners + (giveaway.hostedBy ? '\n' + strings.hostedBy : '');
 
         for (
             let i = 1;
             descriptionString(formattedWinners).length > 4096 ||
-            giveaway.prize.length + giveaway.messages.endedAt.length + descriptionString(formattedWinners).length > 6000;
+            strings.prize.length + strings.endedAt.length + descriptionString(formattedWinners).length > 6000;
             i++
         ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
 
-        const embed = new Discord.MessageEmbed();
-        embed
-            .setTitle(giveaway.prize)
+        return new Discord.MessageEmbed()
+            .setTitle(strings.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
+            .setFooter(strings.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(descriptionString(formattedWinners))
             .setTimestamp(new Date(giveaway.endAt).toISOString())
             .setThumbnail(giveaway.thumbnail);
-        return giveaway.fillInEmbed(embed);
     }
 
     /**
@@ -146,8 +148,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateNoValidParticipantsEndEmbed(giveaway) {
-        const embed = new Discord.MessageEmbed();
-        embed
+        const embed = new Discord.MessageEmbed()
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
