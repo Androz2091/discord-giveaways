@@ -83,12 +83,12 @@ client.on('interactionCreate', (interaction) => {
 
     const ms = require('ms');
 
-    if (interaction.isCommand() && interaction.commandName === 'start-giveaway') {
-        // /start-giveaway 2d 1 Awesome prize!
+    if (interaction.isCommand() && interaction.commandName === 'start') {
+        // /start 2d 1 Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be "Awesome prize!"
 
         const duration = interaction.options.getString('duration');
-        const winnerCount = interaction.options.getInteger('winner_count');
+        const winnerCount = interaction.options.getInteger('winners');
         const prize = interaction.options.getString('prize');
 
         client.giveawaysManager.start(interaction.channel, {
@@ -118,7 +118,7 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageId` of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageId` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
 
 ```js
-let giveaway = 
+const giveaway = 
 // Search with giveaway prize
 client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('query')) ||
 // Search with messageId
@@ -449,7 +449,7 @@ For example:
 
 ```js
 const duration = interaction.options.getString('duration');
-const winnerCount = interaction.options.getInteger('winnerCount');
+const winnerCount = interaction.options.getInteger('winners');
 const prize = interaction.options.getString('prize');
 
 client.giveawaysManager.start(interaction.channel, {
