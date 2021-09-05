@@ -36,7 +36,7 @@
     
 
 
-    <h3>discord-giveaways 5.0.0</h3>
+    <h3>discord-giveaways 5.0.1</h3>
 
 
 
@@ -124,12 +124,12 @@ You can pass an options object to customize the giveaways. Here is a list of the
 
     const ms = require('ms');
 
-    if (interaction.isCommand() && interaction.commandName === 'start-giveaway') {
-        // /start-giveaway 2d 1 Awesome prize!
+    if (interaction.isCommand() && interaction.commandName === 'start') {
+        // /start 2d 1 Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be &quot;Awesome prize!&quot;
 
         const duration = interaction.options.getString('duration');
-        const winnerCount = interaction.options.getInteger('winner_count');
+        const winnerCount = interaction.options.getInteger('winners');
         const prize = interaction.options.getString('prize');
 
         client.giveawaysManager.start(interaction.channel, {
@@ -154,12 +154,12 @@ You can pass an options object to customize the giveaways. Here is a list of the
     <img src="https://zupimages.net/up/19/23/5h0s.png"/>
 </a>
 <h4>⚠ ATTENTION!</h4>
-<p>The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the <code>prize</code> or the <code>messageId</code>of a giveaway. To prevent abuse we recommend to check if the <code>prize</code> or the <code>messageId</code> that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.</p>
-<pre class="prettyprint source lang-js"><code>let giveaway = 
+<p>The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the <code>prize</code> or the <code>messageId</code> of a giveaway. To prevent abuse we recommend to check if the <code>prize</code> or the <code>messageId</code> that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.</p>
+<pre class="prettyprint source lang-js"><code>const giveaway = 
 // Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.prize === interaction.options.getString('query')) ||
+client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('query')) ||
 // Search with messageId
-client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guild.id && g.messageId === interaction.options.getString('query'));
+client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.messageId === interaction.options.getString('query'));
 
 // If no giveaway was found
 if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
@@ -327,7 +327,7 @@ client.giveawaysManager.start(interaction.channel, {
 <ul>
 <li><strong>lastChance.enabled</strong>: if the last chance system is enabled.</li>
 <li><strong>lastChance.content</strong>: the text of the embed when the last chance system is enabled.<br>
-^^^You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
+^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>lastChance.threshold</strong>: the number of milliseconds before the giveaway ends when the last chance system will be enabled.</li>
 <li><strong>lastChance.embedColor</strong>: the color of the embed when last chance is enabled.</li>
 </ul>
@@ -424,12 +424,12 @@ For example:</p>
 ^^^ <a href="https://discord-giveaways.js.org/global.html#EmbedFooterObject">Can be deactivated and iconURL can be set</a>.</li>
 <li><strong>options.messages.noWinner</strong>: the message that is displayed if no winner can be drawn.</li>
 <li><strong>options.messages.hostedBy</strong>: the message to display the host of the giveaway.</li>
-<li><strong>options.messages.winners</strong>: simply the expression &quot;winner(s):&quot; in your language.</li>
+<li><strong>options.messages.winners</strong>: simply the expression &quot;Winner(s):&quot; in your language.</li>
 <li><strong>options.messages.endedAt</strong>: simply the words &quot;Ended at&quot; in your language.</li>
 </ul>
 <p>For example:</p>
 <pre class="prettyprint source lang-js"><code>const duration = interaction.options.getString('duration');
-const winnerCount = interaction.options.getInteger('winnerCount');
+const winnerCount = interaction.options.getInteger('winners');
 const prize = interaction.options.getString('prize');
 
 client.giveawaysManager.start(interaction.channel, {
@@ -443,7 +443,7 @@ client.giveawaysManager.start(interaction.channel, {
         dropMessage: 'Be the first to react with 🎉 !',
         inviteToParticipate: 'React with 🎉 to participate!',
         winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
-        embedFooter: '{this.winnerCount} winner(s) • Powered by the discord-giveaways package',
+        embedFooter: '{this.winnerCount} winner(s)',
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {this.hostedBy}',
         winners: 'Winner(s):',
