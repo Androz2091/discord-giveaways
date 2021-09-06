@@ -413,18 +413,19 @@ class GiveawaysManager extends EventEmitter {
             return [];
         } else {
             // If the file exists, read it
-            const storageContent = await readFile(this.options.storage);
+            const storageContent = await readFile(this.options.storage, { encoding: 'utf-8'});
+            if (!storageContent.trim().startsWith('[') || !storageContent.trim().endsWith(']')) {
+                console.log(storageContent);
+                throw new SyntaxError('The storage file is not properly formatted (does not contain an array).');
+            }
+
             try {
-                const giveaways = await JSON.parse(storageContent.toString(), (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v);
-                if (Array.isArray(giveaways)) return giveaways;
-                else {
-                    console.log(storageContent, giveaways);
-                    throw new SyntaxError('The storage file is not properly formatted (giveaways is not an array).');
-                }
+                return await JSON.parse(storageContent, (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v);
             } catch (err) {
-                if (err.message === 'Unexpected end of JSON input') {
-                    throw new SyntaxError('The storage file is not properly formatted (Unexpected end of JSON input).');
-                } else throw err;
+                if (err.message.startsWith('Unexpected token')) {
+                    throw new SyntaxError(`${err.message} | LINK: (${require('path').resolve(this.options.storage)}:1:${err.message.split(' ').at(-1)})`);
+                }
+                throw err;
             }
         }
     }
