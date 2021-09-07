@@ -113,7 +113,8 @@ exports.PauseOptions = {
     content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
     unPauseAfter: null,
     embedColor: '#FFFF00',
-    durationAfterPause: null
+    durationAfterPause: null,
+    pauseRemainingText: "`NEVER`"
 };
 
 /**
