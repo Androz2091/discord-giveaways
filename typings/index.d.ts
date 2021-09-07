@@ -63,6 +63,7 @@ declare module 'discord-giveaways' {
         unPauseAfter: number;
         embedColor: ColorResolvable;
         durationAfterPause: number;
+        pauseRemainingText: string;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
