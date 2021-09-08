@@ -98,7 +98,7 @@ class GiveawaysManager extends EventEmitter {
                         '\n' +
                         giveaway.messages.drawing.replace(
                             '{timestamp}',
-                            giveaway.endAt === Infinity ? (giveaway.pauseOptions.pauseRemainingText ? giveaway.pauseOptions.pauseRemainingText : '`NEVER`') : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
+                            giveaway.endAt === Infinity ? (giveaway.pauseOptions.infiniteDurationText ? giveaway.pauseOptions.infiniteDurationText : '`NEVER`') : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
                         )
                     ) +
                     (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
