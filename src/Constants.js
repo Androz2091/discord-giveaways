@@ -114,7 +114,7 @@ exports.PauseOptions = {
     unPauseAfter: null,
     embedColor: '#FFFF00',
     durationAfterPause: null,
-    pauseRemainingText: "`NEVER`"
+    infiniteDurationText: "`NEVER`"
 };
 
 /**
