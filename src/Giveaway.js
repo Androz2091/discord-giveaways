@@ -324,7 +324,7 @@ class Giveaway extends EventEmitter {
                 }
                 string = string.replaceAll(match, replacer);
             });
-        return string;
+        return string.trim();
     }
 
     /**

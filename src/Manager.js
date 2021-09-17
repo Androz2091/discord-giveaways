@@ -214,7 +214,7 @@ class GiveawaysManager extends EventEmitter {
                         : Discord.Permissions.FLAGS.SEND_MESSAGES
                 ])
             ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
-            if (typeof options.prize !== 'string' || options.prize.length > 256) {
+            if (typeof options.prize !== 'string' || (options.prize = options.prize.trim()).length > 256) {
                 return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
             }
             if (!Number.isInteger(options.winnerCount) || options.winnerCount < 1) {
