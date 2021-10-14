@@ -1,1 +1,4 @@
-export { GiveawaysManager, version } from './index.js';
+export {
+    GiveawaysManager,
+    version
+} from './index.js';
