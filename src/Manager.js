@@ -521,11 +521,13 @@ class GiveawaysManager extends EventEmitter {
                 setTimeout(async () => {
                     giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message?.edit({
-                        content: giveaway.fillInString(giveaway.messages.giveaway),
-                        embeds: [embed],
-                        allowedMentions: giveaway.allowedMentions
-                    }).catch(() => {});
+                    giveaway.message = await giveaway.message
+                        ?.edit({
+                            content: giveaway.fillInString(giveaway.messages.giveaway),
+                            embeds: [embed],
+                            allowedMentions: giveaway.allowedMentions
+                        })
+                        .catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
@@ -537,11 +539,13 @@ class GiveawaysManager extends EventEmitter {
             const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
-                giveaway.message.edit({
-                    content: giveaway.fillInString(giveaway.messages.giveaway),
-                    embeds: [updatedEmbed],
-                    allowedMentions: giveaway.allowedMentions
-                }).catch(() => {});
+                giveaway.message = await giveaway.message
+                    .edit({
+                        content: giveaway.fillInString(giveaway.messages.giveaway),
+                        embeds: [updatedEmbed],
+                        allowedMentions: giveaway.allowedMentions
+                    })
+                    .catch(() => {});
             }
         });
     }

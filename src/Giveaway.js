@@ -528,11 +528,13 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message.edit({
-                    content: this.fillInString(this.messages.giveaway),
-                    embeds: [embed],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                this.message = await this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveaway),
+                        embeds: [embed],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
             }
             resolve(this);
         });
@@ -567,11 +569,13 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({
-                    content: this.fillInString(this.messages.giveawayEnded),
-                    embeds: [embed],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                this.message = await this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveawayEnded),
+                        embeds: [embed],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
@@ -639,11 +643,13 @@ class Giveaway extends EventEmitter {
                     });
                 }
 
-                this.message.edit({
-                    content: this.fillInString(this.messages.giveawayEnded),
-                    embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                this.message = await this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveawayEnded),
+                        embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
                 resolve([]);
             }
         });
@@ -680,11 +686,13 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({
-                    content: this.fillInString(this.messages.giveawayEnded),
-                    embeds: [embed],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                this.message = await this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveawayEnded),
+                        embeds: [embed],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
@@ -789,11 +797,13 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({
-                content: this.fillInString(this.messages.giveaway),
-                embeds: [embed],
-                allowedMentions: this.allowedMentions
-            }).catch(() => {});
+            this.message = await this.message
+                .edit({
+                    content: this.fillInString(this.messages.giveaway),
+                    embeds: [embed],
+                    allowedMentions: this.allowedMentions
+                })
+                .catch(() => {});
             resolve(this);
         });
     }
@@ -819,11 +829,13 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({
-                content: this.fillInString(this.messages.giveaway),
-                embeds: [embed],
-                allowedMentions: this.allowedMentions
-            }).catch(() => {});
+            this.message = await this.message
+                .edit({
+                    content: this.fillInString(this.messages.giveaway),
+                    embeds: [embed],
+                    allowedMentions: this.allowedMentions
+                })
+                .catch(() => {});
             resolve(this);
         });
     }
