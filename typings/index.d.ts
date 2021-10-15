@@ -135,7 +135,7 @@ declare module 'discord-giveaways' {
         public hostedBy?: User;
         public manager: GiveawaysManager;
         public message: Message | null;
-        public messageId?: Snowflake;
+        public messageId: Snowflake;
         public messages: GiveawaysMessages;
         public thumbnail?: string;
         public options: GiveawayData;
@@ -204,7 +204,7 @@ declare module 'discord-giveaways' {
         guildId: Snowflake;
         ended: boolean;
         winnerIds?: Snowflake[];
-        messageId?: Snowflake;
+        messageId: Snowflake;
         reaction?: EmojiIdentifierResolvable;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: string;
