@@ -557,13 +557,9 @@ class Giveaway extends EventEmitter {
             const winners = await this.roll();
             
             const channel =
-            this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
-                (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
-                    ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                    : Discord.Permissions.FLAGS.SEND_MESSAGES
-            ])
-                ? this.message.channel.parent
-                : this.message.channel;
+                this.message.channel.isThread() && !this.message.channel.sendable
+                    ? this.message.channel.parent
+                    : this.message.channel;
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
@@ -674,11 +670,7 @@ class Giveaway extends EventEmitter {
             
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
-                this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
-                    (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
-                        ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                        : Discord.Permissions.FLAGS.SEND_MESSAGES
-                ])
+                this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
 
