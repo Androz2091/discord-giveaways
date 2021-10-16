@@ -340,7 +340,8 @@ client.giveawaysManager.start(interaction.channel, {
         isPaused: true,
         content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
         unPauseAfter: null,
-        embedColor: '#FFFF00'
+        embedColor: '#FFFF00',
+        infiniteDurationText: '`NEVER`'
     }
 });
 ```
