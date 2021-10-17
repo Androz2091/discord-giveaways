@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 const validateEmbedColor = (embedColor) => {
     try {
-        Discord.Util.resolveColor(embedColor);
+        embedColor = Discord.Util.resolveColor(embedColor);
         return (!isNaN(embedColor) && typeof embedColor === 'number' ? true : false);
     } catch {
         return false;
