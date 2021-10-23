@@ -1,63 +1,63 @@
 {
-  "name": "discord-giveaways",
-  "version": "5.0.1",
-  "description": "A complete framework to facilitate the creation of giveaways using discord.js",
-  "main": "index.js",
-  "exports": {
-    ".": [
-      {
-        "require": "./index.js",
-        "import": "./esm.mjs"
-      },
-      "./index.js"
+    "name": "discord-giveaways",
+    "version": "5.0.1",
+    "description": "A complete framework to facilitate the creation of giveaways using discord.js",
+    "main": "index.js",
+    "exports": {
+        ".": [
+            {
+                "require": "./index.js",
+                "import": "./esm.mjs"
+            },
+            "./index.js"
+        ],
+        "./": "./",
+        "./esm": "./esm.mjs"
+    },
+    "types": "typings/index.d.ts",
+    "files": [
+        "src/",
+        "typings/"
     ],
-    "./": "./",
-    "./esm": "./esm.mjs"
-  },
-  "types": "typings/index.d.ts",
-  "files": [
-    "src/",
-    "typings/"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Androz2091/discord-giveaways.git"
-  },
-  "keywords": [
-    "discord",
-    "discord.js",
-    "giveaways",
-    "winner",
-    "framework",
-    "bot",
-    "discord-giveaways",
-    "discord giveaways",
-    "giveaway"
-  ],
-  "author": "Androz2091",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Androz2091/discord-giveaways/issues"
-  },
-  "homepage": "https://discord-giveaways.js.org",
-  "dependencies": {
-    "deepmerge": "^4.2.2",
-    "discord.js": "^13.2.0",
-    "serialize-javascript": "^6.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^16.6.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-node": "^11.1.0",
-    "jsdoc": "^3.6.4",
-    "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
-    "typescript": "^4.4.2"
-  },
-  "engines": {
-    "node": ">=16.6.0"
-  }
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "generate-docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Androz2091/discord-giveaways.git"
+    },
+    "keywords": [
+        "discord",
+        "discord.js",
+        "giveaways",
+        "winner",
+        "framework",
+        "bot",
+        "discord-giveaways",
+        "discord giveaways",
+        "giveaway"
+    ],
+    "author": "Androz2091",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Androz2091/discord-giveaways/issues"
+    },
+    "homepage": "https://discord-giveaways.js.org",
+    "dependencies": {
+        "deepmerge": "^4.2.2",
+        "discord.js": "^13.2.0",
+        "serialize-javascript": "^6.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^16.6.0",
+        "eslint": "^7.32.0",
+        "eslint-plugin-node": "^11.1.0",
+        "jsdoc": "^3.6.4",
+        "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
+        "typescript": "^4.4.2"
+    },
+    "engines": {
+        "node": ">=16.6.0"
+    }
 }

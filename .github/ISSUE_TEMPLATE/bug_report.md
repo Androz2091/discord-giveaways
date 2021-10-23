@@ -4,7 +4,6 @@ about: Report incorrect or unexpected behavior
 title: ''
 labels: bug
 assignees: ''
-
 ---
 
 <!--
@@ -16,30 +15,30 @@ assignees: ''
 
 -->
 
-**Describe the bug**  
+**Describe the bug**
 
 A clear and concise description of what the bug is.
 
-**Error**  
+**Error**
 
 A screenshot or the text block of the error if there is one.
 
-**To Reproduce**  
+**To Reproduce**
 
 Steps to reproduce the behavior:
 
-**Expected behavior**  
+**Expected behavior**
 
 A clear and concise description of what you expected to happen.
 
-**Screenshots**  
+**Screenshots**
 
 If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 
-* `discord-giveaways` version:
-* `discord.js` version:
-* Custom Database (if you use one):
+-   `discord-giveaways` version:
+-   `discord.js` version:
+-   Custom Database (if you use one):
 
 Add any other context about the problem here.

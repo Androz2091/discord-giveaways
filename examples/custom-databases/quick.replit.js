@@ -1,9 +1,6 @@
 const Discord = require('discord.js'),
     client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-        ]
+        intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
     }),
     settings = {
         prefix: 'g!',
@@ -58,14 +55,18 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 };
 
 // Create a new instance of your new class
-const manager = new GiveawayManagerWithOwnDatabase(client, {
-    default: {
-        botsCanWin: false,
-        embedColor: '#FF0000',
-        embedColorEnd: '#000000',
-        reaction: '🎉'
-    }
-}, false); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
+const manager = new GiveawayManagerWithOwnDatabase(
+    client,
+    {
+        default: {
+            botsCanWin: false,
+            embedColor: '#FF0000',
+            embedColorEnd: '#000000',
+            reaction: '🎉'
+        }
+    },
+    false
+); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
@@ -77,7 +78,7 @@ db.on('ready', async () => {
 });
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log("I'm ready!");
 });
 
 client.login(settings.token);

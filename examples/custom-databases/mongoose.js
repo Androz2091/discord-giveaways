@@ -1,9 +1,6 @@
 const Discord = require('discord.js'),
     client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-        ]
+        intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
     }),
     settings = {
         prefix: 'g!',
@@ -22,59 +19,62 @@ db.once('open', () => {
 });
 
 // Create the schema for giveaways
-const giveawaySchema = new mongoose.Schema({
-    messageId: String,
-    channelId: String,
-    guildId: String,
-    startAt: Number,
-    endAt: Number,
-    ended: Boolean,
-    winnerCount: Number,
-    prize: String,
-    messages: {
-        giveaway: String,
-        giveawayEnded: String,
-        inviteToParticipate: String,
-        drawing: String,
-        dropMessage: String,
-        winMessage: mongoose.Mixed,
-        embedFooter: mongoose.Mixed,
-        noWinner: String,
-        winners: String,
-        endedAt: String,
-        hostedBy: String
-    },
-    thumbnail: String,
-    hostedBy: String,
-    winnerIds: { type: [String], default: undefined },
-    reaction: mongoose.Mixed,
-    botsCanWin: Boolean,
-    embedColor: mongoose.Mixed,
-    embedColorEnd: mongoose.Mixed,
-    exemptPermissions: { type: [], default: undefined },
-    exemptMembers: String,
-    bonusEntries: String,
-    extraData: mongoose.Mixed,
-    lastChance: {
-        enabled: Boolean,
-        content: String,
-        threshold: Number,
-        embedColor: mongoose.Mixed
-    },
-    pauseOptions: {
-        isPaused: Boolean,
-        content: String,
-        unPauseAfter: Number,
+const giveawaySchema = new mongoose.Schema(
+    {
+        messageId: String,
+        channelId: String,
+        guildId: String,
+        startAt: Number,
+        endAt: Number,
+        ended: Boolean,
+        winnerCount: Number,
+        prize: String,
+        messages: {
+            giveaway: String,
+            giveawayEnded: String,
+            inviteToParticipate: String,
+            drawing: String,
+            dropMessage: String,
+            winMessage: mongoose.Mixed,
+            embedFooter: mongoose.Mixed,
+            noWinner: String,
+            winners: String,
+            endedAt: String,
+            hostedBy: String
+        },
+        thumbnail: String,
+        hostedBy: String,
+        winnerIds: { type: [String], default: undefined },
+        reaction: mongoose.Mixed,
+        botsCanWin: Boolean,
         embedColor: mongoose.Mixed,
-        durationAfterPause: Number
+        embedColorEnd: mongoose.Mixed,
+        exemptPermissions: { type: [], default: undefined },
+        exemptMembers: String,
+        bonusEntries: String,
+        extraData: mongoose.Mixed,
+        lastChance: {
+            enabled: Boolean,
+            content: String,
+            threshold: Number,
+            embedColor: mongoose.Mixed
+        },
+        pauseOptions: {
+            isPaused: Boolean,
+            content: String,
+            unPauseAfter: Number,
+            embedColor: mongoose.Mixed,
+            durationAfterPause: Number
+        },
+        isDrop: Boolean,
+        allowedMentions: {
+            parse: { type: [String], default: undefined },
+            users: { type: [String], default: undefined },
+            roles: { type: [String], default: undefined }
+        }
     },
-    isDrop: Boolean,
-    allowedMentions: {
-        parse: { type: [String], default: undefined },
-        users: { type: [String], default: undefined },
-        roles: { type: [String], default: undefined }
-    }
-}, { id: false });
+    { id: false }
+);
 
 // Create the model
 const giveawayModel = mongoose.model('giveaways', giveawaySchema);
@@ -125,7 +125,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log("I'm ready!");
 });
 
 client.login(settings.token);

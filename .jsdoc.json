@@ -8,9 +8,7 @@
         "includePattern": ".js$",
         "excludePattern": "(node_modules/|docs|tests/)"
     },
-    "plugins": [
-        "plugins/markdown"
-    ],
+    "plugins": ["plugins/markdown"],
     "templates": {
         "cleverLinks": false,
         "monospaceLinks": true,

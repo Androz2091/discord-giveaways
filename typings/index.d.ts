@@ -32,7 +32,10 @@ declare module 'discord-giveaways' {
         public edit(messageId: Snowflake, options: GiveawayEditOptions): Promise<Giveaway>;
         public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
         public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
-        public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
+        public start(
+            channel: TextChannel | NewsChannel | ThreadChannel,
+            options: GiveawayStartOptions
+        ): Promise<Giveaway>;
         public pause(messageId: Snowflake, options: PauseOptions): Promise<Giveaway>;
         public unpause(messageId: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
@@ -70,12 +73,12 @@ declare module 'discord-giveaways' {
         forceUpdateEvery?: number;
         endedGiveawaysLifetime?: number;
         default?: {
-            botsCanWin?: boolean,
-            exemptPermissions?: PermissionResolvable[],
-            exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>,
-            embedColor?: ColorResolvable,
-            embedColorEnd?: ColorResolvable,
-            reaction?: EmojiIdentifierResolvable,
+            botsCanWin?: boolean;
+            exemptPermissions?: PermissionResolvable[];
+            exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
+            embedColor?: ColorResolvable;
+            embedColorEnd?: ColorResolvable;
+            reaction?: EmojiIdentifierResolvable;
             lastChance?: LastChanceOptions;
         };
     }
@@ -107,7 +110,7 @@ declare module 'discord-giveaways' {
         winMessage?: string | MessageObject;
         drawing?: string;
         dropMessage?: string;
-        embedFooter?: string | { text?: string; iconURL?: string; };
+        embedFooter?: string | { text?: string; iconURL?: string };
         noWinner?: string;
         winners?: string;
         endedAt?: string;

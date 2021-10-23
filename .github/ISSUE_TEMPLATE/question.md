@@ -4,7 +4,6 @@ about: Ask a question about this project and/or how to use it
 title: ''
 labels: question
 assignees: ''
-
 ---
 
 <!--

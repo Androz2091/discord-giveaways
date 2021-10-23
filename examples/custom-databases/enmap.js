@@ -1,9 +1,6 @@
 const Discord = require('discord.js'),
     client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-        ]
+        intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
     }),
     settings = {
         prefix: 'g!',
@@ -62,7 +59,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log("I'm ready!");
 });
 
 client.login(settings.token);

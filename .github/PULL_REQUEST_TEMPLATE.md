@@ -8,10 +8,11 @@
 -->
 
 ## Changes
+
 <!-- Describe what changes this PR includes and explain why are they needed. -->
 
 ## Status
 
-- [ ] These changes have been tested and formatted properly.
-- [ ] This PR includes only documentation changes (JSDoc, README or typings), no code change.
-- [ ] This PR introduces some breaking changes.
+-   [ ] These changes have been tested and formatted properly.
+-   [ ] This PR includes only documentation changes (JSDoc, README or typings), no code change.
+-   [ ] This PR introduces some breaking changes.

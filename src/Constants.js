@@ -193,6 +193,7 @@ exports.GiveawayEditOptions = {};
  *
  * @property {number} startAt The start date of the giveaway.
  * @property {number} endAt The end date of the giveaway.
+ * @property {Discord.MessageButton | Object} unit The unit used to count the participants in the giveaway.
  * @property {number} winnerCount The number of winners for the giveaway.
  * @property {boolean} ended If the giveaway has ended.
  * @property {GiveawayMessages} messages The giveaway messages.

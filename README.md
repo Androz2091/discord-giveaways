@@ -64,7 +64,7 @@ const manager = new GiveawaysManager(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log("I'm ready!");
 });
 
 client.login(settings.token);
@@ -80,7 +80,6 @@ You can pass an options object to customize the giveaways. Here is a list of the
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     const ms = require('ms');
 
     if (interaction.isCommand() && interaction.commandName === 'start') {
@@ -91,13 +90,15 @@ client.on('interactionCreate', (interaction) => {
         const winnerCount = interaction.options.getInteger('winners');
         const prize = interaction.options.getString('prize');
 
-        client.giveawaysManager.start(interaction.channel, {
-            duration: ms(duration),
-            winnerCount,
-            prize
-        }).then((gData) => {
-            console.log(gData); // {...} (messageId, end date and more)
-        });
+        client.giveawaysManager
+            .start(interaction.channel, {
+                duration: ms(duration),
+                winnerCount,
+                prize
+            })
+            .then((gData) => {
+                console.log(gData); // {...} (messageId, end date and more)
+            });
         // And the giveaway has started!
     }
 });
@@ -115,31 +116,38 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 </a>
 
 #### ⚠ ATTENTION!
-The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageId` of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageId` that was provided  by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
+
+The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageId` of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageId` that was provided by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
 
 ```js
-const giveaway = 
-// Search with giveaway prize
-client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('query')) ||
-// Search with messageId
-client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.messageId === interaction.options.getString('query'));
+const giveaway =
+    // Search with giveaway prize
+    client.giveawaysManager.giveaways.find(
+        (g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('query')
+    ) ||
+    // Search with messageId
+    client.giveawaysManager.giveaways.find(
+        (g) => g.guildId === interaction.guildId && g.messageId === interaction.options.getString('query')
+    );
 
 // If no giveaway was found
-if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'+ args.join(' ') +'`.');
+if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `' + args.join(' ') + '`.');
 ```
 
 ### Reroll a giveaway
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     if (interaction.isCommand() && interaction.commandName === 'reroll') {
         const messageId = interaction.options.getString('message_id');
-        client.giveawaysManager.reroll(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway rerolled!');
-        }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        client.giveawaysManager
+            .reroll(messageId)
+            .then(() => {
+                interaction.channel.send('Success! Giveaway rerolled!');
+            })
+            .catch((err) => {
+                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            });
     }
 });
 ```
@@ -155,18 +163,20 @@ client.on('interactionCreate', (interaction) => {
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     if (interaction.isCommand() && interaction.commandName === 'edit') {
         const messageId = interaction.options.getString('message_id');
-        client.giveawaysManager.edit(messageId, {
-            addTime: 5000,
-            newWinnerCount: 3,
-            newPrize: 'New Prize!'
-        }).then(() => {
-            interaction.channel.send('Success! Giveaway updated!');
-        }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        client.giveawaysManager
+            .edit(messageId, {
+                addTime: 5000,
+                newWinnerCount: 3,
+                newPrize: 'New Prize!'
+            })
+            .then(() => {
+                interaction.channel.send('Success! Giveaway updated!');
+            })
+            .catch((err) => {
+                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            });
     }
 });
 ```
@@ -176,7 +186,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 -   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
-^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 -   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
@@ -187,14 +197,16 @@ client.on('interactionCreate', (interaction) => {
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     if (interaction.isCommand() && interaction.commandName === 'delete') {
         const messageId = interaction.options.getString('message_id');
-        client.giveawaysManager.delete(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway deleted!');
-        }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        client.giveawaysManager
+            .delete(messageId)
+            .then(() => {
+                interaction.channel.send('Success! Giveaway deleted!');
+            })
+            .catch((err) => {
+                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            });
     }
 });
 ```
@@ -207,33 +219,37 @@ client.on('interactionCreate', (interaction) => {
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     if (interaction.isCommand() && interaction.commandName === 'end') {
         const messageId = interaction.options.getString('message_id');
-        client.giveawaysManager.end(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway ended!');
-        }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        client.giveawaysManager
+            .end(messageId)
+            .then(() => {
+                interaction.channel.send('Success! Giveaway ended!');
+            })
+            .catch((err) => {
+                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            });
     }
 });
 ```
 
-- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.  
-^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+-   **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.  
+    ^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 
 ### Pause a giveaway
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     if (interaction.isCommand() && interaction.commandName === 'pause') {
         const messageId = interaction.options.getString('message_id');
-        client.giveawaysManager.pause(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway paused!');
-        }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        client.giveawaysManager
+            .pause(messageId)
+            .then(() => {
+                interaction.channel.send('Success! Giveaway paused!');
+            })
+            .catch((err) => {
+                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            });
     }
 });
 ```
@@ -248,14 +264,16 @@ client.on('interactionCreate', (interaction) => {
 
 ```js
 client.on('interactionCreate', (interaction) => {
-
     if (interaction.isCommand() && interaction.commandName === 'unpause') {
         const messageId = interaction.options.getString('message_id');
-        client.giveawaysManager.unpause(messageId).then(() => {
-            interaction.channel.send('Success! Giveaway unpaused!');
-        }).catch((err) => {
-            interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
-        });
+        client.giveawaysManager
+            .unpause(messageId)
+            .then(() => {
+                interaction.channel.send('Success! Giveaway unpaused!');
+            })
+            .catch((err) => {
+                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+            });
     }
 });
 ```
@@ -297,7 +315,7 @@ client.giveawaysManager.start(interaction.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     // Only members who have the the role which is assigned to "roleName" are able to win
-    exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`),
+    exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`)
 });
 ```
 
@@ -321,7 +339,7 @@ client.giveawaysManager.start(interaction.channel, {
 
 -   **lastChance.enabled**: if the last chance system is enabled.
 -   **lastChance.content**: the text of the embed when the last chance system is enabled.  
-^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
 -   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
@@ -348,11 +366,11 @@ client.giveawaysManager.start(interaction.channel, {
 
 -   **pauseOptions.isPaused**: if the giveaway is paused.
 -   **pauseOptions.content**: the text of the embed when the giveaway is paused.  
-^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **pauseOptions.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
 -   **pauseOptions.infiniteDurationText**: The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unPauseAfter".  
-^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
     <img src="https://zupimages.net/up/21/24/dxhk.png"/>
@@ -365,10 +383,10 @@ client.giveawaysManager.start(interaction.channel, {
     duration: 60000,
     winnerCount: 1,
     prize: 'Free Steam Key',
-    bonusEntries: [  
+    bonusEntries: [
         {
             // Members who have the "Nitro Boost" role get 2 bonus entries
-            bonus: (member) => member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null,
+            bonus: (member) => (member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null),
             cumulative: false
         }
     ]
@@ -389,10 +407,13 @@ client.giveawaysManager.start(interaction.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     bonusEntries: [
-        {   
+        {
             // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
-            bonus: new Function('member', `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`),
-            cumulative: false 
+            bonus: new Function(
+                'member',
+                `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`
+            ),
+            cumulative: false
         }
     ]
 });
@@ -406,6 +427,7 @@ You can send an embed instead of, or with the normal message for the following m
 `giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
 
 The format looks like this:
+
 ```js
 message: { content: '', embed: new Discord.MessageEmbed() }
 ```
@@ -418,14 +440,18 @@ You can access any giveaway property inside of giveaway messages with the format
 For example:
 
 ```js
-messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }
+messages: {
+    winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}';
+}
 ```
 
 Also, you can write JavaScript code inside of the `{}`.  
 For example:
 
 ```js
-messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }
+messages: {
+    winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}';
+}
 ```
 
 If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
@@ -440,9 +466,9 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.  
-^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+    ^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.  
-^^^ [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
+    ^^^ [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.hostedBy**: the message to display the host of the giveaway.
 -   **options.messages.winners**: simply the expression "Winner(s):" in your language.
@@ -470,7 +496,7 @@ client.giveawaysManager.start(interaction.channel, {
         noWinner: 'Giveaway cancelled, no valid participations.',
         hostedBy: 'Hosted by: {this.hostedBy}',
         winners: 'Winner(s):',
-        endedAt: 'Ended at',
+        endedAt: 'Ended at'
     }
 });
 ```
@@ -481,11 +507,11 @@ And for the `reroll()` function:
 
 ```js
 client.giveawaysManager.reroll(messageId, {
-        messages: {
-            congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
-            error: 'No valid participations, no new winner(s) can be chosen!'
-        }
-    });
+    messages: {
+        congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
+        error: 'No valid participations, no new winner(s) can be chosen!'
+    }
+});
 ```
 
 -   **options.messages.congrat**: the congratulatory message.
@@ -506,19 +532,21 @@ You can use your custom database to save giveaways, instead of the json files (t
 **⚠️ All the methods should be asynchronous to return a promise!**
 
 <ins>**SQL examples**</ins>
-- [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- SQLite
-  - [Quick.db](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.db.js)
-  - [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
+
+-   [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+-   SQLite
+    -   [Quick.db](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.db.js)
+    -   [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 
 <ins>**NoSQL examples**</ins>
-- MongoDB
-  - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
-  - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
-- [Apache CouchDB - Nano](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/nano.js)
-- Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
-  - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
-  - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.replit.js)
+
+-   MongoDB
+    -   [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
+    -   [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
+-   [Apache CouchDB - Nano](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/nano.js)
+-   Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
+    -   [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
+    -   [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.replit.js)
 
 ## Support shards
 
@@ -564,7 +592,7 @@ const manager = new GiveawayManagerWithShardSupport(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log("I'm ready!");
 });
 
 client.login(settings.token);
