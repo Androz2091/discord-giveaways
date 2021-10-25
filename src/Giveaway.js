@@ -47,16 +47,13 @@ class Giveaway extends EventEmitter {
          */
 
         this.unitData = this.resolveUnit(options.unit);
+
         /**
-         * Whether the giveaway counts with reactions.
-         * @type {boolean}
+         * The giveaway type. (1 = Reactions, 2 = Buttons).
+         * @type {number}
          */
-        this.isWithReactions = null;
-        /**
-         * Whether the giveaway counts with buttons.
-         * @type {boolean}
-         */
-        this.isWithButtons = false;
+
+        this.type = 0;
         /**
          * The giveaway prize.
          * @type {string}
@@ -137,6 +134,12 @@ class Giveaway extends EventEmitter {
          * @type {?Discord.Message}
          */
         this.message = null;
+        /**
+         * The participating users (For buttons).
+         * @type {Discord.User[] | null}
+         */
+
+        this.participatedUsers = null;
     }
 
     /**
@@ -175,19 +178,29 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Whether the the giveaway counts entries with buttons.
+     * @type {boolean}
+     */
+
+    get isWithButtons() {
+        return this.type === 2;
+    }
+
+    /**
+     * Whether the giveaway counts entries with reactions.
+     * @type {boolean}
+     */
+
+    get isWithReactions() {
+        return this.type === 1;
+    }
+
+    /**
      * The color of the giveaway embed when it has ended.
      * @type {Discord.ColorResolvable}
      */
     get embedColorEnd() {
         return this.options.embedColorEnd ?? this.manager.options.default.embedColorEnd;
-    }
-
-    /**
-     * The reaction on the giveaway message.
-     * @type {Discord.EmojiIdentifierResolvable}
-     */
-    get reaction() {
-        return this.options.reaction ?? this.manager.options.default.reaction;
     }
 
     /**
@@ -257,11 +270,9 @@ class Giveaway extends EventEmitter {
                 .setCustomId('giveaway');
 
             this.isWithButtons = true;
+            this.participatedUsers = [];
         } else {
-            unitData = {
-                isReaction: true,
-                reaction: data.reaction ?? this.manager.options.default.reaction
-            };
+            unitData = data.reaction ?? this.manager.options.default.reaction;
 
             this.isWithReactions = true;
         }
@@ -334,9 +345,10 @@ class Giveaway extends EventEmitter {
                 !this.options.bonusEntries || typeof this.options.bonusEntries === 'string'
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
-            reaction: this.options.reaction,
+            unitData: this.unitData instanceof Discord.MessageButton ? this.unitData.toJSON() : this.unitData,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
+            participatedUsers: this.participatedUsers ?? null,
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions,
             isDrop: this.options.isDrop || undefined,
@@ -484,6 +496,7 @@ class Giveaway extends EventEmitter {
      */
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
+
         // Pick the winner
         let reaction = Discord.Util.resolvePartialEmoji(this.reaction);
         reaction = this.message.reactions.cache.find((r) =>

@@ -57,7 +57,8 @@ const manager = new GiveawaysManager(client, {
         botsCanWin: false,
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
-        reaction: '🎉'
+        reaction: '🎉',
+        buttonEntries: false
     }
 });
 // We now have a giveawaysManager property to access the manager everywhere!

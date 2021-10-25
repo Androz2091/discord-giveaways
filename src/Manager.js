@@ -70,8 +70,8 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
                     ? giveaway.pauseOptions.embedColor
                     : lastChanceEnabled
-                    ? giveaway.lastChance.embedColor
-                    : giveaway.embedColor
+                        ? giveaway.lastChance.embedColor
+                        : giveaway.embedColor
             )
             .setFooter(
                 typeof giveaway.messages.embedFooter === 'object'
@@ -85,10 +85,10 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.isDrop
                     ? giveaway.messages.dropMessage
                     : (giveaway.pauseOptions.isPaused
-                          ? giveaway.pauseOptions.content + '\n\n'
-                          : lastChanceEnabled
-                          ? giveaway.lastChance.content + '\n\n'
-                          : '') +
+                        ? giveaway.pauseOptions.content + '\n\n'
+                        : lastChanceEnabled
+                            ? giveaway.lastChance.content + '\n\n'
+                            : '') +
                           giveaway.messages.inviteToParticipate +
                           '\n' +
                           giveaway.messages.drawing.replace(
