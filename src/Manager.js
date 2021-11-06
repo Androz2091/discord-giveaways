@@ -67,11 +67,13 @@ class GiveawaysManager extends EventEmitter {
         const embed = new Discord.MessageEmbed()
             .setTitle(giveaway.prize)
             .setColor(
-                giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
-                    ? giveaway.pauseOptions.embedColor
-                    : lastChanceEnabled
-                        ? giveaway.lastChance.embedColor
-                        : giveaway.embedColor
+                giveaway.isDrop
+                    ? giveaway.embedColor
+                    : giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
+                        ? giveaway.pauseOptions.embedColor
+                        : lastChanceEnabled
+                            ? giveaway.lastChance.embedColor
+                            : giveaway.embedColor
             )
             .setFooter(
                 typeof giveaway.messages.embedFooter === 'object'
@@ -232,7 +234,7 @@ class GiveawaysManager extends EventEmitter {
                 prize: options.prize,
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
-                    (options.messages && typeof options.messages === 'object')
+                    options.messages && typeof options.messages === 'object'
                         ? merge(GiveawayMessages, options.messages)
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
@@ -240,13 +242,25 @@ class GiveawaysManager extends EventEmitter {
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
                 exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,
-                bonusEntries: Array.isArray(options.bonusEntries) ? options.bonusEntries.filter((elem) => typeof elem === 'object') : undefined,
+                bonusEntries:
+                    Array.isArray(options.bonusEntries) && !options.isDrop
+                        ? options.bonusEntries.filter((elem) => typeof elem === 'object')
+                        : undefined,
                 embedColor: validateEmbedColor(options.embedColor) ? options.embedColor : undefined,
                 embedColorEnd: validateEmbedColor(options.embedColorEnd) ? options.embedColorEnd : undefined,
                 extraData: options.extraData,
-                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
-                pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined,
-                allowedMentions: (options.allowedMentions && typeof options.allowedMentions === 'object') ? options.allowedMentions : undefined,
+                lastChance:
+                    options.lastChance && typeof options.lastChance === 'object' && !options.isDrop
+                        ? options.lastChance
+                        : undefined,
+                pauseOptions:
+                    options.pauseOptions && typeof options.pauseOptions === 'object' && !options.isDrop
+                        ? options.pauseOptions
+                        : undefined,
+                allowedMentions:
+                    options.allowedMentions && typeof options.allowedMentions === 'object'
+                        ? options.allowedMentions
+                        : undefined,
                 isDrop: options.isDrop
             });
 

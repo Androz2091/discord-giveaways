@@ -661,7 +661,7 @@ class Giveaway extends EventEmitter {
             if (!this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is not ended.');
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-            if (this.isDrop) return reject('Cannot reroll a drop giveaway.');
+            if (this.isDrop) return reject('Drop giveaways cannot get rerolled!');
             if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
             options = merge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
@@ -764,6 +764,7 @@ class Giveaway extends EventEmitter {
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is already paused.');
+            if (this.isDrop) return reject('Drop giveaways cannot get paused!');
             if (this.endTimeout) clearTimeout(this.endTimeout);
 
             // Update data
@@ -810,6 +811,7 @@ class Giveaway extends EventEmitter {
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
+            if (this.isDrop) return reject('Drop giveaways cannot get unpaused!');
 
             // Update data
             if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause === 'number') {
