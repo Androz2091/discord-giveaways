@@ -171,6 +171,16 @@ class Giveaway extends EventEmitter {
      * @type {Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
+        if (!this.options.reaction && this.message) {
+            const emoji = Discord.Util.resolvePartialEmoji(this.manager.options.default.reaction);
+            if (!this.message.reactions.cache.has(emoji.id ?? emoji.name)) {
+                const reaction = this.message.reactions.cache.reduce(
+                    (prev, curr) => (curr.count > prev.count ? curr : prev),
+                    { count: 0 }
+                );
+                this.options.reaction = reaction.emoji?.id ?? reaction.emoji?.name;
+            }
+        }
         return this.options.reaction ?? this.manager.options.default.reaction;
     }
 
@@ -429,8 +439,8 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
         // Pick the winner
-        let reaction = Discord.Util.resolvePartialEmoji(this.reaction);
-        reaction = this.message.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction?.name || reaction?.id));
+        const emoji = Discord.Util.resolvePartialEmoji(this.reaction);
+        const reaction = this.message.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id));
         if (!reaction) return [];
         const guild = this.message.guild;
         // Fetch guild members

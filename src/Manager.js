@@ -278,7 +278,7 @@ class GiveawaysManager extends EventEmitter {
             resolve(giveaway);
             if (giveaway.isDrop) {
                 reaction.message.awaitReactions({
-                    filter: (r, u) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction.emoji.name || reaction.emoji.id) && u.id !== this.client.user.id,
+                    filter: (r, u) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction.emoji.id ?? reaction.emoji.name) && u.id !== this.client.user.id,
                     maxUsers: giveaway.winnerCount
                 }).then(() => this.end(giveaway.messageId)).catch(() => {});
             }
@@ -496,8 +496,8 @@ class GiveawaysManager extends EventEmitter {
             // Second case: the giveaway is a drop and has already one reaction
             if (giveaway.isDrop) {
                 giveaway.message = await giveaway.fetchMessage().catch(() => {});
-                let reaction = Discord.Util.resolvePartialEmoji(giveaway.reaction);
-                reaction = giveaway.message?.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction?.name || reaction?.id));
+                const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
+                const reaction = giveaway.message?.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name));
                 if (reaction?.count - 1 >= giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
             }
 
@@ -578,8 +578,8 @@ class GiveawaysManager extends EventEmitter {
         if (!channel) return;
         const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
-        let reaction = Discord.Util.resolvePartialEmoji(giveaway.reaction);
-        reaction = message.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction?.name || reaction?.id));
+        const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
+        const reaction = message.reactions.cache.find((r) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name));
         if (!reaction) return;
         if (reaction.emoji.name !== packet.d.emoji.name) return;
         if (reaction.emoji.id && reaction.emoji.id !== packet.d.emoji.id) return;
