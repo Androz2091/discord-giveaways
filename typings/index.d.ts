@@ -116,6 +116,7 @@ declare module 'discord-giveaways' {
     interface MessageObject {
         content?: string;
         embed?: MessageEmbed | MessageEmbedOptions;
+        replyToGiveaway?: boolean;
     }
     interface GiveawaysManagerEvents {
         giveawayDeleted: [Giveaway];

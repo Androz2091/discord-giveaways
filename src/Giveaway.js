@@ -590,7 +590,11 @@ class Giveaway extends EventEmitter {
                 if (message?.length > 2000) {
                     channel.send({
                         content: winMessage.substr(0, winMessage.indexOf('{winners}')),
-                        allowedMentions: this.allowedMentions
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference: typeof this.messages.winMessage.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                            failIfNotExists: false
+                        }
                     });
                     while (formattedWinners.length >= 2000) {
                         await channel.send({
@@ -614,29 +618,69 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
-                            allowedMentions: this.allowedMentions
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    message?.length <= 2000 && typeof this.messages.winMessage.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
                         });
                     } else {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
-                            embeds: [new Discord.MessageEmbed(embed).setDescription(embed.description.substr(0, embed.description.indexOf('{winners}')))],
-                            allowedMentions: this.allowedMentions
+                            embeds: [
+                                new Discord.MessageEmbed(embed).setDescription(
+                                    embed.description.substr(0, embed.description.indexOf('{winners}'))
+                                )
+                            ],
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    message?.length <= 2000 && typeof this.messages.winMessage.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
                         });
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
                         while (formattedWinners.length >= 4096) {
                             await channel.send({
-                                embeds: [tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ',')],
+                                embeds: [
+                                    tempEmbed.setDescription(
+                                        formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ','
+                                    )
+                                ],
                                 allowedMentions: this.allowedMentions
                             });
-                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length);
+                            formattedWinners = formattedWinners.slice(
+                                formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
+                            );
                         }
-                        channel.send({ embeds: [tempEmbed.setDescription(formattedWinners)], allowedMentions: this.allowedMentions });
                         channel.send({
-                            embeds: [tempEmbed.setDescription(embed.description.substr(embed.description.indexOf('{winners}') + 9))],
+                            embeds: [tempEmbed.setDescription(formattedWinners)],
+                            allowedMentions: this.allowedMentions
+                        });
+                        channel.send({
+                            embeds: [
+                                tempEmbed.setDescription(
+                                    embed.description.substr(embed.description.indexOf('{winners}') + 9)
+                                )
+                            ],
                             allowedMentions: this.allowedMentions
                         });
                     }
-                } else if (message?.length <= 2000) channel.send({ content: message, allowedMentions: this.allowedMentions });
+                } else if (message?.length <= 2000) {
+                    channel.send({
+                        content: message,
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference: typeof this.messages.winMessage.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                            failIfNotExists: false
+                        }
+                    });
+                }
                 resolve(winners);
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
@@ -645,7 +689,11 @@ class Giveaway extends EventEmitter {
                     channel.send({
                         content: message,
                         embeds: embed ? [embed] : null,
-                        allowedMentions: this.allowedMentions
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference: typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                            failIfNotExists: false
+                        }
                     });
                 }
 
@@ -703,7 +751,11 @@ class Giveaway extends EventEmitter {
                 if (message?.length > 2000) {
                     channel.send({
                         content: congratMessage.substr(0, congratMessage.indexOf('{winners}')),
-                        allowedMentions: this.allowedMentions
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference: typeof options.messages.congrat.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                            failIfNotExists: false
+                        }
                     });
                     while (formattedWinners.length >= 2000) {
                         await channel.send({
@@ -727,36 +779,80 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
-                            allowedMentions: this.allowedMentions
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    message?.length <= 2000 && typeof options.messages.congrat.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
                         });
                     } else {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
-                            embeds: [new Discord.MessageEmbed(embed).setDescription(embed.description.substr(0, embed.description.indexOf('{winners}')))],
-                            allowedMentions: this.allowedMentions
+                            embeds: [
+                                new Discord.MessageEmbed(embed).setDescription(
+                                    embed.description.substr(0, embed.description.indexOf('{winners}'))
+                                )
+                            ],
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    message?.length <= 2000 && typeof options.messages.congrat.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
                         });
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
                         while (formattedWinners.length >= 4096) {
                             await channel.send({
-                                embeds: [tempEmbed.setDescription(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ',')],
+                                embeds: [
+                                    tempEmbed.setDescription(
+                                        formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ','
+                                    )
+                                ],
                                 allowedMentions: this.allowedMentions
                             });
-                            formattedWinners = formattedWinners.slice(formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length);
+                            formattedWinners = formattedWinners.slice(
+                                formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
+                            );
                         }
-                        channel.send({ embeds: [tempEmbed.setDescription(formattedWinners)], allowedMentions: this.allowedMentions });
                         channel.send({
-                            embeds: [tempEmbed.setDescription(embed.description.substr(embed.description.indexOf('{winners}') + 9))],
+                            embeds: [tempEmbed.setDescription(formattedWinners)],
+                            allowedMentions: this.allowedMentions
+                        });
+                        channel.send({
+                            embeds: [
+                                tempEmbed.setDescription(
+                                    embed.description.substr(embed.description.indexOf('{winners}') + 9)
+                                )
+                            ],
                             allowedMentions: this.allowedMentions
                         });
                     }
-                } else if (message?.length <= 2000) channel.send({ content: message, allowedMentions: this.allowedMentions });
+                } else if (message?.length <= 2000) {
+                    channel.send({
+                        content: message,
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference: typeof options.messages.congrat.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                            failIfNotExists: false
+                        }
+                    });
+                }
                 resolve(winners);
             } else {
                 const embed = this.fillInEmbed(options.messages.error.embed);
                 channel.send({
                     content: this.fillInString(options.messages.error.content || options.messages.error),
                     embeds: embed ? [embed] : null,
-                    allowedMentions: this.allowedMentions
+                    allowedMentions: this.allowedMentions,
+                    reply: {
+                        messageReference: typeof options.messages.error.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                        failIfNotExists: false
+                    }
                 });
                 resolve([]);
             }
