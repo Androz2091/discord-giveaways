@@ -18,7 +18,7 @@
   "files": [
     "src/",
     "typings/",
-    "./esm.mjs"
+    "esm.mjs"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
