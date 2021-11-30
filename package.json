@@ -17,7 +17,8 @@
   "types": "typings/index.d.ts",
   "files": [
     "src/",
-    "typings/"
+    "typings/",
+    "./esm.mjs"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
