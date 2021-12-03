@@ -613,7 +613,7 @@ class Giveaway extends EventEmitter {
                 if (this.messages.winMessage.embed && typeof this.messages.winMessage.embed === 'object') {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(this.messages.winMessage.embed);
-                    const embedDescription = embed.description.replace('{winners}', formattedWinners);
+                    const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
@@ -774,7 +774,7 @@ class Giveaway extends EventEmitter {
                 if (options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object') {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(options.messages.congrat.embed);
-                    const embedDescription = embed.description.replace('{winners}', formattedWinners);
+                    const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
