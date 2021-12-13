@@ -33,7 +33,7 @@ declare module 'discord-giveaways' {
         public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
         public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
-        public pause(messageId: Snowflake, options: PauseOptions): Promise<Giveaway>;
+        public pause(messageId: Snowflake, options?: PauseOptions): Promise<Giveaway>;
         public unpause(messageId: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
             event: K,
@@ -58,12 +58,12 @@ declare module 'discord-giveaways' {
         threshold?: number;
     }
     interface PauseOptions {
-        isPaused: boolean;
-        content: string;
-        unPauseAfter: number;
-        embedColor: ColorResolvable;
-        durationAfterPause: number;
-        infiniteDurationText: string;
+        isPaused?: boolean;
+        content?: string;
+        unPauseAfter?: number;
+        embedColor?: ColorResolvable;
+        durationAfterPause?: number;
+        infiniteDurationText?: string;
     }
     interface GiveawaysManagerOptions {
         storage?: string;
