@@ -471,7 +471,7 @@ class Giveaway extends EventEmitter {
                 const highestBonusEntries = await this.checkBonusEntries(user);
                 if (!highestBonusEntries) continue;
                 
-                userArray = userArray.concat(Array(highestBonusEntries).fill(user));
+                userArray.push(...Array(highestBonusEntries).fill(user))
             }
         }
 
