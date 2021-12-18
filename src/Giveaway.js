@@ -2,17 +2,7 @@ const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const { EventEmitter } = require('events');
-const {
-    GiveawayEditOptions,
-    GiveawayData,
-    GiveawayMessages,
-    GiveawayRerollOptions,
-    LastChanceOptions,
-    BonusEntry,
-    PauseOptions,
-    MessageObject,
-    DEFAULT_CHECK_INTERVAL
-} = require('./Constants.js');
+const { GiveawayEditOptions, GiveawayData, GiveawayMessages, GiveawayRerollOptions, LastChanceOptions, BonusEntry, PauseOptions, MessageObject, DEFAULT_CHECK_INTERVAL } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 const { validateEmbedColor } = require('./utils.js');
 
@@ -229,7 +219,7 @@ class Giveaway extends EventEmitter {
      */
     get exemptMembersFunction() {
         return this.options.exemptMembers
-            ? (typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous'))
+            ? typeof this.options.exemptMembers === 'string' && this.options.exemptMembers.includes('function anonymous')
                 ? eval(`(${this.options.exemptMembers})`)
                 : eval(this.options.exemptMembers)
             : null;
@@ -277,14 +267,8 @@ class Giveaway extends EventEmitter {
             embedColorEnd: this.options.embedColorEnd,
             botsCanWin: this.options.botsCanWin,
             exemptPermissions: this.options.exemptPermissions,
-            exemptMembers:
-                (!this.options.exemptMembers || typeof this.options.exemptMembers === 'string')
-                    ? this.options.exemptMembers || undefined
-                    : serialize(this.options.exemptMembers),
-            bonusEntries:
-                (!this.options.bonusEntries || typeof this.options.bonusEntries === 'string')
-                    ? this.options.bonusEntries || undefined
-                    : serialize(this.options.bonusEntries),
+            exemptMembers: !this.options.exemptMembers || typeof this.options.exemptMembers === 'string' ? this.options.exemptMembers || undefined : serialize(this.options.exemptMembers),
+            bonusEntries: !this.options.bonusEntries || typeof this.options.bonusEntries === 'string' ? this.options.bonusEntries || undefined : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
@@ -300,7 +284,7 @@ class Giveaway extends EventEmitter {
      * if it will end soon
      * @returns {NodeJS.Timeout}
      */
-    ensureEndTimeout () {
+    ensureEndTimeout() {
         if (this.endTimeout) return;
         if (this.remainingTime > (this.manager.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) return;
         this.endTimeout = setTimeout(() => this.manager.end.call(this.manager, this.messageId).catch(() => {}), this.remainingTime);
@@ -360,17 +344,17 @@ class Giveaway extends EventEmitter {
             if (!this.messageId) return;
             let tryLater = false;
             const channel = await this.client.channels.fetch(this.channelId).catch((err) => {
-                if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
+                if (err.httpStatus.toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
             });
             const message = await channel?.messages.fetch(this.messageId).catch((err) => {
-                if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
+                if (err.httpStatus.toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) tryLater = true;
             });
             if (!message) {
                 if (!tryLater) {
                     this.manager.giveaways = this.manager.giveaways.filter((g) => g.messageId !== this.messageId);
                     await this.manager.deleteGiveaway(this.messageId);
                 }
-                return reject('Unable to fetch message with Id ' + this.messageId + '.' + tryLater ? ' Try later!' : '');
+                return reject('Unable to fetch message with Id ' + this.messageId + '.' + (tryLater ? ' Try later!' : ''));
             }
             resolve(message);
         });
@@ -444,9 +428,7 @@ class Giveaway extends EventEmitter {
             userCollection = userCollection.concat(newUsers);
         }
 
-        const users = userCollection
-            .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.client.user.id);
+        const users = userCollection.filter((u) => !u.bot || u.bot === this.botsCanWin).filter((u) => u.id !== this.client.user.id);
         if (!users.size) return [];
 
         // Bonus Entries
@@ -471,9 +453,12 @@ class Giveaway extends EventEmitter {
              * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
-            rolledWinners = Array.from({
-                length: Math.min(winnerCount, users.size)
-            }, () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]);
+            rolledWinners = Array.from(
+                {
+                    length: Math.min(winnerCount, users.size)
+                },
+                () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]
+            );
         }
 
         const winners = [];
@@ -514,12 +499,12 @@ class Giveaway extends EventEmitter {
             if (options.newExtraData) this.extraData = options.newExtraData;
 
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop) this.winnerCount = options.newWinnerCount;
-            if (!isNaN(options.addTime) && typeof options.addTime === 'number' && !this.isDrop) {
+            if (!Number.isNaN(options.addTime) && !this.isDrop) {
                 this.endAt = this.endAt + options.addTime;
                 if (this.endTimeout) clearTimeout(this.endTimeout);
                 this.ensureEndTimeout();
             }
-            if (!isNaN(options.setEndTimestamp) && typeof options.setEndTimestamp === 'number' && !this.isDrop) this.endAt = options.setEndTimestamp;
+            if (!Number.isNaN(options.setEndTimestamp) && !this.isDrop) this.endAt = options.setEndTimestamp;
             if (Array.isArray(options.newBonusEntries) && !this.isDrop) this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
 
@@ -527,11 +512,13 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message.edit({
-                    content: this.fillInString(this.messages.giveaway),
-                    embeds: [embed],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveaway),
+                        embeds: [embed],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
             }
             resolve(this);
         });
@@ -552,30 +539,35 @@ class Giveaway extends EventEmitter {
             if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
-            
+
             const channel =
-            this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
-                (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
-                    ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                    : Discord.Permissions.FLAGS.SEND_MESSAGES
-            ])
-                ? this.message.channel.parent
-                : this.message.channel;
+                this.message.channel.isThread() &&
+                !this.message.channel
+                    .permissionsFor(this.client.user)
+                    ?.has([
+                        this.message.channel.locked || (!this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
+                            ? Discord.Permissions.FLAGS.MANAGE_THREADS
+                            : Discord.Permissions.FLAGS.SEND_MESSAGES
+                    ])
+                    ? this.message.channel.parent
+                    : this.message.channel;
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({
-                    content: this.fillInString(this.messages.giveawayEnded),
-                    embeds: [embed],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                await this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveawayEnded),
+                        embeds: [embed],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage?.replace('{winners}', formattedWinners);
-                
+
                 if (message?.length > 2000) {
                     channel.send({
                         content: winMessage.substr(0, winMessage.indexOf('{winners}')),
@@ -638,11 +630,13 @@ class Giveaway extends EventEmitter {
                     });
                 }
 
-                this.message.edit({
-                    content: this.fillInString(this.messages.giveawayEnded),
-                    embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveawayEnded),
+                        embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
                 resolve([]);
             }
         });
@@ -664,14 +658,17 @@ class Giveaway extends EventEmitter {
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
-            
+
             const winners = await this.roll(options.winnerCount || undefined);
             const channel =
-                this.message.channel.isThread() && !this.message.channel.permissionsFor(this.client.user)?.has([
-                    (this.message.channel.locked || !this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
-                        ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                        : Discord.Permissions.FLAGS.SEND_MESSAGES
-                ])
+                this.message.channel.isThread() &&
+                !this.message.channel
+                    .permissionsFor(this.client.user)
+                    ?.has([
+                        this.message.channel.locked || (!this.message.channel.joined && this.message.channel.type === 'GUILD_PRIVATE_THREAD')
+                            ? Discord.Permissions.FLAGS.MANAGE_THREADS
+                            : Discord.Permissions.FLAGS.SEND_MESSAGES
+                    ])
                     ? this.message.channel.parent
                     : this.message.channel;
 
@@ -679,11 +676,13 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                await this.message.edit({
-                    content: this.fillInString(this.messages.giveawayEnded),
-                    embeds: [embed],
-                    allowedMentions: this.allowedMentions
-                }).catch(() => {});
+                await this.message
+                    .edit({
+                        content: this.fillInString(this.messages.giveawayEnded),
+                        embeds: [embed],
+                        allowedMentions: this.allowedMentions
+                    })
+                    .catch(() => {});
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
@@ -768,7 +767,7 @@ class Giveaway extends EventEmitter {
             // Update data
             const pauseOptions = this.options.pauseOptions || {};
             if (typeof options.content === 'string') pauseOptions.content = options.content;
-            if (!isNaN(options.unPauseAfter) && options.unPauseAfter === 'number') {
+            if (!Number.isNaN(options.unPauseAfter)) {
                 if (options.unPauseAfter < Date.now()) {
                     pauseOptions.unPauseAfter = Date.now() + options.unPauseAfter;
                     this.endAt = this.endAt + options.unPauseAfter;
@@ -788,11 +787,13 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({
-                content: this.fillInString(this.messages.giveaway),
-                embeds: [embed],
-                allowedMentions: this.allowedMentions
-            }).catch(() => {});
+            this.message
+                .edit({
+                    content: this.fillInString(this.messages.giveaway),
+                    embeds: [embed],
+                    allowedMentions: this.allowedMentions
+                })
+                .catch(() => {});
             resolve(this);
         });
     }
@@ -809,7 +810,7 @@ class Giveaway extends EventEmitter {
             if (!this.pauseOptions.isPaused) return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
 
             // Update data
-            if (!isNaN(this.pauseOptions.durationAfterPause) && typeof this.pauseOptions.durationAfterPause === 'number') {
+            if (!Number.isNaN(this.pauseOptions.durationAfterPause)) {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
             this.options.pauseOptions.isPaused = false;
@@ -818,11 +819,13 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message.edit({
-                content: this.fillInString(this.messages.giveaway),
-                embeds: [embed],
-                allowedMentions: this.allowedMentions
-            }).catch(() => {});
+            this.message
+                .edit({
+                    content: this.fillInString(this.messages.giveaway),
+                    embeds: [embed],
+                    allowedMentions: this.allowedMentions
+                })
+                .catch(() => {});
             resolve(this);
         });
     }

@@ -66,45 +66,22 @@ class GiveawaysManager extends EventEmitter {
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed()
             .setTitle(giveaway.prize)
-            .setColor(
-                giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
-                    ? giveaway.pauseOptions.embedColor
-                    : lastChanceEnabled
-                        ? giveaway.lastChance.embedColor
-                        : giveaway.embedColor
-            )
+            .setColor(giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor ? giveaway.pauseOptions.embedColor : lastChanceEnabled ? giveaway.lastChance.embedColor : giveaway.embedColor)
             .setFooter(
-                typeof giveaway.messages.embedFooter === 'object'
-                    ? giveaway.messages.embedFooter.text?.length > 0
-                        ? giveaway.messages.embedFooter.text
-                        : ''
-                    : giveaway.messages.embedFooter,
+                typeof giveaway.messages.embedFooter === 'object' ? (giveaway.messages.embedFooter.text?.length > 0 ? giveaway.messages.embedFooter.text : '') : giveaway.messages.embedFooter,
                 giveaway.messages.embedFooter.iconURL
             )
             .setDescription(
                 giveaway.isDrop
                     ? giveaway.messages.dropMessage
-                    : (
-                        (
-                            giveaway.pauseOptions.isPaused
-                                ? giveaway.pauseOptions.content + '\n\n'
-                                : (
-                                    lastChanceEnabled
-                                        ? giveaway.lastChance.content + '\n\n'
-                                        : ''
-                                )
-                        ) +
-                        giveaway.messages.inviteToParticipate +
-                        '\n' +
-                        giveaway.messages.drawing.replace(
-                            '{timestamp}',
-                            giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`
-                        )
-                    ) +
-                    (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
+                    : (giveaway.pauseOptions.isPaused ? giveaway.pauseOptions.content + '\n\n' : lastChanceEnabled ? giveaway.lastChance.content + '\n\n' : '') +
+                          giveaway.messages.inviteToParticipate +
+                          '\n' +
+                          giveaway.messages.drawing.replace('{timestamp}', giveaway.endAt === Infinity ? '`NEVER`' : `<t:${Math.round(giveaway.endAt / 1000)}:R>`) +
+                          (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : '')
             )
             .setThumbnail(giveaway.thumbnail);
-        if (giveaway.endAt !== Infinity) embed.setTimestamp(new Date(giveaway.endAt).toISOString());
+        if (giveaway.endAt !== Infinity) embed.setTimestamp(giveaway.endAt);
         return giveaway.fillInEmbed(embed);
     }
 
@@ -126,19 +103,15 @@ class GiveawaysManager extends EventEmitter {
 
         const descriptionString = (formattedWinners) => strings.winners + ' ' + formattedWinners + (giveaway.hostedBy ? '\n' + strings.hostedBy : '');
 
-        for (
-            let i = 1;
-            descriptionString(formattedWinners).length > 4096 ||
-            strings.prize.length + strings.endedAt.length + descriptionString(formattedWinners).length > 6000;
-            i++
-        ) formattedWinners = formattedWinners.substr(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
+        for (let i = 1; descriptionString(formattedWinners).length > 4096 || strings.prize.length + strings.endedAt.length + descriptionString(formattedWinners).length > 6000; i++)
+            formattedWinners = formattedWinners.slice(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
 
         return new Discord.MessageEmbed()
             .setTitle(strings.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter(strings.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(descriptionString(formattedWinners))
-            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setTimestamp(giveaway.endAt)
             .setThumbnail(giveaway.thumbnail);
     }
 
@@ -153,7 +126,7 @@ class GiveawaysManager extends EventEmitter {
             .setColor(giveaway.embedColorEnd)
             .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
             .setDescription(giveaway.messages.noWinner + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : ''))
-            .setTimestamp(new Date(giveaway.endAt).toISOString())
+            .setTimestamp(giveaway.endAt)
             .setThumbnail(giveaway.thumbnail);
         return giveaway.fillInEmbed(embed);
     }
@@ -208,12 +181,12 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (
-                channel.isThread() && !channel.permissionsFor(this.client.user)?.has([
-                    (channel.locked || !channel.joined && channel.type === 'GUILD_PRIVATE_THREAD')
-                        ? Discord.Permissions.FLAGS.MANAGE_THREADS
-                        : Discord.Permissions.FLAGS.SEND_MESSAGES
-                ])
-            ) return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
+                channel.isThread() &&
+                !channel
+                    .permissionsFor(this.client.user)
+                    ?.has([channel.locked || (!channel.joined && channel.type === 'GUILD_PRIVATE_THREAD') ? Discord.Permissions.FLAGS.MANAGE_THREADS : Discord.Permissions.FLAGS.SEND_MESSAGES])
+            )
+                return reject(`The manager is unable to send messages in the provided ThreadChannel. (id=${channel.id})`);
             if (typeof options.prize !== 'string' || options.prize.length > 256) {
                 return reject(`options.prize is not a string or longer than 256 characters. (val=${options.prize})`);
             }
@@ -223,7 +196,7 @@ class GiveawaysManager extends EventEmitter {
             if (options.isDrop && typeof options.isDrop !== 'boolean') {
                 return reject(`options.isDrop is not a boolean. (val=${options.isDrop})`);
             }
-            if (!options.isDrop && (isNaN(options.duration) || typeof options.duration !== 'number' || options.duration < 1)) {
+            if (!options.isDrop && (Number.isNaN(options.duration) || options.duration < 1)) {
                 return reject(`options.duration is not a positive number. (val=${options.duration})`);
             }
 
@@ -235,10 +208,7 @@ class GiveawaysManager extends EventEmitter {
                 guildId: channel.guildId,
                 prize: options.prize,
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
-                messages:
-                    (options.messages && typeof options.messages === 'object')
-                        ? merge(GiveawayMessages, options.messages)
-                        : GiveawayMessages,
+                messages: options.messages && typeof options.messages === 'object' ? merge(GiveawayMessages, options.messages) : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 reaction: Discord.Util.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
@@ -248,9 +218,9 @@ class GiveawaysManager extends EventEmitter {
                 embedColor: validateEmbedColor(options.embedColor) ? options.embedColor : undefined,
                 embedColorEnd: validateEmbedColor(options.embedColorEnd) ? options.embedColorEnd : undefined,
                 extraData: options.extraData,
-                lastChance: (options.lastChance && typeof options.lastChance === 'object') ? options.lastChance : undefined,
-                pauseOptions: (options.pauseOptions && typeof options.pauseOptions === 'object') ? options.pauseOptions : undefined,
-                allowedMentions: (options.allowedMentions && typeof options.allowedMentions === 'object') ? options.allowedMentions : undefined,
+                lastChance: options.lastChance && typeof options.lastChance === 'object' ? options.lastChance : undefined,
+                pauseOptions: options.pauseOptions && typeof options.pauseOptions === 'object' ? options.pauseOptions : undefined,
+                allowedMentions: options.allowedMentions && typeof options.allowedMentions === 'object' ? options.allowedMentions : undefined,
                 isDrop: options.isDrop
             });
 
@@ -267,10 +237,13 @@ class GiveawaysManager extends EventEmitter {
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
             resolve(giveaway);
             if (giveaway.isDrop) {
-                reaction.message.awaitReactions({
-                    filter: (r, u) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction.emoji.name || reaction.emoji.id) && u.id !== this.client.user.id,
-                    maxUsers: giveaway.winnerCount
-                }).then(() => this.end(giveaway.messageId)).catch(() => {});
+                reaction.message
+                    .awaitReactions({
+                        filter: (r, u) => [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction.emoji.name || reaction.emoji.id) && u.id !== this.client.user.id,
+                        maxUsers: giveaway.winnerCount
+                    })
+                    .then(() => this.end(giveaway.messageId))
+                    .catch(() => {});
             }
         });
     }
@@ -383,7 +356,10 @@ class GiveawaysManager extends EventEmitter {
     async deleteGiveaway(messageId) {
         await writeFile(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
+            JSON.stringify(
+                this.giveaways.map((giveaway) => giveaway.data),
+                (_, v) => (typeof v === 'bigint' ? serialize(v) : v)
+            ),
             'utf-8'
         );
         this.refreshStorage();
@@ -405,7 +381,9 @@ class GiveawaysManager extends EventEmitter {
      */
     async getAllGiveaways() {
         // Whether the storage file exists, or not
-        const storageExists = await access(this.options.storage).then(() => true).catch(() => false);
+        const storageExists = await access(this.options.storage)
+            .then(() => true)
+            .catch(() => false);
         // If it doesn't exists
         if (!storageExists) {
             // Create the file with an empty array
@@ -415,7 +393,7 @@ class GiveawaysManager extends EventEmitter {
             // If the file exists, read it
             const storageContent = await readFile(this.options.storage);
             try {
-                const giveaways = await JSON.parse(storageContent.toString(), (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v);
+                const giveaways = await JSON.parse(storageContent.toString(), (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v) ? eval(v) : v));
                 if (Array.isArray(giveaways)) return giveaways;
                 else {
                     console.log(storageContent, giveaways);
@@ -438,7 +416,10 @@ class GiveawaysManager extends EventEmitter {
     async editGiveaway(messageId, giveawayData) {
         await writeFile(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
+            JSON.stringify(
+                this.giveaways.map((giveaway) => giveaway.data),
+                (_, v) => (typeof v === 'bigint' ? serialize(v) : v)
+            ),
             'utf-8'
         );
         this.refreshStorage();
@@ -454,7 +435,10 @@ class GiveawaysManager extends EventEmitter {
     async saveGiveaway(messageId, giveawayData) {
         await writeFile(
             this.options.storage,
-            JSON.stringify(this.giveaways.map((giveaway) => giveaway.data), (_, v) => typeof v === 'bigint' ? serialize(v) : v),
+            JSON.stringify(
+                this.giveaways.map((giveaway) => giveaway.data),
+                (_, v) => (typeof v === 'bigint' ? serialize(v) : v)
+            ),
             'utf-8'
         );
         this.refreshStorage();
@@ -469,13 +453,9 @@ class GiveawaysManager extends EventEmitter {
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
         this.giveaways.forEach(async (giveaway) => {
-
             // First case: giveaway is ended and we need to check if it should be deleted
             if (giveaway.ended) {
-                if (
-                    !isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number' &&
-                    giveaway.endAt + this.options.endedGiveawaysLifetime <= Date.now()
-                ) {
+                if (!Number.isNaN(this.options.endedGiveawaysLifetime) && giveaway.endAt + this.options.endedGiveawaysLifetime <= Date.now()) {
                     this.giveaways = this.giveaways.filter((g) => g.messageId !== giveaway.messageId);
                     await this.deleteGiveaway(giveaway.messageId);
                 }
@@ -492,18 +472,12 @@ class GiveawaysManager extends EventEmitter {
 
             // Third case: the giveaway is paused and we should check whether it should be unpaused
             if (giveaway.pauseOptions.isPaused) {
-                if (
-                    (isNaN(giveaway.pauseOptions.unPauseAfter) || typeof giveaway.pauseOptions.unPauseAfter !== 'number') &&
-                    (isNaN(giveaway.pauseOptions.durationAfterPause) || typeof giveaway.pauseOptions.durationAfterPause !== 'number')
-                ) {
+                if (Number.isNaN(giveaway.pauseOptions.unPauseAfter) && Number.isNaN(giveaway.pauseOptions.durationAfterPause)) {
                     giveaway.options.pauseOptions.durationAfterPause = giveaway.remainingTime;
                     giveaway.endAt = Infinity;
                     await this.editGiveaway(giveaway.messageId, giveaway.data);
                 }
-                if (
-                    !isNaN(giveaway.pauseOptions.unPauseAfter) && typeof giveaway.pauseOptions.unPauseAfter === 'number' &&
-                    Date.now() < giveaway.pauseOptions.unPauseAfter
-                ) return this.unpause(giveaway.messageId).catch(() => {});
+                if (!Number.isNaN(giveaway.pauseOptions.unPauseAfter) && Date.now() < giveaway.pauseOptions.unPauseAfter) return this.unpause(giveaway.messageId).catch(() => {});
             }
 
             // Fourth case: giveaway should be ended right now. this case should only happen after a restart
@@ -516,15 +490,17 @@ class GiveawaysManager extends EventEmitter {
 
             // Sixth case: the giveaway will be in the last chance state soon, we add a timeout so it's updated at the right time
             // And it does not need to wait for _checkGiveaway to be called again
-            if (giveaway.lastChance.enabled && (giveaway.remainingTime - giveaway.lastChance.threshold) < (this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) {
+            if (giveaway.lastChance.enabled && giveaway.remainingTime - giveaway.lastChance.threshold < (this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL)) {
                 setTimeout(async () => {
                     giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message?.edit({
-                        content: giveaway.fillInString(giveaway.messages.giveaway),
-                        embeds: [embed],
-                        allowedMentions: giveaway.allowedMentions
-                    }).catch(() => {});
+                    giveaway.message
+                        ?.edit({
+                            content: giveaway.fillInString(giveaway.messages.giveaway),
+                            embeds: [embed],
+                            allowedMentions: giveaway.allowedMentions
+                        })
+                        .catch(() => {});
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
@@ -536,11 +512,13 @@ class GiveawaysManager extends EventEmitter {
             const needUpdate = !embedEqual(giveaway.message.embeds[0], updatedEmbed) || giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
-                giveaway.message.edit({
-                    content: giveaway.fillInString(giveaway.messages.giveaway),
-                    embeds: [updatedEmbed],
-                    allowedMentions: giveaway.allowedMentions
-                }).catch(() => {});
+                giveaway.message
+                    .edit({
+                        content: giveaway.fillInString(giveaway.messages.giveaway),
+                        embeds: [updatedEmbed],
+                        allowedMentions: giveaway.allowedMentions
+                    })
+                    .catch(() => {});
             }
         });
     }
@@ -588,13 +566,9 @@ class GiveawaysManager extends EventEmitter {
         }, this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL);
         this.ready = true;
 
-        if (!isNaN(this.options.endedGiveawaysLifetime) && typeof this.options.endedGiveawaysLifetime === 'number') {
-            const endedGiveaways = this.giveaways.filter(
-                (g) => g.ended && g.endAt + this.options.endedGiveawaysLifetime <= Date.now()
-            );
-            this.giveaways = this.giveaways.filter(
-                (g) => !endedGiveaways.map((giveaway) => giveaway.messageId).includes(g.messageId)
-            );
+        if (!Number.isNaN(this.options.endedGiveawaysLifetime)) {
+            const endedGiveaways = this.giveaways.filter((g) => g.ended && g.endAt + this.options.endedGiveawaysLifetime <= Date.now());
+            this.giveaways = this.giveaways.filter((g) => !endedGiveaways.map((giveaway) => giveaway.messageId).includes(g.messageId));
             for (const giveaway of endedGiveaways) await this.deleteGiveaway(giveaway.messageId);
         }
 
