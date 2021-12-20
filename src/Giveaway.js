@@ -403,18 +403,18 @@ class Giveaway extends EventEmitter {
 
     /**
      * @param {Discord.User} user The user to check.
-     * @returns {Promise<number|boolean>} The highest bonus entries the user should get or false.
+     * @returns {Promise<number>} The highest bonus entries the user should get.
      */
     async checkBonusEntries(user) {
         const member = await this.message.guild.members.fetch(user.id).catch(() => {});
-        const entries = [];
+        const entries = [0];
         const cumulativeEntries = [];
 
         if (this.bonusEntries.length) {
             for (const obj of this.bonusEntries) {
                 if (typeof obj.bonus === 'function') {
                     try {
-                        const result = await obj.bonus(member);
+                        const result = await obj.bonus.apply(this, [member]);
                         if (Number.isInteger(result) && result > 0) {
                             if (obj.cumulative) cumulativeEntries.push(result);
                             else entries.push(result);
@@ -427,8 +427,7 @@ class Giveaway extends EventEmitter {
         }
 
         if (cumulativeEntries.length) entries.push(cumulativeEntries.reduce((a, b) => a + b));
-        if (entries.length) return Math.max.apply(Math, entries);
-        return false;
+        return Math.max(...entries);
     }
 
     /**

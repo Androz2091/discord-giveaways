@@ -169,10 +169,12 @@ declare module 'discord-giveaways' {
         private ensureEndTimeout(): void;
         private fillInString(string: string): string | null;
         private fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
+        private checkWinnerEntry(user: User): Promise<boolean>;
         public exemptMembers(member: GuildMember): Promise<boolean>;
+        public checkBonusEntries(user: User): Promise<number>;
+        public fetchMessage(): Promise<Message>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
-        public fetchMessage(): Promise<Message>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
         public pause(options?: PauseOptions): Promise<Giveaway>;
