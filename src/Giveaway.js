@@ -620,7 +620,7 @@ class Giveaway extends EventEmitter {
 
                 if (message?.length > 2000) {
                     channel.send({
-                        content: winMessage.substr(0, winMessage.indexOf('{winners}')),
+                        content: winMessage.slice(0, winMessage.indexOf('{winners}')),
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -632,16 +632,16 @@ class Giveaway extends EventEmitter {
                     });
                     while (formattedWinners.length >= 2000) {
                         await channel.send({
-                            content: formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
+                            content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
                             allowedMentions: this.allowedMentions
                         });
                         formattedWinners = formattedWinners.slice(
-                            formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length
+                            formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999) + 2).length
                         );
                     }
                     channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
                     channel.send({
-                        content: winMessage.substr(winMessage.indexOf('{winners}') + 9),
+                        content: winMessage.slice(winMessage.indexOf('{winners}') + 9),
                         allowedMentions: this.allowedMentions
                     });
                 }
@@ -669,7 +669,7 @@ class Giveaway extends EventEmitter {
                             content: message?.length <= 2000 ? message : null,
                             embeds: [
                                 new Discord.MessageEmbed(embed).setDescription(
-                                    embed.description.substr(0, embed.description.indexOf('{winners}'))
+                                    embed.description.slice(0, embed.description.indexOf('{winners}'))
                                 )
                             ],
                             allowedMentions: this.allowedMentions,
@@ -687,13 +687,13 @@ class Giveaway extends EventEmitter {
                             await channel.send({
                                 embeds: [
                                     tempEmbed.setDescription(
-                                        formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ','
+                                        formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095)) + ','
                                     )
                                 ],
                                 allowedMentions: this.allowedMentions
                             });
                             formattedWinners = formattedWinners.slice(
-                                formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
+                                formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
                             );
                         }
                         channel.send({
@@ -703,7 +703,7 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             embeds: [
                                 tempEmbed.setDescription(
-                                    embed.description.substr(embed.description.indexOf('{winners}') + 9)
+                                    embed.description.slice(embed.description.indexOf('{winners}') + 9)
                                 )
                             ],
                             allowedMentions: this.allowedMentions
@@ -792,7 +792,7 @@ class Giveaway extends EventEmitter {
 
                 if (message?.length > 2000) {
                     channel.send({
-                        content: congratMessage.substr(0, congratMessage.indexOf('{winners}')),
+                        content: congratMessage.slice(0, congratMessage.indexOf('{winners}')),
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -804,16 +804,16 @@ class Giveaway extends EventEmitter {
                     });
                     while (formattedWinners.length >= 2000) {
                         await channel.send({
-                            content: formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
+                            content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
                             allowedMentions: this.allowedMentions
                         });
                         formattedWinners = formattedWinners.slice(
-                            formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 1999) + 2).length
+                            formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999) + 2).length
                         );
                     }
                     channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
                     channel.send({
-                        content: congratMessage.substr(congratMessage.indexOf('{winners}') + 9),
+                        content: congratMessage.slice(congratMessage.indexOf('{winners}') + 9),
                         allowedMentions: this.allowedMentions
                     });
                 }
@@ -841,7 +841,7 @@ class Giveaway extends EventEmitter {
                             content: message?.length <= 2000 ? message : null,
                             embeds: [
                                 new Discord.MessageEmbed(embed).setDescription(
-                                    embed.description.substr(0, embed.description.indexOf('{winners}'))
+                                    embed.description.slice(0, embed.description.indexOf('{winners}'))
                                 )
                             ],
                             allowedMentions: this.allowedMentions,
@@ -859,13 +859,13 @@ class Giveaway extends EventEmitter {
                             await channel.send({
                                 embeds: [
                                     tempEmbed.setDescription(
-                                        formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095)) + ','
+                                        formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095)) + ','
                                     )
                                 ],
                                 allowedMentions: this.allowedMentions
                             });
                             formattedWinners = formattedWinners.slice(
-                                formattedWinners.substr(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
+                                formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
                             );
                         }
                         channel.send({
@@ -875,7 +875,7 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             embeds: [
                                 tempEmbed.setDescription(
-                                    embed.description.substr(embed.description.indexOf('{winners}') + 9)
+                                    embed.description.slice(embed.description.indexOf('{winners}') + 9)
                                 )
                             ],
                             allowedMentions: this.allowedMentions
