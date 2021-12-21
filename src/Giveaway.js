@@ -375,21 +375,12 @@ class Giveaway extends EventEmitter {
      */
     async fetchMessage() {
         return new Promise(async (resolve, reject) => {
-            if (!this.messageId) return;
-            let tryLater = false;
+            let tryLater = true;
             const channel = await this.client.channels.fetch(this.channelId).catch((err) => {
-                // prettier-ignore
-                if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) {
-                    tryLater = true;
-                }
+                if (err.code === 10003) tryLater = false;
             });
             const message = await channel?.messages.fetch(this.messageId).catch((err) => {
-                // prettier-ignore
-                {
-                    if ((err.httpStatus).toString().startsWith('5') || err.httpStatus === 429 || err.code === 130000) {
-                        tryLater = true;
-                    }
-                }
+                if (err.code === 10008) tryLater = false;
             });
             if (!message) {
                 if (!tryLater) {
