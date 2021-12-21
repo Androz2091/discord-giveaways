@@ -170,8 +170,8 @@ declare module 'discord-giveaways' {
         private fillInString(string: string): string | null;
         private fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
         private checkWinnerEntry(user: User): Promise<boolean>;
+        private checkBonusEntries(user: User): Promise<number>;
         public exemptMembers(member: GuildMember): Promise<boolean>;
-        public checkBonusEntries(user: User): Promise<number>;
         public fetchMessage(): Promise<Message>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
         public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
