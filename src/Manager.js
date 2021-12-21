@@ -15,7 +15,7 @@ const {
     DEFAULT_CHECK_INTERVAL
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
-const { validateEmbedColor, embedEqual } = require('./utils.js');
+const { validateEmbedColor } = require('./utils.js');
 
 /**
  * Giveaways Manager
@@ -575,9 +575,11 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway.message) return;
             const lastChanceEnabled =
                 giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
+            const oldEmbed = giveaway.message.embeds[0];
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             const needUpdate =
-                !embedEqual(giveaway.message.embeds[0], updatedEmbed) ||
+                !oldEmbed ||
+                !updatedEmbed.equals(oldEmbed) ||
                 giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
