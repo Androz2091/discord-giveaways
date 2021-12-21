@@ -130,8 +130,9 @@ class GiveawaysManager extends EventEmitter {
             descriptionString(formattedWinners).length > 4096 ||
             strings.prize.length + strings.endedAt.length + descriptionString(formattedWinners).length > 6000;
             i++
-        )
+        ) {
             formattedWinners = formattedWinners.slice(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
+        }
 
         return new Discord.MessageEmbed()
             .setTitle(strings.prize)
@@ -538,8 +539,9 @@ class GiveawaysManager extends EventEmitter {
                 if (
                     Number.isFinite(giveaway.pauseOptions.unPauseAfter) &&
                     Date.now() < giveaway.pauseOptions.unPauseAfter
-                )
+                ) {
                     return this.unpause(giveaway.messageId).catch(() => {});
+                }
             }
 
             // Fourth case: giveaway should be ended right now. this case should only happen after a restart
@@ -627,8 +629,9 @@ class GiveawaysManager extends EventEmitter {
         if (packet.t === 'MESSAGE_REACTION_ADD') {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
-            if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount)
+            if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount) {
                 this.end(giveaway.messageId).catch(() => {});
+            }
         } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);
     }
 

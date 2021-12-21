@@ -455,16 +455,19 @@ class Giveaway extends EventEmitter {
      */
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
-        // Pick the winner
+
+        // Find the reaction
         const emoji = Discord.Util.resolvePartialEmoji(this.reaction);
         const reaction = this.message.reactions.cache.find((r) =>
             [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id)
         );
         if (!reaction) return [];
         const guild = this.message.guild;
-        // Fetch guild members
-        if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS))
+
+        // Fetch all guild members if the intent is available
+        if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) {
             await guild.members.fetch();
+        }
 
         // Fetch all reaction users
         let userCollection = await reaction.users.fetch().catch(() => {});
@@ -543,24 +546,27 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
 
             // Update data
-            if (options.newMessages && typeof options.newMessages === 'object')
+            if (options.newMessages && typeof options.newMessages === 'object') {
                 this.messages = merge(this.messages, options.newMessages);
+            }
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (options.newExtraData) this.extraData = options.newExtraData;
-
-            if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop)
+            if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop) {
                 this.winnerCount = options.newWinnerCount;
+            }
             if (Number.isFinite(options.addTime) && !this.isDrop) {
                 this.endAt = this.endAt + options.addTime;
                 if (this.endTimeout) clearTimeout(this.endTimeout);
                 this.ensureEndTimeout();
             }
             if (Number.isFinite(options.setEndTimestamp) && !this.isDrop) this.endAt = options.setEndTimestamp;
-            if (Array.isArray(options.newBonusEntries) && !this.isDrop)
+            if (Array.isArray(options.newBonusEntries) && !this.isDrop) {
                 this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
-            if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop)
+            }
+            if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) {
                 this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
+            }
 
             await this.manager.editGiveaway(this.messageId, this.data);
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
