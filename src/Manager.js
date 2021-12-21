@@ -570,16 +570,19 @@ class GiveawaysManager extends EventEmitter {
                 }, giveaway.remainingTime - giveaway.lastChance.threshold);
             }
 
-            // Regular case: the giveaway is not ended and we need to update it
+            // Fetch the message if necessary and make sure the embed is alright
             giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) return;
+            if (!giveaway.message.embeds[0]) {
+                giveaway.message = await giveaway.message.suppressEmbeds(false).catch(() => {});
+            }
+
+            // Regular case: the giveaway is not ended and we need to update it
             const lastChanceEnabled =
                 giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
-            const oldEmbed = giveaway.message.embeds[0];
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             const needUpdate =
-                !oldEmbed ||
-                !updatedEmbed.equals(oldEmbed) ||
+                !updatedEmbed.equals(giveaway.message.embeds[0]) ||
                 giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
