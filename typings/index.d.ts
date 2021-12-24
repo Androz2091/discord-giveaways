@@ -167,10 +167,10 @@ declare module 'discord-giveaways' {
         readonly isDrop: boolean;
 
         private ensureEndTimeout(): void;
-        private fillInString(string: string): string | null;
-        private fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
         private checkWinnerEntry(user: User): Promise<boolean>;
-        private checkBonusEntries(user: User): Promise<number>;
+        public checkBonusEntries(user: User): Promise<number>;
+        public fillInString(string: string): string | null;
+        public fillInString(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public fetchMessage(): Promise<Message>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;

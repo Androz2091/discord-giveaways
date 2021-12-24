@@ -185,10 +185,8 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Starts a new giveaway
-     *
      * @param {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
-     *
      * @returns {Promise<Giveaway>} The created giveaway.
      *
      * @example
@@ -428,6 +426,7 @@ class GiveawaysManager extends EventEmitter {
         const storageExists = await access(this.options.storage)
             .then(() => true)
             .catch(() => false);
+
         // If it doesn't exists
         if (!storageExists) {
             // Create the file with an empty array
@@ -499,7 +498,6 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Checks each giveaway and update it if needed
      * @ignore
-     * @private
      */
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
@@ -638,7 +636,6 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Inits the manager
      * @ignore
-     * @private
      */
     async _init() {
         const rawGiveaways = await this.getAllGiveaways();

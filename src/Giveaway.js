@@ -33,6 +33,7 @@ class Giveaway extends EventEmitter {
         this.manager = manager;
         /**
          * The end timeout for this giveaway
+         * @private
          * @type {?NodeJS.Timeout}
          */
         this.endTimeout = null;
@@ -311,8 +312,8 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * Ensure that an end timeout is created for this giveaway
-     * if it will end soon
+     * Ensure that an end timeout is created for this giveaway, in case it will end soon
+     * @private
      * @returns {NodeJS.Timeout}
      */
     ensureEndTimeout() {
@@ -396,12 +397,15 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Checks if a user fulfills the requirements to win the giveaway.
+     * @private
      * @param {Discord.User} user The user to check.
      * @returns {Promise<boolean>} If the entry was valid.
      */
     async checkWinnerEntry(user) {
         if (this.winnerIds.includes(user.id)) return false;
-        const member = await this.message.guild.members.fetch(user.id).catch(() => {});
+        this.message ??= await this.fetchMessage().catch(() => {});
+        const member = await this.message?.guild.members.fetch(user.id).catch(() => {});
         if (!member) return false;
         const exemptMember = await this.exemptMembers(member);
         if (exemptMember) return false;
@@ -411,11 +415,14 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Checks if a user gets any additional entries for the giveaway.
      * @param {Discord.User} user The user to check.
      * @returns {Promise<number>} The highest bonus entries the user should get.
      */
     async checkBonusEntries(user) {
-        const member = await this.message.guild.members.fetch(user.id).catch(() => {});
+        this.message ??= await this.fetchMessage().catch(() => {});
+        const member = await this.message?.guild.members.fetch(user.id).catch(() => {});
+        if (!member) return 0;
         const entries = [0];
         const cumulativeEntries = [];
 
