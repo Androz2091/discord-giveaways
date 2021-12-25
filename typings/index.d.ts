@@ -155,7 +155,7 @@ declare module 'discord-giveaways' {
         readonly embedColorEnd: ColorResolvable;
         readonly botsCanWin: boolean;
         readonly reaction: EmojiIdentifierResolvable;
-        readonly lastChance: LastChanceOptions;
+        readonly lastChance: Required<LastChanceOptions>;
 
         // getters calculated using other values
         readonly remainingTime: number;
@@ -164,7 +164,7 @@ declare module 'discord-giveaways' {
         readonly exemptMembersFunction: Function | null;
         readonly bonusEntries: BonusEntry[];
         readonly data: GiveawayData;
-        readonly pauseOptions: PauseOptions;
+        readonly pauseOptions: Required<PauseOptions>;
         readonly isDrop: boolean;
 
         private ensureEndTimeout(): void;
