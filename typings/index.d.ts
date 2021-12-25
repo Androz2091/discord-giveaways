@@ -140,6 +140,7 @@ declare module 'discord-giveaways' {
         public messageId: Snowflake;
         public messages: GiveawaysMessages;
         public thumbnail?: string;
+        public extraData?: any;
         public options: GiveawayData;
         public prize: string;
         public startAt: number;
