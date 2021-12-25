@@ -33,7 +33,7 @@ declare module 'discord-giveaways' {
         public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
         public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions): Promise<Giveaway>;
-        public pause(messageId: Snowflake, options?: PauseOptions): Promise<Giveaway>;
+        public pause(messageId: Snowflake, options?: Omit<PauseOptions, 'durationAfterPause'>): Promise<Giveaway>;
         public unpause(messageId: Snowflake): Promise<Giveaway>;
         public on<K extends keyof GiveawaysManagerEvents>(
             event: K,
@@ -60,9 +60,9 @@ declare module 'discord-giveaways' {
     interface PauseOptions {
         isPaused?: boolean;
         content?: string;
-        unPauseAfter?: number;
+        unPauseAfter?: number | null;
         embedColor?: ColorResolvable;
-        durationAfterPause?: number;
+        durationAfterPause?: number | null;
         infiniteDurationText?: string;
     }
     interface GiveawaysManagerOptions {
@@ -178,7 +178,7 @@ declare module 'discord-giveaways' {
         public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
         public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
         public roll(winnerCount?: number): Promise<GuildMember[]>;
-        public pause(options?: PauseOptions): Promise<Giveaway>;
+        public pause(options?: Omit<PauseOptions, 'durationAfterPause'>): Promise<Giveaway>;
         public unpause(): Promise<Giveaway>;
     }
     interface GiveawayEditOptions {
