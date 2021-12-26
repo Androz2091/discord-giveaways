@@ -138,7 +138,7 @@ declare module 'discord-giveaways' {
         public manager: GiveawaysManager;
         public message: Message | null;
         public messageId: Snowflake;
-        public messages: GiveawaysMessages;
+        public messages: Required<GiveawaysMessages>;
         public thumbnail?: string;
         public extraData?: any;
         public options: GiveawayData;
