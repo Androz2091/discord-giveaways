@@ -1,7 +1,9 @@
 const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
-const { EventEmitter } = require('events');
+const { EventEmitter } = require('node:events');
+const {setTimeout} = require('node:timers');
+
 const {
     GiveawayEditOptions,
     GiveawayData,

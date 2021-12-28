@@ -1,22 +1,12 @@
 declare module 'discord-giveaways' {
-    import { EventEmitter } from 'events';
     import {
-        Client,
-        PermissionResolvable,
-        ColorResolvable,
-        EmojiIdentifierResolvable,
-        User,
-        Snowflake,
-        GuildMember,
-        TextChannel,
-        MessageReaction,
-        Message,
+        Client, ColorResolvable,
+        EmojiIdentifierResolvable, GuildMember, Message,
         MessageEmbed,
         MessageEmbedOptions,
-        MessageMentionOptions,
-        NewsChannel,
-        ThreadChannel
+        MessageMentionOptions, MessageReaction, NewsChannel, PermissionResolvable, Snowflake, TextChannel, ThreadChannel, User
     } from 'discord.js';
+    import { EventEmitter } from 'node:events';
 
     export const version: string;
     export class GiveawaysManager extends EventEmitter {
@@ -170,8 +160,10 @@ declare module 'discord-giveaways' {
         private ensureEndTimeout(): void;
         private checkWinnerEntry(user: User): Promise<boolean>;
         public checkBonusEntries(user: User): Promise<number>;
-        public fillInString(string: string): string | null;
-        public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
+        public fillInString(string?: null): null;
+        public fillInString(string: string): string;
+        public fillInEmbed(embed?: null): null;
+        public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public fetchMessage(): Promise<Message>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;

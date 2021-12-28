@@ -1,4 +1,4 @@
-const { EventEmitter } = require('events');
+const { EventEmitter } = require('node:events');
 const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
 const { writeFile, readFile, access } = require('fs/promises');
@@ -16,6 +16,7 @@ const {
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 const { validateEmbedColor } = require('./utils.js');
+const {setTimeout, setInterval} = require('node:timers');
 
 /**
  * Giveaways Manager
