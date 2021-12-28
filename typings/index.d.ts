@@ -116,7 +116,7 @@ declare module 'discord-giveaways' {
         giveawayReactionRemoved: [Giveaway, GuildMember, MessageReaction];
         endedGiveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
     }
-    class Giveaway extends EventEmitter {
+    class Giveaway<T=any> extends EventEmitter {
         constructor(manager: GiveawaysManager, options: GiveawayData);
 
         public channelId: Snowflake;
@@ -130,7 +130,7 @@ declare module 'discord-giveaways' {
         public messageId: Snowflake;
         public messages: Required<GiveawaysMessages>;
         public thumbnail?: string;
-        public extraData?: any;
+        public extraData?: T;
         public options: GiveawayData;
         public prize: string;
         public startAt: number;
@@ -191,7 +191,7 @@ declare module 'discord-giveaways' {
             error?: string | MessageObject;
         };
     }
-    interface GiveawayData {
+    interface GiveawayData<T=any> {
         startAt: number;
         endAt: number;
         winnerCount: number;
@@ -210,7 +210,7 @@ declare module 'discord-giveaways' {
         embedColorEnd?: ColorResolvable;
         thumbnail?: string;
         hostedBy?: string;
-        extraData?: any;
+        extraData?: T;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
         isDrop?: boolean;
