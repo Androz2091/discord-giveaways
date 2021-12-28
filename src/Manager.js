@@ -114,7 +114,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateEndEmbed(giveaway, winners) {
-        let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+        let formattedWinners = winners.map((w) => `${w}`).join(', ');
 
         const strings = {
             winners: giveaway.fillInString(giveaway.messages.winners),
