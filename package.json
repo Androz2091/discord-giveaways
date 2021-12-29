@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint":"eslint .",
+    "lint": "eslint .",
     "generate-docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
@@ -48,7 +48,7 @@
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "discord.js": "^13.3.1",
+    "discord.js": "^13.5.0",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
