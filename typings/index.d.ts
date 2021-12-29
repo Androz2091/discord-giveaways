@@ -1,11 +1,21 @@
 declare module 'discord-giveaways' {
     import { EventEmitter } from 'node:events';
     import {
-        Client, ColorResolvable,
-        EmojiIdentifierResolvable, GuildMember, Message,
+        Client,
+        ColorResolvable,
+        EmojiIdentifierResolvable,
+        GuildMember,
+        Message,
         MessageEmbed,
         MessageEmbedOptions,
-        MessageMentionOptions, MessageReaction, NewsChannel, PermissionResolvable, Snowflake, TextChannel, ThreadChannel, User
+        MessageMentionOptions,
+        MessageReaction,
+        NewsChannel,
+        PermissionResolvable,
+        Snowflake,
+        TextChannel,
+        ThreadChannel,
+        User
     } from 'discord.js';
 
     export const version: string;
