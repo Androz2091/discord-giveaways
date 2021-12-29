@@ -1,7 +1,8 @@
-const { EventEmitter } = require('events');
+const { EventEmitter } = require('node:events');
+const { setTimeout, setInterval } = require('node:timers');
+const { writeFile, readFile, access } = require('fs/promises');
 const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
-const { writeFile, readFile, access } = require('fs/promises');
 const Discord = require('discord.js');
 const {
     GiveawayMessages,
@@ -113,7 +114,7 @@ class GiveawaysManager extends EventEmitter {
      * @returns {Discord.MessageEmbed} The generated embed
      */
     generateEndEmbed(giveaway, winners) {
-        let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
+        let formattedWinners = winners.map((w) => `${w}`).join(', ');
 
         const strings = {
             winners: giveaway.fillInString(giveaway.messages.winners),

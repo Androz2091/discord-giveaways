@@ -1,21 +1,21 @@
 declare module 'discord-giveaways' {
-    import { EventEmitter } from 'events';
+    import { EventEmitter } from 'node:events';
     import {
         Client,
-        PermissionResolvable,
         ColorResolvable,
         EmojiIdentifierResolvable,
-        User,
-        Snowflake,
         GuildMember,
-        TextChannel,
-        MessageReaction,
         Message,
         MessageEmbed,
         MessageEmbedOptions,
         MessageMentionOptions,
+        MessageReaction,
         NewsChannel,
-        ThreadChannel
+        PermissionResolvable,
+        Snowflake,
+        TextChannel,
+        ThreadChannel,
+        User
     } from 'discord.js';
 
     export const version: string;
@@ -126,7 +126,7 @@ declare module 'discord-giveaways' {
         giveawayReactionRemoved: [Giveaway, GuildMember, MessageReaction];
         endedGiveawayReactionAdded: [Giveaway, GuildMember, MessageReaction];
     }
-    class Giveaway extends EventEmitter {
+    class Giveaway<T=any> extends EventEmitter {
         constructor(manager: GiveawaysManager, options: GiveawayData);
 
         public channelId: Snowflake;
@@ -140,7 +140,7 @@ declare module 'discord-giveaways' {
         public messageId: Snowflake;
         public messages: Required<GiveawaysMessages>;
         public thumbnail?: string;
-        public extraData?: any;
+        public extraData?: T;
         public options: GiveawayData;
         public prize: string;
         public startAt: number;
@@ -170,8 +170,10 @@ declare module 'discord-giveaways' {
         private ensureEndTimeout(): void;
         private checkWinnerEntry(user: User): Promise<boolean>;
         public checkBonusEntries(user: User): Promise<number>;
-        public fillInString(string: string): string | null;
-        public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed | null;
+        public fillInString(string: string): string;
+        public fillInString(string: any): string | null;
+        public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
+        public fillInEmbed(embed: any): MessageEmbed | null;
         public exemptMembers(member: GuildMember): Promise<boolean>;
         public fetchMessage(): Promise<Message>;
         public edit(options: GiveawayEditOptions): Promise<Giveaway>;
@@ -199,7 +201,7 @@ declare module 'discord-giveaways' {
             error?: string | MessageObject;
         };
     }
-    interface GiveawayData {
+    interface GiveawayData<T=any> {
         startAt: number;
         endAt: number;
         winnerCount: number;
@@ -218,7 +220,7 @@ declare module 'discord-giveaways' {
         embedColorEnd?: ColorResolvable;
         thumbnail?: string;
         hostedBy?: string;
-        extraData?: any;
+        extraData?: T;
         lastChance?: LastChanceOptions;
         pauseOptions?: PauseOptions;
         isDrop?: boolean;
