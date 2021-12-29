@@ -1,4 +1,5 @@
 declare module 'discord-giveaways' {
+    import { EventEmitter } from 'node:events';
     import {
         Client, ColorResolvable,
         EmojiIdentifierResolvable, GuildMember, Message,
@@ -6,7 +7,6 @@ declare module 'discord-giveaways' {
         MessageEmbedOptions,
         MessageMentionOptions, MessageReaction, NewsChannel, PermissionResolvable, Snowflake, TextChannel, ThreadChannel, User
     } from 'discord.js';
-    import { EventEmitter } from 'node:events';
 
     export const version: string;
     export class GiveawaysManager extends EventEmitter {
