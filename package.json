@@ -48,16 +48,19 @@
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "discord.js": "^13.5.0",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^16.6.0",
+    "discord.js": "^13.5.0",
     "eslint": "^8.5.0",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
     "typescript": "^4.5.4"
+  },
+  "peerDependencies": {
+    "discord.js": "^13.0.0"
   },
   "engines": {
     "node": ">=16.6.0"
