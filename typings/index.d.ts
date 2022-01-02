@@ -8,7 +8,7 @@ import {
 import { EventEmitter } from 'node:events';
 
 export const version: string;
-export class GiveawaysManager<ExtraData> extends EventEmitter {
+export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     constructor(client: Client, options?: GiveawaysManagerOptions, init?: boolean);
 
     public client: Client;
