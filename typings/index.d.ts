@@ -107,7 +107,7 @@ export interface MessageObject {
     embed?: MessageEmbed | MessageEmbedOptions;
     replyToGiveaway?: boolean;
 }
-export interface GiveawaysManagerEvents<ExtraData> {
+export interface GiveawaysManagerEvents<ExtraData = any> {
     giveawayDeleted: [Giveaway<ExtraData>];
     giveawayEnded: [Giveaway<ExtraData>, GuildMember[]];
     giveawayRerolled: [Giveaway<ExtraData>, GuildMember[]];
