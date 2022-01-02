@@ -1,7 +1,8 @@
 const { EventEmitter } = require('node:events');
+const { setTimeout, setInterval } = require('node:timers');
+const { writeFile, readFile, access } = require('fs/promises');
 const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
-const { writeFile, readFile, access } = require('fs/promises');
 const Discord = require('discord.js');
 const {
     GiveawayMessages,
@@ -16,7 +17,6 @@ const {
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 const { validateEmbedColor } = require('./utils.js');
-const {setTimeout, setInterval} = require('node:timers');
 
 /**
  * Giveaways Manager
@@ -76,14 +76,15 @@ class GiveawaysManager extends EventEmitter {
                             ? giveaway.lastChance.embedColor
                             : giveaway.embedColor
             )
-            .setFooter(
-                typeof giveaway.messages.embedFooter === 'object'
-                    ? giveaway.messages.embedFooter.text?.length > 0
-                        ? giveaway.messages.embedFooter.text
-                        : ''
-                    : giveaway.messages.embedFooter,
-                giveaway.messages.embedFooter.iconURL
-            )
+            .setFooter({
+                text:
+                    typeof giveaway.messages.embedFooter === 'object'
+                        ? giveaway.messages.embedFooter.text?.length > 0
+                            ? giveaway.messages.embedFooter.text
+                            : ''
+                        : giveaway.messages.embedFooter,
+                iconURL: giveaway.messages.embedFooter.iconURL
+            })
             .setDescription(
                 giveaway.isDrop
                     ? giveaway.messages.dropMessage
@@ -104,6 +105,7 @@ class GiveawaysManager extends EventEmitter {
             )
             .setThumbnail(giveaway.thumbnail);
         if (giveaway.endAt !== Infinity) embed.setTimestamp(giveaway.endAt);
+        if (giveaway.endAt === Infinity) delete embed.timestamp; // TODO: Remove, when the "null to 0" problem is (probably) redundant with @discordjs/builders in discord.js v14
         return giveaway.fillInEmbed(embed);
     }
 
@@ -138,7 +140,7 @@ class GiveawaysManager extends EventEmitter {
         return new Discord.MessageEmbed()
             .setTitle(strings.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(strings.endedAt, giveaway.messages.embedFooter.iconURL)
+            .setFooter({ text: strings.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
             .setDescription(descriptionString(formattedWinners))
             .setTimestamp(giveaway.endAt)
             .setThumbnail(giveaway.thumbnail);
@@ -153,7 +155,7 @@ class GiveawaysManager extends EventEmitter {
         const embed = new Discord.MessageEmbed()
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
-            .setFooter(giveaway.messages.endedAt, giveaway.messages.embedFooter.iconURL)
+            .setFooter({ text: giveaway.messages.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
             .setDescription(giveaway.messages.noWinner + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : ''))
             .setTimestamp(giveaway.endAt)
             .setThumbnail(giveaway.thumbnail);
