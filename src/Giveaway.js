@@ -64,6 +64,12 @@ class Giveaway extends EventEmitter {
          */
         this.ended = options.ended ?? false;
         /**
+         * Whether the ending process was actually successful.
+         * @private
+         * @type {Boolean}
+         */
+        this.endedProperly = options.endedProperly ?? false;
+        /**
          * The Id of the channel of the giveaway.
          * @type {Discord.Snowflake}
          */
@@ -308,7 +314,8 @@ class Giveaway extends EventEmitter {
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions,
             isDrop: this.options.isDrop || undefined,
-            allowedMentions: this.allowedMentions
+            allowedMentions: this.allowedMentions,
+            endedProperly: this.options.endedProperly || undefined
         };
     }
 
@@ -599,20 +606,21 @@ class Giveaway extends EventEmitter {
 
             if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
-            const winners = await this.roll();
+            const winners = this.rolledWinners ?? (await this.roll());
 
             const channel =
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
 
+            const giveawayEndedMessage = this.fillInString(this.messages.giveawayEnded);
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 this.message = await this.message
                     .edit({
-                        content: this.fillInString(this.messages.giveawayEnded),
+                        content: giveawayEndedMessage,
                         embeds: [embed],
                         allowedMentions: this.allowedMentions
                     })
@@ -726,14 +734,20 @@ class Giveaway extends EventEmitter {
                         }
                     });
                 }
+
+                if (embed.equals(this.message.embeds[0]) && giveaway.message.content === giveawayEndedMessage) {
+                    this.endedProperly = true;
+                    await this.manager.editGiveaway(this.messageId, this.data);
+                }
+
                 resolve(winners);
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
-                const embed = this.fillInEmbed(noWinnerMessage?.embed);
-                if (message || embed) {
+                const embed1 = this.fillInEmbed(noWinnerMessage?.embed);
+                if (message || embed1) {
                     channel.send({
                         content: message,
-                        embeds: embed ? [embed] : null,
+                        embeds: embed ? [embed1] : null,
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -743,13 +757,20 @@ class Giveaway extends EventEmitter {
                     });
                 }
 
+                const embed2 = this.manager.generateNoValidParticipantsEndEmbed(this);
                 this.message = await this.message
                     .edit({
-                        content: this.fillInString(this.messages.giveawayEnded),
-                        embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
+                        content: giveawayEndedMessage,
+                        embeds: [embed2],
                         allowedMentions: this.allowedMentions
                     })
                     .catch(() => {});
+
+                if (embed2.equals(this.message.embeds[0]) && giveaway.message.content === giveawayEndedMessage) {
+                    this.endedProperly = true;
+                    await this.manager.editGiveaway(this.messageId, this.data);
+                }
+
                 resolve([]);
             }
         });

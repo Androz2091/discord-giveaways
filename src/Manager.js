@@ -505,8 +505,22 @@ class GiveawaysManager extends EventEmitter {
     _checkGiveaway() {
         if (this.giveaways.length <= 0) return;
         this.giveaways.forEach(async (giveaway) => {
-            // First case: giveaway is ended and we need to check if it should be deleted
+            // First case: giveaway is ended
             if (giveaway.ended) {
+                // 1.1 Check if the giveaway ending was actually successful
+                if (!giveaway.endedProperly) {
+                    giveaway.message = await giveaway.fetchMessage().catch(() => {});
+                    if (giveaway.message) {
+                        if (!giveaway.message.embeds[0]) {
+                            giveaway.message = await giveaway.message.suppressEmbeds(false).catch(() => {});
+                        }
+
+                        giveaway.rolledWinners = giveaway.winnerIds.length ? giveaway.winnerIds : undefined;
+                        return this.end(giveaway.messageId).catch(() => {});
+                    }
+                }
+
+                // 1.2 Check if the ended giveaway should get deleted
                 if (
                     Number.isFinite(this.options.endedGiveawaysLifetime) &&
                     giveaway.endAt + this.options.endedGiveawaysLifetime <= Date.now()
