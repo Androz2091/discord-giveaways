@@ -510,14 +510,14 @@ class GiveawaysManager extends EventEmitter {
                 // 1.1 Check if the giveaway ending was actually successful
                 if (!giveaway.endedProperly) {
                     giveaway.message = await giveaway.fetchMessage().catch(() => {});
-                    if (giveaway.message) {
-                        if (!giveaway.message.embeds[0]) {
-                            giveaway.message = await giveaway.message.suppressEmbeds(false).catch(() => {});
-                        }
+                    if (!giveaway.message) return;
 
-                        giveaway.rolledWinners = giveaway.winnerIds.length ? giveaway.winnerIds : undefined;
-                        return this.end(giveaway.messageId).catch(() => {});
+                    if (!giveaway.message.embeds[0]) {
+                        giveaway.message = await giveaway.message.suppressEmbeds(false).catch(() => {});
                     }
+
+                    giveaway.rolledWinners = giveaway.winnerIds.length ? giveaway.winnerIds : undefined;
+                    return this.end(giveaway.messageId).catch(() => {});
                 }
 
                 // 1.2 Check if the ended giveaway should get deleted
