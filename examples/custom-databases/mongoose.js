@@ -12,7 +12,7 @@ const Discord = require('discord.js'),
 
 // Connect to the database
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/giveaways');
+mongoose.connect('mongodb://localhost/database');
 const db = mongoose.connection;
 
 // Check the connection
