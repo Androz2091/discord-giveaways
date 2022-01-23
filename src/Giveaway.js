@@ -949,6 +949,9 @@ class Giveaway extends EventEmitter {
             if (validateEmbedColor(options.embedColor)) {
                 pauseOptions.embedColor = options.embedColor;
             }
+            if (typeof options.infiniteDurationText === 'string') {
+                pauseOptions.infiniteDurationText = options.infiniteDurationText;
+            }
             pauseOptions.isPaused = true;
             this.options.pauseOptions = pauseOptions;
 
