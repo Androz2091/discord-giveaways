@@ -1,11 +1,22 @@
+
+import { EventEmitter } from 'node:events';
 import {
-    Client, ColorResolvable,
-    EmojiIdentifierResolvable, GuildMember, Message,
+    Client,
+    ColorResolvable,
+    EmojiIdentifierResolvable,
+    GuildMember,
+    Message,
     MessageEmbed,
     MessageEmbedOptions,
-    MessageMentionOptions, MessageReaction, NewsChannel, PermissionResolvable, Snowflake, TextChannel, ThreadChannel, User
+    MessageMentionOptions,
+    MessageReaction,
+    NewsChannel,
+    PermissionResolvable,
+    Snowflake,
+    TextChannel,
+    ThreadChannel,
+    User
 } from 'discord.js';
-import { EventEmitter } from 'node:events';
 
 export const version: string;
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
@@ -24,6 +35,7 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
     public pause(messageId: Snowflake, options?: Omit<PauseOptions, 'durationAfterPause'>): Promise<Giveaway<ExtraData>>;
     public unpause(messageId: Snowflake): Promise<Giveaway<ExtraData>>;
+    
     public on<K extends keyof GiveawaysManagerEvents<ExtraData>>(
         event: K,
         listener: (...args: GiveawaysManagerEvents<ExtraData>[K]) => void
