@@ -46,6 +46,7 @@ exports.GiveawayMessages = {
  *
  * @property {string} [content] The raw message
  * @property {Discord.MessageEmbed|Discord.MessageEmbedOptions} [embed] The embed
+ * @property {Boolean} [replyToGiveaway] If the sent message should reply to the giveaway embed.
  */
 
 /**
@@ -106,14 +107,16 @@ exports.LastChanceOptions = {
  * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused.
  * @property {number} [unPauseAfter=null] The number of milliseconds after which the giveaway will automatically unpause.
  * @property {Discord.EmbedColorResolveAble} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
- * @property {number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused. ⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
+ * @private @property {number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused. ⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
+ * @property {string} [infiniteDurationText='`NEVER`'] The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unPauseAfter".
  */
 exports.PauseOptions = {
     isPaused: false,
     content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
     unPauseAfter: null,
     embedColor: '#FFFF00',
-    durationAfterPause: null
+    durationAfterPause: null,
+    infiniteDurationText: '`NEVER`'
 };
 
 /**
@@ -199,7 +202,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.Snowflake} channelId The Id of the channel.
  * @property {Discord.Snowflake} guildId The Id of the guild.
  * @property {Discord.Snowflake[]} [winnerIds] The winner Ids of the giveaway after it ended.
- * @property {Discord.Snowflake} [messageId] The Id of the message.
+ * @property {Discord.Snowflake} messageId The Id of the message.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
  * @property {boolean} [botsCanWin] If bots can win the giveaway.
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.

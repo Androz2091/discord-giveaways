@@ -14,6 +14,14 @@ const Discord = require('discord.js'),
 const nano = require('nano')('http://admin:mypassword@localhost:5984');
 let giveawayDB;
 
+// Check the DB
+(async () => {
+    if (!(await nano.db.list()).includes('giveaways')) await nano.db.create('giveaways');
+    giveawayDB = nano.use('giveaways');
+    // Start the manager only after the DB got checked to prevent an error
+    client.giveawaysManager._init();
+})();
+
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when the manager needs to get all giveaways which are stored in the database.
@@ -62,14 +70,6 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 }, false); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
-
-// Check the DB
-(async () => {
-    if (!(await nano.db.list()).includes('giveaways')) await nano.db.create('giveaways');
-    giveawayDB = nano.use('giveaways');
-    // Start the manager only after the DB got checked to prevent an error
-    client.giveawaysManager._init();
-})();
 
 client.on('ready', () => {
     console.log('I\'m ready!');

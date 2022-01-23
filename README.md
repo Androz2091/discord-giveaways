@@ -340,7 +340,8 @@ client.giveawaysManager.start(interaction.channel, {
         isPaused: true,
         content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
         unPauseAfter: null,
-        embedColor: '#FFFF00'
+        embedColor: '#FFFF00',
+        infiniteDurationText: '`NEVER`'
     }
 });
 ```
@@ -350,6 +351,8 @@ client.giveawaysManager.start(interaction.channel, {
 ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **pauseOptions.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
+-   **pauseOptions.infiniteDurationText**: The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unPauseAfter".  
+^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
     <img src="https://zupimages.net/up/21/24/dxhk.png"/>

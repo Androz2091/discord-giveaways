@@ -1,6 +1,6 @@
 {
   "name": "discord-giveaways",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
   "exports": {
@@ -11,16 +11,18 @@
       },
       "./index.js"
     ],
-    "./": "./",
+    "./*": "./",
     "./esm": "./esm.mjs"
   },
   "types": "typings/index.d.ts",
   "files": [
     "src/",
-    "typings/"
+    "typings/",
+    "esm.mjs"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
     "generate-docs": "jsdoc node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
@@ -39,6 +41,9 @@
     "giveaway"
   ],
   "author": "Androz2091",
+  "contributors": [
+    "Nico105"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Androz2091/discord-giveaways/issues"
@@ -46,16 +51,19 @@
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "discord.js": "^13.1.0",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^16.6.0",
-    "eslint": "^7.32.0",
+    "discord.js": "^13.5.0",
+    "eslint": "^8.5.0",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
-    "typescript": "^4.4.2"
+    "typescript": "^4.5.4"
+  },
+  "peerDependencies": {
+    "discord.js": ">=13.5.0"
   },
   "engines": {
     "node": ">=16.6.0"
