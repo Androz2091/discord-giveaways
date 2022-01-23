@@ -1,6 +1,6 @@
 {
   "name": "discord-giveaways",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
   "exports": {
@@ -41,6 +41,9 @@
     "giveaway"
   ],
   "author": "Androz2091",
+  "contributors": [
+    "Nico105"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Androz2091/discord-giveaways/issues"
