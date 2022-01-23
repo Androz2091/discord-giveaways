@@ -105,7 +105,7 @@ class GiveawaysManager extends EventEmitter {
             )
             .setThumbnail(giveaway.thumbnail);
         if (giveaway.endAt !== Infinity) embed.setTimestamp(giveaway.endAt);
-        if (giveaway.endAt === Infinity) delete embed.timestamp; // TODO: Remove, when the "null to 0" problem is (probably) redundant with @discordjs/builders in discord.js v14
+        else delete embed.timestamp; // TODO: Remove, when the "null to 0" problem is (probably) redundant with @discordjs/builders in discord.js v14
         return giveaway.fillInEmbed(embed);
     }
 
