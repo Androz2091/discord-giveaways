@@ -654,10 +654,18 @@ class Giveaway extends EventEmitter {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(this.messages.winMessage.embed);
                     const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
+                    let components = this.messages.winMessage.components;
+                    if (components?.length)
+                        components = components.forEach((row) => {
+                            row.components.forEach((component) => {
+                                component.customId = component.customId.replace('{message_id}', this.messageId);
+                            });
+                        });
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
+                            components,
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
@@ -676,6 +684,7 @@ class Giveaway extends EventEmitter {
                                     embed.description.slice(0, embed.description.indexOf('{winners}'))
                                 )
                             ],
+                            components,
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
