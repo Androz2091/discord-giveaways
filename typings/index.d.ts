@@ -121,10 +121,13 @@ export interface MessageObject {
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
     giveawayDeleted: [Giveaway<ExtraData>];
+    giveawayEdited: [Giveaway<ExtraData>];
     giveawayEnded: [Giveaway<ExtraData>, GuildMember[]];
     giveawayRerolled: [Giveaway<ExtraData>, GuildMember[]];
     giveawayReactionAdded: [Giveaway<ExtraData>, GuildMember, MessageReaction];
     giveawayReactionRemoved: [Giveaway<ExtraData>, GuildMember, MessageReaction];
+    giveawayPaused: [Giveaway<ExtraData>];
+    giveawayUnpaused: [Giveaway<ExtraData>];
     endedGiveawayReactionAdded: [Giveaway<ExtraData>, GuildMember, MessageReaction];
 }
 export class Giveaway<ExtraData = any> extends EventEmitter {
