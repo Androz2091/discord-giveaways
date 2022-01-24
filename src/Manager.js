@@ -331,6 +331,7 @@ class GiveawaysManager extends EventEmitter {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
             giveaway.pause(options).then(resolve).catch(reject);
+            this.emit('giveawayPaused', giveaway);
         });
     }
 
@@ -347,6 +348,7 @@ class GiveawaysManager extends EventEmitter {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
             giveaway.unpause().then(resolve).catch(reject);
+            this.emit('giveawayUnpaused', giveaway);
         });
     }
 
@@ -368,6 +370,7 @@ class GiveawaysManager extends EventEmitter {
             const giveaway = this.giveaways.find((g) => g.messageId === messageId);
             if (!giveaway) return reject('No giveaway found with message Id ' + messageId + '.');
             giveaway.edit(options).then(resolve).catch(reject);
+            this.emit('giveawayEdited', giveaway);
         });
     }
 
