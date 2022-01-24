@@ -277,6 +277,7 @@ class GiveawaysManager extends EventEmitter {
             giveaway.message = reaction.message;
             this.giveaways.push(giveaway);
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
+            this.emit('giveawayCreated', giveaway);
             resolve(giveaway);
             if (giveaway.isDrop) {
                 reaction.message

@@ -120,6 +120,7 @@ export interface MessageObject {
     replyToGiveaway?: boolean;
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
+    giveawayCreated: [Giveaway<ExtraData>];
     giveawayDeleted: [Giveaway<ExtraData>];
     giveawayEdited: [Giveaway<ExtraData>];
     giveawayEnded: [Giveaway<ExtraData>, GuildMember[]];
