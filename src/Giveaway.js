@@ -605,7 +605,15 @@ class Giveaway extends EventEmitter {
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
-
+            const components = this.messages.winMessage.components;
+            if (components?.length) {
+                components.forEach((row) => {
+                    row.components.forEach((component) => {
+                        component.customId = this.fillInString(component.customId);
+                        component.label = this.fillInString(component.label);
+                    });
+                });
+            }
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
@@ -626,6 +634,7 @@ class Giveaway extends EventEmitter {
                     channel.send({
                         content: winMessage.slice(0, winMessage.indexOf('{winners}')),
                         allowedMentions: this.allowedMentions,
+                        components,
                         reply: {
                             messageReference:
                                 typeof this.messages.winMessage.replyToGiveaway === 'boolean'
@@ -654,14 +663,7 @@ class Giveaway extends EventEmitter {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(this.messages.winMessage.embed);
                     const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
-                    let components = this.messages.winMessage.components;
-                    if (components?.length)
-                        components = components.forEach((row) => {
-                            row.components.forEach((component) => {
-                                component.customId = this.fillInString(component.customId);
-                                component.label = this.fillInString(component.label);
-                            });
-                        });
+
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
@@ -726,6 +728,7 @@ class Giveaway extends EventEmitter {
                 } else if (message?.length <= 2000) {
                     channel.send({
                         content: message,
+                        components,
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -744,6 +747,7 @@ class Giveaway extends EventEmitter {
                     channel.send({
                         content: message,
                         embeds: embed ? [embed] : null,
+                        components,
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
