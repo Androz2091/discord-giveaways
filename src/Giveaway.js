@@ -658,7 +658,8 @@ class Giveaway extends EventEmitter {
                     if (components?.length)
                         components = components.forEach((row) => {
                             row.components.forEach((component) => {
-                                component.customId = component.customId.replace('{message_id}', this.messageId);
+                                component.customId = this.fillInString(component.customId);
+                                component.label = this.fillInString(component.label);
                             });
                         });
                     if (embedDescription.length <= 4096) {
