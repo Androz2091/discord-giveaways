@@ -661,7 +661,7 @@ class Giveaway extends EventEmitter {
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
-                                    message?.length <= 2000 &&
+                                    !(message?.length > 2000) &&
                                     typeof this.messages.winMessage.replyToGiveaway === 'boolean'
                                         ? this.messageId
                                         : undefined,
@@ -679,7 +679,7 @@ class Giveaway extends EventEmitter {
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
-                                    message?.length <= 2000 &&
+                                    !(message?.length > 2000) &&
                                     typeof this.messages.winMessage.replyToGiveaway === 'boolean'
                                         ? this.messageId
                                         : undefined,
@@ -833,7 +833,7 @@ class Giveaway extends EventEmitter {
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
-                                    message?.length <= 2000 &&
+                                    !(message?.length > 2000) &&
                                     typeof options.messages.congrat.replyToGiveaway === 'boolean'
                                         ? this.messageId
                                         : undefined,
@@ -851,7 +851,7 @@ class Giveaway extends EventEmitter {
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
-                                    message?.length <= 2000 &&
+                                    !(message?.length > 2000) &&
                                     typeof options.messages.congrat.replyToGiveaway === 'boolean'
                                         ? this.messageId
                                         : undefined,
