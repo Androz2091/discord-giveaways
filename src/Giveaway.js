@@ -636,7 +636,7 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: firstContentPart,
                             allowedMentions: this.allowedMentions,
-                        components,
+                            components,
                             reply: {
                                 messageReference:
                                     typeof this.messages.winMessage.replyToGiveaway === 'boolean'
@@ -691,7 +691,7 @@ class Giveaway extends EventEmitter {
                             channel.send({
                                 content: message?.length <= 2000 ? message : null,
                                 embeds: [firstEmbed],
-                            components,
+                                components,
                                 allowedMentions: this.allowedMentions,
                                 reply: {
                                     messageReference:
