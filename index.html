@@ -36,7 +36,7 @@
     
 
 
-    <h3>discord-giveaways 5.1.0</h3>
+    <h3>discord-giveaways 5.1.1</h3>
 
 
 
@@ -264,6 +264,8 @@ if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `'
 <li><strong>options.content</strong>: the text of the embed when the giveaway is paused. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>options.unPauseAfter</strong>: the number of milliseconds after which the giveaway will automatically unpause.</li>
 <li><strong>options.embedColor</strong>: the color of the embed when the giveaway is paused.</li>
+<li><strong>options.infiniteDurationText</strong>: The text that gets displayed next to <code>GiveawayMessages#drawing</code> in the paused embed, when there is no <code>unPauseAfter</code>.<br>
+^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 </ul>
 <p>⚠️ <strong>Note</strong>: the pause function overwrites/edits the <a href="https://github.com/Androz2091/discord-giveaways#pause-options">pauseOptions object property</a> of a giveaway!</p>
 <h3>Unpause a giveaway</h3>
@@ -354,7 +356,7 @@ client.giveawaysManager.start(interaction.channel, {
 ^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 <li><strong>pauseOptions.unPauseAfter</strong>: the number of milliseconds after which the giveaway will automatically unpause.</li>
 <li><strong>pauseOptions.embedColor</strong>: the color of the embed when the giveaway is paused.</li>
-<li><strong>pauseOptions.infiniteDurationText</strong>: The text that gets displayed next to &quot;GiveawayMessages#drawing&quot; in the paused embed, when there is no &quot;unPauseAfter&quot;.<br>
+<li><strong>pauseOptions.infiniteDurationText</strong>: The text that gets displayed next to <code>GiveawayMessages#drawing</code> in the paused embed, when there is no <code>unPauseAfter</code>.<br>
 ^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 </ul>
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
