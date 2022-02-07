@@ -46,20 +46,18 @@ const Discord = require('discord.js'),
     settings = {
         prefix: 'g!',
         token: 'Your Discord Bot Token'
-    };
-
-// Requires Manager from discord-giveaways
-const { GiveawaysManager } = require('discord-giveaways');
-// Starts updating currents giveaways
-const manager = new GiveawaysManager(client, {
-    storage: './giveaways.json',
-    default: {
-        botsCanWin: false,
-        embedColor: '#FF0000',
-        embedColorEnd: '#000000',
-        reaction: '🎉'
-    }
-});
+    },
+    { GiveawaysManager } = require('discord-giveaways'), // Requires Manager from discord-giveaways
+    const manager = new GiveawaysManager(client, { // Starts updating currents giveaways
+        storage: './giveaways.json',
+        default: {
+            botsCanWin: false,
+            embedColor: '#FF0000',
+            embedColorEnd: '#000000',
+            reaction: '🎉'
+        }
+    });
+    
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
