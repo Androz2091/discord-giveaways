@@ -900,18 +900,24 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
-                const embed = this.fillInEmbed(options.messages.error.embed);
-                channel.send({
-                    content: this.fillInString(options.messages.error.content || options.messages.error),
-                    embeds: embed ? [embed] : null,
-                    allowedMentions: this.allowedMentions,
-                    reply: {
-                        messageReference:
-                            typeof options.messages.error.replyToGiveaway === 'boolean' ? this.messageId : undefined,
-                        failIfNotExists: false
-                    }
-                });
-                resolve([]);
+                if (options.rejectOnNoWinner) {
+                    reject(new Error('No valid participations, no new winner(s) can be chosen!'));
+                } else {
+                    const embed = this.fillInEmbed(options.messages.error.embed);
+                    channel.send({
+                        content: this.fillInString(options.messages.error.content || options.messages.error),
+                        embeds: embed ? [embed] : null,
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference:
+                                typeof options.messages.error.replyToGiveaway === 'boolean'
+                                    ? this.messageId
+                                    : undefined,
+                            failIfNotExists: false
+                        }
+                    });
+                    resolve([]);
+                }
             }
         });
     }
