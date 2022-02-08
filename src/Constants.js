@@ -46,6 +46,7 @@ exports.GiveawayMessages = {
  *
  * @property {string} [content] The raw message
  * @property {Discord.MessageEmbed|Discord.MessageEmbedOptions} [embed] The embed
+ * @property {Discord.MessageActionRow[]} [components] The components
  * @property {Boolean} [replyToGiveaway] If the sent message should reply to the giveaway embed.
  */
 

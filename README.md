@@ -414,6 +414,16 @@ message: { content: '', embed: new Discord.MessageEmbed() }
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
 
+### Send components with message
+
+You can send an components with the normal message or embed for the following messages:  
+`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
+
+The format looks like this:
+```js
+message: { content: '', embed: new Discord.MessageEmbed(), components: [new Discord.MessageActionRow()] }
+```
+
 ### Access giveaway properties in messages
 
 You can access any giveaway property inside of giveaway messages with the format: `{this.<property>}`.  

@@ -796,6 +796,15 @@ class Giveaway extends EventEmitter {
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
+            const components = this.messages.winMessage.components;
+            if (components?.length) {
+                components.forEach((row) => {
+                    row.components.forEach((component) => {
+                        component.customId = this.fillInString(component.customId);
+                        component.label = this.fillInString(component.label);
+                    });
+                });
+            }
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
@@ -818,6 +827,7 @@ class Giveaway extends EventEmitter {
                     if (firstContentPart.length) {
                         channel.send({
                             content: firstContentPart,
+                            components,
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
@@ -854,6 +864,7 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
+                            components,
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
@@ -872,6 +883,7 @@ class Giveaway extends EventEmitter {
                             channel.send({
                                 content: message?.length <= 2000 ? message : null,
                                 embeds: [firstEmbed],
+                                components,
                                 allowedMentions: this.allowedMentions,
                                 reply: {
                                     messageReference:
@@ -913,6 +925,7 @@ class Giveaway extends EventEmitter {
                 } else if (message?.length <= 2000) {
                     channel.send({
                         content: message,
+                        components,
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -929,6 +942,7 @@ class Giveaway extends EventEmitter {
                 channel.send({
                     content: this.fillInString(options.messages.error.content || options.messages.error),
                     embeds: embed ? [embed] : null,
+                    components,
                     allowedMentions: this.allowedMentions,
                     reply: {
                         messageReference:

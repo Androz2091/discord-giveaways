@@ -20,7 +20,6 @@
         "no-async-promise-executor": "off",
         "no-unused-vars": "off",
         "node/no-missing-require": "off",
-        "no-console": ["error", { "allow": ["warn", "error"] }],
         "no-restricted-globals": [
             "error",
             {
