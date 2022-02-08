@@ -947,16 +947,16 @@ class Giveaway extends EventEmitter {
             // Update data
             const pauseOptions = this.options.pauseOptions || {};
             if (typeof options.content === 'string') pauseOptions.content = options.content;
-            if (Number.isFinite(options.unPauseAfter)) {
-                if (options.unPauseAfter < Date.now()) {
-                    pauseOptions.unPauseAfter = Date.now() + options.unPauseAfter;
-                    this.endAt = this.endAt + options.unPauseAfter;
+            if (Number.isFinite(options.unpauseAfter)) {
+                if (options.unpauseAfter < Date.now()) {
+                    pauseOptions.unpauseAfter = Date.now() + options.unpauseAfter;
+                    this.endAt = this.endAt + options.unpauseAfter;
                 } else {
-                    pauseOptions.unPauseAfter = options.unPauseAfter;
-                    this.endAt = this.endAt + options.unPauseAfter - Date.now();
+                    pauseOptions.unpauseAfter = options.unpauseAfter;
+                    this.endAt = this.endAt + options.unpauseAfter - Date.now();
                 }
             } else {
-                delete pauseOptions.unPauseAfter;
+                delete pauseOptions.unpauseAfter;
                 pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
@@ -1000,7 +1000,7 @@ class Giveaway extends EventEmitter {
             if (Number.isFinite(this.pauseOptions.durationAfterPause)) {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
-            delete this.options.pauseOptions.unPauseAfter;
+            delete this.options.pauseOptions.unpauseAfter;
             this.options.pauseOptions.isPaused = false;
 
             this.ensureEndTimeout();

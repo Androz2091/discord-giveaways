@@ -69,7 +69,7 @@ export interface LastChanceOptions {
 export interface PauseOptions {
     isPaused?: boolean;
     content?: string;
-    unPauseAfter?: number | null;
+    unpauseAfter?: number | null;
     embedColor?: ColorResolvable;
     durationAfterPause?: number | null;
     infiniteDurationText?: string;
