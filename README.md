@@ -146,6 +146,7 @@ client.on('interactionCreate', (interaction) => {
 
 -   **options.winnerCount**: the number of winners to pick.
 -   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
+-   **options.rejectOnNoWinner**: Whether or not reject the promise if there is no winner.
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
