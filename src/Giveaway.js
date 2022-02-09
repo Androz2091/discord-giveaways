@@ -965,8 +965,9 @@ class Giveaway extends EventEmitter {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-            if (this.pauseOptions.isPaused)
+            if (this.pauseOptions.isPaused) {
                 return reject('Giveaway with message Id ' + this.messageId + ' is already paused.');
+            }
             if (this.isDrop) return reject('Drop giveaways cannot get paused!');
             if (this.endTimeout) clearTimeout(this.endTimeout);
 
@@ -982,6 +983,7 @@ class Giveaway extends EventEmitter {
                     this.endAt = this.endAt + options.unPauseAfter - Date.now();
                 }
             } else {
+                delete pauseOptions.unPauseAfter;
                 pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
@@ -1016,14 +1018,16 @@ class Giveaway extends EventEmitter {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-            if (!this.pauseOptions.isPaused)
+            if (!this.pauseOptions.isPaused) {
                 return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
+            }
             if (this.isDrop) return reject('Drop giveaways cannot get unpaused!');
 
             // Update data
             if (Number.isFinite(this.pauseOptions.durationAfterPause)) {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
+            delete this.options.pauseOptions.unPauseAfter;
             this.options.pauseOptions.isPaused = false;
 
             this.ensureEndTimeout();
