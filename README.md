@@ -42,13 +42,10 @@ const Discord = require('discord.js'),
             Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
             Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
         ]
-    }),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Bot Token'
-    },
-    { GiveawaysManager } = require('discord-giveaways'), // Requires Manager from discord-giveaways
-    const manager = new GiveawaysManager(client, { // Starts updating currents giveaways
+    });
+    
+const { GiveawaysManager } = require('discord-giveaways'), // Requires Manager from discord-giveaways
+    manager = new GiveawaysManager(client, { // Starts updating currents giveaways
         storage: './giveaways.json',
         default: {
             botsCanWin: false,
@@ -65,7 +62,7 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.login(settings.token);
+client.login(process.env.TOKEN);
 ```
 
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
