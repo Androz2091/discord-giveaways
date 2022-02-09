@@ -465,7 +465,7 @@ class Giveaway extends EventEmitter {
 
         // Fetch all guild members if the intent is available
         if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) {
-            await guild.members.fetch();
+            await guild.members.fetch().catch(() => {});
         }
 
         // Fetch all reaction users
