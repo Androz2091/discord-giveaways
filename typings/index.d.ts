@@ -37,7 +37,7 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     ): Promise<Giveaway<ExtraData>>;
     public pause(
         messageId: Snowflake,
-        options?: Omit<PauseOptions, 'durationAfterPause'>
+        options?: Omit<PauseOptions, 'isPaused' | 'durationAfterPause'>
     ): Promise<Giveaway<ExtraData>>;
     public unpause(messageId: Snowflake): Promise<Giveaway<ExtraData>>;
 
@@ -189,7 +189,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
     public reroll(options?: GiveawayRerollOptions): Promise<GuildMember[]>;
     public roll(winnerCount?: number): Promise<GuildMember[]>;
-    public pause(options?: Omit<PauseOptions, 'durationAfterPause'>): Promise<Giveaway<ExtraData>>;
+    public pause(options?: Omit<PauseOptions, 'isPaused' | 'durationAfterPause'>): Promise<Giveaway<ExtraData>>;
     public unpause(): Promise<Giveaway<ExtraData>>;
 }
 export interface GiveawayEditOptions<ExtraData> {

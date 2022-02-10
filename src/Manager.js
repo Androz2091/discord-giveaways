@@ -407,15 +407,6 @@ class GiveawaysManager extends EventEmitter {
             ),
             'utf-8'
         );
-        this.refreshStorage();
-        return true;
-    }
-
-    /**
-     * Refresh the cache to support shards.
-     * @ignore
-     */
-    async refreshStorage() {
         return true;
     }
 
@@ -475,7 +466,6 @@ class GiveawaysManager extends EventEmitter {
             ),
             'utf-8'
         );
-        this.refreshStorage();
         return;
     }
 
@@ -494,7 +484,6 @@ class GiveawaysManager extends EventEmitter {
             ),
             'utf-8'
         );
-        this.refreshStorage();
         return;
     }
 
@@ -539,7 +528,7 @@ class GiveawaysManager extends EventEmitter {
                 }
                 if (
                     Number.isFinite(giveaway.pauseOptions.unPauseAfter) &&
-                    Date.now() < giveaway.pauseOptions.unPauseAfter
+                    Date.now() > giveaway.pauseOptions.unPauseAfter
                 ) {
                     return this.unpause(giveaway.messageId).catch(() => {});
                 }
@@ -641,8 +630,18 @@ class GiveawaysManager extends EventEmitter {
      * @ignore
      */
     async _init() {
-        const rawGiveaways = await this.getAllGiveaways();
+        let rawGiveaways = await this.getAllGiveaways();
+
+        await (this.client.readyAt ? Promise.resolve() : new Promise((resolve) => this.client.once('ready', resolve)));
+
+        // Filter giveaways for each shard
+        if (this.client.shard && this.client.guilds.cache.size) {
+            const shardId = this.client.shard.shardIdForGuildId(this.client.guilds.cache.first().id, this.client.shard.count);
+            rawGiveaways = rawGiveaways.filter((g) => shardId === this.client.shard.shardIdForGuildId(g.guildId, this.client.shard.count));
+        }
+        
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
+
         setInterval(() => {
             if (this.client.readyAt) this._checkGiveaway.call(this);
         }, this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL);
