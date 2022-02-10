@@ -563,6 +563,9 @@ class Giveaway extends EventEmitter {
             if (Array.isArray(options.newBonusEntries) && !this.isDrop) {
                 this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             }
+            if (options.newExemptMembers) {
+                this.options.exemptMembers = options.newExemptMembers;
+            }
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) {
                 this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
             }

@@ -1,4 +1,3 @@
-
 import { EventEmitter } from 'node:events';
 import {
     Client,
@@ -32,10 +31,16 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     public edit(messageId: Snowflake, options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
     public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
     public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
-    public start(channel: TextChannel | NewsChannel | ThreadChannel, options: GiveawayStartOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
-    public pause(messageId: Snowflake, options?: Omit<PauseOptions, 'durationAfterPause'>): Promise<Giveaway<ExtraData>>;
+    public start(
+        channel: TextChannel | NewsChannel | ThreadChannel,
+        options: GiveawayStartOptions<ExtraData>
+    ): Promise<Giveaway<ExtraData>>;
+    public pause(
+        messageId: Snowflake,
+        options?: Omit<PauseOptions, 'durationAfterPause'>
+    ): Promise<Giveaway<ExtraData>>;
     public unpause(messageId: Snowflake): Promise<Giveaway<ExtraData>>;
-    
+
     public on<K extends keyof GiveawaysManagerEvents<ExtraData>>(
         event: K,
         listener: (...args: GiveawaysManagerEvents<ExtraData>[K]) => void
@@ -46,7 +51,10 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
         listener: (...args: GiveawaysManagerEvents<ExtraData>[K]) => void
     ): this;
 
-    public emit<K extends keyof GiveawaysManagerEvents<ExtraData>>(event: K, ...args: GiveawaysManagerEvents<ExtraData>[K]): boolean;
+    public emit<K extends keyof GiveawaysManagerEvents<ExtraData>>(
+        event: K,
+        ...args: GiveawaysManagerEvents<ExtraData>[K]
+    ): boolean;
 }
 export interface BonusEntry {
     bonus(member?: GuildMember): number | Promise<number>;
@@ -71,12 +79,12 @@ export interface GiveawaysManagerOptions {
     forceUpdateEvery?: number;
     endedGiveawaysLifetime?: number;
     default?: {
-        botsCanWin?: boolean,
-        exemptPermissions?: PermissionResolvable[],
-        exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>,
-        embedColor?: ColorResolvable,
-        embedColorEnd?: ColorResolvable,
-        reaction?: EmojiIdentifierResolvable,
+        botsCanWin?: boolean;
+        exemptPermissions?: PermissionResolvable[];
+        exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
+        embedColor?: ColorResolvable;
+        embedColorEnd?: ColorResolvable;
+        reaction?: EmojiIdentifierResolvable;
         lastChance?: LastChanceOptions;
     };
 }
@@ -108,7 +116,7 @@ export interface GiveawaysMessages {
     winMessage?: string | MessageObject;
     drawing?: string;
     dropMessage?: string;
-    embedFooter?: string | { text?: string; iconURL?: string; };
+    embedFooter?: string | { text?: string; iconURL?: string };
     noWinner?: string;
     winners?: string;
     endedAt?: string;
@@ -192,6 +200,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newMessages?: GiveawaysMessages;
     newThumbnail?: string;
     newBonusEntries?: BonusEntry[];
+    newExemptMembers?: Function;
     newExtraData?: ExtraData;
     newLastChance?: LastChanceOptions;
 }
