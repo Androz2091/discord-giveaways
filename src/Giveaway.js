@@ -912,9 +912,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
-                if (options.rejectOnNoWinner) {
-                    reject(new Error('No valid participations, no new winner(s) can be chosen!'));
-                } else {
+                if (options.messages.replyWhenNoWinner) {
                     const embed = this.fillInEmbed(options.messages.error.embed);
                     channel.send({
                         content: this.fillInString(options.messages.error.content || options.messages.error),
@@ -928,8 +926,8 @@ class Giveaway extends EventEmitter {
                             failIfNotExists: false
                         }
                     });
-                    resolve([]);
                 }
+                resolve([]);
             }
         });
     }
