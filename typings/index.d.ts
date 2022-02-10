@@ -208,8 +208,8 @@ export interface GiveawayRerollOptions {
     messages?: {
         congrat?: string | MessageObject;
         error?: string | MessageObject;
+        replyWhenNoWinner?: boolean;
     };
-    rejectOnNoWinner?: boolean;
 }
 export interface GiveawayData<ExtraData = any> {
     startAt: number;
