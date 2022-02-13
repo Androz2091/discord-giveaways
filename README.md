@@ -179,6 +179,7 @@ client.on('interactionCreate', (interaction) => {
 ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
+-   **options.newExemptMembers**: the new filter function to exempt members from winning the giveaway.
 -   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
 **Note**: to reduce giveaway duration, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway duration by 5 seconds!

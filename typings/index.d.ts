@@ -200,6 +200,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newMessages?: GiveawaysMessages;
     newThumbnail?: string;
     newBonusEntries?: BonusEntry[];
+    newExemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
     newExtraData?: ExtraData;
     newLastChance?: LastChanceOptions;
 }

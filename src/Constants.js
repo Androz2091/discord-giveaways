@@ -184,6 +184,7 @@ exports.GiveawayRerollOptions = {
  * @property {string} [newThumbnail] The new thumbnail url.
  * @property {any} [newExtraData] The new extra data for this giveaway.
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
+ * @property {Function} [newExemptMembers] The new filter function to exempt members from winning the giveaway.
  * @property {LastChanceOptions} [newLastChance] The new options for the last chance system. Will get merged with the existing object, if there.
  */
 exports.GiveawayEditOptions = {};
