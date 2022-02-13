@@ -44,7 +44,7 @@ const client = new Discord.Client({
     ]
 });
 
-// Requires Manager from discord-giveaways 
+// Requires Manager from discord-giveaways
 const { GiveawaysManager } = require('discord-giveaways');
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
