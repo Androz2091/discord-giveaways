@@ -1,14 +1,10 @@
-const Discord = require('discord.js'),
-    client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-        ]
-    }),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Bot Token'
-    };
+const Discord = require('discord.js');
+const client = new Discord.Client({
+    intents: [
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+    ]
+});
 
 // Load mysql
 const MySQL = require('mysql');
@@ -124,4 +120,4 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.login(settings.token);
+client.login(process.env.DISCORD_BOT_TOKEN);
