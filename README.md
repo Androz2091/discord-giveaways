@@ -35,22 +35,17 @@ Required Discord Intents: `GUILDS` and `GUILD_MESSAGE_REACTIONS`.
 Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
-const Discord = require('discord.js'),
-    client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
-        ]
-    }),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Bot Token'
-    };
+const Discord = require('discord.js');
+const client = new Discord.Client({
+    intents: [
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
+    ]
+});
 
 // Requires Manager from discord-giveaways
 const { GiveawaysManager } = require('discord-giveaways');
-// Starts updating currents giveaways
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     default: {
@@ -67,7 +62,7 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.login(settings.token);
+client.login(process.env.DISCORD_BOT_TOKEN);
 ```
 
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
