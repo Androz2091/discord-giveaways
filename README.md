@@ -35,26 +35,26 @@ Required Discord Intents: `GUILDS` and `GUILD_MESSAGE_REACTIONS`.
 Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
 
 ```js
-const Discord = require('discord.js'),
-    client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
-        ]
-    });
-    
-const { GiveawaysManager } = require('discord-giveaways'), // Requires Manager from discord-giveaways
-    manager = new GiveawaysManager(client, { // Starts updating currents giveaways
-        storage: './giveaways.json',
-        default: {
-            botsCanWin: false,
-            embedColor: '#FF0000',
-            embedColorEnd: '#000000',
-            reaction: '🎉'
-        }
-    });
-    
+const Discord = require('discord.js');
+const client = new Discord.Client({
+    intents: [
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
+    ]
+});
+
+// Requires Manager from discord-giveaways 
+const { GiveawaysManager } = require('discord-giveaways');
+const manager = new GiveawaysManager(client, {
+    storage: './giveaways.json',
+    default: {
+        botsCanWin: false,
+        embedColor: '#FF0000',
+        embedColorEnd: '#000000',
+        reaction: '🎉'
+    }
+});
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
@@ -62,7 +62,7 @@ client.on('ready', () => {
     console.log('I\'m ready!');
 });
 
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
 ```
 
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
