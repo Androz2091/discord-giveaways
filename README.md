@@ -402,27 +402,32 @@ client.giveawaysManager.start(interaction.channel, {
 
 **Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
-### Send embed as message
+### Message Customizations
 
-You can send an embed instead of, or with the normal message for the following messages:  
+You can send an embed, components for the following messages:  
 `giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
 
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed or component properties that are a string.
+
+#### Send Embed 
+
 The format looks like this:
+
 ```js
 message: { content: '', embed: new Discord.MessageEmbed() }
 ```
 
-You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
+Note: You can send embed instead of, or with the normal message.
 
-### Send components with message
-
-You can send an components with the normal message or embed for the following messages:  
-`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
+#### Send Components 
 
 The format looks like this:
+
 ```js
 message: { content: '', embed: new Discord.MessageEmbed(), components: [new Discord.MessageActionRow()] }
 ```
+
+Note: When sending component message or embed is required.
 
 ### Access giveaway properties in messages
 
