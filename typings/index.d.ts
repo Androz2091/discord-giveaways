@@ -185,6 +185,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public fillInString(string: any): string | null;
     public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
     public fillInEmbed(embed: any): MessageEmbed | null;
+    public fillInComponents(components: MessageActionRow[]): MessageActionRow[];
     public exemptMembers(member: GuildMember): Promise<boolean>;
     public fetchMessage(): Promise<Message>;
     public edit(options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;

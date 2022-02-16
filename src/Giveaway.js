@@ -372,6 +372,29 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * @param {Discord.MessageActionRow[]} components The components that should get filled in.
+     * @returns {Discord.MessageActionRow[]} The filled in components.
+     */
+    fillInComponents(components) {
+        if (!components?.length) return components;
+        components.forEach((row) => {
+            row.components.forEach((component) => {
+                if (component.customId) component.customId = this.fillInString(component.customId);
+                component.label = this.fillInString(component.label);
+                if (component.url) component.url = this.fillInString(component.url);
+                if (component.placeholder) component.placeholder = this.fillInString(component.placeholder);
+                if (component.options)
+                    component.options = component.options.map((options) => {
+                        options.label = this.fillInString(options.label);
+                        options.value = this.fillInString(options.value);
+                        if (options.description) options.description = this.fillInString(options.description);
+                        return options;
+                    });
+            });
+        });
+    }
+
+    /**
      * Fetches the giveaway message from its channel.
      * @returns {Promise<Discord.Message>} The Discord message
      */
@@ -605,24 +628,7 @@ class Giveaway extends EventEmitter {
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
-            const components = this.messages.winMessage.components;
-            if (components?.length) {
-                components.forEach((row) => {
-                    row.components.forEach((component) => {
-                        if (component.customId) component.customId = this.fillInString(component.customId);
-                        component.label = this.fillInString(component.label);
-                        if (component.url) component.url = this.fillInString(component.url);
-                        if (component.placeholder) component.placeholder = this.fillInString(component.placeholder);
-                        if (component.options)
-                            component.options = component.options.map((options) => {
-                                options.label = this.fillInString(options.label);
-                                options.value = this.fillInString(options.value);
-                                if (options.description) options.description = this.fillInString(options.description);
-                                return options;
-                            });
-                    });
-                });
-            }
+            const components = this.fillInComponents(this.messages.winMessage.components);
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
@@ -805,24 +811,7 @@ class Giveaway extends EventEmitter {
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
-            const components = this.messages.winMessage.components;
-            if (components?.length) {
-                components.forEach((row) => {
-                    row.components.forEach((component) => {
-                        if (component.customId) component.customId = this.fillInString(component.customId);
-                        component.label = this.fillInString(component.label);
-                        if (component.url) component.url = this.fillInString(component.url);
-                        if (component.placeholder) component.placeholder = this.fillInString(component.placeholder);
-                        if (component.options)
-                            component.options = component.options.map((options) => {
-                                options.label = this.fillInString(options.label);
-                                options.value = this.fillInString(options.value);
-                                if (options.description) options.description = this.fillInString(options.description);
-                                return options;
-                            });
-                    });
-                });
-            }
+            const components = this.fillInComponents(this.messages.winMessage.components);
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
