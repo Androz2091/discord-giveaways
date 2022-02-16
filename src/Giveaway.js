@@ -609,8 +609,17 @@ class Giveaway extends EventEmitter {
             if (components?.length) {
                 components.forEach((row) => {
                     row.components.forEach((component) => {
-                        component.customId = this.fillInString(component.customId);
+                        if (component.customId) component.customId = this.fillInString(component.customId);
                         component.label = this.fillInString(component.label);
+                        if (component.url) component.url = this.fillInString(component.url);
+                        if (component.placeholder) component.placeholder = this.fillInString(component.placeholder);
+                        if (component.options)
+                            component.options = component.options.map((options) => {
+                                options.label = this.fillInString(options.label);
+                                options.value = this.fillInString(options.value);
+                                if (options.description) options.description = this.fillInString(options.description);
+                                return options;
+                            });
                     });
                 });
             }
@@ -800,8 +809,17 @@ class Giveaway extends EventEmitter {
             if (components?.length) {
                 components.forEach((row) => {
                     row.components.forEach((component) => {
-                        component.customId = this.fillInString(component.customId);
+                        if (component.customId) component.customId = this.fillInString(component.customId);
                         component.label = this.fillInString(component.label);
+                        if (component.url) component.url = this.fillInString(component.url);
+                        if (component.placeholder) component.placeholder = this.fillInString(component.placeholder);
+                        if (component.options)
+                            component.options = component.options.map((options) => {
+                                options.label = this.fillInString(options.label);
+                                options.value = this.fillInString(options.value);
+                                if (options.description) options.description = this.fillInString(options.description);
+                                return options;
+                            });
                     });
                 });
             }
