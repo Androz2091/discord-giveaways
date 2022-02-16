@@ -392,6 +392,7 @@ class Giveaway extends EventEmitter {
                     });
             });
         });
+        return components;
     }
 
     /**
