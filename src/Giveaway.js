@@ -629,7 +629,6 @@ class Giveaway extends EventEmitter {
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
-            const components = this.fillInComponents(this.messages.winMessage.components);
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
@@ -645,6 +644,7 @@ class Giveaway extends EventEmitter {
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage?.replace('{winners}', formattedWinners);
+                const components = this.fillInComponents(this.messages.winMessage.components);
 
                 if (message?.length > 2000) {
                     const firstContentPart = winMessage.slice(0, winMessage.indexOf('{winners}'));
@@ -764,6 +764,7 @@ class Giveaway extends EventEmitter {
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
                 const embed = this.fillInEmbed(noWinnerMessage?.embed);
+                const components = this.fillInComponents(noWinnerMessage?.components);
                 if (message || embed) {
                     channel.send({
                         content: message,
@@ -812,7 +813,6 @@ class Giveaway extends EventEmitter {
                 this.message.channel.isThread() && !this.message.channel.sendable
                     ? this.message.channel.parent
                     : this.message.channel;
-            const components = this.fillInComponents(this.messages.winMessage.components);
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
@@ -829,6 +829,7 @@ class Giveaway extends EventEmitter {
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
                 const message = congratMessage?.replace('{winners}', formattedWinners);
+                const components = this.fillInComponents(this.messages.winMessage.components);
 
                 if (message?.length > 2000) {
                     const firstContentPart = congratMessage.slice(0, congratMessage.indexOf('{winners}'));
@@ -947,6 +948,7 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 const embed = this.fillInEmbed(options.messages.error.embed);
+                const components = this.fillInComponents(this.messages.error.components);
                 channel.send({
                     content: this.fillInString(options.messages.error.content || options.messages.error),
                     embeds: embed ? [embed] : null,
