@@ -948,7 +948,7 @@ class Giveaway extends EventEmitter {
                 resolve(winners);
             } else {
                 const embed = this.fillInEmbed(options.messages.error.embed);
-                const components = this.fillInComponents(this.messages.error.components);
+                const components = this.fillInComponents(options.messages.error.components);
                 channel.send({
                     content: this.fillInString(options.messages.error.content || options.messages.error),
                     embeds: embed ? [embed] : null,
