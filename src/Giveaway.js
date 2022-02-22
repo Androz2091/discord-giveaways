@@ -1,5 +1,5 @@
 const { EventEmitter } = require('node:events');
-const { setTimeout } = require('node:timers');
+const { setTimeout, clearTimeout } = require('node:timers');
 const merge = require('deepmerge');
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
