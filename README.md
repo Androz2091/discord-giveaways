@@ -409,25 +409,13 @@ You can send an embed, components for the following messages:
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed or component properties that are a string.
 
-#### Send Embed 
-
-The format looks like this:
-
-```js
-message: { content: '', embed: new Discord.MessageEmbed() }
-```
-
-Note: You can send embed instead of, or with the normal message.
-
-#### Send Components 
-
 The format looks like this:
 
 ```js
 message: { content: '', embed: new Discord.MessageEmbed(), components: [new Discord.MessageActionRow()] }
 ```
 
-Note: When sending component message or embed is required.
+Note: When sending a component, `content` or `embed` is required.
 
 ### Access giveaway properties in messages
 
