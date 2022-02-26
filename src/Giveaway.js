@@ -377,9 +377,10 @@ class Giveaway extends EventEmitter {
      */
     fillInComponents(components) {
         if (!components || !Array.isArray(components)) return null;
+        const filledComponents = [];
         components.forEach((row) => {
-            row = row instanceof Discord.MessageActionRow ? row : new Discord.MessageActionRow(row);
-            row.components.forEach((component) => {
+            const component = new Discord.MessageActionRow(row);
+            component.components.forEach((component) => {
                 if (component.customId) component.customId = this.fillInString(component.customId);
                 component.label = this.fillInString(component.label);
                 if (component.url) component.url = this.fillInString(component.url);
@@ -392,8 +393,9 @@ class Giveaway extends EventEmitter {
                         return options;
                     });
             });
+            filledComponents.push(component);
         });
-        return components;
+        return filledComponents;
     }
 
     /**
