@@ -372,12 +372,13 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * @param {Discord.MessageActionRow[]} components The components that should get filled in.
+     * @param {(Discord.MessageActionRow|Discord.MessageActionRowOptions)[]} components The components that should get filled in.
      * @returns {?Discord.MessageActionRow[]} The filled in components.
      */
     fillInComponents(components) {
         if (!components || !Array.isArray(components)) return null;
         components.forEach((row) => {
+            row = row instanceof Discord.MessageActionRow ? row : new Discord.MessageActionRow(row);
             row.components.forEach((component) => {
                 if (component.customId) component.customId = this.fillInString(component.customId);
                 component.label = this.fillInString(component.label);
