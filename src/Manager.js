@@ -1,7 +1,7 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, setInterval } = require('node:timers');
 const { writeFile, readFile, access } = require('fs/promises');
-const merge = require('deepmerge');
+const { deepmerge } = require("deepmerge-ts");
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const {
@@ -53,7 +53,7 @@ class GiveawaysManager extends EventEmitter {
          * The manager options
          * @type {GiveawaysManagerOptions}
          */
-        this.options = merge(GiveawaysManagerOptions, options || {});
+        this.options = deepmerge(GiveawaysManagerOptions, options || {});
 
         if (init) this._init();
     }
@@ -237,7 +237,7 @@ class GiveawaysManager extends EventEmitter {
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
                     options.messages && typeof options.messages === 'object'
-                        ? merge(GiveawayMessages, options.messages)
+                        ? deepmerge(GiveawayMessages, options.messages)
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 reaction: Discord.Util.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
