@@ -404,7 +404,7 @@ client.giveawaysManager.start(interaction.channel, {
 ### Message Options
 
 Options are available for the following messages:  
-`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
+`GiveawayStartOptions#GiveawayMessages#winMessage`, `GiveawayRerollOptions#messages#congrat`, `GiveawayRerollOptions#messages#error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed or component properties that are a string.
 
@@ -427,18 +427,14 @@ You can access any giveaway property inside of giveaway messages with the format
 For example:
 
 ```js
-messages: {
-    winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'
-}
+winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'
 ```
 
 Also, you can write JavaScript code inside of the `{}`.  
 For example:
 
 ```js
-messages: {
-    winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}'
-}
+winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}'
 ```
 
 If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
@@ -452,7 +448,8 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended. [Message Options](https://github.com/Androz2091/discord-giveaways#message-options).
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
+^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.  
 ^^^ [Can be deactivated and `iconURL` can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
