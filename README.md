@@ -437,7 +437,7 @@ For example:
 winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}'
 ```
 
-If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
+If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings, `giveaway.fillInEmbed(embed)` for embeds and `giveaway.fillInComponents(embed)` for components.
 
 ## 🇫🇷 Translation
 
