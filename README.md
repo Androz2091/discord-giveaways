@@ -419,7 +419,7 @@ message: {
 }
 ```
 
-Note: When sending a component, `content` or `embed` is required.
+⚠ **Note**: When sending a component, `content` or `embed` is required.
 
 ### Access giveaway properties in messages
 
@@ -449,7 +449,7 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
-^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.
+^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.  
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.  
 ^^^ [Can be deactivated and `iconURL` can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
