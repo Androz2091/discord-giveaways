@@ -6,6 +6,7 @@ import {
     GuildMember,
     Message,
     MessageActionRow,
+    MessageActionRowOptions,
     MessageEmbed,
     MessageEmbedOptions,
     MessageMentionOptions,
@@ -126,7 +127,7 @@ export interface GiveawaysMessages {
 export interface MessageObject {
     content?: string;
     embed?: MessageEmbed | MessageEmbedOptions;
-    components: MessageActionRow[];
+    components: (MessageActionRow | MessageActionRowOptions)[];
     replyToGiveaway?: boolean;
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
@@ -185,7 +186,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public fillInString(string: unknown): string | null;
     public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
     public fillInEmbed(embed: unknown): MessageEmbed | null;
-    public fillInComponents(components: MessageActionRow[]): MessageActionRow[];
+    public fillInComponents(components: (MessageActionRow | MessageActionRowOptions)[]): MessageActionRow[];
     public fillInComponents(components: unknown): MessageActionRow[] | null;
     public exemptMembers(member: GuildMember): Promise<boolean>;
     public fetchMessage(): Promise<Message>;
