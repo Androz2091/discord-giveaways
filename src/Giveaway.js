@@ -1,6 +1,7 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout } = require('node:timers');
-const { deepmerge } = require('deepmerge-ts');
+const { deepmerge, deepmergeCustom } = require('deepmerge-ts');
+const customDeepmerge = deepmergeCustom({ mergeArrays: false });
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const {
@@ -546,7 +547,7 @@ class Giveaway extends EventEmitter {
 
             // Update data
             if (options.newMessages && typeof options.newMessages === 'object') {
-                this.messages = deepmerge(this.messages, options.newMessages);
+                this.messages = customDeepmerge(this.messages, options.newMessages);
             }
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
