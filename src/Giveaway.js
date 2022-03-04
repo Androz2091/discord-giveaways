@@ -679,9 +679,9 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: lastContentPart,
                             components:
-                                !this.messages.winMessage.embed || typeof this.messages.winMessage.embed !== 'object'
-                                    ? components
-                                    : null,
+                                this.messages.winMessage.embed && typeof this.messages.winMessage.embed === 'object'
+                                    ? null
+                                    : components,
                             allowedMentions: this.allowedMentions
                         });
                     }
@@ -869,9 +869,9 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: lastContentPart,
                             components:
-                                !options.messages.congrat.embed || typeof options.messages.congrat.embed !== 'object'
-                                    ? components
-                                    : null,
+                                options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object'
+                                    ? null
+                                    : components,
                             allowedMentions: this.allowedMentions
                         });
                     }
