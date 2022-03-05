@@ -215,8 +215,7 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
-- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.  
-^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway. [Message Options](https://github.com/Androz2091/discord-giveaways#message-options)
 
 ### Pause a giveaway
 
@@ -398,17 +397,25 @@ client.giveawaysManager.start(interaction.channel, {
 
 **Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
 
-### Send embed as message
+### Message Options
 
-You can send an embed instead of, or with the normal message for the following messages:  
-`giveaway.messages.winMessage`, `GiveawayRerollOptions.messages.congrat`, `GiveawayRerollOptions.messages.error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
+Options are available for the following messages:  
+`GiveawayStartOptions#GiveawayMessages#winMessage`, `GiveawayRerollOptions#messages#congrat`, `GiveawayRerollOptions#messages#error` and `client.giveawaysManager.end(messageId, noWinnerMessage)`.
 
-The format looks like this:
+You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed or component properties that are a string.
+
+The format, including all currently available options, looks like this:
+
 ```js
-message: { content: '', embed: new Discord.MessageEmbed() }
+message: {
+    content: '',
+    embed: new Discord.MessageEmbed(),
+    components: [new Discord.MessageActionRow()],
+    replyToGiveaway: true
+}
 ```
 
-You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in all embed properties that are a string.
+⚠ **Note**: When sending a component, `content` or `embed` is required.
 
 ### Access giveaway properties in messages
 
@@ -416,17 +423,17 @@ You can access any giveaway property inside of giveaway messages with the format
 For example:
 
 ```js
-messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}' }
+winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'
 ```
 
 Also, you can write JavaScript code inside of the `{}`.  
 For example:
 
 ```js
-messages: { winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}' }
+winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}'
 ```
 
-If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings and `giveaway.fillInEmbed(embed)` for embeds.
+If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings, `giveaway.fillInEmbed(embed)` for embeds and `giveaway.fillInComponents(embed)` for components.
 
 ## 🇫🇷 Translation
 
@@ -437,10 +444,10 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.  
-^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
+^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.  
 -   **options.messages.embedFooter**: the message displayed at the bottom of the embeds.  
-^^^ [Can be deactivated and iconURL can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
+^^^ [Can be deactivated and `iconURL` can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.hostedBy**: the message to display the host of the giveaway.
 -   **options.messages.winners**: simply the expression "Winner(s):" in your language.
@@ -490,7 +497,7 @@ client.giveawaysManager.reroll(messageId, {
 -   **options.messages.error**: the error message if there is no valid participant.
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
-You can [send embeds instead of, or with the normal messages](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+[Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in these messages.
 
 ## Custom Database
 
