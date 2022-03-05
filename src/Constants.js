@@ -12,7 +12,7 @@ exports.DEFAULT_CHECK_INTERVAL = 15_000;
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended. "{winners}" will be replaced automatically with the mentions of the giveaway winners.
  * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
  * @property {string} [dropMessage='Be the first to react with 🎉'] Displayed in the giveaway embed for drop giveaways.
- * @property {string|EmbedFooterObject} [embedFooter='{this.winnerCount} winner(s)'] The footer of the giveaway embed.
+ * @property {string|EmbedFooterObject} [embedFooter='{this.winnerCount} winner(s)'] The footer of the giveaway embed. An empty string can be used for "deactivation".
  * @property {string} [noWinner='Giveaway cancelled, no valid participations.'] Displayed in the giveaway embed when there is no valid winner for the giveaway.
  * @property {string} [winners='Winner(s):'] Displayed in the giveaway embed before the winners.
  * @property {string} [endedAt='Ended at'] Displayed as the embed footer, next to the giveaway end date, when the giveaway has ended.
@@ -36,8 +36,8 @@ exports.GiveawayMessages = {
  * Embed Footer object.
  * @typedef EmbedFooterObject
  *
- * @property {string} [text] The text of the footer. If the value is a empty string then "embedFooter" will not show up in the giveaway embed.
- * @property {string} [iconURL] The icon URL of the footer.
+ * @property {string} [text] The text of the footer.
+ * @property {string} [iconURL] The icon URL of the footer of ALL giveaway embeds. "text" is required to be defined, when the icon is to be shown in the main embed.
  */
 
 /**

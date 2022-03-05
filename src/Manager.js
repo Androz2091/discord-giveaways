@@ -78,11 +78,8 @@ class GiveawaysManager extends EventEmitter {
             )
             .setFooter({
                 text:
-                    typeof giveaway.messages.embedFooter === 'object'
-                        ? giveaway.messages.embedFooter.text?.length > 0
-                            ? giveaway.messages.embedFooter.text
-                            : ''
-                        : giveaway.messages.embedFooter,
+                    giveaway.messages.embedFooter.text ??
+                    (typeof giveaway.messages.embedFooter === 'string' ? giveaway.messages.embedFooter : ''),
                 iconURL: giveaway.messages.embedFooter.iconURL
             })
             .setDescription(
@@ -636,10 +633,15 @@ class GiveawaysManager extends EventEmitter {
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
-            const shardId = this.client.shard.shardIdForGuildId(this.client.guilds.cache.first().id, this.client.shard.count);
-            rawGiveaways = rawGiveaways.filter((g) => shardId === this.client.shard.shardIdForGuildId(g.guildId, this.client.shard.count));
+            const shardId = this.client.shard.shardIdForGuildId(
+                this.client.guilds.cache.first().id,
+                this.client.shard.count
+            );
+            rawGiveaways = rawGiveaways.filter(
+                (g) => shardId === this.client.shard.shardIdForGuildId(g.guildId, this.client.shard.count)
+            );
         }
-        
+
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
 
         setInterval(() => {
