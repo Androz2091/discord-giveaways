@@ -372,7 +372,7 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * @param {(Discord.MessageActionRow|Discord.MessageActionRowOptions)[]} components The components that should get filled in.
+     * @param {Array<Discord.MessageActionRow|Discord.MessageActionRowOptions>} components The components that should get filled in.
      * @returns {?Discord.MessageActionRow[]} The filled in components.
      */
     fillInComponents(components) {
