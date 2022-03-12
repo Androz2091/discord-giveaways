@@ -1,6 +1,7 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, clearTimeout } = require('node:timers');
-const merge = require('deepmerge');
+const { deepmerge, deepmergeCustom } = require('deepmerge-ts');
+const customDeepmerge = deepmergeCustom({ mergeArrays: false });
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const {
@@ -209,7 +210,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return merge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
+        return deepmerge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
     }
 
     /**
@@ -217,7 +218,7 @@ class Giveaway extends EventEmitter {
      * @type {PauseOptions}
      */
     get pauseOptions() {
-        return merge(PauseOptions, this.options.pauseOptions ?? {});
+        return deepmerge(PauseOptions, this.options.pauseOptions ?? {});
     }
 
     /**
@@ -571,7 +572,7 @@ class Giveaway extends EventEmitter {
 
             // Update data
             if (options.newMessages && typeof options.newMessages === 'object') {
-                this.messages = merge(this.messages, options.newMessages);
+                this.messages = customDeepmerge(this.messages, options.newMessages);
             }
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
@@ -592,7 +593,7 @@ class Giveaway extends EventEmitter {
                 this.options.exemptMembers = options.newExemptMembers;
             }
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) {
-                this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
+                this.options.lastChance = deepmerge(this.options.lastChance || {}, options.newLastChance);
             }
 
             await this.manager.editGiveaway(this.messageId, this.data);
@@ -812,7 +813,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (this.isDrop) return reject('Drop giveaways cannot get rerolled!');
             if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
-            options = merge(GiveawayRerollOptions, options);
+            options = deepmerge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
