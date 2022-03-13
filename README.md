@@ -126,7 +126,7 @@ const giveaway =
     );
 
 // If no giveaway was found
-if (!giveaway) return interaction.channel.send('Unable to find a giveaway for `' + args.join(' ') + '`.');
+if (!giveaway) return interaction.reply('Unable to find a giveaway for `' + options.getString('query') + '`.');
 ```
 
 ### Reroll a giveaway
