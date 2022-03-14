@@ -915,7 +915,7 @@ class Giveaway extends EventEmitter {
                 }
                 resolve(winners);
             } else {
-                if (options.messages.replyWhenNoWinner) {
+                if (options.messages.replyWhenNoWinner !== false) {
                     const embed = this.fillInEmbed(options.messages.error.embed);
                     channel.send({
                         content: this.fillInString(options.messages.error.content || options.messages.error),
