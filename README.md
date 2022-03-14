@@ -59,7 +59,7 @@ const manager = new GiveawaysManager(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log("I'm ready!");
+    console.log('Bot is ready!');
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
@@ -91,8 +91,8 @@ client.on('interactionCreate', (interaction) => {
                 winnerCount,
                 prize
             })
-            .then((gData) => {
-                console.log(gData); // {...} (messageId, end date and more)
+            .then((data) => {
+                console.log(data); // {...} (messageId, end date and more)
             });
         // And the giveaway has started!
     }
@@ -146,7 +146,7 @@ client.on('interactionCreate', (interaction) => {
 
 -   **options.winnerCount**: the number of winners to pick.
 -   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
--   **options.messages.replyWhenNoWinner**: Whether or not send error reply when no winner(s) can be chosen.
+-   **options.messages.replyWhenNoWinner**: Whether or not to send the "error" message when there is no winner.
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -179,7 +179,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
 -   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
-     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.newExtraData**: the new extra data value for the giveaway.
 -   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
 -   **options.newExemptMembers**: the new filter function to exempt members from winning the giveaway.
@@ -251,7 +251,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
 -   **options.embedColor**: the color of the embed when the giveaway is paused.
 -   **options.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
-     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 ⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
 
@@ -334,7 +334,7 @@ client.giveawaysManager.start(interaction.channel, {
 
 -   **lastChance.enabled**: if the last chance system is enabled.
 -   **lastChance.content**: the text of the embed when the last chance system is enabled.  
-     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
 -   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
@@ -361,11 +361,11 @@ client.giveawaysManager.start(interaction.channel, {
 
 -   **pauseOptions.isPaused**: if the giveaway is paused.
 -   **pauseOptions.content**: the text of the embed when the giveaway is paused.  
-     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **pauseOptions.unPauseAfter**: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
 -   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
 -   **pauseOptions.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
-     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
     <img src="https://zupimages.net/up/21/24/dxhk.png"/>
@@ -441,29 +441,31 @@ message: {
 You can access any giveaway property inside of giveaway messages with the format: `{this.<property>}`.  
 For example:
 
+<!-- prettier-ignore -->
 ```js
-winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}';
+winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'
 ```
 
-Also, you can write JavaScript code inside of the `{}`.  
+Also, you can write JavaScript code inside of `{}`.  
 For example:
 
+<!-- prettier-ignore -->
 ```js
-winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}';
+winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}'
 ```
 
 If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings, `giveaway.fillInEmbed(embed)` for embeds and `giveaway.fillInComponents(embed)` for components.
 
 ## 🇫🇷 Translation
 
-You can also pass a `messages` parameter for `start()` function, if you want to translate the bot text:
+You can also pass a `messages` parameter for the `start()` function, if you want to translate the giveaway texts:
 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
--   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
+-   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.  
     ^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.
 -   **options.messages.embedFooter**: the message displayed at the bottom of the main (not ended) embed.  
     ^^^ An empty string can be used for "deactivation", or [`iconURL` can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
@@ -520,7 +522,9 @@ You can [access giveaway properties](https://github.com/Androz2091/discord-givea
 
 ## Custom Database
 
-You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
+You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`).  
+For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones.  
+There are 4 methods you will need to replace:
 
 -   `getAllGiveaways`: this method returns an array of stored giveaways.
 -   `saveGiveaway`: this method stores a new giveaway in the database.
