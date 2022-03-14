@@ -1,6 +1,7 @@
 const { EventEmitter } = require('node:events');
-const { setTimeout } = require('node:timers');
-const merge = require('deepmerge');
+const { setTimeout, clearTimeout } = require('node:timers');
+const { deepmerge, deepmergeCustom } = require('deepmerge-ts');
+const customDeepmerge = deepmergeCustom({ mergeArrays: false });
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const {
@@ -209,7 +210,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return merge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
+        return deepmerge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
     }
 
     /**
@@ -217,7 +218,7 @@ class Giveaway extends EventEmitter {
      * @type {PauseOptions}
      */
     get pauseOptions() {
-        return merge(PauseOptions, this.options.pauseOptions ?? {});
+        return deepmerge(PauseOptions, this.options.pauseOptions ?? {});
     }
 
     /**
@@ -369,6 +370,31 @@ class Giveaway extends EventEmitter {
             })
         );
         return embed;
+    }
+
+    /**
+     * @param {Array<Discord.MessageActionRow|Discord.MessageActionRowOptions>} components The components that should get filled in.
+     * @returns {?Discord.MessageActionRow[]} The filled in components.
+     */
+    fillInComponents(components) {
+        if (!Array.isArray(components)) return null;
+        return components.map((row) => {
+            row = new Discord.MessageActionRow(row);
+            row.components = row.components.map((component) => {
+                component.customId &&= this.fillInString(component.customId);
+                component.label &&= this.fillInString(component.label);
+                component.url &&= this.fillInString(component.url);
+                component.placeholder &&= this.fillInString(component.placeholder);
+                component.options &&= component.options.map((options) => {
+                    options.label = this.fillInString(options.label);
+                    options.value = this.fillInString(options.value);
+                    options.description &&= this.fillInString(options.description);
+                    return options;
+                });
+                return component;
+            });
+            return row;
+        });
     }
 
     /**
@@ -546,7 +572,7 @@ class Giveaway extends EventEmitter {
 
             // Update data
             if (options.newMessages && typeof options.newMessages === 'object') {
-                this.messages = merge(this.messages, options.newMessages);
+                this.messages = customDeepmerge(this.messages, options.newMessages);
             }
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
@@ -567,7 +593,7 @@ class Giveaway extends EventEmitter {
                 this.options.exemptMembers = options.newExemptMembers;
             }
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) {
-                this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
+                this.options.lastChance = deepmerge(this.options.lastChance || {}, options.newLastChance);
             }
 
             await this.manager.editGiveaway(this.messageId, this.data);
@@ -624,6 +650,7 @@ class Giveaway extends EventEmitter {
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage?.replace('{winners}', formattedWinners);
+                const components = this.fillInComponents(this.messages.winMessage.components);
 
                 if (message?.length > 2000) {
                     const firstContentPart = winMessage.slice(0, winMessage.indexOf('{winners}'));
@@ -640,7 +667,6 @@ class Giveaway extends EventEmitter {
                             }
                         });
                     }
-
                     while (formattedWinners.length >= 2000) {
                         await channel.send({
                             content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
@@ -654,7 +680,14 @@ class Giveaway extends EventEmitter {
 
                     const lastContentPart = winMessage.slice(winMessage.indexOf('{winners}') + 9);
                     if (lastContentPart.length) {
-                        channel.send({ content: lastContentPart, allowedMentions: this.allowedMentions });
+                        channel.send({
+                            content: lastContentPart,
+                            components:
+                                this.messages.winMessage.embed && typeof this.messages.winMessage.embed === 'object'
+                                    ? null
+                                    : components,
+                            allowedMentions: this.allowedMentions
+                        });
                     }
                 }
 
@@ -662,10 +695,12 @@ class Giveaway extends EventEmitter {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(this.messages.winMessage.embed);
                     const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
+
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
+                            components,
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
@@ -719,12 +754,13 @@ class Giveaway extends EventEmitter {
                             embed.description.slice(embed.description.indexOf('{winners}') + 9)
                         );
                         if (lastEmbed.length) {
-                            channel.send({ embeds: [lastEmbed], allowedMentions: this.allowedMentions });
+                            channel.send({ embeds: [lastEmbed], components, allowedMentions: this.allowedMentions });
                         }
                     }
                 } else if (message?.length <= 2000) {
                     channel.send({
                         content: message,
+                        components,
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -743,6 +779,7 @@ class Giveaway extends EventEmitter {
                     channel.send({
                         content: message,
                         embeds: embed ? [embed] : null,
+                        components: this.fillInComponents(noWinnerMessage?.components),
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -776,7 +813,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (this.isDrop) return reject('Drop giveaways cannot get rerolled!');
             if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
-            options = merge(GiveawayRerollOptions, options);
+            options = deepmerge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
@@ -802,6 +839,7 @@ class Giveaway extends EventEmitter {
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
                 const message = congratMessage?.replace('{winners}', formattedWinners);
+                const components = this.fillInComponents(options.messages.congrat.components);
 
                 if (message?.length > 2000) {
                     const firstContentPart = congratMessage.slice(0, congratMessage.indexOf('{winners}'));
@@ -832,7 +870,14 @@ class Giveaway extends EventEmitter {
 
                     const lastContentPart = congratMessage.slice(congratMessage.indexOf('{winners}') + 9);
                     if (lastContentPart.length) {
-                        channel.send({ content: lastContentPart, allowedMentions: this.allowedMentions });
+                        channel.send({
+                            content: lastContentPart,
+                            components:
+                                options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object'
+                                    ? null
+                                    : components,
+                            allowedMentions: this.allowedMentions
+                        });
                     }
                 }
 
@@ -844,6 +889,7 @@ class Giveaway extends EventEmitter {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
+                            components,
                             allowedMentions: this.allowedMentions,
                             reply: {
                                 messageReference:
@@ -897,12 +943,13 @@ class Giveaway extends EventEmitter {
                             embed.description.slice(embed.description.indexOf('{winners}') + 9)
                         );
                         if (lastEmbed.length) {
-                            channel.send({ embeds: [lastEmbed], allowedMentions: this.allowedMentions });
+                            channel.send({ embeds: [lastEmbed], components, allowedMentions: this.allowedMentions });
                         }
                     }
                 } else if (message?.length <= 2000) {
                     channel.send({
                         content: message,
+                        components,
                         allowedMentions: this.allowedMentions,
                         reply: {
                             messageReference:
@@ -917,18 +964,17 @@ class Giveaway extends EventEmitter {
             } else {
                 if (options.messages.replyWhenNoWinner !== false) {
                     const embed = this.fillInEmbed(options.messages.error.embed);
-                    channel.send({
-                        content: this.fillInString(options.messages.error.content || options.messages.error),
-                        embeds: embed ? [embed] : null,
-                        allowedMentions: this.allowedMentions,
-                        reply: {
-                            messageReference:
-                                typeof options.messages.error.replyToGiveaway === 'boolean'
-                                    ? this.messageId
-                                    : undefined,
-                            failIfNotExists: false
-                        }
-                    });
+                channel.send({
+                    content: this.fillInString(options.messages.error.content || options.messages.error),
+                    embeds: embed ? [embed] : null,
+                    components: this.fillInComponents(options.messages.error.components),
+                    allowedMentions: this.allowedMentions,
+                    reply: {
+                        messageReference:
+                            typeof options.messages.error.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                        failIfNotExists: false
+                    }
+                });
                 }
                 resolve([]);
             }

@@ -1,7 +1,7 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, setInterval } = require('node:timers');
 const { writeFile, readFile, access } = require('fs/promises');
-const merge = require('deepmerge');
+const { deepmerge } = require('deepmerge-ts');
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const {
@@ -53,7 +53,7 @@ class GiveawaysManager extends EventEmitter {
          * The manager options
          * @type {GiveawaysManagerOptions}
          */
-        this.options = merge(GiveawaysManagerOptions, options || {});
+        this.options = deepmerge(GiveawaysManagerOptions, options || {});
 
         if (init) this._init();
     }
@@ -78,11 +78,8 @@ class GiveawaysManager extends EventEmitter {
             )
             .setFooter({
                 text:
-                    typeof giveaway.messages.embedFooter === 'object'
-                        ? giveaway.messages.embedFooter.text?.length > 0
-                            ? giveaway.messages.embedFooter.text
-                            : ''
-                        : giveaway.messages.embedFooter,
+                    giveaway.messages.embedFooter.text ??
+                    (typeof giveaway.messages.embedFooter === 'string' ? giveaway.messages.embedFooter : ''),
                 iconURL: giveaway.messages.embedFooter.iconURL
             })
             .setDescription(
@@ -237,7 +234,7 @@ class GiveawaysManager extends EventEmitter {
                 hostedBy: options.hostedBy ? options.hostedBy.toString() : undefined,
                 messages:
                     options.messages && typeof options.messages === 'object'
-                        ? merge(GiveawayMessages, options.messages)
+                        ? deepmerge(GiveawayMessages, options.messages)
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 reaction: Discord.Util.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
@@ -636,10 +633,15 @@ class GiveawaysManager extends EventEmitter {
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
-            const shardId = this.client.shard.shardIdForGuildId(this.client.guilds.cache.first().id, this.client.shard.count);
-            rawGiveaways = rawGiveaways.filter((g) => shardId === this.client.shard.shardIdForGuildId(g.guildId, this.client.shard.count));
+            const shardId = this.client.shard.shardIdForGuildId(
+                this.client.guilds.cache.first().id,
+                this.client.shard.count
+            );
+            rawGiveaways = rawGiveaways.filter(
+                (g) => shardId === this.client.shard.shardIdForGuildId(g.guildId, this.client.shard.count)
+            );
         }
-        
+
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
 
         setInterval(() => {

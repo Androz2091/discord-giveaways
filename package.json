@@ -50,12 +50,12 @@
   },
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
-    "deepmerge": "^4.2.2",
+    "deepmerge-ts": "^4.0.0",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^16.6.0",
-    "discord.js": "^13.5.0",
+    "discord.js": "^13.6.0",
     "eslint": "^8.5.0",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.4",

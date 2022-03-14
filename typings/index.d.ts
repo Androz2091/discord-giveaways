@@ -5,6 +5,8 @@ import {
     EmojiIdentifierResolvable,
     GuildMember,
     Message,
+    MessageActionRow,
+    MessageActionRowOptions,
     MessageEmbed,
     MessageEmbedOptions,
     MessageMentionOptions,
@@ -125,6 +127,7 @@ export interface GiveawaysMessages {
 export interface MessageObject {
     content?: string;
     embed?: MessageEmbed | MessageEmbedOptions;
+    components: (MessageActionRow | MessageActionRowOptions)[];
     replyToGiveaway?: boolean;
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
@@ -180,9 +183,11 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     private checkWinnerEntry(user: User): Promise<boolean>;
     public checkBonusEntries(user: User): Promise<number>;
     public fillInString(string: string): string;
-    public fillInString(string: any): string | null;
+    public fillInString(string: unknown): string | null;
     public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
-    public fillInEmbed(embed: any): MessageEmbed | null;
+    public fillInEmbed(embed: unknown): MessageEmbed | null;
+    public fillInComponents(components: (MessageActionRow | MessageActionRowOptions)[]): MessageActionRow[];
+    public fillInComponents(components: unknown): MessageActionRow[] | null;
     public exemptMembers(member: GuildMember): Promise<boolean>;
     public fetchMessage(): Promise<Message>;
     public edit(options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
