@@ -9,15 +9,15 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 
 ## Features
 
-- ⏱️ Easy to use!
-- 🔄 Automatic restart after bot crash!
-- 🇫🇷 Support for translations: adapt the strings for your own language!
-- 📁 Support for all databases! (default is json)
-- ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, etc...)
-- 🚀 Super powerful: start, edit, reroll, end, delete and pause giveaways!
-- 💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
-- 🕸️ Support for shards!
-- and much more!
+-   ⏱️ Easy to use!
+-   🔄 Automatic restart after bot crash!
+-   🇫🇷 Support for translations: adapt the strings for your own language!
+-   📁 Support for all databases! (default is json)
+-   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, etc...)
+-   🚀 Super powerful: start, edit, reroll, end, delete and pause giveaways!
+-   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
+-   🕸️ Support for shards!
+-   and much more!
 
 ## Installation
 
@@ -68,8 +68,8 @@ client.login(process.env.DISCORD_BOT_TOKEN);
 After that, giveaways that are not yet completed will start to be updated again and new giveaways can be started.
 You can pass an options object to customize the giveaways. Here is a list of them:
 
-- **client**: the discord client (your discord bot instance).
-- **[and many other optional parameters to customize the manager - read documentation](https://discord-giveaways.js.org/global.html#GiveawaysManagerOptions)**
+-   **client**: the discord client (your discord bot instance).
+-   **[and many other optional parameters to customize the manager - read documentation](https://discord-giveaways.js.org/global.html#GiveawaysManagerOptions)**
 
 ### Start a giveaway
 
@@ -99,10 +99,10 @@ client.on('interactionCreate', (interaction) => {
 });
 ```
 
-- **options.duration**: the giveaway duration.
-- **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
-- **options.winnerCount**: the number of giveaway winners.
-- **[and many other optional parameters to customize the giveaway - read documentation](https://discord-giveaways.js.org/global.html#GiveawayStartOptions)**
+-   **options.duration**: the giveaway duration.
+-   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.winnerCount**: the number of giveaway winners.
+-   **[and many other optional parameters to customize the giveaway - read documentation](https://discord-giveaways.js.org/global.html#GiveawayStartOptions)**
 
 This allows you to start a new giveaway. Once the `start()` function is called, the giveaway starts, and you only have to observe the result, the package does the rest!
 
@@ -138,18 +138,18 @@ client.on('interactionCreate', (interaction) => {
         client.giveawaysManager
             .reroll(messageId)
             .then(() => {
-                interaction.channel.send('Success! Giveaway rerolled!');
+                interaction.reply('Success! Giveaway rerolled!');
             })
             .catch((err) => {
-                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+                interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
             });
     }
 });
 ```
 
-- **options.winnerCount**: the number of winners to pick.
-- **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
-- **options.messages.replyWhenNoWinner**: Whether or not send error reply when no winner(s) can be chosen.
+-   **options.winnerCount**: the number of winners to pick.
+-   **options.messages**: an object with the "congrat" and the "error" message. [Usage example](https://github.com/Androz2091/discord-giveaways#-translation).
+-   **options.messages.replyWhenNoWinner**: Whether or not send error reply when no winner(s) can be chosen.
 
 <a href="http://zupimages.net/viewer.php?id=19/24/mhuo.png">
     <img src="https://zupimages.net/up/19/24/mhuo.png"/>
@@ -168,25 +168,25 @@ client.on('interactionCreate', (interaction) => {
                 newPrize: 'New Prize!'
             })
             .then(() => {
-                interaction.channel.send('Success! Giveaway updated!');
+                interaction.reply('Success! Giveaway updated!');
             })
             .catch((err) => {
-                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+                interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
             });
     }
 });
 ```
 
-- **options.newWinnerCount**: the new number of winners.
-- **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
-- **options.addTime**: the number of milliseconds to add to the giveaway duration.
-- **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
-- **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
-- **options.newExtraData**: the new extra data value for the giveaway.
-- **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
-- **options.newExemptMembers**: the new filter function to exempt members from winning the giveaway.
-- **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
+-   **options.newWinnerCount**: the new number of winners.
+-   **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.addTime**: the number of milliseconds to add to the giveaway duration.
+-   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
+-   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
+     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.newExtraData**: the new extra data value for the giveaway.
+-   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
+-   **options.newExemptMembers**: the new filter function to exempt members from winning the giveaway.
+-   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
 
 **Note**: to reduce giveaway duration, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway duration by 5 seconds!
 
@@ -199,16 +199,16 @@ client.on('interactionCreate', (interaction) => {
         client.giveawaysManager
             .delete(messageId)
             .then(() => {
-                interaction.channel.send('Success! Giveaway deleted!');
+                interaction.reply('Success! Giveaway deleted!');
             })
             .catch((err) => {
-                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+                interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
             });
     }
 });
 ```
 
-- **doNotDeleteMessage**: whether the giveaway message shouldn't be deleted.
+-   **doNotDeleteMessage**: whether the giveaway message shouldn't be deleted.
 
 ⚠️ **Note**: when you use the delete function, the giveaway data and the message of the giveaway are deleted (by default). You cannot restore a giveaway once you have deleted it!
 
@@ -221,17 +221,17 @@ client.on('interactionCreate', (interaction) => {
         client.giveawaysManager
             .end(messageId)
             .then(() => {
-                interaction.channel.send('Success! Giveaway ended!');
+                interaction.reply('Success! Giveaway ended!');
             })
             .catch((err) => {
-                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+                interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
             });
     }
 });
 ```
 
-- **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.  
-    ^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
+-   **noWinnerMessage**: Sent in the channel if there is no valid winner for the giveaway.  
+     ^^^ You can [send an embed instead of, or with the normal message](https://github.com/Androz2091/discord-giveaways#send-embed-as-message).
 
 ### Pause a giveaway
 
@@ -242,20 +242,20 @@ client.on('interactionCreate', (interaction) => {
         client.giveawaysManager
             .pause(messageId)
             .then(() => {
-                interaction.channel.send('Success! Giveaway paused!');
+                interaction.reply('Success! Giveaway paused!');
             })
             .catch((err) => {
-                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+                interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
             });
     }
 });
 ```
 
-- **options.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
-- **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
-- **options.embedColor**: the color of the embed when the giveaway is paused.
-- **options.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **options.embedColor**: the color of the embed when the giveaway is paused.
+-   **options.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
+     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 ⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
 
@@ -268,10 +268,10 @@ client.on('interactionCreate', (interaction) => {
         client.giveawaysManager
             .unpause(messageId)
             .then(() => {
-                interaction.channel.send('Success! Giveaway unpaused!');
+                interaction.reply('Success! Giveaway unpaused!');
             })
             .catch((err) => {
-                interaction.channel.send(`An error has occurred, please check and try again.\n\`${err}\``);
+                interaction.reply(`An error has occurred, please check and try again.\n\`${err}\``);
             });
     }
 });
@@ -336,11 +336,11 @@ client.giveawaysManager.start(interaction.channel, {
 });
 ```
 
-- **lastChance.enabled**: if the last chance system is enabled.
-- **lastChance.content**: the text of the embed when the last chance system is enabled.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
-- **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
-- **lastChance.embedColor**: the color of the embed when last chance is enabled.
+-   **lastChance.enabled**: if the last chance system is enabled.
+-   **lastChance.content**: the text of the embed when the last chance system is enabled.  
+     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **lastChance.threshold**: the number of milliseconds before the giveaway ends when the last chance system will be enabled.
+-   **lastChance.embedColor**: the color of the embed when last chance is enabled.
 
 <a href="https://zupimages.net/viewer.php?id=21/08/50mx.png">
     <img src="https://zupimages.net/up/21/08/50mx.png"/>
@@ -363,13 +363,13 @@ client.giveawaysManager.start(interaction.channel, {
 });
 ```
 
-- **pauseOptions.isPaused**: if the giveaway is paused.
-- **pauseOptions.content**: the text of the embed when the giveaway is paused.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
-- **pauseOptions.unPauseAfter**: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
-- **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
-- **pauseOptions.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **pauseOptions.isPaused**: if the giveaway is paused.
+-   **pauseOptions.content**: the text of the embed when the giveaway is paused.  
+     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **pauseOptions.unPauseAfter**: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
+-   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
+-   **pauseOptions.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
+     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
     <img src="https://zupimages.net/up/21/24/dxhk.png"/>
@@ -392,8 +392,8 @@ client.giveawaysManager.start(interaction.channel, {
 });
 ```
 
-- **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
-- **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
+-   **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
+-   **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
 
 **Note**: if the `bonus` function should be customizable:
 
@@ -446,14 +446,14 @@ You can access any giveaway property inside of giveaway messages with the format
 For example:
 
 ```js
-winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'
+winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}';
 ```
 
 Also, you can write JavaScript code inside of the `{}`.  
 For example:
 
 ```js
-winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}'
+winMessage: 'Congratulations, {winners}! You won **{this.prize.toUpperCase()}**!\n{this.messageURL}';
 ```
 
 If you want to fill in strings that are not messages of a giveaway, or just custom embeds, then you can use `giveaway.fillInString(string)` for strings, `giveaway.fillInEmbed(embed)` for embeds and `giveaway.fillInComponents(embed)` for components.
@@ -468,9 +468,9 @@ You can also pass a `messages` parameter for `start()` function, if you want to 
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
 -   **options.messages.winMessage**: the message that will be displayed to congratulate the winner(s) when the giveaway is ended.
-^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.  
+    ^^^ [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in this message.
 -   **options.messages.embedFooter**: the message displayed at the bottom of the main (not ended) embed.  
-^^^ An empty string can be used for "deactivation", or [`iconURL` can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
+    ^^^ An empty string can be used for "deactivation", or [`iconURL` can be set](https://discord-giveaways.js.org/global.html#EmbedFooterObject).
 -   **options.messages.noWinner**: the message that is displayed if no winner can be drawn.
 -   **options.messages.hostedBy**: the message to display the host of the giveaway.
 -   **options.messages.winners**: simply the expression "Winner(s):" in your language.
@@ -516,8 +516,8 @@ client.giveawaysManager.reroll(messageId, {
 });
 ```
 
-- **options.messages.congrat**: the congratulatory message.
-- **options.messages.error**: the error message if there is no valid participant.
+-   **options.messages.congrat**: the congratulatory message.
+-   **options.messages.error**: the error message if there is no valid participant.
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
 [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in these messages.
@@ -526,26 +526,26 @@ You can [access giveaway properties](https://github.com/Androz2091/discord-givea
 
 You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`). For this, you will need to extend the `GiveawaysManager` class, and replace some methods with your custom ones. There are 4 methods you will need to replace:
 
-- `getAllGiveaways`: this method returns an array of stored giveaways.
-- `saveGiveaway`: this method stores a new giveaway in the database.
-- `editGiveaway`: this method edits a giveaway already stored in the database.
-- `deleteGiveaway`: this method deletes a giveaway from the database (permanently).
+-   `getAllGiveaways`: this method returns an array of stored giveaways.
+-   `saveGiveaway`: this method stores a new giveaway in the database.
+-   `editGiveaway`: this method edits a giveaway already stored in the database.
+-   `deleteGiveaway`: this method deletes a giveaway from the database (permanently).
 
 **⚠️ All the methods should be asynchronous to return a promise!**
 
 <ins>**SQL examples**</ins>
 
-- [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
-- SQLite
-  - [Quick.db](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.db.js)
-  - [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
+-   [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
+-   SQLite
+    -   [Quick.db](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.db.js)
+    -   [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 
 <ins>**NoSQL examples**</ins>
 
-- MongoDB
-  - [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
-  - [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
-- [Apache CouchDB - Nano](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/nano.js)
-- Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
-  - [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
-  - [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.replit.js)
+-   MongoDB
+    -   [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)
+    -   [QuickMongo](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quickmongo.js) ⚠️ Not recommended for high giveaway usage, use the `mongoose` example instead
+-   [Apache CouchDB - Nano](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/nano.js)
+-   Replit Database ⚠️ Only usable if your bot is hosted on [Replit](https://replit.com/)
+    -   [@replit/database](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/replit.js)
+    -   [Quick.Replit](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.replit.js)
