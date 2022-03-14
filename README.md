@@ -115,18 +115,15 @@ This allows you to start a new giveaway. Once the `start()` function is called, 
 The command examples below (reroll, edit delete, end) can be executed on any server your bot is a member of if a person has the `prize` or the `messageId` of a giveaway. To prevent abuse we recommend to check if the `prize` or the `messageId` that was provided by the command user is for a giveaway on the same server, if it is not, then cancel the command execution.
 
 ```js
+const query = interaction.options.getString('query');
 const giveaway =
     // Search with giveaway prize
-    client.giveawaysManager.giveaways.find(
-        (g) => g.guildId === interaction.guildId && g.prize === interaction.options.getString('query')
-    ) ||
+    client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.prize === query) ||
     // Search with messageId
-    client.giveawaysManager.giveaways.find(
-        (g) => g.guildId === interaction.guildId && g.messageId === interaction.options.getString('query')
-    );
+    client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.messageId === query);
 
 // If no giveaway was found
-if (!giveaway) return interaction.reply('Unable to find a giveaway for `' + options.getString('query') + '`.');
+if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query}\`.`);
 ```
 
 ### Reroll a giveaway
