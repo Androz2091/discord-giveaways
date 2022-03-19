@@ -164,12 +164,14 @@ exports.GiveawaysManagerOptions = {
  * @property {Object} [messages] The messages used in this method.
  * @property {string|MessageObject} [messages.congrat=':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}'] The message used if there are new winners.
  * @property {string|MessageObject} [messages.error='No valid participations, no new winner(s) can be chosen!'] The message used if no new winner(s) could be chosen.
+ * @property {boolean} [messages.replyWhenNoWinner=true] Whether or not to send the "error" message when there is no winner.
  */
 exports.GiveawayRerollOptions = {
     winnerCount: null,
     messages: {
         congrat: ':tada: New winner(s): {winners}! Congratulations, you won **{this.prize}**!\n{this.messageURL}',
-        error: 'No valid participations, no new winner(s) can be chosen!'
+        error: 'No valid participations, no new winner(s) can be chosen!',
+        replyWhenNoWinner: true
     }
 };
 

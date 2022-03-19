@@ -214,6 +214,7 @@ export interface GiveawayRerollOptions {
     messages?: {
         congrat?: string | MessageObject;
         error?: string | MessageObject;
+        replyWhenNoWinner?: boolean;
     };
 }
 export interface GiveawayData<ExtraData = any> {
