@@ -390,7 +390,7 @@ class Giveaway extends EventEmitter {
         if (!reaction) return [];
         const guild = this.channel.guild;
         // Fetch guild members
-        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch();
+        if (this.manager.options.hasGuildMembersIntent) await guild.members.fetch().catch(() => {});
         const users = (await reaction.users.fetch())
             .filter((u) => !u.bot || u.bot === this.botsCanWin)
             .filter((u) => u.id !== this.message.client.user.id);
