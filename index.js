@@ -1,5 +1,3 @@
-module.exports = {
-    version: require('./package.json').version,
-    GiveawaysManager: require('./src/Manager'),
-    Giveaway: require('./src/Giveaway')
-};
+exports.version = require('./package.json').version;
+exports.GiveawaysManager = require('./src/Manager');
+exports.Giveaway = require('./src/Giveaway');
