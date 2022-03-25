@@ -487,10 +487,14 @@ class Giveaway extends EventEmitter {
             [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id)
         );
         if (!reaction) return [];
-        const guild = this.message.guild;
+        let guild = this.message.guild;
 
         // Fetch all guild members if the intent is available
         if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) {
+            // Try to fetch the guild from the client if the guild instance of the message does not have its shard defined
+            if (this.client.shard && !guild.shard) {
+                guild = this.message.guild = (await this.client.guilds.fetch(guild.id).catch(() => {})) ?? guild;
+            }
             await guild.members.fetch().catch(() => {});
         }
 
