@@ -646,12 +646,12 @@ class GiveawaysManager extends EventEmitter {
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
-            const shardId = this.client.shard.shardIdForGuildId(
+            const shardId = Discord.ShardClientUtil.shardIdForGuildId(
                 this.client.guilds.cache.first().id,
                 this.client.shard.count
             );
             rawGiveaways = rawGiveaways.filter(
-                (g) => shardId === this.client.shard.shardIdForGuildId(g.guildId, this.client.shard.count)
+                (g) => shardId === Discord.ShardClientUtil.shardIdForGuildId(g.guildId, this.client.shard.count)
             );
         }
 
