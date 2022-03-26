@@ -508,12 +508,6 @@ class GiveawaysManager extends EventEmitter {
 
             // Second case: the giveaway is a drop
             if (giveaway.isDrop) {
-                // Delete the data of a drop which did not end within 1 week
-                if (giveaway.startAt + DELETE_DROP_DATA_AFTER <= Date.now()) {
-                    this.giveaways = this.giveaways.filter((g) => g.messageId !== giveaway.messageId);
-                    return await this.deleteGiveaway(giveaway.messageId);
-                }
-
                 giveaway.message = await giveaway.fetchMessage().catch(() => {});
                 const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
                 const reaction = giveaway.message?.reactions.cache.find((r) =>
@@ -531,6 +525,12 @@ class GiveawaysManager extends EventEmitter {
                         if (validUsers === giveaway.WinnerCount) return this.end(giveaway.messageId).catch(() => {});
                         if (await giveaway.checkWinnerEntry(user)) validUsers++;
                     }
+                }
+
+                // Delete the data of a drop which did not end within 1 week
+                if (giveaway.startAt + DELETE_DROP_DATA_AFTER <= Date.now()) {
+                    this.giveaways = this.giveaways.filter((g) => g.messageId !== giveaway.messageId);
+                    return await this.deleteGiveaway(giveaway.messageId);
                 }
             }
 
@@ -696,13 +696,6 @@ class GiveawaysManager extends EventEmitter {
             );
             for (const giveaway of endedGiveaways) await this.deleteGiveaway(giveaway.messageId);
         }
-
-        // Delete data of drops which did not end within 1 week
-        const drops = this.giveaways.filter((g) => g.isDrop && g.startAt + DELETE_DROP_DATA_AFTER <= Date.now());
-        this.giveaways = this.giveaways.filter(
-            (g) => !drops.map((giveaway) => giveaway.messageId).includes(g.messageId)
-        );
-        for (const giveaway of drops) await this.deleteGiveaway(giveaway.messageId);
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));
     }
