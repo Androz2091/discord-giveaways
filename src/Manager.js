@@ -13,7 +13,8 @@ const {
     GiveawayStartOptions,
     PauseOptions,
     MessageObject,
-    DEFAULT_CHECK_INTERVAL
+    DEFAULT_CHECK_INTERVAL,
+    DELETE_DROP_DATA_AFTER
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
 const { validateEmbedColor } = require('./utils.js');
@@ -505,14 +506,32 @@ class GiveawaysManager extends EventEmitter {
                 return;
             }
 
-            // Second case: the giveaway is a drop and has already one reaction
+            // Second case: the giveaway is a drop
             if (giveaway.isDrop) {
+                // Delete the data of a drop which did not end within 1 week
+                if (giveaway.startAt + DELETE_DROP_DATA_AFTER <= Date.now()) {
+                    this.giveaways = this.giveaways.filter((g) => g.messageId !== giveaway.messageId);
+                    return await this.deleteGiveaway(giveaway.messageId);
+                }
+
                 giveaway.message = await giveaway.fetchMessage().catch(() => {});
                 const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
                 const reaction = giveaway.message?.reactions.cache.find((r) =>
                     [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name)
                 );
-                if (reaction?.count - 1 >= giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
+
+                if (reaction?.count - 1 >= giveaway.winnerCount) {
+                    const users =
+                        (await reaction.users.fetch().catch(() => {}))
+                            ?.filter((u) => !u.bot || u.bot === giveaway.botsCanWin)
+                            .filter((u) => u.id !== this.client.user.id) ?? [];
+
+                    let validUsers = 0;
+                    for (const user of users) {
+                        if (validUsers === giveaway.WinnerCount) return this.end(giveaway.messageId).catch(() => {});
+                        if (await giveaway.checkWinnerEntry(user)) validUsers++;
+                    }
+                }
             }
 
             // Third case: the giveaway is paused and we should check whether it should be unpaused
@@ -625,12 +644,17 @@ class GiveawaysManager extends EventEmitter {
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
 
             if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount) {
-                const users = (await reaction.users.fetch().catch(() => {}))
-                    ?.filter((u) => !u.bot || u.bot === giveaway.botsCanWin)
-                    .filter((u) => u.id !== this.client.user.id)
-                    .filter(async (u) => await giveaway.checkWinnerEntry(u));
-                if (users.size < giveaway.WinnerCount) return;
-                this.end(giveaway.messageId).catch(() => {});
+                // Only end drops if the amount of available, valid winners is equal to the winnerCount
+                const users =
+                    (await reaction.users.fetch().catch(() => {}))
+                        ?.filter((u) => !u.bot || u.bot === giveaway.botsCanWin)
+                        .filter((u) => u.id !== this.client.user.id) ?? [];
+
+                let validUsers = 0;
+                for (const user of users) {
+                    if (validUsers === giveaway.WinnerCount) this.end(giveaway.messageId).catch(() => {});
+                    if (await giveaway.checkWinnerEntry(user)) validUsers++;
+                }
             }
         } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);
     }
@@ -662,6 +686,7 @@ class GiveawaysManager extends EventEmitter {
         }, this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL);
         this.ready = true;
 
+        // Delete data of ended giveaways
         if (Number.isFinite(this.options.endedGiveawaysLifetime)) {
             const endedGiveaways = this.giveaways.filter(
                 (g) => g.ended && g.endAt + this.options.endedGiveawaysLifetime <= Date.now()
@@ -671,6 +696,13 @@ class GiveawaysManager extends EventEmitter {
             );
             for (const giveaway of endedGiveaways) await this.deleteGiveaway(giveaway.messageId);
         }
+
+        // Delete data of drops which did not end within 1 week
+        const drops = this.giveaways.filter((g) => g.isDrop && g.startAt + DELETE_DROP_DATA_AFTER <= Date.now());
+        this.giveaways = this.giveaways.filter(
+            (g) => !drops.map((giveaway) => giveaway.messageId).includes(g.messageId)
+        );
+        for (const giveaway of drops) await this.deleteGiveaway(giveaway.messageId);
 
         this.client.on('raw', (packet) => this._handleRawPacket(packet));
     }

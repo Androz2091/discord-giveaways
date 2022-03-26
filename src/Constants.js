@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 
 exports.DEFAULT_CHECK_INTERVAL = 15_000;
+exports.DELETE_DROP_DATA_AFTER = 6.048e+8; // 1 week
 
 /**
  * The Giveaway messages that are used to display the giveaway content.
