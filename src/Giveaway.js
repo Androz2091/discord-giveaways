@@ -525,35 +525,37 @@ class Giveaway extends EventEmitter {
             }
         }
 
-        let rolledWinners;
-        if (!userArray || userArray.length <= winnerCount) rolledWinners = users.random(winnerCount);
-        else {
+        const randomUsers = (amount) => {
+            if (!userArray || userArray.length <= amount) return users.random(amount);
             /**
              * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
-            rolledWinners = Array.from(
+            return Array.from(
                 {
-                    length: Math.min(winnerCount, users.size)
+                    length: Math.min(amount, users.size)
                 },
                 () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]
             );
-        }
+        };
 
         const winners = [];
 
-        for (const u of rolledWinners) {
+        for (const u of randomUsers(winnerCount)) {
             const isValidEntry = !winners.some((winner) => winner.id === u.id) && (await this.checkWinnerEntry(u));
             if (isValidEntry) winners.push(u);
             else {
                 // Find a new winner
-                for (const user of userArray || [...users.values()]) {
+                for (let i = 0; i < users.size; i++) {
+                    const user = randomUsers(1);
                     const isUserValidEntry =
                         !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
                         winners.push(user);
                         break;
                     }
+                    users.delete(user.id);
+                    userArray ??= userArray.filter((u) => u.id !== user.id);
                 }
             }
         }
