@@ -522,7 +522,7 @@ class GiveawaysManager extends EventEmitter {
 
                     let validUsers = 0;
                     for (const user of users) {
-                        if (validUsers === giveaway.WinnerCount) return this.end(giveaway.messageId).catch(() => {});
+                        if (validUsers === giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
                         if (await giveaway.checkWinnerEntry(user)) validUsers++;
                     }
                 }
@@ -652,7 +652,7 @@ class GiveawaysManager extends EventEmitter {
 
                 let validUsers = 0;
                 for (const user of users) {
-                    if (validUsers === giveaway.WinnerCount) this.end(giveaway.messageId).catch(() => {});
+                    if (validUsers === giveaway.winnerCount) this.end(giveaway.messageId).catch(() => {});
                     if (await giveaway.checkWinnerEntry(user)) validUsers++;
                 }
             }
