@@ -555,7 +555,7 @@ class Giveaway extends EventEmitter {
                         break;
                     }
                     users.delete(user.id);
-                    userArray ??= userArray.filter((u) => u.id !== user.id);
+                    userArray = userArray?.filter((u) => u.id !== user.id);
                 }
             }
         }
