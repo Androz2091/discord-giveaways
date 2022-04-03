@@ -379,7 +379,7 @@ class Giveaway extends EventEmitter {
     fillInComponents(components) {
         if (!Array.isArray(components)) return null;
         return components.map((row) => {
-            row = new Discord.MessageActionRow(row);
+            row = new Discord.MessageActionRow(row instanceof Discord.MessageActionRow ? row.toJSON() : row);
             row.components = row.components.map((component) => {
                 component.customId &&= this.fillInString(component.customId);
                 component.label &&= this.fillInString(component.label);
