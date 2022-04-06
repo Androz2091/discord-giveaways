@@ -1,5 +1,5 @@
-import { EventEmitter } from 'node:events';
-import {
+import type { EventEmitter } from 'node:events';
+import type {
     Client,
     ColorResolvable,
     EmojiIdentifierResolvable,
@@ -16,16 +16,17 @@ import {
     Snowflake,
     TextChannel,
     ThreadChannel,
-    User
+    User,
+    Awaitable
 } from 'discord.js';
 
 export const version: string;
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
-    constructor(client: Client, options?: GiveawaysManagerOptions, init?: boolean);
+    constructor(client: Client, options?: GiveawaysManagerOptions<ExtraData>, init?: boolean);
 
     public client: Client;
     public giveaways: Giveaway<ExtraData>[];
-    public options: GiveawaysManagerOptions;
+    public options: GiveawaysManagerOptions<ExtraData>;
     public ready: boolean;
 
     public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway<ExtraData>>;
@@ -59,7 +60,7 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     ): boolean;
 }
 export interface BonusEntry {
-    bonus(member?: GuildMember): number | Promise<number>;
+    bonus(member?: GuildMember): Awaitable<number>;
     cumulative?: boolean;
 }
 export interface LastChanceOptions {
@@ -76,14 +77,14 @@ export interface PauseOptions {
     durationAfterPause?: number | null;
     infiniteDurationText?: string;
 }
-export interface GiveawaysManagerOptions {
+export interface GiveawaysManagerOptions<ExtraData> {
     storage?: string;
     forceUpdateEvery?: number;
     endedGiveawaysLifetime?: number;
     default?: {
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
-        exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
+        exemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
         reaction?: EmojiIdentifierResolvable;
@@ -97,7 +98,7 @@ export interface GiveawayStartOptions<ExtraData> {
     hostedBy?: User;
     botsCanWin?: boolean;
     exemptPermissions?: PermissionResolvable[];
-    exemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
+    exemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
     bonusEntries?: BonusEntry[];
     embedColor?: ColorResolvable;
     embedColorEnd?: ColorResolvable;
@@ -180,15 +181,15 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly isDrop: boolean;
 
     private ensureEndTimeout(): void;
-    private checkWinnerEntry(user: User): Promise<boolean>;
-    public checkBonusEntries(user: User): Promise<number>;
+    private checkWinnerEntry(user: User): Awaitable<boolean>;
+    public checkBonusEntries(user: User): Awaitable<number>;
     public fillInString(string: string): string;
     public fillInString(string: unknown): string | null;
     public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
     public fillInEmbed(embed: unknown): MessageEmbed | null;
     public fillInComponents(components: (MessageActionRow | MessageActionRowOptions)[]): MessageActionRow[];
     public fillInComponents(components: unknown): MessageActionRow[] | null;
-    public exemptMembers(member: GuildMember): Promise<boolean>;
+    public exemptMembers(member: GuildMember, giveaway: Giveaway): Awaitable<boolean>;
     public fetchMessage(): Promise<Message>;
     public edit(options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
     public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
@@ -205,7 +206,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newMessages?: GiveawaysMessages;
     newThumbnail?: string;
     newBonusEntries?: BonusEntry[];
-    newExemptMembers?: (member: GuildMember) => boolean | Promise<boolean>;
+    newExemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
     newExtraData?: ExtraData;
     newLastChance?: LastChanceOptions;
 }
