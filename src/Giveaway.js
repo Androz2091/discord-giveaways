@@ -548,7 +548,7 @@ class Giveaway extends EventEmitter {
             else {
                 // Find a new winner
                 for (let i = 0; i < users.size; i++) {
-                    const user = randomUsers(1);
+                    const user = randomUsers(1)[0];
                     const isUserValidEntry =
                         !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
