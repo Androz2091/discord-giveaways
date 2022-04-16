@@ -509,21 +509,17 @@ class GiveawaysManager extends EventEmitter {
             // Second case: the giveaway is a drop
             if (giveaway.isDrop) {
                 giveaway.message = await giveaway.fetchMessage().catch(() => {});
-                const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
-                const reaction = giveaway.message?.reactions.cache.find((r) =>
-                    [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name)
-                );
 
-                if (reaction?.count - 1 >= giveaway.winnerCount) {
-                    const users =
-                        (await reaction.users.fetch().catch(() => {}))
-                            ?.filter((u) => !u.bot || u.bot === giveaway.botsCanWin)
-                            .filter((u) => u.id !== this.client.user.id) ?? [];
+                if (giveaway.messageReaction?.count - 1 >= giveaway.winnerCount) {
+                    const users = await giveaway.fetchAllEntrants().catch(() => {});
 
                     let validUsers = 0;
-                    for (const user of users) {
-                        if (validUsers === giveaway.winnerCount) return this.end(giveaway.messageId).catch(() => {});
+                    for (const user of [...(users?.values() || [])]) {
                         if (await giveaway.checkWinnerEntry(user)) validUsers++;
+                        if (validUsers === giveaway.winnerCount) {
+                            await this.end(giveaway.messageId).catch(() => {});
+                            break;
+                        }
                     }
                 }
 
@@ -643,17 +639,17 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, reaction);
             this.emit('giveawayReactionAdded', giveaway, member, reaction);
 
+            // Only end drops if the amount of available, valid winners is equal to the winnerCount
             if (giveaway.isDrop && reaction.count - 1 >= giveaway.winnerCount) {
-                // Only end drops if the amount of available, valid winners is equal to the winnerCount
-                const users =
-                    (await reaction.users.fetch().catch(() => {}))
-                        ?.filter((u) => !u.bot || u.bot === giveaway.botsCanWin)
-                        .filter((u) => u.id !== this.client.user.id) ?? [];
+                const users = await giveaway.fetchAllEntrants().catch(() => {});
 
                 let validUsers = 0;
-                for (const user of users) {
-                    if (validUsers === giveaway.winnerCount) this.end(giveaway.messageId).catch(() => {});
+                for (const user of [...(users?.values() || [])]) {
                     if (await giveaway.checkWinnerEntry(user)) validUsers++;
+                    if (validUsers === giveaway.winnerCount) {
+                        await this.end(giveaway.messageId).catch(() => {});
+                        break;
+                    }
                 }
             }
         } else this.emit('giveawayReactionRemoved', giveaway, member, reaction);

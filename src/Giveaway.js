@@ -170,7 +170,7 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * The reaction on the giveaway message.
+     * The emoji used for the reaction on the giveaway message.
      * @type {Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
@@ -231,7 +231,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * If the giveaway is a drop, or not.
-     * Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
+     * Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
      * @type {Boolean}
      */
     get isDrop() {
@@ -249,6 +249,19 @@ class Giveaway extends EventEmitter {
                 ? eval(`(${this.options.exemptMembers})`)
                 : eval(this.options.exemptMembers)
             : null;
+    }
+
+    /**
+     * The reaction on the giveaway message.
+     * @type {?Discord.MessageReaction}
+     */
+    get messageReaction() {
+        const emoji = Discord.Util.resolvePartialEmoji(this.reaction);
+        return (
+            this.message?.reactions.cache.find((r) =>
+                [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id)
+            ) ?? null
+        );
     }
 
     /**
@@ -424,6 +437,32 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * Fetches all users of the giveaway reaction, except bots, if not otherwise specified.
+     * @returns {Promise<Discord.Collection<Discord.Snowflake, Discord.User>>} The collection of reaction users.
+     */
+    async fetchAllEntrants() {
+        return new Promise(async (resolve, reject) => {
+            this.message = await this.fetchMessage().catch(() => {});
+            const reaction = this.messageReaction;
+            if (!reaction) return reject('Unable to find the giveaway reaction.');
+
+            let userCollection = await reaction.users.fetch().catch(() => {});
+            if (!userCollection) return reject('Unable to fetch the reaction users.');
+
+            while (userCollection.size % 100 === 0) {
+                const newUsers = await reaction.users.fetch({ after: userCollection.lastKey() });
+                if (newUsers.size === 0) break;
+                userCollection = userCollection.concat(newUsers);
+            }
+
+            const users = userCollection
+                .filter((u) => !u.bot || u.bot === this.botsCanWin)
+                .filter((u) => u.id !== this.client.user.id);
+            resolve(users);
+        });
+    }
+
+    /**
      * Checks if a user fulfills the requirements to win the giveaway.
      * @private
      * @param {Discord.User} user The user to check.
@@ -481,12 +520,6 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
 
-        // Find the reaction
-        const emoji = Discord.Util.resolvePartialEmoji(this.reaction);
-        const reaction = this.message.reactions.cache.find((r) =>
-            [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id)
-        );
-        if (!reaction) return [];
         let guild = this.message.guild;
 
         // Fetch all guild members if the intent is available
@@ -499,19 +532,8 @@ class Giveaway extends EventEmitter {
             await guild.members.fetch().catch(() => {});
         }
 
-        // Fetch all reaction users
-        let userCollection = await reaction.users.fetch().catch(() => {});
-        if (!userCollection) return [];
-        while (userCollection.size % 100 === 0) {
-            const newUsers = await reaction.users.fetch({ after: userCollection.lastKey() });
-            if (newUsers.size === 0) break;
-            userCollection = userCollection.concat(newUsers);
-        }
-
-        const users = userCollection
-            .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.client.user.id);
-        if (!users.size) return [];
+        const users = await this.fetchAllEntrants().catch(() => {});
+        if (!users?.size) return [];
 
         // Bonus Entries
         let userArray;

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events';
 import {
     Client,
+    Collection,
     ColorResolvable,
     EmojiIdentifierResolvable,
     GuildMember,
@@ -178,10 +179,12 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly data: GiveawayData<ExtraData>;
     readonly pauseOptions: Required<PauseOptions>;
     readonly isDrop: boolean;
+    readonly messageReaction: MessageReaction | null;
 
     private ensureEndTimeout(): void;
     private checkWinnerEntry(user: User): Promise<boolean>;
     public checkBonusEntries(user: User): Promise<number>;
+    public fetchAllEntrants(): Promise<Collection<Snowflake, User>>;
     public fillInString(string: string): string;
     public fillInString(string: unknown): string | null;
     public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
