@@ -272,7 +272,7 @@ class Giveaway extends EventEmitter {
     async exemptMembers(member) {
         if (typeof this.exemptMembersFunction === 'function') {
             try {
-                const result = await this.exemptMembersFunction(member);
+                const result = await this.exemptMembersFunction(member, this);
                 return result;
             } catch (err) {
                 console.error(
@@ -282,7 +282,7 @@ class Giveaway extends EventEmitter {
             }
         }
         if (typeof this.manager.options.default.exemptMembers === 'function') {
-            return await this.manager.options.default.exemptMembers(member);
+            return await this.manager.options.default.exemptMembers(member, this);
         }
         return false;
     }
