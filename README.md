@@ -296,11 +296,11 @@ client.giveawaysManager.start(interaction.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     // Only members who have the "Nitro Boost" role are able to win
-    exemptMembers: (member) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
+    exemptMembers: (member, giveaway) => !member.roles.cache.some((r) => r.name === 'Nitro Boost')
 });
 ```
 
-**Note**: if the function should be customizable:
+**Note (only for proficients)**: if you want to use values of global variables inside of the function without using `giveaway.extraData`, you can use the [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) constructor:
 
 ```js
 const roleName = 'Nitro Boost';
@@ -310,11 +310,23 @@ client.giveawaysManager.start(interaction.channel, {
     winnerCount: 1,
     prize: 'Free Steam Key',
     // Only members who have the the role which is assigned to "roleName" are able to win
-    exemptMembers: new Function('member', `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`)
+    exemptMembers: new Function(
+        'member',
+        'giveaway',
+        `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`
+    )
 });
 ```
 
-**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
+<u>**⚠ Note**</u>
+
+-   You can use `this`, instead of the `giveaway` parameter, inside of the function string to access anything of the giveaway instance.  
+    For example: `this.extraData`, or `this.client`.
+-   Strings have to be "stringified" again like you can see in the example. Arrays are even more complicated.
+-   Global variables which contain numbers or [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes) with more than 16 digits cannot be used.
+-   If you want to make an asynchronous function in this format, refer to [this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction) article.
+-   <u>**Because of those various complications it is therefore highly suggested to use `giveaway.extraData` for storing variables.**</u>  
+    But if you really want to do it in this way and need more information/help, please visit the [Discord Server](https://discord.gg/r5mb9r5WXv).
 
 ### Last Chance
 
@@ -381,40 +393,18 @@ client.giveawaysManager.start(interaction.channel, {
     bonusEntries: [
         {
             // Members who have the "Nitro Boost" role get 2 bonus entries
-            bonus: (member) => (member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null),
+            bonus: (member, giveaway) => (member.roles.cache.some((r) => r.name === 'Nitro Boost') ? 2 : null),
             cumulative: false
         }
     ]
 });
 ```
 
--   **bonusEntries[].bonus**: the filter function that takes one parameter, a member and returns the amount of entries.
+-   **bonusEntries[].bonus**: the filter function that takes two parameters: "member" and "giveaway", and returns the amount of additional entries.
 -   **bonusEntries[].cumulative**: if the amount of entries from the function can get summed with other amounts of entries.
 
-**Note**: if the `bonus` function should be customizable:
-
-```js
-const roleName = 'Nitro Boost';
-const roleBonusEntries = 2;
-
-client.giveawaysManager.start(interaction.channel, {
-    duration: 60000,
-    winnerCount: 1,
-    prize: 'Free Steam Key',
-    bonusEntries: [
-        {
-            // Members who have the role which is assigned to "roleName" get the amount of bonus entries which is assigned to "roleBonusEntries"
-            bonus: new Function(
-                'member',
-                `return member.roles.cache.some((r) => r.name === \'${roleName}\') ? ${roleBonusEntries} : null`
-            ),
-            cumulative: false
-        }
-    ]
-});
-```
-
-**Note**: because of the special `new Function()` format, you can use `this` inside of the function string to access anything from the giveaway instance. For example: `this.extraData`, or `this.client`.
+**Note (only for proficients)**: if you want to use values of global variables inside of the function without using `giveaway.extraData`, you can use the [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) constructor.  
+Look at the [exemptMembers](https://github.com/Androz2091/discord-giveaways#exempt-members) section for more information on that.
 
 ### Message Options
 
@@ -533,14 +523,14 @@ There are 4 methods you will need to replace:
 
 **⚠️ All the methods should be asynchronous to return a promise!**
 
-<ins>**SQL examples**</ins>
+<u>**SQL examples**</u>
 
 -   [MySQL](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mysql.js)
 -   SQLite
     -   [Quick.db](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/quick.db.js)
     -   [Enmap](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/enmap.js)
 
-<ins>**NoSQL examples**</ins>
+<u>**NoSQL examples**</u>
 
 -   MongoDB
     -   [Mongoose](https://github.com/Androz2091/discord-giveaways/blob/master/examples/custom-databases/mongoose.js)

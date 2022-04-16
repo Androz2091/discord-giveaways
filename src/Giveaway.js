@@ -51,17 +51,17 @@ class Giveaway extends EventEmitter {
         this.prize = options.prize;
         /**
          * The start date of the giveaway.
-         * @type {Number}
+         * @type {number}
          */
         this.startAt = options.startAt;
         /**
          * The end date of the giveaway.
-         * @type {Number}
+         * @type {number}
          */
         this.endAt = options.endAt ?? Infinity;
         /**
          * Whether the giveaway is ended.
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.ended = options.ended ?? false;
         /**
@@ -137,7 +137,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The remaining time before the end of the giveaway.
-     * @type {Number}
+     * @type {number}
      * @readonly
      */
     get remainingTime() {
@@ -146,7 +146,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The total duration of the giveaway.
-     * @type {Number}
+     * @type {number}
      * @readonly
      */
     get duration() {
@@ -189,7 +189,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * If bots can win the giveaway.
-     * @type {Boolean}
+     * @type {boolean}
      */
     get botsCanWin() {
         return typeof this.options.botsCanWin === 'boolean'
@@ -232,7 +232,7 @@ class Giveaway extends EventEmitter {
     /**
      * If the giveaway is a drop, or not.
      * Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
-     * @type {Boolean}
+     * @type {boolean}
      */
     get isDrop() {
         return this.options.isDrop ?? false;
@@ -496,7 +496,7 @@ class Giveaway extends EventEmitter {
             for (const obj of this.bonusEntries) {
                 if (typeof obj.bonus === 'function') {
                     try {
-                        const result = await obj.bonus.apply(this, [member]);
+                        const result = await obj.bonus.apply(this, [member, this]);
                         if (Number.isInteger(result) && result > 0) {
                             if (obj.cumulative) cumulativeEntries.push(result);
                             else entries.push(result);

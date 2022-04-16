@@ -26,7 +26,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * @param {Discord.Client} client The Discord Client
      * @param {GiveawaysManagerOptions} [options] The manager options
-     * @param {Boolean} [init=true] If the manager should start automatically. If set to "false", for example to create a delay, the manager can be started manually with "manager._init()".
+     * @param {boolean} [init=true] If the manager should start automatically. If set to "false", for example to create a delay, the manager can be started manually with "manager._init()".
      */
     constructor(client, options, init = true) {
         super();
@@ -42,7 +42,7 @@ class GiveawaysManager extends EventEmitter {
         this.client = client;
         /**
          * Whether the manager is ready
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.ready = false;
         /**

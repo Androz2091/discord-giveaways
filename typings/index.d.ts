@@ -60,8 +60,8 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
         ...args: GiveawaysManagerEvents<ExtraData>[K]
     ): boolean;
 }
-export interface BonusEntry {
-    bonus(member?: GuildMember): Awaitable<number>;
+export interface BonusEntry<ExtraData> {
+    bonus(member: GuildMember, giveaway: Giveaway<ExtraData>): Awaitable<number>;
     cumulative?: boolean;
 }
 export interface LastChanceOptions {
@@ -100,7 +100,7 @@ export interface GiveawayStartOptions<ExtraData> {
     botsCanWin?: boolean;
     exemptPermissions?: PermissionResolvable[];
     exemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
-    bonusEntries?: BonusEntry[];
+    bonusEntries?: BonusEntry<ExtraData>[];
     embedColor?: ColorResolvable;
     embedColorEnd?: ColorResolvable;
     reaction?: EmojiIdentifierResolvable;
@@ -176,7 +176,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly duration: number;
     readonly messageURL: string;
     readonly exemptMembersFunction: Function | null;
-    readonly bonusEntries: BonusEntry[];
+    readonly bonusEntries: BonusEntry<ExtraData>[];
     readonly data: GiveawayData<ExtraData>;
     readonly pauseOptions: Required<PauseOptions>;
     readonly isDrop: boolean;
@@ -208,7 +208,7 @@ export interface GiveawayEditOptions<ExtraData> {
     setEndTimestamp?: number;
     newMessages?: GiveawaysMessages;
     newThumbnail?: string;
-    newBonusEntries?: BonusEntry[];
+    newBonusEntries?: BonusEntry<ExtraData>[];
     newExemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
     newExtraData?: ExtraData;
     newLastChance?: LastChanceOptions;
