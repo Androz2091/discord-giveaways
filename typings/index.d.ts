@@ -192,7 +192,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public fillInEmbed(embed: unknown): MessageEmbed | null;
     public fillInComponents(components: (MessageActionRow | MessageActionRowOptions)[]): MessageActionRow[];
     public fillInComponents(components: unknown): MessageActionRow[] | null;
-    public exemptMembers(member: GuildMember, giveaway: Giveaway): Awaitable<boolean>;
+    public exemptMembers(member: GuildMember): Promise<boolean>;
     public fetchMessage(): Promise<Message>;
     public edit(options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
     public end(noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
