@@ -115,6 +115,7 @@ export interface GiveawayStartOptions<ExtraData> {
 export interface GiveawaysMessages {
     giveaway?: string;
     giveawayEnded?: string;
+    title?: string;
     inviteToParticipate?: string;
     timeRemaining?: string;
     winMessage?: string | MessageObject;

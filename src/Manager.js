@@ -67,7 +67,7 @@ class GiveawaysManager extends EventEmitter {
      */
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
         const embed = new Discord.MessageEmbed()
-            .setTitle(giveaway.prize)
+            .setTitle(typeof giveaway.messages.title === 'string' ? giveaway.messages.title : giveaway.prize)
             .setColor(
                 giveaway.isDrop
                     ? giveaway.embedColor
@@ -120,7 +120,7 @@ class GiveawaysManager extends EventEmitter {
             winners: giveaway.fillInString(giveaway.messages.winners),
             hostedBy: giveaway.fillInString(giveaway.messages.hostedBy),
             endedAt: giveaway.fillInString(giveaway.messages.endedAt),
-            prize: giveaway.fillInString(giveaway.prize)
+            title: giveaway.fillInString(giveaway.messages.title)
         };
 
         const descriptionString = (formattedWinners) =>
@@ -129,14 +129,14 @@ class GiveawaysManager extends EventEmitter {
         for (
             let i = 1;
             descriptionString(formattedWinners).length > 4096 ||
-            strings.prize.length + strings.endedAt.length + descriptionString(formattedWinners).length > 6000;
+            strings.title.length + strings.endedAt.length + descriptionString(formattedWinners).length > 6000;
             i++
         ) {
             formattedWinners = formattedWinners.slice(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
         }
 
         return new Discord.MessageEmbed()
-            .setTitle(strings.prize)
+            .setTitle(strings.title)
             .setColor(giveaway.embedColorEnd)
             .setFooter({ text: strings.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
             .setDescription(descriptionString(formattedWinners))
@@ -151,7 +151,7 @@ class GiveawaysManager extends EventEmitter {
      */
     generateNoValidParticipantsEndEmbed(giveaway) {
         const embed = new Discord.MessageEmbed()
-            .setTitle(giveaway.prize)
+            .setTitle(typeof giveaway.messages.title === 'string' ? giveaway.messages.title : giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter({ text: giveaway.messages.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
             .setDescription(giveaway.messages.noWinner + (giveaway.hostedBy ? '\n' + giveaway.messages.hostedBy : ''))

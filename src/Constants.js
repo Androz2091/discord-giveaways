@@ -9,6 +9,7 @@ exports.DELETE_DROP_DATA_AFTER = 6.048e+8; // 1 week
  *
  * @property {string} [giveaway='🎉🎉 **GIVEAWAY** 🎉🎉'] Displayed above the giveaway embed when the giveaway is running.
  * @property {string} [giveawayEnded='🎉🎉 **GIVEAWAY ENDED** 🎉🎉'] Displayed above the giveaway embed when the giveaway has ended.
+ * @property {string} [title='{this.prize}'] The title of the giveaway embed.<br>Will default to the prize of the giveaway if the value is not a string.
  * @property {string} [inviteToParticipate='React with 🎉 to participate!'] Displayed in the giveaway embed. Invite people to react to the giveaway.
  * @property {string|MessageObject} [winMessage='Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}'] Sent in the channel when the giveaway is ended. "{winners}" will be replaced automatically with the mentions of the giveaway winners.
  * @property {string} [drawing='Drawing: {timestamp}'] Displayed below "inviteToParticipate" in the giveaway embed. "{timestamp}" will be replaced automatically with the time remaining.
@@ -22,6 +23,7 @@ exports.DELETE_DROP_DATA_AFTER = 6.048e+8; // 1 week
 exports.GiveawayMessages = {
     giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
     giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+    title: '{this.prize}',
     inviteToParticipate: 'React with 🎉 to participate!',
     winMessage: 'Congratulations, {winners}! You won **{this.prize}**!\n{this.messageURL}',
     drawing: 'Drawing: {timestamp}',
@@ -201,7 +203,7 @@ exports.GiveawayRerollOptions = {
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration.
  * @property {number} [setEndTimestamp] The timestamp of the new end date.
  * @property {GiveawayMessages} [newMessages] The new giveaway messages.<br>Will get merged with the existing object, if there.
- * @property {string} [newThumbnail] The new thumbnail url.
+ * @property {string} [newThumbnail] The new thumbnail URL.
  * @property {any} [newExtraData] The new extra data for this giveaway.
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
  * @property {ExemptMembersFunction} [newExemptMembers] The new filter function to exempt members from winning the giveaway.
