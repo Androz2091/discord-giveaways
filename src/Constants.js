@@ -76,6 +76,7 @@ exports.GiveawayMessages = {
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
  * @property {GiveawayMessages} [messages] The giveaway messages.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
+ * @property {string} [image] The URL appearing as the image on the giveaway embed.
  * @property {any} [extraData] The extra data for this giveaway.
  * @property {LastChanceOptions} [lastChance] The options for the last chance system.
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
@@ -201,7 +202,8 @@ exports.GiveawayRerollOptions = {
  * @property {number} [addTime] Number of milliseconds to add to the giveaway duration.
  * @property {number} [setEndTimestamp] The timestamp of the new end date.
  * @property {GiveawayMessages} [newMessages] The new giveaway messages.<br>Will get merged with the existing object, if there.
- * @property {string} [newThumbnail] The new thumbnail url.
+ * @property {string} [newThumbnail] The new thumbnail URL.
+ * @property {string} [newImage] The new image URL.
  * @property {any} [newExtraData] The new extra data for this giveaway.
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
  * @property {ExemptMembersFunction} [newExemptMembers] The new filter function to exempt members from winning the giveaway.
@@ -220,6 +222,7 @@ exports.GiveawayEditOptions = {};
  * @property {GiveawayMessages} messages The giveaway messages.
  * @property {string} prize The giveaway prize.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
+ * @property {string} [image] The URL appearing as the image on the giveaway embed.
  * @property {Discord.Snowflake} channelId The Id of the channel.
  * @property {Discord.Snowflake} guildId The Id of the guild.
  * @property {Discord.Snowflake[]} [winnerIds] The winner Ids of the giveaway after it ended.

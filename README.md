@@ -178,12 +178,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
--   **options.newExtraData**: the new extra data value for the giveaway.
--   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
--   **options.newExemptMembers**: the new filter function to exempt members from winning the giveaway.
--   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
+-   **[and many other optional parameters - read documentation](https://discord-giveaways.js.org/global.html#GiveawayEditOptions)**
 
 **Note**: to reduce giveaway duration, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway duration by 5 seconds!
 

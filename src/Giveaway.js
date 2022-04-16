@@ -105,6 +105,11 @@ class Giveaway extends EventEmitter {
          */
         this.thumbnail = options.thumbnail;
         /**
+         * The URL appearing as the image on the giveaway embed.
+         * @type {string}
+         */
+        this.image = options.image;
+        /**
          * Extra data concerning this giveaway.
          * @type {any}
          */
@@ -303,6 +308,7 @@ class Giveaway extends EventEmitter {
             prize: this.prize,
             messages: this.messages,
             thumbnail: this.thumbnail,
+            image: this.image,
             hostedBy: this.options.hostedBy,
             embedColor: this.options.embedColor,
             embedColorEnd: this.options.embedColorEnd,
@@ -602,6 +608,7 @@ class Giveaway extends EventEmitter {
                 this.messages = customDeepmerge(this.messages, options.newMessages);
             }
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
+            if (typeof options.newImage === 'string') this.image = options.newImage;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (options.newExtraData) this.extraData = options.newExtraData;
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop) {
