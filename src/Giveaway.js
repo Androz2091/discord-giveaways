@@ -493,7 +493,8 @@ class Giveaway extends EventEmitter {
         if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) {
             // Try to fetch the guild from the client if the guild instance of the message does not have its shard defined
             if (this.client.shard && !guild.shard) {
-                guild = this.message.guild = (await this.client.guilds.fetch(guild.id).catch(() => {})) ?? guild;
+                guild = (await this.client.guilds.fetch(guild.id).catch(() => {})) ?? guild;
+                this.message = await this.fetchMessage().catch(() => {});
             }
             await guild.members.fetch().catch(() => {});
         }
@@ -547,7 +548,7 @@ class Giveaway extends EventEmitter {
             else {
                 // Find a new winner
                 for (let i = 0; i < users.size; i++) {
-                    const user = randomUsers(1);
+                    const user = randomUsers(1)[0];
                     const isUserValidEntry =
                         !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
