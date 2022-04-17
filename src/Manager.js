@@ -241,6 +241,7 @@ class GiveawaysManager extends EventEmitter {
                         ? deepmerge(GiveawayMessages, options.messages)
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
+                image: typeof options.image === 'string' ? options.image : undefined,
                 reaction: Discord.Util.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
