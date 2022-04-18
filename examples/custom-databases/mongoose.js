@@ -41,6 +41,7 @@ const giveawaySchema = new mongoose.Schema({
         hostedBy: String
     },
     thumbnail: String,
+    image: String,
     hostedBy: String,
     winnerIds: { type: [String], default: undefined },
     reaction: mongoose.Mixed,
