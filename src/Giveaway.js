@@ -533,7 +533,8 @@ class Giveaway extends EventEmitter {
             // Try to fetch the guild from the client if the guild instance of the message does not have its shard defined
             if (this.client.shard && !guild.shard) {
                 guild = (await this.client.guilds.fetch(guild.id).catch(() => {})) ?? guild;
-                this.message = await this.fetchMessage().catch(() => {});
+                // "Update" the message instance too, if possible. If not, reassign to prevent ending error.
+                this.message = (await this.fetchMessage().catch(() => {})) ?? this.message;
             }
             await guild.members.fetch().catch(() => {});
         }
