@@ -448,7 +448,9 @@ class Giveaway extends EventEmitter {
      */
     async fetchAllEntrants() {
         return new Promise(async (resolve, reject) => {
-            this.message = await this.fetchMessage().catch(() => {});
+            const message = await this.fetchMessage().catch((err) => reject(err));
+            if (!message) return;
+            this.message = message;
             const reaction = this.messageReaction;
             if (!reaction) return reject('Unable to find the giveaway reaction.');
 
@@ -533,7 +535,7 @@ class Giveaway extends EventEmitter {
             // Try to fetch the guild from the client if the guild instance of the message does not have its shard defined
             if (this.client.shard && !guild.shard) {
                 guild = (await this.client.guilds.fetch(guild.id).catch(() => {})) ?? guild;
-                // "Update" the message instance too, if possible. If not, reassign to prevent ending error.
+                // "Update" the message instance too, if possible.
                 this.message = (await this.fetchMessage().catch(() => {})) ?? this.message;
             }
             await guild.members.fetch().catch(() => {});
@@ -656,10 +658,13 @@ class Giveaway extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
             this.ended = true;
-            this.message ??= await this.fetchMessage().catch((err) =>
-                err.includes('Try later!') ? (this.ended = false) : undefined
-            );
-            if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
+
+            // Always fetch the message in order to reject early
+            this.message = await this.fetchMessage().catch((err) => {
+                if (err.includes('Try later!')) this.ended = false;
+                return reject(err);
+            });
+            if (!this.message) return;
 
             if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
             await this.manager.editGiveaway(this.messageId, this.data);
