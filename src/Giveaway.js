@@ -528,7 +528,7 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
 
-        let guild = this.message.guild;
+        let guild = this.message.guild ?? await this.client.guilds.fetch(this.guildId).catch(() => {});
 
         // Fetch all guild members if the intent is available
         if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) {
