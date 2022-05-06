@@ -675,8 +675,6 @@ class Giveaway extends EventEmitter {
             });
             if (!this.message) return;
 
-            if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
-            await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
 
             const channel =
@@ -708,10 +706,6 @@ class Giveaway extends EventEmitter {
                             'could not get edited. Try later!'
                     );
                 }
-
-                // Consider the ending successful if at least the embed was edited successfully
-                this.ended = true;
-                await this.manager.editGiveaway(this.messageId, this.data);
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
@@ -837,8 +831,6 @@ class Giveaway extends EventEmitter {
                         }
                     });
                 }
-                this.isEnding = false;
-                resolve(winners);
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
                 const embed = this.fillInEmbed(noWinnerMessage?.embed);
@@ -876,14 +868,15 @@ class Giveaway extends EventEmitter {
                             'could not get edited. Try later!'
                     );
                 }
-
-                // Consider the ending successful if at least the embed was edited successfully
-                this.ended = true;
-                await this.manager.editGiveaway(this.messageId, this.data);
-
-                this.isEnding = false;
-                resolve([]);
             }
+
+            // Consider the ending successful if at least the embed was edited successfully
+            this.ended = true;
+            if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+            await this.manager.editGiveaway(this.messageId, this.data);
+            this.isEnding = false;
+
+            resolve(winners);
         });
     }
 
