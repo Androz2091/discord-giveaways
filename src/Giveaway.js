@@ -13,7 +13,8 @@ const {
     BonusEntry,
     PauseOptions,
     MessageObject,
-    DEFAULT_CHECK_INTERVAL
+    DEFAULT_CHECK_INTERVAL,
+    MAX_TIME_TO_EDIT_EMBED
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 const { validateEmbedColor } = require('./utils.js');
@@ -64,6 +65,12 @@ class Giveaway extends EventEmitter {
          * @type {boolean}
          */
         this.ended = options.ended ?? false;
+        /**
+         * Whether the giveaway is currently in the ending process.
+         * @private
+         * @type {Boolean}
+         */
+        this.isEnding = false;
         /**
          * The Id of the channel of the giveaway.
          * @type {Discord.Snowflake}
@@ -656,12 +663,14 @@ class Giveaway extends EventEmitter {
      */
     end(noWinnerMessage = null) {
         return new Promise(async (resolve, reject) => {
-            if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
-            this.ended = true;
+            if (this.isEnding || this.ended) {
+                return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
+            }
+            this.isEnding = true;
 
             // Always fetch the message in order to reject early
             this.message = await this.fetchMessage().catch((err) => {
-                if (err.includes('Try later!')) this.ended = false;
+                if (err.includes('Try later!')) this.isEnding = false;
                 return reject(err);
             });
             if (!this.message) return;
@@ -677,15 +686,32 @@ class Giveaway extends EventEmitter {
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageId, this.data);
+
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message = await this.message
-                    .edit({
-                        content: this.fillInString(this.messages.giveawayEnded),
-                        embeds: [embed],
-                        allowedMentions: this.allowedMentions
-                    })
-                    .catch(() => {});
+                const date = Date.now();
+                do {
+                    this.message = await this.message
+                        .edit({
+                            content: this.fillInString(this.messages.giveawayEnded),
+                            embeds: [embed],
+                            allowedMentions: this.allowedMentions
+                        })
+                        .catch(() => {});
+                } while (!embed.equals(this.message?.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
+
+                if (!embed.equals(this.message?.embeds[0])) {
+                    this.winnerIds = [];
+                    this.isEnding = false;
+                    return reject(
+                        'Ending aborted because giveaway with message Id ' +
+                            this.messageId +
+                            'could not get edited. Try later!'
+                    );
+                }
+
+                // Consider the ending successful if at least the embed was edited successfully
+                this.ended = true;
+                await this.manager.editGiveaway(this.messageId, this.data);
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
@@ -811,6 +837,7 @@ class Giveaway extends EventEmitter {
                         }
                     });
                 }
+                this.isEnding = false;
                 resolve(winners);
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
@@ -829,13 +856,32 @@ class Giveaway extends EventEmitter {
                     });
                 }
 
-                this.message = await this.message
-                    .edit({
-                        content: this.fillInString(this.messages.giveawayEnded),
-                        embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
-                        allowedMentions: this.allowedMentions
-                    })
-                    .catch(() => {});
+
+                const date = Date.now();
+                do {
+                    this.message = await this.message
+                        .edit({
+                            content: this.fillInString(this.messages.giveawayEnded),
+                            embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
+                            allowedMentions: this.allowedMentions
+                        })
+                        .catch(() => {});
+                } while (!embed.equals(this.message?.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
+
+                if (!embed.equals(this.message?.embeds[0])) {
+                    this.isEnding = false;
+                    return reject(
+                        'Ending aborted because giveaway with message Id ' +
+                            this.messageId +
+                            'could not get edited. Try later!'
+                    );
+                }
+
+                // Consider the ending successful if at least the embed was edited successfully
+                this.ended = true;
+                await this.manager.editGiveaway(this.messageId, this.data);
+
+                this.isEnding = false;
                 resolve([]);
             }
         });
