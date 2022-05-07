@@ -708,6 +708,11 @@ class Giveaway extends EventEmitter {
                     );
                 }
 
+                // Consider the ending successful if at least the embed was edited successfully
+                this.ended = true;
+                if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+                await this.manager.editGiveaway(this.messageId, this.data);
+
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage?.replace('{winners}', formattedWinners);
@@ -833,22 +838,6 @@ class Giveaway extends EventEmitter {
                     });
                 }
             } else {
-                const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
-                const embed = this.fillInEmbed(noWinnerMessage?.embed);
-                if (message || embed) {
-                    channel.send({
-                        content: message,
-                        embeds: embed ? [embed] : null,
-                        components: this.fillInComponents(noWinnerMessage?.components),
-                        allowedMentions: this.allowedMentions,
-                        reply: {
-                            messageReference:
-                                typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
-                            failIfNotExists: false
-                        }
-                    });
-                }
-
                 const date = Date.now();
                 do {
                     const message = await this.message
@@ -869,14 +858,30 @@ class Giveaway extends EventEmitter {
                             'could not get edited. Try later!'
                     );
                 }
+
+                // Consider the ending successful if at least the embed was edited successfully
+                this.ended = true;
+                if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+                await this.manager.editGiveaway(this.messageId, this.data);
+
+                const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
+                const embed = this.fillInEmbed(noWinnerMessage?.embed);
+                if (message || embed) {
+                    channel.send({
+                        content: message,
+                        embeds: embed ? [embed] : null,
+                        components: this.fillInComponents(noWinnerMessage?.components),
+                        allowedMentions: this.allowedMentions,
+                        reply: {
+                            messageReference:
+                                typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                            failIfNotExists: false
+                        }
+                    });
+                }
             }
 
-            // Consider the ending successful if at least the embed was edited successfully
-            this.ended = true;
-            if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
-            await this.manager.editGiveaway(this.messageId, this.data);
             this.isEnding = false;
-
             resolve(winners);
         });
     }
