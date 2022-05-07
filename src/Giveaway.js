@@ -688,16 +688,17 @@ class Giveaway extends EventEmitter {
                 const embed = this.manager.generateEndEmbed(this, winners);
                 const date = Date.now();
                 do {
-                    this.message = await this.message
+                    const message = await this.message
                         .edit({
                             content: this.fillInString(this.messages.giveawayEnded),
                             embeds: [embed],
                             allowedMentions: this.allowedMentions
                         })
                         .catch(() => {});
-                } while (!embed.equals(this.message?.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
+                    if (message) this.message = message;
+                } while (!embed.equals(this.message.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
 
-                if (!embed.equals(this.message?.embeds[0])) {
+                if (!embed.equals(this.message.embeds[0])) {
                     this.winnerIds = [];
                     this.isEnding = false;
                     return reject(
@@ -848,19 +849,19 @@ class Giveaway extends EventEmitter {
                     });
                 }
 
-
                 const date = Date.now();
                 do {
-                    this.message = await this.message
+                    const message = await this.message
                         .edit({
                             content: this.fillInString(this.messages.giveawayEnded),
                             embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
                             allowedMentions: this.allowedMentions
                         })
                         .catch(() => {});
-                } while (!embed.equals(this.message?.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
+                    if (message) this.message = message;
+                } while (!embed.equals(this.message.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
 
-                if (!embed.equals(this.message?.embeds[0])) {
+                if (!embed.equals(this.message.embeds[0])) {
                     this.isEnding = false;
                     return reject(
                         'Ending aborted because giveaway with message Id ' +
