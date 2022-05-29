@@ -570,7 +570,7 @@ class GiveawaysManager extends EventEmitter {
                 setTimeout(async () => {
                     giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
                     const embed = this.generateMainEmbed(giveaway, true);
-                    giveaway.message = await giveaway.message
+                    await giveaway.message
                         ?.edit({
                             content: giveaway.fillInString(giveaway.messages.giveaway),
                             embeds: [embed],
@@ -583,9 +583,7 @@ class GiveawaysManager extends EventEmitter {
             // Fetch the message if necessary and make sure the embed is alright
             giveaway.message ??= await giveaway.fetchMessage().catch(() => {});
             if (!giveaway.message) return;
-            if (!giveaway.message.embeds[0]) {
-                giveaway.message = await giveaway.message.suppressEmbeds(false).catch(() => {});
-            }
+            if (!giveaway.message.embeds[0]) await giveaway.message.suppressEmbeds(false).catch(() => {});
 
             // Regular case: the giveaway is not ended and we need to update it
             const lastChanceEnabled =
@@ -596,7 +594,7 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
-                giveaway.message = await giveaway.message
+                await giveaway.message
                     .edit({
                         content: giveaway.fillInString(giveaway.messages.giveaway),
                         embeds: [updatedEmbed],

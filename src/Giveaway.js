@@ -644,7 +644,7 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveaway),
                         embeds: [embed],
@@ -688,17 +688,20 @@ class Giveaway extends EventEmitter {
                 const embed = this.manager.generateEndEmbed(this, winners);
                 const date = Date.now();
                 do {
-                    const message = await this.message
+                    await this.message
                         .edit({
                             content: this.fillInString(this.messages.giveawayEnded),
                             embeds: [embed],
                             allowedMentions: this.allowedMentions
                         })
                         .catch(() => {});
-                    if (message) this.message = message;
-                } while (!embed.equals(this.message.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
+                } while (
+                    this.message &&
+                    !embed.equals(this.message.embeds[0]) &&
+                    Date.now() - date < MAX_TIME_TO_EDIT_EMBED
+                );
 
-                if (!embed.equals(this.message.embeds[0])) {
+                if (!this.message || !embed.equals(this.message.embeds[0])) {
                     this.winnerIds = [];
                     this.isEnding = false;
                     return reject(
@@ -840,17 +843,20 @@ class Giveaway extends EventEmitter {
             } else {
                 const date = Date.now();
                 do {
-                    const message = await this.message
+                    await this.message
                         .edit({
                             content: this.fillInString(this.messages.giveawayEnded),
                             embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
                             allowedMentions: this.allowedMentions
                         })
                         .catch(() => {});
-                    if (message) this.message = message;
-                } while (!embed.equals(this.message.embeds[0]) && Date.now() - date < MAX_TIME_TO_EDIT_EMBED);
+                } while (
+                    this.message &&
+                    !embed.equals(this.message.embeds[0]) &&
+                    Date.now() - date < MAX_TIME_TO_EDIT_EMBED
+                );
 
-                if (!embed.equals(this.message.embeds[0])) {
+                if (!this.message || !embed.equals(this.message.embeds[0])) {
                     this.isEnding = false;
                     return reject(
                         'Ending aborted because giveaway with message Id ' +
@@ -910,16 +916,28 @@ class Giveaway extends EventEmitter {
                     : this.message.channel;
 
             if (winners.length > 0) {
+                const oldWinners = this.winnerIds;
                 this.winnerIds = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageId, this.data);
+
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveawayEnded),
                         embeds: [embed],
                         allowedMentions: this.allowedMentions
                     })
                     .catch(() => {});
+
+                if (!this.message || !embed.equals(this.message.embeds[0])) {
+                    this.winnerIds = oldWinners;
+                    return reject(
+                        'Reroll aborted because giveaway with message Id ' +
+                            this.messageId +
+                            'could not get edited. Try later!'
+                    );
+                }
+
+                await this.manager.editGiveaway(this.messageId, this.data);
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
@@ -1111,7 +1129,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message = await this.message
+            await this.message
                 .edit({
                     content: this.fillInString(this.messages.giveaway),
                     embeds: [embed],
@@ -1147,7 +1165,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message = await this.message
+            await this.message
                 .edit({
                     content: this.fillInString(this.messages.giveaway),
                     embeds: [embed],
