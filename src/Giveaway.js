@@ -637,7 +637,7 @@ class Giveaway extends EventEmitter {
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveaway),
                         embeds: [embed],
@@ -679,7 +679,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveawayEnded),
                         embeds: [embed],
@@ -829,7 +829,7 @@ class Giveaway extends EventEmitter {
                     });
                 }
 
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveawayEnded),
                         embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
@@ -868,7 +868,7 @@ class Giveaway extends EventEmitter {
                 this.winnerIds = winners.map((w) => w.id);
                 await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveawayEnded),
                         embeds: [embed],
@@ -1066,7 +1066,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message = await this.message
+            await this.message
                 .edit({
                     content: this.fillInString(this.messages.giveaway),
                     embeds: [embed],
@@ -1102,7 +1102,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message = await this.message
+            await this.message
                 .edit({
                     content: this.fillInString(this.messages.giveaway),
                     embeds: [embed],
