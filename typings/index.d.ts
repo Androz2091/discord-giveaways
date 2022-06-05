@@ -164,6 +164,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public winnerIds: Snowflake[];
     public allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
     private endTimeout?: NodeJS.Timeout;
+    private isEnding?: boolean;
 
     // getters calculated using default manager options
     readonly exemptPermissions: PermissionResolvable[];
