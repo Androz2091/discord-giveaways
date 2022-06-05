@@ -1,6 +1,7 @@
 const { EventEmitter } = require('node:events');
-const { setTimeout } = require('node:timers');
-const merge = require('deepmerge');
+const { setTimeout, clearTimeout } = require('node:timers');
+const { deepmerge, deepmergeCustom } = require('deepmerge-ts');
+const customDeepmerge = deepmergeCustom({ mergeArrays: false });
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
 const {
@@ -12,7 +13,8 @@ const {
     BonusEntry,
     PauseOptions,
     MessageObject,
-    DEFAULT_CHECK_INTERVAL
+    DEFAULT_CHECK_INTERVAL,
+    MAX_TIME_TO_EDIT_EMBED
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
 const { validateEmbedColor } = require('./utils.js');
@@ -50,19 +52,25 @@ class Giveaway extends EventEmitter {
         this.prize = options.prize;
         /**
          * The start date of the giveaway.
-         * @type {Number}
+         * @type {number}
          */
         this.startAt = options.startAt;
         /**
          * The end date of the giveaway.
-         * @type {Number}
+         * @type {number}
          */
         this.endAt = options.endAt ?? Infinity;
         /**
          * Whether the giveaway is ended.
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.ended = options.ended ?? false;
+        /**
+         * Whether the giveaway is currently in the ending process.
+         * @private
+         * @type {Boolean}
+         */
+        this.isEnding = false;
         /**
          * The Id of the channel of the giveaway.
          * @type {Discord.Snowflake}
@@ -104,6 +112,11 @@ class Giveaway extends EventEmitter {
          */
         this.thumbnail = options.thumbnail;
         /**
+         * The URL appearing as the image on the giveaway embed.
+         * @type {string}
+         */
+        this.image = options.image;
+        /**
          * Extra data concerning this giveaway.
          * @type {any}
          */
@@ -136,7 +149,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The remaining time before the end of the giveaway.
-     * @type {Number}
+     * @type {number}
      * @readonly
      */
     get remainingTime() {
@@ -145,7 +158,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The total duration of the giveaway.
-     * @type {Number}
+     * @type {number}
      * @readonly
      */
     get duration() {
@@ -169,7 +182,7 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * The reaction on the giveaway message.
+     * The emoji used for the reaction on the giveaway message.
      * @type {Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
@@ -188,7 +201,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * If bots can win the giveaway.
-     * @type {Boolean}
+     * @type {boolean}
      */
     get botsCanWin() {
         return typeof this.options.botsCanWin === 'boolean'
@@ -209,7 +222,7 @@ class Giveaway extends EventEmitter {
      * @type {LastChanceOptions}
      */
     get lastChance() {
-        return merge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
+        return deepmerge(this.manager.options.default.lastChance, this.options.lastChance ?? {});
     }
 
     /**
@@ -217,7 +230,7 @@ class Giveaway extends EventEmitter {
      * @type {PauseOptions}
      */
     get pauseOptions() {
-        return merge(PauseOptions, this.options.pauseOptions ?? {});
+        return deepmerge(PauseOptions, this.options.pauseOptions ?? {});
     }
 
     /**
@@ -230,8 +243,8 @@ class Giveaway extends EventEmitter {
 
     /**
      * If the giveaway is a drop, or not.
-     * Drop means that if the amount of reactions to the giveaway is the same as "winnerCount" then it immediately ends.
-     * @type {Boolean}
+     * Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
+     * @type {boolean}
      */
     get isDrop() {
         return this.options.isDrop ?? false;
@@ -251,6 +264,19 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * The reaction on the giveaway message.
+     * @type {?Discord.MessageReaction}
+     */
+    get messageReaction() {
+        const emoji = Discord.Util.resolvePartialEmoji(this.reaction);
+        return (
+            this.message?.reactions.cache.find((r) =>
+                [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id)
+            ) ?? null
+        );
+    }
+
+    /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
      * @property {Discord.GuildMember} member The member to check
      * @returns {Promise<boolean>} Whether the member should get exempted
@@ -258,7 +284,7 @@ class Giveaway extends EventEmitter {
     async exemptMembers(member) {
         if (typeof this.exemptMembersFunction === 'function') {
             try {
-                const result = await this.exemptMembersFunction(member);
+                const result = await this.exemptMembersFunction(member, this);
                 return result;
             } catch (err) {
                 console.error(
@@ -268,7 +294,7 @@ class Giveaway extends EventEmitter {
             }
         }
         if (typeof this.manager.options.default.exemptMembers === 'function') {
-            return await this.manager.options.default.exemptMembers(member);
+            return await this.manager.options.default.exemptMembers(member, this);
         }
         return false;
     }
@@ -289,6 +315,7 @@ class Giveaway extends EventEmitter {
             prize: this.prize,
             messages: this.messages,
             thumbnail: this.thumbnail,
+            image: this.image,
             hostedBy: this.options.hostedBy,
             embedColor: this.options.embedColor,
             embedColorEnd: this.options.embedColorEnd,
@@ -372,6 +399,31 @@ class Giveaway extends EventEmitter {
     }
 
     /**
+     * @param {Array<Discord.MessageActionRow|Discord.MessageActionRowOptions>} components The components that should get filled in.
+     * @returns {?Discord.MessageActionRow[]} The filled in components.
+     */
+    fillInComponents(components) {
+        if (!Array.isArray(components)) return null;
+        return components.map((row) => {
+            row = new Discord.MessageActionRow(row instanceof Discord.MessageActionRow ? row.toJSON() : row);
+            row.components = row.components.map((component) => {
+                component.customId &&= this.fillInString(component.customId);
+                component.label &&= this.fillInString(component.label);
+                component.url &&= this.fillInString(component.url);
+                component.placeholder &&= this.fillInString(component.placeholder);
+                component.options &&= component.options.map((options) => {
+                    options.label = this.fillInString(options.label);
+                    options.value = this.fillInString(options.value);
+                    options.description &&= this.fillInString(options.description);
+                    return options;
+                });
+                return component;
+            });
+            return row;
+        });
+    }
+
+    /**
      * Fetches the giveaway message from its channel.
      * @returns {Promise<Discord.Message>} The Discord message
      */
@@ -394,6 +446,34 @@ class Giveaway extends EventEmitter {
                 );
             }
             resolve(message);
+        });
+    }
+
+    /**
+     * Fetches all users of the giveaway reaction, except bots, if not otherwise specified.
+     * @returns {Promise<Discord.Collection<Discord.Snowflake, Discord.User>>} The collection of reaction users.
+     */
+    async fetchAllEntrants() {
+        return new Promise(async (resolve, reject) => {
+            const message = await this.fetchMessage().catch((err) => reject(err));
+            if (!message) return;
+            this.message = message;
+            const reaction = this.messageReaction;
+            if (!reaction) return reject('Unable to find the giveaway reaction.');
+
+            let userCollection = await reaction.users.fetch().catch(() => {});
+            if (!userCollection) return reject('Unable to fetch the reaction users.');
+
+            while (userCollection.size % 100 === 0) {
+                const newUsers = await reaction.users.fetch({ after: userCollection.lastKey() });
+                if (newUsers.size === 0) break;
+                userCollection = userCollection.concat(newUsers);
+            }
+
+            const users = userCollection
+                .filter((u) => !u.bot || u.bot === this.botsCanWin)
+                .filter((u) => u.id !== this.client.user.id);
+            resolve(users);
         });
     }
 
@@ -431,7 +511,7 @@ class Giveaway extends EventEmitter {
             for (const obj of this.bonusEntries) {
                 if (typeof obj.bonus === 'function') {
                     try {
-                        const result = await obj.bonus.apply(this, [member]);
+                        const result = await obj.bonus.apply(this, [member, this]);
                         if (Number.isInteger(result) && result > 0) {
                             if (obj.cumulative) cumulativeEntries.push(result);
                             else entries.push(result);
@@ -455,32 +535,21 @@ class Giveaway extends EventEmitter {
     async roll(winnerCount = this.winnerCount) {
         if (!this.message) return [];
 
-        // Find the reaction
-        const emoji = Discord.Util.resolvePartialEmoji(this.reaction);
-        const reaction = this.message.reactions.cache.find((r) =>
-            [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.name ?? emoji?.id)
-        );
-        if (!reaction) return [];
-        const guild = this.message.guild;
+        let guild = this.message.guild;
 
         // Fetch all guild members if the intent is available
         if (new Discord.Intents(this.client.options.intents).has(Discord.Intents.FLAGS.GUILD_MEMBERS)) {
-            await guild.members.fetch();
+            // Try to fetch the guild from the client if the guild instance of the message does not have its shard defined
+            if (this.client.shard && !guild.shard) {
+                guild = (await this.client.guilds.fetch(guild.id).catch(() => {})) ?? guild;
+                // "Update" the message instance too, if possible.
+                this.message = (await this.fetchMessage().catch(() => {})) ?? this.message;
+            }
+            await guild.members.fetch().catch(() => {});
         }
 
-        // Fetch all reaction users
-        let userCollection = await reaction.users.fetch().catch(() => {});
-        if (!userCollection) return [];
-        while (userCollection.size % 100 === 0) {
-            const newUsers = await reaction.users.fetch({ after: userCollection.lastKey() });
-            if (newUsers.size === 0) break;
-            userCollection = userCollection.concat(newUsers);
-        }
-
-        const users = userCollection
-            .filter((u) => !u.bot || u.bot === this.botsCanWin)
-            .filter((u) => u.id !== this.client.user.id);
-        if (!users.size) return [];
+        const users = await this.fetchAllEntrants().catch(() => {});
+        if (!users?.size) return [];
 
         // Bonus Entries
         let userArray;
@@ -491,41 +560,41 @@ class Giveaway extends EventEmitter {
                 if (!isUserValidEntry) continue;
 
                 const highestBonusEntries = await this.checkBonusEntries(user);
-                if (!highestBonusEntries) continue;
-
                 for (let i = 0; i < highestBonusEntries; i++) userArray.push(user);
             }
         }
 
-        let rolledWinners;
-        if (!userArray || userArray.length <= winnerCount) rolledWinners = users.random(winnerCount);
-        else {
+        const randomUsers = (amount) => {
+            if (!userArray || userArray.length <= amount) return users.random(amount);
             /**
              * Random mechanism like https://github.com/discordjs/collection/blob/master/src/index.ts
              * because collections/maps do not allow duplicates and so we cannot use their built in "random" function
              */
-            rolledWinners = Array.from(
+            return Array.from(
                 {
-                    length: Math.min(winnerCount, users.size)
+                    length: Math.min(amount, users.size)
                 },
                 () => userArray.splice(Math.floor(Math.random() * userArray.length), 1)[0]
             );
-        }
+        };
 
         const winners = [];
 
-        for (const u of rolledWinners) {
+        for (const u of randomUsers(winnerCount)) {
             const isValidEntry = !winners.some((winner) => winner.id === u.id) && (await this.checkWinnerEntry(u));
             if (isValidEntry) winners.push(u);
             else {
                 // Find a new winner
-                for (const user of userArray || [...users.values()]) {
+                for (let i = 0; i < users.size; i++) {
+                    const user = randomUsers(1)[0];
                     const isUserValidEntry =
                         !winners.some((winner) => winner.id === user.id) && (await this.checkWinnerEntry(user));
                     if (isUserValidEntry) {
                         winners.push(user);
                         break;
                     }
+                    users.delete(user.id);
+                    userArray = userArray?.filter((u) => u.id !== user.id);
                 }
             }
         }
@@ -546,9 +615,10 @@ class Giveaway extends EventEmitter {
 
             // Update data
             if (options.newMessages && typeof options.newMessages === 'object') {
-                this.messages = merge(this.messages, options.newMessages);
+                this.messages = customDeepmerge(this.messages, options.newMessages);
             }
             if (typeof options.newThumbnail === 'string') this.thumbnail = options.newThumbnail;
+            if (typeof options.newImage === 'string') this.image = options.newImage;
             if (typeof options.newPrize === 'string') this.prize = options.newPrize;
             if (options.newExtraData) this.extraData = options.newExtraData;
             if (Number.isInteger(options.newWinnerCount) && options.newWinnerCount > 0 && !this.isDrop) {
@@ -563,15 +633,18 @@ class Giveaway extends EventEmitter {
             if (Array.isArray(options.newBonusEntries) && !this.isDrop) {
                 this.options.bonusEntries = options.newBonusEntries.filter((elem) => typeof elem === 'object');
             }
+            if (typeof options.newExemptMembers === 'function') {
+                this.options.exemptMembers = options.newExemptMembers;
+            }
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) {
-                this.options.lastChance = merge(this.options.lastChance || {}, options.newLastChance);
+                this.options.lastChance = deepmerge(this.options.lastChance || {}, options.newLastChance);
             }
 
             await this.manager.editGiveaway(this.messageId, this.data);
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});
             else {
                 const embed = this.manager.generateMainEmbed(this);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveaway),
                         embeds: [embed],
@@ -590,15 +663,18 @@ class Giveaway extends EventEmitter {
      */
     end(noWinnerMessage = null) {
         return new Promise(async (resolve, reject) => {
-            if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
-            this.ended = true;
-            this.message ??= await this.fetchMessage().catch((err) =>
-                err.includes('Try later!') ? (this.ended = false) : undefined
-            );
-            if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
+            if (this.isEnding || this.ended) {
+                return reject('Giveaway with message Id ' + this.messageId + ' is already ended');
+            }
+            this.isEnding = true;
 
-            if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
-            await this.manager.editGiveaway(this.messageId, this.data);
+            // Always fetch the message in order to reject early
+            this.message = await this.fetchMessage().catch((err) => {
+                if (err.includes('Try later!')) this.isEnding = false;
+                return reject(err);
+            });
+            if (!this.message) return;
+
             const winners = await this.roll();
 
             const channel =
@@ -608,50 +684,87 @@ class Giveaway extends EventEmitter {
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageId, this.data);
+
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message = await this.message
-                    .edit({
-                        content: this.fillInString(this.messages.giveawayEnded),
-                        embeds: [embed],
-                        allowedMentions: this.allowedMentions
-                    })
-                    .catch(() => {});
+                const date = Date.now();
+                do {
+                    await this.message
+                        .edit({
+                            content: this.fillInString(this.messages.giveawayEnded),
+                            embeds: [embed],
+                            allowedMentions: this.allowedMentions
+                        })
+                        .catch(() => {});
+                } while (
+                    this.message &&
+                    !embed.equals(this.message.embeds[0]) &&
+                    Date.now() - date < MAX_TIME_TO_EDIT_EMBED
+                );
+
+                if (!this.message || !embed.equals(this.message.embeds[0])) {
+                    this.winnerIds = [];
+                    this.isEnding = false;
+                    return reject(
+                        'Ending aborted because giveaway with message Id ' +
+                            this.messageId +
+                            'could not get edited. Try later!'
+                    );
+                }
+
+                // Consider the ending successful if at least the embed was edited successfully
+                this.ended = true;
+                if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+                await this.manager.editGiveaway(this.messageId, this.data);
 
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const winMessage = this.fillInString(this.messages.winMessage.content || this.messages.winMessage);
                 const message = winMessage?.replace('{winners}', formattedWinners);
+                const components = this.fillInComponents(this.messages.winMessage.components);
 
                 if (message?.length > 2000) {
                     const firstContentPart = winMessage.slice(0, winMessage.indexOf('{winners}'));
                     if (firstContentPart.length) {
-                        channel.send({
-                            content: firstContentPart,
-                            allowedMentions: this.allowedMentions,
-                            reply: {
-                                messageReference:
-                                    typeof this.messages.winMessage.replyToGiveaway === 'boolean'
-                                        ? this.messageId
-                                        : undefined,
-                                failIfNotExists: false
-                            }
-                        });
+                        await channel
+                            .send({
+                                content: firstContentPart,
+                                allowedMentions: this.allowedMentions,
+                                reply: {
+                                    messageReference:
+                                        typeof this.messages.winMessage.replyToGiveaway === 'boolean'
+                                            ? this.messageId
+                                            : undefined,
+                                    failIfNotExists: false
+                                }
+                            })
+                            .catch(() => {});
                     }
-
                     while (formattedWinners.length >= 2000) {
-                        await channel.send({
-                            content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
-                            allowedMentions: this.allowedMentions
-                        });
+                        await channel
+                            .send({
+                                content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
+                                allowedMentions: this.allowedMentions
+                            })
+                            .catch(() => {});
                         formattedWinners = formattedWinners.slice(
                             formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999) + 2).length
                         );
                     }
-                    channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
+                    await channel
+                        .send({ content: formattedWinners, allowedMentions: this.allowedMentions })
+                        .catch(() => {});
 
                     const lastContentPart = winMessage.slice(winMessage.indexOf('{winners}') + 9);
                     if (lastContentPart.length) {
-                        channel.send({ content: lastContentPart, allowedMentions: this.allowedMentions });
+                        await channel
+                            .send({
+                                content: lastContentPart,
+                                components:
+                                    this.messages.winMessage.embed && typeof this.messages.winMessage.embed === 'object'
+                                        ? null
+                                        : components,
+                                allowedMentions: this.allowedMentions
+                            })
+                            .catch(() => {});
                     }
                 }
 
@@ -659,28 +772,13 @@ class Giveaway extends EventEmitter {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(this.messages.winMessage.embed);
                     const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
+
                     if (embedDescription.length <= 4096) {
-                        channel.send({
-                            content: message?.length <= 2000 ? message : null,
-                            embeds: [embed.setDescription(embedDescription)],
-                            allowedMentions: this.allowedMentions,
-                            reply: {
-                                messageReference:
-                                    !(message?.length > 2000) &&
-                                    typeof this.messages.winMessage.replyToGiveaway === 'boolean'
-                                        ? this.messageId
-                                        : undefined,
-                                failIfNotExists: false
-                            }
-                        });
-                    } else {
-                        const firstEmbed = new Discord.MessageEmbed(embed).setDescription(
-                            embed.description.slice(0, embed.description.indexOf('{winners}'))
-                        );
-                        if (firstEmbed.length) {
-                            channel.send({
+                        await channel
+                            .send({
                                 content: message?.length <= 2000 ? message : null,
-                                embeds: [firstEmbed],
+                                embeds: [embed.setDescription(embedDescription)],
+                                components,
                                 allowedMentions: this.allowedMentions,
                                 reply: {
                                     messageReference:
@@ -690,74 +788,130 @@ class Giveaway extends EventEmitter {
                                             : undefined,
                                     failIfNotExists: false
                                 }
-                            });
+                            })
+                            .catch(() => {});
+                    } else {
+                        const firstEmbed = new Discord.MessageEmbed(embed).setDescription(
+                            embed.description.slice(0, embed.description.indexOf('{winners}'))
+                        );
+                        if (firstEmbed.length) {
+                            await channel
+                                .send({
+                                    content: message?.length <= 2000 ? message : null,
+                                    embeds: [firstEmbed],
+                                    allowedMentions: this.allowedMentions,
+                                    reply: {
+                                        messageReference:
+                                            !(message?.length > 2000) &&
+                                            typeof this.messages.winMessage.replyToGiveaway === 'boolean'
+                                                ? this.messageId
+                                                : undefined,
+                                        failIfNotExists: false
+                                    }
+                                })
+                                .catch(() => {});
                         }
 
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
                         while (formattedWinners.length >= 4096) {
-                            await channel.send({
-                                embeds: [
-                                    tempEmbed.setDescription(
-                                        formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095)) + ','
-                                    )
-                                ],
-                                allowedMentions: this.allowedMentions
-                            });
+                            await channel
+                                .send({
+                                    embeds: [
+                                        tempEmbed.setDescription(
+                                            formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095)) + ','
+                                        )
+                                    ],
+                                    allowedMentions: this.allowedMentions
+                                })
+                                .catch(() => {});
                             formattedWinners = formattedWinners.slice(
                                 formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
                             );
                         }
-                        channel.send({
-                            embeds: [tempEmbed.setDescription(formattedWinners)],
-                            allowedMentions: this.allowedMentions
-                        });
+                        await channel
+                            .send({
+                                embeds: [tempEmbed.setDescription(formattedWinners)],
+                                allowedMentions: this.allowedMentions
+                            })
+                            .catch(() => {});
 
                         const lastEmbed = tempEmbed.setDescription(
                             embed.description.slice(embed.description.indexOf('{winners}') + 9)
                         );
                         if (lastEmbed.length) {
-                            channel.send({ embeds: [lastEmbed], allowedMentions: this.allowedMentions });
+                            await channel
+                                .send({ embeds: [lastEmbed], components, allowedMentions: this.allowedMentions })
+                                .catch(() => {});
                         }
                     }
                 } else if (message?.length <= 2000) {
-                    channel.send({
-                        content: message,
-                        allowedMentions: this.allowedMentions,
-                        reply: {
-                            messageReference:
-                                typeof this.messages.winMessage.replyToGiveaway === 'boolean'
-                                    ? this.messageId
-                                    : undefined,
-                            failIfNotExists: false
-                        }
-                    });
+                    await channel
+                        .send({
+                            content: message,
+                            components,
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    typeof this.messages.winMessage.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
+                        })
+                        .catch(() => {});
                 }
-                resolve(winners);
             } else {
-                const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
-                const embed = this.fillInEmbed(noWinnerMessage?.embed);
-                if (message || embed) {
-                    channel.send({
-                        content: message,
-                        embeds: embed ? [embed] : null,
-                        allowedMentions: this.allowedMentions,
-                        reply: {
-                            messageReference:
-                                typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
-                            failIfNotExists: false
-                        }
-                    });
+                const embed1 = this.manager.generateNoValidParticipantsEndEmbed(this);
+                const date = Date.now();
+                do {
+                    await this.message
+                        .edit({
+                            content: this.fillInString(this.messages.giveawayEnded),
+                            embeds: [embed1],
+                            allowedMentions: this.allowedMentions
+                        })
+                        .catch(() => {});
+                } while (
+                    this.message &&
+                    !embed1.equals(this.message.embeds[0]) &&
+                    Date.now() - date < MAX_TIME_TO_EDIT_EMBED
+                );
+
+                if (!this.message || !embed1.equals(this.message.embeds[0])) {
+                    this.isEnding = false;
+                    return reject(
+                        'Ending aborted because giveaway with message Id ' +
+                            this.messageId +
+                            'could not get edited. Try later!'
+                    );
                 }
 
-                this.message = await this.message
-                    .edit({
-                        content: this.fillInString(this.messages.giveawayEnded),
-                        embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
-                        allowedMentions: this.allowedMentions
-                    })
-                    .catch(() => {});
-                resolve([]);
+                // Consider the ending successful if at least the embed was edited successfully
+                this.ended = true;
+                if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+                await this.manager.editGiveaway(this.messageId, this.data);
+
+                const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
+                const embed2 = this.fillInEmbed(noWinnerMessage?.embed);
+                if (message || embed2) {
+                    await channel
+                        .send({
+                            content: message,
+                            embeds: embed2 ? [embed2] : null,
+                            components: this.fillInComponents(noWinnerMessage?.components),
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
+                                failIfNotExists: false
+                            }
+                        })
+                        .catch(() => {});
+                }
             }
+
+            this.isEnding = false;
+            resolve(winners);
         });
     }
 
@@ -773,7 +927,7 @@ class Giveaway extends EventEmitter {
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
             if (this.isDrop) return reject('Drop giveaways cannot get rerolled!');
             if (!options || typeof options !== 'object') return reject(`"options" is not an object (val=${options})`);
-            options = merge(GiveawayRerollOptions, options);
+            options = deepmerge(GiveawayRerollOptions, options);
             if (options.winnerCount && (!Number.isInteger(options.winnerCount) || options.winnerCount < 1)) {
                 return reject(`options.winnerCount is not a positive integer. (val=${options.winnerCount})`);
             }
@@ -785,10 +939,11 @@ class Giveaway extends EventEmitter {
                     : this.message.channel;
 
             if (winners.length > 0) {
+                const oldWinners = this.winnerIds;
                 this.winnerIds = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageId, this.data);
+
                 const embed = this.manager.generateEndEmbed(this, winners);
-                this.message = await this.message
+                await this.message
                     .edit({
                         content: this.fillInString(this.messages.giveawayEnded),
                         embeds: [embed],
@@ -796,40 +951,67 @@ class Giveaway extends EventEmitter {
                     })
                     .catch(() => {});
 
+                if (!this.message || !embed.equals(this.message.embeds[0])) {
+                    this.winnerIds = oldWinners;
+                    return reject(
+                        'Reroll aborted because giveaway with message Id ' +
+                            this.messageId +
+                            'could not get edited. Try later!'
+                    );
+                }
+
+                await this.manager.editGiveaway(this.messageId, this.data);
+
                 let formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                 const congratMessage = this.fillInString(options.messages.congrat.content || options.messages.congrat);
                 const message = congratMessage?.replace('{winners}', formattedWinners);
+                const components = this.fillInComponents(options.messages.congrat.components);
 
                 if (message?.length > 2000) {
                     const firstContentPart = congratMessage.slice(0, congratMessage.indexOf('{winners}'));
                     if (firstContentPart.length) {
-                        channel.send({
-                            content: firstContentPart,
-                            allowedMentions: this.allowedMentions,
-                            reply: {
-                                messageReference:
-                                    typeof options.messages.congrat.replyToGiveaway === 'boolean'
-                                        ? this.messageId
-                                        : undefined,
-                                failIfNotExists: false
-                            }
-                        });
+                        await channel
+                            .send({
+                                content: firstContentPart,
+                                allowedMentions: this.allowedMentions,
+                                reply: {
+                                    messageReference:
+                                        typeof options.messages.congrat.replyToGiveaway === 'boolean'
+                                            ? this.messageId
+                                            : undefined,
+                                    failIfNotExists: false
+                                }
+                            })
+                            .catch(() => {});
                     }
 
                     while (formattedWinners.length >= 2000) {
-                        await channel.send({
-                            content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
-                            allowedMentions: this.allowedMentions
-                        });
+                        await channel
+                            .send({
+                                content: formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999)) + ',',
+                                allowedMentions: this.allowedMentions
+                            })
+                            .catch(() => {});
                         formattedWinners = formattedWinners.slice(
                             formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 1999) + 2).length
                         );
                     }
-                    channel.send({ content: formattedWinners, allowedMentions: this.allowedMentions });
+                    await channel
+                        .send({ content: formattedWinners, allowedMentions: this.allowedMentions })
+                        .catch(() => {});
 
                     const lastContentPart = congratMessage.slice(congratMessage.indexOf('{winners}') + 9);
                     if (lastContentPart.length) {
-                        channel.send({ content: lastContentPart, allowedMentions: this.allowedMentions });
+                        await channel
+                            .send({
+                                content: lastContentPart,
+                                components:
+                                    options.messages.congrat.embed && typeof options.messages.congrat.embed === 'object'
+                                        ? null
+                                        : components,
+                                allowedMentions: this.allowedMentions
+                            })
+                            .catch(() => {});
                     }
                 }
 
@@ -837,28 +1019,13 @@ class Giveaway extends EventEmitter {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(options.messages.congrat.embed);
                     const embedDescription = embed.description?.replace('{winners}', formattedWinners) ?? '';
+
                     if (embedDescription.length <= 4096) {
-                        channel.send({
-                            content: message?.length <= 2000 ? message : null,
-                            embeds: [embed.setDescription(embedDescription)],
-                            allowedMentions: this.allowedMentions,
-                            reply: {
-                                messageReference:
-                                    !(message?.length > 2000) &&
-                                    typeof options.messages.congrat.replyToGiveaway === 'boolean'
-                                        ? this.messageId
-                                        : undefined,
-                                failIfNotExists: false
-                            }
-                        });
-                    } else {
-                        const firstEmbed = new Discord.MessageEmbed(embed).setDescription(
-                            embed.description.slice(0, embed.description.indexOf('{winners}'))
-                        );
-                        if (firstEmbed.length) {
-                            channel.send({
+                        await channel
+                            .send({
                                 content: message?.length <= 2000 ? message : null,
-                                embeds: [firstEmbed],
+                                embeds: [embed.setDescription(embedDescription)],
+                                components,
                                 allowedMentions: this.allowedMentions,
                                 reply: {
                                     messageReference:
@@ -868,61 +1035,98 @@ class Giveaway extends EventEmitter {
                                             : undefined,
                                     failIfNotExists: false
                                 }
-                            });
+                            })
+                            .catch(() => {});
+                    } else {
+                        const firstEmbed = new Discord.MessageEmbed(embed).setDescription(
+                            embed.description.slice(0, embed.description.indexOf('{winners}'))
+                        );
+                        if (firstEmbed.length) {
+                            await channel
+                                .send({
+                                    content: message?.length <= 2000 ? message : null,
+                                    embeds: [firstEmbed],
+                                    allowedMentions: this.allowedMentions,
+                                    reply: {
+                                        messageReference:
+                                            !(message?.length > 2000) &&
+                                            typeof options.messages.congrat.replyToGiveaway === 'boolean'
+                                                ? this.messageId
+                                                : undefined,
+                                        failIfNotExists: false
+                                    }
+                                })
+                                .catch(() => {});
                         }
 
                         const tempEmbed = new Discord.MessageEmbed().setColor(embed.color);
                         while (formattedWinners.length >= 4096) {
-                            await channel.send({
-                                embeds: [
-                                    tempEmbed.setDescription(
-                                        formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095)) + ','
-                                    )
-                                ],
-                                allowedMentions: this.allowedMentions
-                            });
+                            await channel
+                                .send({
+                                    embeds: [
+                                        tempEmbed.setDescription(
+                                            formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095)) + ','
+                                        )
+                                    ],
+                                    allowedMentions: this.allowedMentions
+                                })
+                                .catch(() => {});
                             formattedWinners = formattedWinners.slice(
                                 formattedWinners.slice(0, formattedWinners.lastIndexOf(',', 4095) + 2).length
                             );
                         }
-                        channel.send({
-                            embeds: [tempEmbed.setDescription(formattedWinners)],
-                            allowedMentions: this.allowedMentions
-                        });
+                        await channel
+                            .send({
+                                embeds: [tempEmbed.setDescription(formattedWinners)],
+                                allowedMentions: this.allowedMentions
+                            })
+                            .catch(() => {});
 
                         const lastEmbed = tempEmbed.setDescription(
                             embed.description.slice(embed.description.indexOf('{winners}') + 9)
                         );
                         if (lastEmbed.length) {
-                            channel.send({ embeds: [lastEmbed], allowedMentions: this.allowedMentions });
+                            await channel
+                                .send({ embeds: [lastEmbed], components, allowedMentions: this.allowedMentions })
+                                .catch(() => {});
                         }
                     }
                 } else if (message?.length <= 2000) {
-                    channel.send({
-                        content: message,
-                        allowedMentions: this.allowedMentions,
-                        reply: {
-                            messageReference:
-                                typeof options.messages.congrat.replyToGiveaway === 'boolean'
-                                    ? this.messageId
-                                    : undefined,
-                            failIfNotExists: false
-                        }
-                    });
+                    await channel
+                        .send({
+                            content: message,
+                            components,
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    typeof options.messages.congrat.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
+                        })
+                        .catch(() => {});
                 }
                 resolve(winners);
             } else {
-                const embed = this.fillInEmbed(options.messages.error.embed);
-                channel.send({
-                    content: this.fillInString(options.messages.error.content || options.messages.error),
-                    embeds: embed ? [embed] : null,
-                    allowedMentions: this.allowedMentions,
-                    reply: {
-                        messageReference:
-                            typeof options.messages.error.replyToGiveaway === 'boolean' ? this.messageId : undefined,
-                        failIfNotExists: false
-                    }
-                });
+                if (options.messages.replyWhenNoWinner !== false) {
+                    const embed = this.fillInEmbed(options.messages.error.embed);
+                    await channel
+                        .send({
+                            content: this.fillInString(options.messages.error.content || options.messages.error),
+                            embeds: embed ? [embed] : null,
+                            components: this.fillInComponents(options.messages.error.components),
+                            allowedMentions: this.allowedMentions,
+                            reply: {
+                                messageReference:
+                                    typeof options.messages.error.replyToGiveaway === 'boolean'
+                                        ? this.messageId
+                                        : undefined,
+                                failIfNotExists: false
+                            }
+                        })
+                        .catch(() => {});
+                }
                 resolve([]);
             }
         });
@@ -938,8 +1142,9 @@ class Giveaway extends EventEmitter {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-            if (this.pauseOptions.isPaused)
+            if (this.pauseOptions.isPaused) {
                 return reject('Giveaway with message Id ' + this.messageId + ' is already paused.');
+            }
             if (this.isDrop) return reject('Drop giveaways cannot get paused!');
             if (this.endTimeout) clearTimeout(this.endTimeout);
 
@@ -955,6 +1160,7 @@ class Giveaway extends EventEmitter {
                     this.endAt = this.endAt + options.unPauseAfter - Date.now();
                 }
             } else {
+                delete pauseOptions.unPauseAfter;
                 pauseOptions.durationAfterPause = this.remainingTime;
                 this.endAt = Infinity;
             }
@@ -969,7 +1175,7 @@ class Giveaway extends EventEmitter {
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message = await this.message
+            await this.message
                 .edit({
                     content: this.fillInString(this.messages.giveaway),
                     embeds: [embed],
@@ -989,21 +1195,23 @@ class Giveaway extends EventEmitter {
             if (this.ended) return reject('Giveaway with message Id ' + this.messageId + ' is already ended.');
             this.message ??= await this.fetchMessage().catch(() => {});
             if (!this.message) return reject('Unable to fetch message with Id ' + this.messageId + '.');
-            if (!this.pauseOptions.isPaused)
+            if (!this.pauseOptions.isPaused) {
                 return reject('Giveaway with message Id ' + this.messageId + ' is not paused.');
+            }
             if (this.isDrop) return reject('Drop giveaways cannot get unpaused!');
 
             // Update data
             if (Number.isFinite(this.pauseOptions.durationAfterPause)) {
                 this.endAt = Date.now() + this.pauseOptions.durationAfterPause;
             }
+            delete this.options.pauseOptions.unPauseAfter;
             this.options.pauseOptions.isPaused = false;
 
             this.ensureEndTimeout();
 
             await this.manager.editGiveaway(this.messageId, this.data);
             const embed = this.manager.generateMainEmbed(this);
-            this.message = await this.message
+            await this.message
                 .edit({
                     content: this.fillInString(this.messages.giveaway),
                     embeds: [embed],
