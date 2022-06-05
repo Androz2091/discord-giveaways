@@ -841,22 +841,23 @@ class Giveaway extends EventEmitter {
                     });
                 }
             } else {
+                const embed1 = this.manager.generateNoValidParticipantsEndEmbed(this);
                 const date = Date.now();
                 do {
                     await this.message
                         .edit({
                             content: this.fillInString(this.messages.giveawayEnded),
-                            embeds: [this.manager.generateNoValidParticipantsEndEmbed(this)],
+                            embeds: [embed1],
                             allowedMentions: this.allowedMentions
                         })
                         .catch(() => {});
                 } while (
                     this.message &&
-                    !embed.equals(this.message.embeds[0]) &&
+                    !embed1.equals(this.message.embeds[0]) &&
                     Date.now() - date < MAX_TIME_TO_EDIT_EMBED
                 );
 
-                if (!this.message || !embed.equals(this.message.embeds[0])) {
+                if (!this.message || !embed1.equals(this.message.embeds[0])) {
                     this.isEnding = false;
                     return reject(
                         'Ending aborted because giveaway with message Id ' +
@@ -871,11 +872,11 @@ class Giveaway extends EventEmitter {
                 await this.manager.editGiveaway(this.messageId, this.data);
 
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
-                const embed = this.fillInEmbed(noWinnerMessage?.embed);
-                if (message || embed) {
+                const embed2 = this.fillInEmbed(noWinnerMessage?.embed);
+                if (message || embed2) {
                     channel.send({
                         content: message,
-                        embeds: embed ? [embed] : null,
+                        embeds: embed2 ? [embed2] : null,
                         components: this.fillInComponents(noWinnerMessage?.components),
                         allowedMentions: this.allowedMentions,
                         reply: {
