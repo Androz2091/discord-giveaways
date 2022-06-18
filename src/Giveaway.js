@@ -707,7 +707,7 @@ class Giveaway extends EventEmitter {
                     return reject(
                         'Ending aborted because giveaway with message Id ' +
                             this.messageId +
-                            'could not get edited. Try later!'
+                            ' could not get edited. Try later!'
                     );
                 }
 
@@ -882,7 +882,7 @@ class Giveaway extends EventEmitter {
                     return reject(
                         'Ending aborted because giveaway with message Id ' +
                             this.messageId +
-                            'could not get edited. Try later!'
+                            ' could not get edited. Try later!'
                     );
                 }
 
@@ -956,7 +956,7 @@ class Giveaway extends EventEmitter {
                     return reject(
                         'Reroll aborted because giveaway with message Id ' +
                             this.messageId +
-                            'could not get edited. Try later!'
+                            ' could not get edited. Try later!'
                     );
                 }
 
