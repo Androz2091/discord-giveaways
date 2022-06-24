@@ -178,12 +178,7 @@ client.on('interactionCreate', (interaction) => {
 -   **options.newPrize**: the new prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 -   **options.addTime**: the number of milliseconds to add to the giveaway duration.
 -   **options.setEndTimestamp**: the timestamp of the new end date (for example, for the giveaway to be ended in 1 hour, set it to `Date.now() + 60000`).
--   **options.newMessages**: the new giveaway messages. Will get merged with the existing object, if there.  
-    ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
--   **options.newExtraData**: the new extra data value for the giveaway.
--   **options.newBonusEntries**: the new BonusEntry objects (for example, to change the amount of entries).
--   **options.newExemptMembers**: the new filter function to exempt members from winning the giveaway.
--   **options.newLastChance**: the new options for the last chance system. Will get merged with the existing object, if there.
+-   **[and many other optional parameters - read documentation](https://discord-giveaways.js.org/global.html#GiveawayEditOptions)**
 
 **Note**: to reduce giveaway duration, define `addTime` with a negative number! For example `addTime: -5000` will reduce giveaway duration by 5 seconds!
 
@@ -313,7 +308,7 @@ client.giveawaysManager.start(interaction.channel, {
     exemptMembers: new Function(
         'member',
         'giveaway',
-        `return !member.roles.cache.some((r) => r.name === \'${roleName}\')`
+        `return !member.roles.cache.some((r) => r.name === '${roleName}')`
     )
 });
 ```
@@ -322,8 +317,10 @@ client.giveawaysManager.start(interaction.channel, {
 
 -   You can use `this`, instead of the `giveaway` parameter, inside of the function string to access anything of the giveaway instance.  
     For example: `this.extraData`, or `this.client`.
--   Strings have to be "stringified" again like you can see in the example. Arrays are even more complicated.
--   Global variables which contain numbers or [Discord Snowflakes](https://discord.com/developers/docs/reference#snowflakes) with more than 16 digits cannot be used.
+-   Strings have to be "stringified" (wrapped in quotation marks) again like you can see in the example.  
+    Array brackets also have to be stated again.
+-   Global variables which contain numbers with more than 16 digits cannot be used.  
+    => Snoflakes have to be "stringified" correctly to avoid misbehaviour.
 -   If you want to make an asynchronous function in this format, refer to [this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction) article.
 -   <u>**Because of those various complications it is therefore highly suggested to use `giveaway.extraData` for storing variables.**</u>  
     But if you really want to do it in this way and need more information/help, please visit the [Discord Server](https://discord.gg/r5mb9r5WXv).
