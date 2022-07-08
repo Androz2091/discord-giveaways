@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 
 exports.DEFAULT_CHECK_INTERVAL = 15_000;
-exports.DELETE_DROP_DATA_AFTER = 6.048e+8; // 1 week
+exports.DELETE_DROP_DATA_AFTER = 6.048e8; // 1 week
 
 /**
  * The Giveaway messages that are used to display the giveaway content.
@@ -46,8 +46,8 @@ exports.GiveawayMessages = {
  * @typedef MessageObject
  *
  * @property {string} [content] The raw message
- * @property {Discord.MessageEmbed|Discord.MessageEmbedOptions} [embed] The embed
- * @property {Array<Discord.MessageActionRow|Discord.MessageActionRowOptions>} [components] The components.<br>"content" or "embed" is required to be defined.
+ * @property {Discord.EmbedBuilder|Discord.EmbedData|Discord.APIEmbed} [embed] The embed
+ * @property {Array<Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>|Discord.MessageActionRowComponentData>} [components] The components.<br>"content" or "embed" is required to be defined.
  * @property {boolean} [replyToGiveaway] If the sent message should reply to the giveaway embed.
  */
 
@@ -90,7 +90,7 @@ exports.GiveawayStartOptions = {};
  *
  * @param {Discord.GuildMember} member
  * @param {Giveaway} giveaway
- * @returns {Promise<number>|number}
+ * @returns {Discord.Awaitable<number>}
  */
 
 /**

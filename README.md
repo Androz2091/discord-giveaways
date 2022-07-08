@@ -31,16 +31,16 @@ You can read this example bot on GitHub: [discord-giveaways-bot](https://github.
 
 ### Launch of the module
 
-Required Discord Intents: `GUILDS` and `GUILD_MESSAGE_REACTIONS`.  
-Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
+Required Discord Intents: `Guilds` and `GuildMessageReactions`.  
+Optional Discord Privileged Intent for better performance: `GuildMembers`.
 
 ```js
 const Discord = require('discord.js');
 const client = new Discord.Client({
     intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
+        Discord.IntentsBitField.Flags.Guilds,
+        Discord.IntentsBitField.Flags.GuildMessageReactions,
+        Discord.IntentsBitField.Flags.GuildMembers // Optional, for better performance
     ]
 });
 
@@ -415,8 +415,8 @@ The format, including all currently available options, looks like this:
 ```js
 message: {
     content: '',
-    embed: new Discord.MessageEmbed(),
-    components: [new Discord.MessageActionRow()],
+    embed: new Discord.EmbedBuilder(),
+    components: [new Discord.ActionRowBuilder()],
     replyToGiveaway: true
 }
 ```

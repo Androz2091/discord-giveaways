@@ -1,9 +1,10 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, setInterval } = require('node:timers');
-const { writeFile, readFile, access } = require('fs/promises');
+const { writeFile, readFile, access } = require('node:fs/promises');
 const { deepmerge } = require('deepmerge-ts');
 const serialize = require('serialize-javascript');
-const Discord = require('discord.js');
+const { IntentsBitField, EmbedBuilder, resolvePartialEmoji, ShardClientUtil } = require('discord.js');
+
 const {
     GiveawayMessages,
     GiveawayEditOptions,
@@ -24,20 +25,20 @@ const { validateEmbedColor } = require('./utils.js');
  */
 class GiveawaysManager extends EventEmitter {
     /**
-     * @param {Discord.Client} client The Discord Client
+     * @param {Client} client The Discord Client
      * @param {GiveawaysManagerOptions} [options] The manager options
      * @param {boolean} [init=true] If the manager should start automatically. If set to "false", for example to create a delay, the manager can be started manually with "manager._init()".
      */
     constructor(client, options, init = true) {
         super();
         if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
-        if (!new Discord.Intents(client.options.intents).has(Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
-            throw new Error('Client is missing the "GUILD_MESSAGE_REACTIONS" intent.');
+        if (!new IntentsBitField(client.options.intents).has(IntentsBitField.Flags.GuildMessageReactions)) {
+            throw new Error('Client is missing the "GuildMessageReactions" intent.');
         }
 
         /**
          * The Discord Client
-         * @type {Discord.Client}
+         * @type {Client}
          */
         this.client = client;
         /**
@@ -63,19 +64,19 @@ class GiveawaysManager extends EventEmitter {
      * Generate an embed displayed when a giveaway is running (with the remaining time)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
      * @param {boolean} [lastChanceEnabled=false] Whether or not to include the last chance text
-     * @returns {Discord.MessageEmbed} The generated embed
+     * @returns {EmbedBuilder} The generated embed
      */
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
-        const embed = new Discord.MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(giveaway.prize)
             .setColor(
                 giveaway.isDrop
                     ? giveaway.embedColor
                     : giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
-                        ? giveaway.pauseOptions.embedColor
-                        : lastChanceEnabled
-                            ? giveaway.lastChance.embedColor
-                            : giveaway.embedColor
+                    ? giveaway.pauseOptions.embedColor
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.embedColor
+                    : giveaway.embedColor
             )
             .setFooter({
                 text:
@@ -87,10 +88,10 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.isDrop
                     ? giveaway.messages.dropMessage
                     : (giveaway.pauseOptions.isPaused
-                        ? giveaway.pauseOptions.content + '\n\n'
-                        : lastChanceEnabled
-                            ? giveaway.lastChance.content + '\n\n'
-                            : '') +
+                          ? giveaway.pauseOptions.content + '\n\n'
+                          : lastChanceEnabled
+                          ? giveaway.lastChance.content + '\n\n'
+                          : '') +
                           giveaway.messages.inviteToParticipate +
                           '\n' +
                           giveaway.messages.drawing.replace(
@@ -104,15 +105,14 @@ class GiveawaysManager extends EventEmitter {
             .setThumbnail(giveaway.thumbnail)
             .setImage(giveaway.image);
         if (giveaway.endAt !== Infinity) embed.setTimestamp(giveaway.endAt);
-        else delete embed.timestamp; // TODO: Remove, when the "null to 0" problem is (probably) redundant with @discordjs/builders in discord.js v14
         return giveaway.fillInEmbed(embed);
     }
 
     /**
      * Generate an embed displayed when a giveaway is ended (with the winners list)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
-     * @param {Discord.GuildMember[]} winners The giveaway winners
-     * @returns {Discord.MessageEmbed} The generated embed
+     * @param {GuildMember[]} winners The giveaway winners
+     * @returns {EmbedBuilder} The generated embed
      */
     generateEndEmbed(giveaway, winners) {
         let formattedWinners = winners.map((w) => `${w}`).join(', ');
@@ -136,7 +136,7 @@ class GiveawaysManager extends EventEmitter {
             formattedWinners = formattedWinners.slice(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
         }
 
-        return new Discord.MessageEmbed()
+        return new EmbedBuilder()
             .setTitle(strings.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter({ text: strings.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
@@ -149,10 +149,10 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Generate an embed displayed when a giveaway is ended and when there is no valid participant
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
-     * @returns {Discord.MessageEmbed} The generated embed
+     * @returns {EmbedBuilder} The generated embed
      */
     generateNoValidParticipantsEndEmbed(giveaway) {
-        const embed = new Discord.MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter({ text: giveaway.messages.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
@@ -165,9 +165,9 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
-     * @param {Discord.Snowflake} messageId The message id of the giveaway
-     * @param {string|MessageObject} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
-     * @returns {Promise<Discord.GuildMember[]>} The winners
+     * @param {Snowflake} messageId The message id of the giveaway
+     * @param {?string|MessageObject} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
+     * @returns {Promise<GuildMember[]>} The winners
      *
      * @example
      * manager.end('664900661003157510');
@@ -189,7 +189,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Starts a new giveaway
-     * @param {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway will be created
+     * @param {GuildTextBasedChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      * @returns {Promise<Giveaway>} The created giveaway.
      *
@@ -207,7 +207,7 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) return reject('The manager is not ready yet.');
-            if (!channel?.id || !channel.isText()) {
+            if (!channel?.id || !channel.isTextBased()) {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (channel.isThread() && !channel.sendable) {
@@ -242,7 +242,7 @@ class GiveawaysManager extends EventEmitter {
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 image: typeof options.image === 'string' ? options.image : undefined,
-                reaction: Discord.Util.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
+                reaction: resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
                 exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,
@@ -299,9 +299,9 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Choose new winner(s) for the giveaway
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway to reroll
+     * @param {Snowflake} messageId The message Id of the giveaway to reroll
      * @param {GiveawayRerollOptions} [options] The reroll options
-     * @returns {Promise<Discord.GuildMember[]>} The new winners
+     * @returns {Promise<GuildMember[]>} The new winners
      *
      * @example
      * manager.reroll('664900661003157510');
@@ -323,7 +323,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Pauses a giveaway.
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway to pause.
+     * @param {Snowflake} messageId The message Id of the giveaway to pause.
      * @param {PauseOptions} [options=giveaway.pauseOptions] The pause options.
      * @returns {Promise<Giveaway>} The paused giveaway.
      *
@@ -340,7 +340,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Unpauses a giveaway.
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway to unpause.
+     * @param {Snowflake} messageId The message Id of the giveaway to unpause.
      * @returns {Promise<Giveaway>} The unpaused giveaway.
      *
      * @example
@@ -356,7 +356,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Edits a giveaway. The modifications will be applicated when the giveaway will be updated.
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway to edit
+     * @param {Snowflake} messageId The message Id of the giveaway to edit
      * @param {GiveawayEditOptions} [options={}] The edit options
      * @returns {Promise<Giveaway>} The edited giveaway
      *
@@ -377,7 +377,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Deletes a giveaway. It will delete the message and all the giveaway data.
-     * @param {Discord.Snowflake} messageId  The message Id of the giveaway
+     * @param {Snowflake} messageId  The message Id of the giveaway
      * @param {boolean} [doNotDeleteMessage=false] Whether the giveaway message shouldn't be deleted
      * @returns {Promise<Giveaway>}
      */
@@ -399,7 +399,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Delete a giveaway from the database
-     * @param {Discord.Snowflake} messageId The message Id of the giveaway to delete
+     * @param {Snowflake} messageId The message Id of the giveaway to delete
      * @returns {Promise<boolean>}
      */
     async deleteGiveaway(messageId) {
@@ -458,7 +458,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Edit the giveaway in the database
      * @ignore
-     * @param {Discord.Snowflake} messageId The message Id identifying the giveaway
+     * @param {Snowflake} messageId The message Id identifying the giveaway
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async editGiveaway(messageId, giveawayData) {
@@ -476,7 +476,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Save the giveaway in the database
      * @ignore
-     * @param {Discord.Snowflake} messageId The message Id identifying the giveaway
+     * @param {Snowflake} messageId The message Id identifying the giveaway
      * @param {GiveawayData} giveawayData The giveaway data to save
      */
     async saveGiveaway(messageId, giveawayData) {
@@ -590,7 +590,7 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             const needUpdate =
-                !updatedEmbed.equals(giveaway.message.embeds[0]) ||
+                !giveaway.message.embeds[0]?.equals(updatedEmbed.toJSON()) ||
                 giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
@@ -614,7 +614,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.d.user_id === this.client.user.id) return;
 
         const giveaway = this.giveaways.find((g) => g.messageId === packet.d.message_id);
-        if (!giveaway || giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
+        if (!giveaway || (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE')) return;
 
         const guild =
             this.client.guilds.cache.get(packet.d.guild_id) ||
@@ -629,8 +629,8 @@ class GiveawaysManager extends EventEmitter {
 
         const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
-        
-        const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
+
+        const emoji = resolvePartialEmoji(giveaway.reaction);
         const reaction = message.reactions.cache.find((r) =>
             [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name)
         );
@@ -668,12 +668,12 @@ class GiveawaysManager extends EventEmitter {
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
-            const shardId = Discord.ShardClientUtil.shardIdForGuildId(
+            const shardId = ShardClientUtil.shardIdForGuildId(
                 this.client.guilds.cache.first().id,
                 this.client.shard.count
             );
             rawGiveaways = rawGiveaways.filter(
-                (g) => shardId === Discord.ShardClientUtil.shardIdForGuildId(g.guildId, this.client.shard.count)
+                (g) => shardId === ShardClientUtil.shardIdForGuildId(g.guildId, this.client.shard.count)
             );
         }
 
@@ -703,7 +703,7 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when a giveaway ended.
  * @event GiveawaysManager#giveawayEnded
  * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember[]} winners The giveaway winners
+ * @param {GuildMember[]} winners The giveaway winners
  *
  * @example
  * // This can be used to add features such as a congratulatory message in DM
@@ -718,8 +718,8 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when someone entered a giveaway.
  * @event GiveawaysManager#giveawayReactionAdded
  * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember} member The member who entered the giveaway
- * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
+ * @param {GuildMember} member The member who entered the giveaway
+ * @param {MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
  * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
@@ -736,8 +736,8 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when someone removed their reaction to a giveaway.
  * @event GiveawaysManager#giveawayReactionRemoved
  * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember} member The member who remove their reaction giveaway
- * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
+ * @param {GuildMember} member The member who remove their reaction giveaway
+ * @param {MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
  * // This can be used to add features such as a member-left-giveaway message per DM
@@ -750,8 +750,8 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when someone reacted to a ended giveaway.
  * @event GiveawaysManager#endedGiveawayReactionAdded
  * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember} member The member who reacted to the ended giveaway
- * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
+ * @param {GuildMember} member The member who reacted to the ended giveaway
+ * @param {MessageReaction} reaction The reaction to enter the giveaway
  *
  * @example
  * // This can be used to prevent new participants when giveaways get rerolled
@@ -764,7 +764,7 @@ class GiveawaysManager extends EventEmitter {
  * Emitted when a giveaway was rerolled.
  * @event GiveawaysManager#giveawayRerolled
  * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember[]} winners The winners of the giveaway
+ * @param {GuildMember[]} winners The winners of the giveaway
  *
  * @example
  * // This can be used to add features such as a congratulatory message per DM

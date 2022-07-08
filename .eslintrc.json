@@ -8,7 +8,6 @@
         "ecmaVersion": 2021
     },
     "rules": {
-        "indent": ["error", 4],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "eol-last": ["error", "always"],
