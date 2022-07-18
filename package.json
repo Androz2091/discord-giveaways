@@ -43,17 +43,17 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.3",
-    "discord.js": "^14.0.0-dev.1657239101-e78c9c9",
-    "eslint": "^8.5.0",
+    "discord.js": "^14.0.2",
+    "eslint": "^8.20.0",
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^3.6.4",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
-    "typescript": "^4.5.4"
+    "typescript": "^4.7.4"
   },
   "peerDependencies": {
-    "discord.js": ">=13.5.0"
+    "discord.js": ">=14.0.0"
   },
   "engines": {
-    "node": ">=16.6.0"
+    "node": ">=16.9.0"
   }
 }

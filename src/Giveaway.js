@@ -1,8 +1,9 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, clearTimeout } = require('node:timers');
+
+const { resolvePartialEmoji, EmbedBuilder, embedLength, ActionRowBuilder, IntentsBitField } = require('discord.js');
 const { deepmerge, deepmergeCustom } = require('deepmerge-ts');
 const serialize = require('serialize-javascript');
-const { resolvePartialEmoji, EmbedBuilder, embedLength, ActionRowBuilder, IntentsBitField } = require('discord.js');
 
 const {
     GiveawayEditOptions,
@@ -139,7 +140,7 @@ class Giveaway extends EventEmitter {
      * @readonly
      */
     get messageURL() {
-        return `https://com/channels/${this.guildId}/${this.channelId}/${this.messageId}`;
+        return `https://discord.com/channels/${this.guildId}/${this.channelId}/${this.messageId}`;
     }
 
     /**
@@ -831,7 +832,7 @@ class Giveaway extends EventEmitter {
                                 typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
                             failIfNotExists: false
                         }
-                    })
+                    });
                 }
 
                 await this.message
