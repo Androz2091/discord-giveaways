@@ -72,10 +72,10 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.isDrop
                     ? giveaway.embedColor
                     : giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
-                        ? giveaway.pauseOptions.embedColor
-                        : lastChanceEnabled
-                            ? giveaway.lastChance.embedColor
-                            : giveaway.embedColor
+                    ? giveaway.pauseOptions.embedColor
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.embedColor
+                    : giveaway.embedColor
             )
             .setFooter({
                 text:
@@ -87,10 +87,10 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.isDrop
                     ? giveaway.messages.dropMessage
                     : (giveaway.pauseOptions.isPaused
-                        ? giveaway.pauseOptions.content + '\n\n'
-                        : lastChanceEnabled
-                            ? giveaway.lastChance.content + '\n\n'
-                            : '') +
+                          ? giveaway.pauseOptions.content + '\n\n'
+                          : lastChanceEnabled
+                          ? giveaway.lastChance.content + '\n\n'
+                          : '') +
                           giveaway.messages.inviteToParticipate +
                           '\n' +
                           giveaway.messages.drawing.replace(
@@ -614,7 +614,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.d.user_id === this.client.user.id) return;
 
         const giveaway = this.giveaways.find((g) => g.messageId === packet.d.message_id);
-        if (!giveaway || giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
+        if (!giveaway || (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE')) return;
 
         const guild =
             this.client.guilds.cache.get(packet.d.guild_id) ||
@@ -629,7 +629,7 @@ class GiveawaysManager extends EventEmitter {
 
         const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
-        
+
         const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
         const reaction = message.reactions.cache.find((r) =>
             [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name)
