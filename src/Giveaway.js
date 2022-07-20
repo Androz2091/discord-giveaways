@@ -826,7 +826,7 @@ class Giveaway extends EventEmitter {
                                 typeof noWinnerMessage?.replyToGiveaway === 'boolean' ? this.messageId : undefined,
                             failIfNotExists: false
                         }
-                    })
+                    });
                 }
 
                 await this.message
