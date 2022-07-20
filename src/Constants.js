@@ -90,7 +90,7 @@ exports.GiveawayStartOptions = {};
  *
  * @param {Discord.GuildMember} member
  * @param {Giveaway} giveaway
- * @returns {Discord.Awaitable<number>}
+ * @returns {Promise<number>|number}
  */
 
 /**
