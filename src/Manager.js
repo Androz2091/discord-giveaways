@@ -1,9 +1,10 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, setInterval } = require('node:timers');
-const { writeFile, readFile, access } = require('fs/promises');
+const { writeFile, readFile, access } = require('node:fs/promises');
 const { deepmerge } = require('deepmerge-ts');
 const serialize = require('serialize-javascript');
 const Discord = require('discord.js');
+
 const {
     GiveawayMessages,
     GiveawayEditOptions,
@@ -31,13 +32,17 @@ class GiveawaysManager extends EventEmitter {
     constructor(client, options, init = true) {
         super();
         if (!client?.options) throw new Error(`Client is a required option. (val=${client})`);
-        if (!new Discord.Intents(client.options.intents).has(Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
-            throw new Error('Client is missing the "GUILD_MESSAGE_REACTIONS" intent.');
+        if (
+            !new Discord.IntentsBitField(client.options.intents).has(
+                Discord.IntentsBitField.Flags.GuildMessageReactions
+            )
+        ) {
+            throw new Error('Client is missing the "GuildMessageReactions" intent.');
         }
 
         /**
          * The Discord Client
-         * @type {Discord.Client}
+         * @type {Client}
          */
         this.client = client;
         /**
@@ -63,19 +68,19 @@ class GiveawaysManager extends EventEmitter {
      * Generate an embed displayed when a giveaway is running (with the remaining time)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
      * @param {boolean} [lastChanceEnabled=false] Whether or not to include the last chance text
-     * @returns {Discord.MessageEmbed} The generated embed
+     * @returns {Discord.EmbedBuilder} The generated embed
      */
     generateMainEmbed(giveaway, lastChanceEnabled = false) {
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.EmbedBuilder()
             .setTitle(typeof giveaway.messages.title === 'string' ? giveaway.messages.title : giveaway.prize)
             .setColor(
                 giveaway.isDrop
                     ? giveaway.embedColor
                     : giveaway.pauseOptions.isPaused && giveaway.pauseOptions.embedColor
-                        ? giveaway.pauseOptions.embedColor
-                        : lastChanceEnabled
-                            ? giveaway.lastChance.embedColor
-                            : giveaway.embedColor
+                    ? giveaway.pauseOptions.embedColor
+                    : lastChanceEnabled
+                    ? giveaway.lastChance.embedColor
+                    : giveaway.embedColor
             )
             .setFooter({
                 text:
@@ -87,10 +92,10 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.isDrop
                     ? giveaway.messages.dropMessage
                     : (giveaway.pauseOptions.isPaused
-                        ? giveaway.pauseOptions.content + '\n\n'
-                        : lastChanceEnabled
-                            ? giveaway.lastChance.content + '\n\n'
-                            : '') +
+                          ? giveaway.pauseOptions.content + '\n\n'
+                          : lastChanceEnabled
+                          ? giveaway.lastChance.content + '\n\n'
+                          : '') +
                           giveaway.messages.inviteToParticipate +
                           '\n' +
                           giveaway.messages.drawing.replace(
@@ -104,7 +109,6 @@ class GiveawaysManager extends EventEmitter {
             .setThumbnail(giveaway.thumbnail)
             .setImage(giveaway.image);
         if (giveaway.endAt !== Infinity) embed.setTimestamp(giveaway.endAt);
-        else delete embed.timestamp; // TODO: Remove, when the "null to 0" problem is (probably) redundant with @discordjs/builders in discord.js v14
         return giveaway.fillInEmbed(embed);
     }
 
@@ -112,7 +116,7 @@ class GiveawaysManager extends EventEmitter {
      * Generate an embed displayed when a giveaway is ended (with the winners list)
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
      * @param {Discord.GuildMember[]} winners The giveaway winners
-     * @returns {Discord.MessageEmbed} The generated embed
+     * @returns {Discord.EmbedBuilder} The generated embed
      */
     generateEndEmbed(giveaway, winners) {
         let formattedWinners = winners.map((w) => `${w}`).join(', ');
@@ -136,7 +140,7 @@ class GiveawaysManager extends EventEmitter {
             formattedWinners = formattedWinners.slice(0, formattedWinners.lastIndexOf(', <@')) + `, ${i} more`;
         }
 
-        return new Discord.MessageEmbed()
+        return new Discord.EmbedBuilder()
             .setTitle(strings.title)
             .setColor(giveaway.embedColorEnd)
             .setFooter({ text: strings.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
@@ -149,10 +153,10 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Generate an embed displayed when a giveaway is ended and when there is no valid participant
      * @param {Giveaway} giveaway The giveaway the embed needs to be generated for
-     * @returns {Discord.MessageEmbed} The generated embed
+     * @returns {Discord.EmbedBuilder} The generated embed
      */
     generateNoValidParticipantsEndEmbed(giveaway) {
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.EmbedBuilder()
             .setTitle(typeof giveaway.messages.title === 'string' ? giveaway.messages.title : giveaway.prize)
             .setColor(giveaway.embedColorEnd)
             .setFooter({ text: giveaway.messages.endedAt, iconURL: giveaway.messages.embedFooter.iconURL })
@@ -166,7 +170,7 @@ class GiveawaysManager extends EventEmitter {
     /**
      * Ends a giveaway. This method is automatically called when a giveaway ends.
      * @param {Discord.Snowflake} messageId The message id of the giveaway
-     * @param {string|MessageObject} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
+     * @param {?string|MessageObject} [noWinnerMessage=null] Sent in the channel if there is no valid winner for the giveaway.
      * @returns {Promise<Discord.GuildMember[]>} The winners
      *
      * @example
@@ -189,7 +193,7 @@ class GiveawaysManager extends EventEmitter {
 
     /**
      * Starts a new giveaway
-     * @param {Discord.TextChannel|Discord.NewsChannel|Discord.ThreadChannel} channel The channel in which the giveaway will be created
+     * @param {Discord.GuildTextBasedChannel} channel The channel in which the giveaway will be created
      * @param {GiveawayStartOptions} options The options for the giveaway
      * @returns {Promise<Giveaway>} The created giveaway.
      *
@@ -207,7 +211,7 @@ class GiveawaysManager extends EventEmitter {
     start(channel, options) {
         return new Promise(async (resolve, reject) => {
             if (!this.ready) return reject('The manager is not ready yet.');
-            if (!channel?.id || !channel.isText()) {
+            if (!channel?.id || !channel.isTextBased()) {
                 return reject(`channel is not a valid text based channel. (val=${channel})`);
             }
             if (channel.isThread() && !channel.sendable) {
@@ -242,7 +246,7 @@ class GiveawaysManager extends EventEmitter {
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 image: typeof options.image === 'string' ? options.image : undefined,
-                reaction: Discord.Util.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
+                reaction: Discord.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
                 exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,
@@ -537,7 +541,7 @@ class GiveawaysManager extends EventEmitter {
             // Third case: the giveaway is paused and we should check whether it should be unpaused
             if (giveaway.pauseOptions.isPaused) {
                 if (
-                    !Number.isFinite(giveaway.pauseOptions.unPauseAfter) &&
+                    !Number.isFinite(giveaway.pauseOptions.unpauseAfter) &&
                     !Number.isFinite(giveaway.pauseOptions.durationAfterPause)
                 ) {
                     giveaway.options.pauseOptions.durationAfterPause = giveaway.remainingTime;
@@ -545,8 +549,8 @@ class GiveawaysManager extends EventEmitter {
                     await this.editGiveaway(giveaway.messageId, giveaway.data);
                 }
                 if (
-                    Number.isFinite(giveaway.pauseOptions.unPauseAfter) &&
-                    Date.now() > giveaway.pauseOptions.unPauseAfter
+                    Number.isFinite(giveaway.pauseOptions.unpauseAfter) &&
+                    Date.now() > giveaway.pauseOptions.unpauseAfter
                 ) {
                     return this.unpause(giveaway.messageId).catch(() => {});
                 }
@@ -590,7 +594,7 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             const needUpdate =
-                !updatedEmbed.equals(giveaway.message.embeds[0]) ||
+                !giveaway.message.embeds[0]?.equals(updatedEmbed.toJSON()) ||
                 giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
@@ -614,7 +618,7 @@ class GiveawaysManager extends EventEmitter {
         if (packet.d.user_id === this.client.user.id) return;
 
         const giveaway = this.giveaways.find((g) => g.messageId === packet.d.message_id);
-        if (!giveaway || giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE') return;
+        if (!giveaway || (giveaway.ended && packet.t === 'MESSAGE_REACTION_REMOVE')) return;
 
         const guild =
             this.client.guilds.cache.get(packet.d.guild_id) ||
@@ -629,8 +633,8 @@ class GiveawaysManager extends EventEmitter {
 
         const message = await channel.messages.fetch(packet.d.message_id).catch(() => {});
         if (!message) return;
-        
-        const emoji = Discord.Util.resolvePartialEmoji(giveaway.reaction);
+
+        const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
         const reaction = message.reactions.cache.find((r) =>
             [r.emoji.name, r.emoji.id].filter(Boolean).includes(emoji?.id ?? emoji?.name)
         );

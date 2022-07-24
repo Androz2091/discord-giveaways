@@ -1,8 +1,7 @@
 const Discord = require('discord.js');
 
 exports.DEFAULT_CHECK_INTERVAL = 15_000;
-exports.DELETE_DROP_DATA_AFTER = 6.048e+8; // 1 week
-exports.MAX_TIME_TO_EDIT_EMBED = 30_000;
+exports.DELETE_DROP_DATA_AFTER = 6.048e8; // 1 week
 
 /**
  * The Giveaway messages that are used to display the giveaway content.
@@ -49,8 +48,8 @@ exports.GiveawayMessages = {
  * @typedef MessageObject
  *
  * @property {string} [content] The raw message
- * @property {Discord.MessageEmbed|Discord.MessageEmbedOptions} [embed] The embed
- * @property {Array<Discord.MessageActionRow|Discord.MessageActionRowOptions>} [components] The components.<br>"content" or "embed" is required to be defined.
+ * @property {Discord.JSONEncodable<Discord.APIEmbed>|Discord.APIEmbed} [embed] The embed
+ * @property {Array<Discord.JSONEncodable<Discord.APIActionRowComponent<Discord.APIActionRowComponentTypes>>|Discord.APIActionRowComponent<Discord.APIActionRowComponentTypes>>} [components] The components.<br>"content" or "embed" is required to be defined.
  * @property {boolean} [replyToGiveaway] If the sent message should reply to the giveaway embed.
  */
 
@@ -127,15 +126,15 @@ exports.LastChanceOptions = {
  *
  * @property {boolean} [isPaused=false] If the giveaway is paused.
  * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused.
- * @property {number} [unPauseAfter=null] The number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
- * @property {Discord.EmbedColorResolveAble} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
+ * @property {number} [unpauseAfter=null] The number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
+ * @property {Discord.ColorResolvable} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
  * @private @property {number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused.<br>⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
- * @property {string} [infiniteDurationText='`NEVER`'] The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unPauseAfter".
+ * @property {string} [infiniteDurationText='`NEVER`'] The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unpauseAfter".
  */
 exports.PauseOptions = {
     isPaused: false,
     content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
-    unPauseAfter: null,
+    unpauseAfter: null,
     embedColor: '#FFFF00',
     durationAfterPause: null,
     infiniteDurationText: '`NEVER`'

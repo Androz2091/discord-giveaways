@@ -1,6 +1,6 @@
 {
   "name": "discord-giveaways",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "A complete framework to facilitate the creation of giveaways using discord.js",
   "main": "index.js",
   "types": "typings/index.d.ts",
@@ -38,22 +38,22 @@
   },
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
-    "deepmerge-ts": "^4.0.3",
+    "deepmerge-ts": "^4.2.1",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
-    "@types/node": "^16.6.0",
-    "discord.js": "^13.6.0",
-    "eslint": "^8.5.0",
+    "@types/node": "^18.0.3",
+    "discord.js": "^14.0.3",
+    "eslint": "^8.20.0",
     "eslint-plugin-node": "^11.1.0",
-    "jsdoc": "^3.6.4",
+    "jsdoc": "^3.6.11",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
-    "typescript": "^4.5.4"
+    "typescript": "^4.7.4"
   },
   "peerDependencies": {
-    "discord.js": ">=13.5.0"
+    "discord.js": ">=14.0.0"
   },
   "engines": {
-    "node": ">=16.6.0"
+    "node": ">=16.9.0"
   }
 }

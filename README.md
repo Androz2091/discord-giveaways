@@ -31,16 +31,16 @@ You can read this example bot on GitHub: [discord-giveaways-bot](https://github.
 
 ### Launch of the module
 
-Required Discord Intents: `GUILDS` and `GUILD_MESSAGE_REACTIONS`.  
-Optional Discord Privileged Intent for better performance: `GUILD_MEMBERS`.
+Required Discord Intents: `Guilds` and `GuildMessageReactions`.  
+Optional Discord Privileged Intent for better performance: `GuildMembers`.
 
 ```js
 const Discord = require('discord.js');
 const client = new Discord.Client({
     intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
+        Discord.IntentsBitField.Flags.Guilds,
+        Discord.IntentsBitField.Flags.GuildMessageReactions,
+        Discord.IntentsBitField.Flags.GuildMembers // Optional, for better performance
     ]
 });
 
@@ -243,9 +243,9 @@ client.on('interactionCreate', (interaction) => {
 ```
 
 -   **options.content**: the text of the embed when the giveaway is paused. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
--   **options.unPauseAfter**: the number of milliseconds after which the giveaway will automatically unpause.
+-   **options.unpauseAfter**: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
 -   **options.embedColor**: the color of the embed when the giveaway is paused.
--   **options.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
+-   **options.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unpauseAfter`.  
     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 ⚠️ **Note**: the pause function overwrites/edits the [pauseOptions object property](https://github.com/Androz2091/discord-giveaways#pause-options) of a giveaway!
@@ -361,7 +361,7 @@ client.giveawaysManager.start(interaction.channel, {
     pauseOptions: {
         isPaused: true,
         content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
-        unPauseAfter: null,
+        unpauseAfter: null,
         embedColor: '#FFFF00',
         infiniteDurationText: '`NEVER`'
     }
@@ -371,9 +371,9 @@ client.giveawaysManager.start(interaction.channel, {
 -   **pauseOptions.isPaused**: if the giveaway is paused.
 -   **pauseOptions.content**: the text of the embed when the giveaway is paused.  
     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
--   **pauseOptions.unPauseAfter**: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
+-   **pauseOptions.unpauseAfter**: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
 -   **pauseOptions.embedColor**: the color of the embed when the giveaway is paused.
--   **pauseOptions.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unPauseAfter`.  
+-   **pauseOptions.infiniteDurationText**: The text that gets displayed next to `GiveawayMessages#drawing` in the paused embed, when there is no `unpauseAfter`.  
     ^^^ You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
 
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
@@ -415,8 +415,8 @@ The format, including all currently available options, looks like this:
 ```js
 message: {
     content: '',
-    embed: new Discord.MessageEmbed(),
-    components: [new Discord.MessageActionRow()],
+    embed: new Discord.EmbedBuilder(),
+    components: [new Discord.ActionRowBuilder()],
     replyToGiveaway: true
 }
 ```
