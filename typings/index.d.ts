@@ -16,16 +16,12 @@ import type {
     Awaitable,
     APIEmbed,
     MessageActionRowComponentBuilder,
-    GuildTextBasedChannel
-} from 'discord.js';
-
-import type { JSONEncodable } from '@discordjs/builders';
-
-import type {
+    GuildTextBasedChannel,
+    JSONEncodable,
     APIActionRowComponent,
     APIMessageActionRowComponent,
     APIModalActionRowComponent
-} from 'discord-api-types/v10';
+} from 'discord.js';
 
 export const version: string;
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
