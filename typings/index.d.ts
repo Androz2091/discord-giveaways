@@ -6,20 +6,26 @@ import type {
     EmojiIdentifierResolvable,
     GuildMember,
     Message,
-    MessageActionRow,
-    MessageActionRowOptions,
-    MessageEmbed,
-    MessageEmbedOptions,
+    ActionRowBuilder,
+    EmbedBuilder,
     MessageMentionOptions,
     MessageReaction,
-    NewsChannel,
     PermissionResolvable,
     Snowflake,
-    TextChannel,
-    ThreadChannel,
     User,
-    Awaitable
+    Awaitable,
+    APIEmbed,
+    MessageActionRowComponentBuilder,
+    GuildTextBasedChannel
 } from 'discord.js';
+
+import type { JSONEncodable } from '@discordjs/builders';
+
+import type {
+    APIActionRowComponent,
+    APIMessageActionRowComponent,
+    APIModalActionRowComponent
+} from 'discord-api-types/v10';
 
 export const version: string;
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
@@ -30,13 +36,15 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     public options: GiveawaysManagerOptions<ExtraData>;
     public ready: boolean;
 
+    public generateMainEmbed(giveaway: Giveaway<ExtraData>, lastChanceEnabled?: boolean): EmbedBuilder;
+    public generateEndEmbed(giveaway: Giveaway<ExtraData>, winners: GuildMember[]): EmbedBuilder;
+    public generateNoValidParticipantsEndEmbed(giveaway: Giveaway<ExtraData>): EmbedBuilder;
     public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway<ExtraData>>;
-    public deleteGiveaway(messageId: Snowflake): Promise<boolean>;
     public edit(messageId: Snowflake, options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
     public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
     public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
     public start(
-        channel: TextChannel | NewsChannel | ThreadChannel,
+        channel: GuildTextBasedChannel,
         options: GiveawayStartOptions<ExtraData>
     ): Promise<Giveaway<ExtraData>>;
     public pause(
@@ -44,6 +52,10 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
         options?: Omit<PauseOptions, 'isPaused' | 'durationAfterPause'>
     ): Promise<Giveaway<ExtraData>>;
     public unpause(messageId: Snowflake): Promise<Giveaway<ExtraData>>;
+    protected getAllGiveaways(): Promise<Giveaway<ExtraData>[]>;
+    protected editGiveaway(messageId: Snowflake, giveawayData: GiveawayData<ExtraData>): Promise<boolean>;
+    protected saveGiveaway(messageId: Snowflake, giveawayData: GiveawayData<ExtraData>): Promise<boolean>;
+    protected deleteGiveaway(messageId: Snowflake): Promise<boolean>;
 
     public on<K extends keyof GiveawaysManagerEvents<ExtraData>>(
         event: K,
@@ -129,8 +141,11 @@ export interface GiveawaysMessages {
 }
 export interface MessageObject {
     content?: string;
-    embed?: MessageEmbed | MessageEmbedOptions;
-    components: (MessageActionRow | MessageActionRowOptions)[];
+    embed?: JSONEncodable<APIEmbed> | APIEmbed;
+    components: (
+        | JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>>
+        | APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>
+    )[];
     replyToGiveaway?: boolean;
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
@@ -184,17 +199,21 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly pauseOptions: Required<PauseOptions>;
     readonly isDrop: boolean;
     readonly messageReaction: MessageReaction | null;
-
     private ensureEndTimeout(): void;
     private checkWinnerEntry(user: User): Promise<boolean>;
     public checkBonusEntries(user: User): Promise<number>;
     public fetchAllEntrants(): Promise<Collection<Snowflake, User>>;
     public fillInString(string: string): string;
     public fillInString(string: unknown): string | null;
-    public fillInEmbed(embed: MessageEmbed | MessageEmbedOptions): MessageEmbed;
-    public fillInEmbed(embed: unknown): MessageEmbed | null;
-    public fillInComponents(components: (MessageActionRow | MessageActionRowOptions)[]): MessageActionRow[];
-    public fillInComponents(components: unknown): MessageActionRow[] | null;
+    public fillInEmbed(embed: JSONEncodable<APIEmbed> | APIEmbed): EmbedBuilder;
+    public fillInEmbed(embed: unknown): EmbedBuilder | null;
+    public fillInComponents(
+        components: (
+            | JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>>
+            | APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>
+        )[]
+    ): ActionRowBuilder<MessageActionRowComponentBuilder>[];
+    public fillInComponents(components: unknown): ActionRowBuilder<MessageActionRowComponentBuilder>[] | null;
     public exemptMembers(member: GuildMember): Promise<boolean>;
     public fetchMessage(): Promise<Message>;
     public edit(options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;

@@ -1,9 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client({
-    intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-    ]
+    intents: [Discord.IntentsBitField.Flags.Guilds, Discord.IntentsBitField.Flags.GuildMessageReactions]
 });
 
 // Load Enmap
