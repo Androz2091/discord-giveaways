@@ -30,11 +30,10 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     public options: GiveawaysManagerOptions<ExtraData>;
     public ready: boolean;
 
-    protected generateMainEmbed(giveaway: Giveaway<ExtraData>, lastChanceEnabled?: boolean): EmbedBuilder;
-    protected generateEndEmbed(giveaway: Giveaway<ExtraData>, winners: GuildMember[]): EmbedBuilder;
-    protected generateNoValidParticipantsEndEmbed(giveaway: Giveaway<ExtraData>): EmbedBuilder;
+    public generateMainEmbed(giveaway: Giveaway<ExtraData>, lastChanceEnabled?: boolean): EmbedBuilder;
+    public generateEndEmbed(giveaway: Giveaway<ExtraData>, winners: GuildMember[]): EmbedBuilder;
+    public generateNoValidParticipantsEndEmbed(giveaway: Giveaway<ExtraData>): EmbedBuilder;
     public delete(messageId: Snowflake, doNotDeleteMessage?: boolean): Promise<Giveaway<ExtraData>>;
-    public deleteGiveaway(messageId: Snowflake): Promise<boolean>;
     public edit(messageId: Snowflake, options: GiveawayEditOptions<ExtraData>): Promise<Giveaway<ExtraData>>;
     public end(messageId: Snowflake, noWinnerMessage?: string | MessageObject): Promise<GuildMember[]>;
     public reroll(messageId: Snowflake, options?: GiveawayRerollOptions): Promise<GuildMember[]>;
@@ -50,6 +49,7 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     protected getAllGiveaways(): Promise<Giveaway<ExtraData>[]>;
     protected editGiveaway(messageId: Snowflake, giveawayData: GiveawayData<ExtraData>): Promise<boolean>;
     protected saveGiveaway(messageId: Snowflake, giveawayData: GiveawayData<ExtraData>): Promise<boolean>;
+    protected deleteGiveaway(messageId: Snowflake): Promise<boolean>;
 
     public on<K extends keyof GiveawaysManagerEvents<ExtraData>>(
         event: K,
