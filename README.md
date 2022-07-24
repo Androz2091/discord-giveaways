@@ -100,7 +100,7 @@ client.on('interactionCreate', (interaction) => {
 ```
 
 -   **options.duration**: the giveaway duration.
--   **options.prize**: the giveaway prize. You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages).
+-   **options.prize**: the giveaway prize.
 -   **options.winnerCount**: the number of giveaway winners.
 -   **[and many other optional parameters to customize the giveaway - read documentation](https://discord-giveaways.js.org/global.html#GiveawayStartOptions)**
 
@@ -449,6 +449,7 @@ You can also pass a `messages` parameter for the `start()` function, if you want
 
 -   **options.messages.giveaway**: the message that will be displayed above the embeds.
 -   **options.messages.giveawayEnded**: the message that will be displayed above the embeds when the giveaway is ended.
+-   **options.messages.title**: the title of the giveaway embed. Will default to the prize of the giveaway if the value is not a string.
 -   **options.messages.drawing**: the message that displays the drawing timestamp.
 -   **options.messages.dropMessage**: the message that will be displayed for drop giveaways.
 -   **options.messages.inviteToParticipate**: the message that invites users to participate.
@@ -475,6 +476,7 @@ client.giveawaysManager.start(interaction.channel, {
     messages: {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+        title: '{this.prize}',
         drawing: 'Drawing: {timestamp}',
         dropMessage: 'Be the first to react with 🎉 !',
         inviteToParticipate: 'React with 🎉 to participate!',
