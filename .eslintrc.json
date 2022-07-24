@@ -8,13 +8,6 @@
         "ecmaVersion": 2021
     },
     "rules": {
-        "indent": ["error", 4],
-        "quotes": ["error", "single"],
-        "semi": ["error", "always"],
-        "eol-last": ["error", "always"],
-        "comma-dangle": ["error", "never"],
-        "arrow-parens": ["error", "always"],
-        "no-trailing-spaces": ["error", { "skipBlankLines": true }],
         "prefer-const": "warn",
         "accessor-pairs": "off",
         "no-async-promise-executor": "off",
@@ -23,25 +16,29 @@
         "no-restricted-globals": [
             "error",
             {
-              "name": "Buffer",
-              "message": "Import Buffer from `node:buffer` instead"
+                "name": "Buffer",
+                "message": "Import Buffer from `node:buffer` instead"
             },
             {
-              "name": "process",
-              "message": "Import process from `node:process` instead"
+                "name": "process",
+                "message": "Import process from `node:process` instead"
             },
             {
-              "name": "setTimeout",
-              "message": "Import setTimeout from `node:timers` instead"
+                "name": "setTimeout",
+                "message": "Import setTimeout from `node:timers` instead"
             },
             {
-              "name": "setInterval",
-              "message": "Import setInterval from `node:timers` instead"
+                "name": "setInterval",
+                "message": "Import setInterval from `node:timers` instead"
             },
             {
-              "name": "setImmediate",
-              "message": "Import setImmediate from `node:timers` instead"
+                "name": "setImmediate",
+                "message": "Import setImmediate from `node:timers` instead"
+            },
+            {
+                "name": "clearTimeout",
+                "message": "Import clearTimeout from `node:timers` instead"
             }
-          ]
+        ]
     }
 }

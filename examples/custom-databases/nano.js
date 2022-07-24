@@ -1,14 +1,7 @@
-const Discord = require('discord.js'),
-    client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-        ]
-    }),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Bot Token'
-    };
+const Discord = require('discord.js');
+const client = new Discord.Client({
+    intents: [Discord.IntentsBitField.Flags.Guilds, Discord.IntentsBitField.Flags.GuildMessageReactions]
+});
 
 // Load nano
 const nano = require('nano')('http://admin:mypassword@localhost:5984');
@@ -60,19 +53,23 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 };
 
 // Create a new instance of your new class
-const manager = new GiveawayManagerWithOwnDatabase(client, {
-    default: {
-        botsCanWin: false,
-        embedColor: '#FF0000',
-        embedColorEnd: '#000000',
-        reaction: '🎉'
-    }
-}, false); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
+const manager = new GiveawayManagerWithOwnDatabase(
+    client,
+    {
+        default: {
+            botsCanWin: false,
+            embedColor: '#FF0000',
+            embedColorEnd: '#000000',
+            reaction: '🎉'
+        }
+    },
+    false
+); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log('Bot is ready!');
 });
 
-client.login(settings.token);
+client.login(process.env.DISCORD_BOT_TOKEN);

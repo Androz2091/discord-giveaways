@@ -1,14 +1,7 @@
-const Discord = require('discord.js'),
-    client = new Discord.Client({
-        intents: [
-            Discord.Intents.FLAGS.GUILDS,
-            Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-        ]
-    }),
-    settings = {
-        prefix: 'g!',
-        token: 'Your Discord Bot Token'
-    };
+const Discord = require('discord.js');
+const client = new Discord.Client({
+    intents: [Discord.IntentsBitField.Flags.Guilds, Discord.IntentsBitField.Flags.GuildMessageReactions]
+});
 
 // Load mysql
 const MySQL = require('mysql');
@@ -29,7 +22,8 @@ sql.connect((err) => {
 });
 
 // Create giveaways table
-sql.query(`
+sql.query(
+    `
 	CREATE TABLE IF NOT EXISTS \`giveaways\`
 	(
 		\`id\` INT(1) NOT NULL AUTO_INCREMENT,
@@ -37,10 +31,12 @@ sql.query(`
 		\`data\` JSON NOT NULL,
 		PRIMARY KEY (\`id\`)
 	);
-`, (err) => {
-    if (err) console.error(err);
-    console.log('[SQL] Created table `giveaways`');
-});
+`,
+    (err) => {
+        if (err) console.error(err);
+        console.log('[SQL] Created table `giveaways`');
+    }
+);
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
@@ -53,7 +49,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
                     return reject(err);
                 }
                 const giveaways = res.map((row) =>
-                    JSON.parse(row.data, (_, v) => (typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v)) ? eval(v) : v)
+                    JSON.parse(row.data, (_, v) =>
+                        typeof v === 'string' && /BigInt\("(-?\d+)"\)/.test(v) ? eval(v) : v
+                    )
                 );
                 resolve(giveaways);
             });
@@ -65,7 +63,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         return new Promise((resolve, reject) => {
             sql.query(
                 'INSERT INTO `giveaways` (`message_id`, `data`) VALUES (?,?)',
-                [messageId, JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v)],
+                [messageId, JSON.stringify(giveawayData, (_, v) => (typeof v === 'bigint' ? `BigInt("${v}")` : v))],
                 (err, res) => {
                     if (err) {
                         console.error(err);
@@ -82,7 +80,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
         return new Promise((resolve, reject) => {
             sql.query(
                 'UPDATE `giveaways` SET `data` = ? WHERE `message_id` = ?',
-                [JSON.stringify(giveawayData, (_, v) => typeof v === 'bigint' ? `BigInt("${v}")` : v), messageId],
+                [JSON.stringify(giveawayData, (_, v) => (typeof v === 'bigint' ? `BigInt("${v}")` : v)), messageId],
                 (err, res) => {
                     if (err) {
                         console.error(err);
@@ -121,7 +119,7 @@ const manager = new GiveawayManagerWithOwnDatabase(client, {
 client.giveawaysManager = manager;
 
 client.on('ready', () => {
-    console.log('I\'m ready!');
+    console.log('Bot is ready!');
 });
 
-client.login(settings.token);
+client.login(process.env.DISCORD_BOT_TOKEN);
