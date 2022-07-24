@@ -1,4 +1,4 @@
-const {resolveColor} = require('discord.js');
+const { resolveColor } = require('discord.js');
 
 exports.validateEmbedColor = (embedColor) => {
     try {
@@ -8,5 +8,3 @@ exports.validateEmbedColor = (embedColor) => {
         return false;
     }
 };
-
-
