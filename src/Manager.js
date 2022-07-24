@@ -541,7 +541,7 @@ class GiveawaysManager extends EventEmitter {
             // Third case: the giveaway is paused and we should check whether it should be unpaused
             if (giveaway.pauseOptions.isPaused) {
                 if (
-                    !Number.isFinite(giveaway.pauseOptions.unPauseAfter) &&
+                    !Number.isFinite(giveaway.pauseOptions.unpauseAfter) &&
                     !Number.isFinite(giveaway.pauseOptions.durationAfterPause)
                 ) {
                     giveaway.options.pauseOptions.durationAfterPause = giveaway.remainingTime;
@@ -549,8 +549,8 @@ class GiveawaysManager extends EventEmitter {
                     await this.editGiveaway(giveaway.messageId, giveaway.data);
                 }
                 if (
-                    Number.isFinite(giveaway.pauseOptions.unPauseAfter) &&
-                    Date.now() > giveaway.pauseOptions.unPauseAfter
+                    Number.isFinite(giveaway.pauseOptions.unpauseAfter) &&
+                    Date.now() > giveaway.pauseOptions.unpauseAfter
                 ) {
                     return this.unpause(giveaway.messageId).catch(() => {});
                 }
