@@ -116,7 +116,7 @@ export interface GiveawayStartOptions<ExtraData> {
     embedColor?: ColorResolvable;
     embedColorEnd?: ColorResolvable;
     reaction?: EmojiIdentifierResolvable;
-    messages?: GiveawaysMessages;
+    messages?: GiveawayMessages;
     thumbnail?: string;
     image?: string;
     extraData?: ExtraData;
@@ -125,7 +125,7 @@ export interface GiveawayStartOptions<ExtraData> {
     isDrop?: boolean;
     allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
 }
-export interface GiveawaysMessages {
+export interface GiveawayMessages {
     giveaway?: string;
     giveawayEnded?: string;
     title?: string;
@@ -169,7 +169,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public manager: GiveawaysManager<ExtraData>;
     public message: Message | null;
     public messageId: Snowflake;
-    public messages: Required<GiveawaysMessages>;
+    public messages: Required<GiveawayMessages>;
     public thumbnail?: string;
     public image?: string;
     public extraData?: ExtraData;
@@ -229,7 +229,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newPrize?: string;
     addTime?: number;
     setEndTimestamp?: number;
-    newMessages?: GiveawaysMessages;
+    newMessages?: GiveawayMessages;
     newThumbnail?: string;
     newImage?: string;
     newBonusEntries?: BonusEntry<ExtraData>[];
@@ -249,7 +249,7 @@ export interface GiveawayData<ExtraData = any> {
     startAt: number;
     endAt: number;
     winnerCount: number;
-    messages: Required<GiveawaysMessages>;
+    messages: Required<GiveawayMessages>;
     prize: string;
     channelId: Snowflake;
     guildId: Snowflake;

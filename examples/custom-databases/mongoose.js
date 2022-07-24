@@ -28,6 +28,7 @@ const giveawaySchema = new mongoose.Schema(
         messages: {
             giveaway: String,
             giveawayEnded: String,
+            title: String,
             inviteToParticipate: String,
             drawing: String,
             dropMessage: String,
