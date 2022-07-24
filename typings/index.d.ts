@@ -7,7 +7,6 @@ import type {
     GuildMember,
     Message,
     ActionRowBuilder,
-    MessageActionRowComponentData,
     EmbedBuilder,
     MessageMentionOptions,
     MessageReaction,
@@ -15,11 +14,18 @@ import type {
     Snowflake,
     User,
     Awaitable,
-    EmbedData,
     APIEmbed,
     MessageActionRowComponentBuilder,
     GuildTextBasedChannel
 } from 'discord.js';
+
+import type { JSONEncodable } from '@discordjs/builders';
+
+import type {
+    APIActionRowComponent,
+    APIMessageActionRowComponent,
+    APIModalActionRowComponent
+} from 'discord-api-types/v10';
 
 export const version: string;
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
@@ -135,8 +141,11 @@ export interface GiveawaysMessages {
 }
 export interface MessageObject {
     content?: string;
-    embed?: EmbedBuilder | EmbedData | APIEmbed;
-    components: (ActionRowBuilder<MessageActionRowComponentBuilder> | MessageActionRowComponentData)[];
+    embed?: JSONEncodable<APIEmbed> | APIEmbed;
+    components: (
+        | JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>>
+        | APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>
+    )[];
     replyToGiveaway?: boolean;
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
@@ -190,17 +199,19 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly pauseOptions: Required<PauseOptions>;
     readonly isDrop: boolean;
     readonly messageReaction: MessageReaction | null;
-
     private ensureEndTimeout(): void;
     private checkWinnerEntry(user: User): Promise<boolean>;
     public checkBonusEntries(user: User): Promise<number>;
     public fetchAllEntrants(): Promise<Collection<Snowflake, User>>;
     public fillInString(string: string): string;
     public fillInString(string: unknown): string | null;
-    public fillInEmbed(embed: EmbedBuilder | EmbedData | APIEmbed): EmbedBuilder;
+    public fillInEmbed(embed: JSONEncodable<APIEmbed> | APIEmbed): EmbedBuilder;
     public fillInEmbed(embed: unknown): EmbedBuilder | null;
     public fillInComponents(
-        components: (ActionRowBuilder<MessageActionRowComponentBuilder> | MessageActionRowComponentData)[]
+        components: (
+            | JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>>
+            | APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>
+        )[]
     ): ActionRowBuilder<MessageActionRowComponentBuilder>[];
     public fillInComponents(components: unknown): ActionRowBuilder<MessageActionRowComponentBuilder>[] | null;
     public exemptMembers(member: GuildMember): Promise<boolean>;

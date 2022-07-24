@@ -47,7 +47,7 @@ exports.GiveawayMessages = {
  *
  * @property {string} [content] The raw message
  * @property {Discord.JSONEncodable<Discord.APIEmbed>|Discord.APIEmbed} [embed] The embed
- * @property {Array<Discord.APIActionRowComponent|Discord.APIActionRowComponentTypes|Discord.JSONEncodable<Discord.APIActionRowComponent|Discord.APIActionRowComponentTypes>>} [components] The components.<br>"content" or "embed" is required to be defined.
+ * @property {Array<Discord.JSONEncodable<Discord.APIActionRowComponent<Discord.APIActionRowComponentTypes>>|Discord.APIActionRowComponent<Discord.APIActionRowComponentTypes>>} [components] The components.<br>"content" or "embed" is required to be defined.
  * @property {boolean} [replyToGiveaway] If the sent message should reply to the giveaway embed.
  */
 

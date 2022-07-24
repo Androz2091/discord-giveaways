@@ -372,7 +372,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Filles in a embed with giveaway properties.
-     * @param {EmbedBuilder|EmbedData|APIEmbed} embed The embed that should get filled in.
+     * @param {Discord.JSONEncodable<Discord.APIEmbed>|Discord.APIEmbed} embed The embed that should get filled in.
      * @returns {?EmbedBuilder} The filled in embed.
      */
     fillInEmbed(embed) {
@@ -398,7 +398,7 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * @param {Array<Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>|Discord.MessageActionRowComponentData>} components The components that should get filled in.
+     * @param {Array<Discord.JSONEncodable<Discord.APIActionRowComponent<Discord.APIActionRowComponentTypes>>|Discord.APIActionRowComponent<Discord.APIActionRowComponentTypes>>} components The components that should get filled in.
      * @returns {?Array<Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>>} The filled in components.
      */
     fillInComponents(components) {
