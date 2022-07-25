@@ -759,7 +759,7 @@ class Giveaway extends EventEmitter {
                         });
                     } else {
                         const firstEmbed = new Discord.EmbedBuilder(embed).setDescription(
-                            embed.data.description.slice(0, embed.data.description.indexOf('{winners}'))
+                            embed.data.description.slice(0, embed.data.description.indexOf('{winners}')) || null
                         );
                         if (Discord.embedLength(firstEmbed.data)) {
                             channel.send({
@@ -777,7 +777,7 @@ class Giveaway extends EventEmitter {
                             });
                         }
 
-                        const tempEmbed = new Discord.EmbedBuilder().setColor(embed.data.color);
+                        const tempEmbed = new Discord.EmbedBuilder().setColor(embed.data.color ?? null);
                         while (formattedWinners.length >= 4096) {
                             await channel.send({
                                 embeds: [
@@ -797,7 +797,7 @@ class Giveaway extends EventEmitter {
                         });
 
                         const lastEmbed = tempEmbed.setDescription(
-                            embed.data.description.slice(embed.data.description.indexOf('{winners}') + 9)
+                            embed.data.description.slice(embed.data.description.indexOf('{winners}') + 9) || null
                         );
                         if (Discord.embedLength(lastEmbed.data)) {
                             channel.send({ embeds: [lastEmbed], components, allowedMentions: this.allowedMentions });
@@ -948,7 +948,7 @@ class Giveaway extends EventEmitter {
                         });
                     } else {
                         const firstEmbed = new Discord.EmbedBuilder(embed).setDescription(
-                            embed.data.description.slice(0, embed.data.description.indexOf('{winners}'))
+                            embed.data.description.slice(0, embed.data.description.indexOf('{winners}')) || null
                         );
                         if (Discord.embedLength(firstEmbed.toJSON())) {
                             channel.send({
@@ -966,7 +966,7 @@ class Giveaway extends EventEmitter {
                             });
                         }
 
-                        const tempEmbed = new Discord.EmbedBuilder().setColor(embed.data.color);
+                        const tempEmbed = new Discord.EmbedBuilder().setColor(embed.data.color ?? null);
                         while (formattedWinners.length >= 4096) {
                             await channel.send({
                                 embeds: [
@@ -986,7 +986,7 @@ class Giveaway extends EventEmitter {
                         });
 
                         const lastEmbed = tempEmbed.setDescription(
-                            embed.data.description.slice(embed.data.description.indexOf('{winners}') + 9)
+                            embed.data.description.slice(embed.data.description.indexOf('{winners}') + 9) || null
                         );
                         if (Discord.embedLength(lastEmbed.toJSON())) {
                             channel.send({ embeds: [lastEmbed], components, allowedMentions: this.allowedMentions });
