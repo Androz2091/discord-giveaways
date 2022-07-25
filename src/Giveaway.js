@@ -44,7 +44,7 @@ class Giveaway extends EventEmitter {
         this.endTimeout = null;
         /**
          * The Discord client.
-         * @type {Client}
+         * @type {Discord.Client}
          */
         this.client = manager.client;
         /**
@@ -69,17 +69,17 @@ class Giveaway extends EventEmitter {
         this.ended = options.ended ?? false;
         /**
          * The Id of the channel of the giveaway.
-         * @type {Snowflake}
+         * @type {Discord.Snowflake}
          */
         this.channelId = options.channelId;
         /**
          * The Id of the message of the giveaway.
-         * @type {Snowflake}
+         * @type {Discord.Snowflake}
          */
         this.messageId = options.messageId;
         /**
          * The Id of the guild of the giveaway.
-         * @type {Snowflake}
+         * @type {Discord.Snowflake}
          */
         this.guildId = options.guildId;
         /**
@@ -119,7 +119,7 @@ class Giveaway extends EventEmitter {
         this.extraData = options.extraData;
         /**
          * Which mentions should be parsed from the giveaway messages content.
-         * @type {MessageMentionOptions}
+         * @type {Discord.MessageMentionOptions}
          */
         this.allowedMentions = options.allowedMentions;
         /**
@@ -129,7 +129,7 @@ class Giveaway extends EventEmitter {
         this.options = options;
         /**
          * The message instance of the embed of this giveaway.
-         * @type {?Message}
+         * @type {?Discord.Message}
          */
         this.message = null;
     }
@@ -163,7 +163,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The color of the giveaway embed.
-     * @type {ColorResolvable}
+     * @type {Discord.ColorResolvable}
      */
     get embedColor() {
         return this.options.embedColor ?? this.manager.options.default.embedColor;
@@ -171,7 +171,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The color of the giveaway embed when it has ended.
-     * @type {ColorResolvable}
+     * @type {Discord.ColorResolvable}
      */
     get embedColorEnd() {
         return this.options.embedColorEnd ?? this.manager.options.default.embedColorEnd;
@@ -179,7 +179,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The emoji used for the reaction on the giveaway message.
-     * @type {EmojiIdentifierResolvable}
+     * @type {Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
         if (!this.options.reaction && this.message) {
@@ -207,7 +207,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Members with any of these permissions will not be able to win a giveaway.
-     * @type {PermissionResolvable[]}
+     * @type {Discord.PermissionResolvable[]}
      */
     get exemptPermissions() {
         return this.options.exemptPermissions ?? this.manager.options.default.exemptPermissions;
@@ -261,7 +261,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * The reaction on the giveaway message.
-     * @type {?MessageReaction}
+     * @type {?Discord.MessageReaction}
      */
     get messageReaction() {
         const emoji = Discord.resolvePartialEmoji(this.reaction);
@@ -274,7 +274,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Function to filter members. If true is returned, the member won't be able to win the giveaway.
-     * @property {GuildMember} member The member to check
+     * @property {Discord.GuildMember} member The member to check
      * @returns {Promise<boolean>} Whether the member should get exempted
      */
     async exemptMembers(member) {
@@ -373,7 +373,7 @@ class Giveaway extends EventEmitter {
     /**
      * Filles in a embed with giveaway properties.
      * @param {Discord.JSONEncodable<Discord.APIEmbed>|Discord.APIEmbed} embed The embed that should get filled in.
-     * @returns {?EmbedBuilder} The filled in embed.
+     * @returns {?Discord.EmbedBuilder} The filled in embed.
      */
     fillInEmbed(embed) {
         if (!embed || typeof embed !== 'object') return null;
@@ -450,7 +450,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Fetches all users of the giveaway reaction, except bots, if not otherwise specified.
-     * @returns {Promise<Discord.Collection<Snowflake, User>>} The collection of reaction users.
+     * @returns {Promise<Discord.Collection<Discord.Snowflake, Discord.User>>} The collection of reaction users.
      */
     async fetchAllEntrants() {
         return new Promise(async (resolve, reject) => {
@@ -479,7 +479,7 @@ class Giveaway extends EventEmitter {
     /**
      * Checks if a user fulfills the requirements to win the giveaway.
      * @private
-     * @param {User} user The user to check.
+     * @param {Discord.User} user The user to check.
      * @returns {Promise<boolean>} If the entry was valid.
      */
     async checkWinnerEntry(user) {
@@ -496,7 +496,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * Checks if a user gets any additional entries for the giveaway.
-     * @param {User} user The user to check.
+     * @param {Discord.User} user The user to check.
      * @returns {Promise<number>} The highest bonus entries the user should get.
      */
     async checkBonusEntries(user) {

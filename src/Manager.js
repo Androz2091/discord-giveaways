@@ -1,9 +1,10 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, setInterval } = require('node:timers');
 const { writeFile, readFile, access } = require('node:fs/promises');
-const { deepmerge } = require('deepmerge-ts');
-const serialize = require('serialize-javascript');
+
 const Discord = require('discord.js');
+const serialize = require('serialize-javascript');
+const { deepmerge } = require('deepmerge-ts');
 
 const {
     GiveawayMessages,
