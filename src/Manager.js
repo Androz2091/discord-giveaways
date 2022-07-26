@@ -662,7 +662,7 @@ class GiveawaysManager extends EventEmitter {
      * @ignore
      */
     async _init() {
-        let rawGiveaways = await this.getAllGiveaways();
+        let rawGiveaways = await this.getAllGiveaways() || []; 
 
         await (this.client.readyAt ? Promise.resolve() : new Promise((resolve) => this.client.once('ready', resolve)));
 
