@@ -126,7 +126,7 @@ class GiveawaysManager extends EventEmitter {
             winners: giveaway.fillInString(giveaway.messages.winners),
             hostedBy: giveaway.fillInString(giveaway.messages.hostedBy),
             endedAt: giveaway.fillInString(giveaway.messages.endedAt),
-            title: giveaway.fillInString(giveaway.messages.title)
+            title: giveaway.fillInString(giveaway.messages.title) ?? giveaway.fillInString(giveaway.prize)
         };
 
         const descriptionString = (formattedWinners) =>
