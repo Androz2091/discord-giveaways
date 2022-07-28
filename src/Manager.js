@@ -19,7 +19,7 @@ const {
     DELETE_DROP_DATA_AFTER
 } = require('./Constants.js');
 const Giveaway = require('./Giveaway.js');
-const { validateEmbedColor } = require('./utils.js');
+const { validateEmbedColor, embedEqual } = require('./utils.js');
 
 /**
  * Giveaways Manager
@@ -595,7 +595,7 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.lastChance.enabled && giveaway.remainingTime < giveaway.lastChance.threshold;
             const updatedEmbed = this.generateMainEmbed(giveaway, lastChanceEnabled);
             const needUpdate =
-                !giveaway.message.embeds[0]?.equals(updatedEmbed.toJSON()) ||
+                !embedEqual(giveaway.message.embeds[0].data, updatedEmbed.data) ||
                 giveaway.message.content !== giveaway.fillInString(giveaway.messages.giveaway);
 
             if (needUpdate || this.options.forceUpdateEvery) {
