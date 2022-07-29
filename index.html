@@ -36,7 +36,7 @@
     
 
 
-    <h3>discord-giveaways 5.2.2</h3>
+    <h3>discord-giveaways 6.0.0</h3>
 
 
 
@@ -77,14 +77,14 @@
 <h2>Examples</h2>
 <p>You can read this example bot on GitHub: <a href="https://github.com/Androz2091/discord-giveaways-bot">discord-giveaways-bot</a></p>
 <h3>Launch of the module</h3>
-<p>Required Discord Intents: <code>GUILDS</code> and <code>GUILD_MESSAGE_REACTIONS</code>.<br>
-Optional Discord Privileged Intent for better performance: <code>GUILD_MEMBERS</code>.</p>
+<p>Required Discord Intents: <code>Guilds</code> and <code>GuildMessageReactions</code>.<br>
+Optional Discord Privileged Intent for better performance: <code>GuildMembers</code>.</p>
 <pre class="prettyprint source lang-js"><code>const Discord = require('discord.js');
 const client = new Discord.Client({
     intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.GUILD_MEMBERS // Optional, for better performance
+        Discord.IntentsBitField.Flags.Guilds,
+        Discord.IntentsBitField.Flags.GuildMessageReactions,
+        Discord.IntentsBitField.Flags.GuildMembers // Optional, for better performance
     ]
 });
 
@@ -141,7 +141,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 </code></pre>
 <ul>
 <li><strong>options.duration</strong>: the giveaway duration.</li>
-<li><strong>options.prize</strong>: the giveaway prize. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
+<li><strong>options.prize</strong>: the giveaway prize.</li>
 <li><strong>options.winnerCount</strong>: the number of giveaway winners.</li>
 <li><strong><a href="https://discord-giveaways.js.org/global.html#GiveawayStartOptions">and many other optional parameters to customize the giveaway - read documentation</a></strong></li>
 </ul>
@@ -265,9 +265,9 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 </code></pre>
 <ul>
 <li><strong>options.content</strong>: the text of the embed when the giveaway is paused. You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
-<li><strong>options.unPauseAfter</strong>: the number of milliseconds after which the giveaway will automatically unpause.</li>
+<li><strong>options.unpauseAfter</strong>: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.</li>
 <li><strong>options.embedColor</strong>: the color of the embed when the giveaway is paused.</li>
-<li><strong>options.infiniteDurationText</strong>: The text that gets displayed next to <code>GiveawayMessages#drawing</code> in the paused embed, when there is no <code>unPauseAfter</code>.<br>
+<li><strong>options.infiniteDurationText</strong>: The text that gets displayed next to <code>GiveawayMessages#drawing</code> in the paused embed, when there is no <code>unpauseAfter</code>.<br>
 ^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 </ul>
 <p>⚠️ <strong>Note</strong>: the pause function overwrites/edits the <a href="https://github.com/Androz2091/discord-giveaways#pause-options">pauseOptions object property</a> of a giveaway!</p>
@@ -364,7 +364,7 @@ But if you really want to do it in this way and need more information/help, plea
     pauseOptions: {
         isPaused: true,
         content: '⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️',
-        unPauseAfter: null,
+        unpauseAfter: null,
         embedColor: '#FFFF00',
         infiniteDurationText: '`NEVER`'
     }
@@ -374,9 +374,9 @@ But if you really want to do it in this way and need more information/help, plea
 <li><strong>pauseOptions.isPaused</strong>: if the giveaway is paused.</li>
 <li><strong>pauseOptions.content</strong>: the text of the embed when the giveaway is paused.<br>
 ^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
-<li><strong>pauseOptions.unPauseAfter</strong>: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.</li>
+<li><strong>pauseOptions.unpauseAfter</strong>: the number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.</li>
 <li><strong>pauseOptions.embedColor</strong>: the color of the embed when the giveaway is paused.</li>
-<li><strong>pauseOptions.infiniteDurationText</strong>: The text that gets displayed next to <code>GiveawayMessages#drawing</code> in the paused embed, when there is no <code>unPauseAfter</code>.<br>
+<li><strong>pauseOptions.infiniteDurationText</strong>: The text that gets displayed next to <code>GiveawayMessages#drawing</code> in the paused embed, when there is no <code>unpauseAfter</code>.<br>
 ^^^ You can <a href="https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages">access giveaway properties</a>.</li>
 </ul>
 <a href="https://zupimages.net/viewer.php?id=21/24/dxhk.png">
@@ -409,8 +409,8 @@ Look at the <a href="https://github.com/Androz2091/discord-giveaways#exempt-memb
 <p>The format, including all currently available options, looks like this:</p>
 <pre class="prettyprint source lang-js"><code>message: {
     content: '',
-    embed: new Discord.MessageEmbed(),
-    components: [new Discord.MessageActionRow()],
+    embed: new Discord.EmbedBuilder(),
+    components: [new Discord.ActionRowBuilder()],
     replyToGiveaway: true
 }
 </code></pre>
@@ -432,6 +432,7 @@ For example:</p>
 <ul>
 <li><strong>options.messages.giveaway</strong>: the message that will be displayed above the embeds.</li>
 <li><strong>options.messages.giveawayEnded</strong>: the message that will be displayed above the embeds when the giveaway is ended.</li>
+<li><strong>options.messages.title</strong>: the title of the giveaway embed. Will default to the prize of the giveaway if the value is not a string.</li>
 <li><strong>options.messages.drawing</strong>: the message that displays the drawing timestamp.</li>
 <li><strong>options.messages.dropMessage</strong>: the message that will be displayed for drop giveaways.</li>
 <li><strong>options.messages.inviteToParticipate</strong>: the message that invites users to participate.</li>
@@ -456,6 +457,7 @@ client.giveawaysManager.start(interaction.channel, {
     messages: {
         giveaway: '🎉🎉 **GIVEAWAY** 🎉🎉',
         giveawayEnded: '🎉🎉 **GIVEAWAY ENDED** 🎉🎉',
+        title: '{this.prize}',
         drawing: 'Drawing: {timestamp}',
         dropMessage: 'Be the first to react with 🎉 !',
         inviteToParticipate: 'React with 🎉 to participate!',

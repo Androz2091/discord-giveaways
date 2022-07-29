@@ -2156,6 +2156,43 @@
 
             <tr>
                 
+                    <td class="name"><code>title</code></td>
+                
+
+                <td class="type">
+                
+                    
+<span class="param-type">string</span>
+
+
+                
+                </td>
+
+                
+                    <td class="attributes">
+                    
+                        &lt;optional><br>
+                    
+
+                    
+                    </td>
+                
+
+                
+                    <td class="default">
+                    
+                        '{this.prize}'
+                    
+                    </td>
+                
+
+                <td class="description last"><p>The title of the giveaway embed.<br>Will default to the prize of the giveaway if the value is not a string.</p></td>
+            </tr>
+
+        
+
+            <tr>
+                
                     <td class="name"><code>inviteToParticipate</code></td>
                 
 
@@ -4369,10 +4406,10 @@
                 <td class="type">
                 
                     
-<span class="param-type">Discord.MessageEmbed</span>
+<span class="param-type">Discord.JSONEncodable.&lt;Discord.APIEmbed></span>
 |
 
-<span class="param-type">Discord.MessageEmbedOptions</span>
+<span class="param-type">Discord.APIEmbed</span>
 
 
                 
@@ -4403,7 +4440,7 @@
                 <td class="type">
                 
                     
-<span class="param-type">Array.&lt;(Discord.MessageActionRow|Discord.MessageActionRowOptions)></span>
+<span class="param-type">Array.&lt;(Discord.JSONEncodable.&lt;Discord.APIActionRowComponent.&lt;Discord.APIActionRowComponentTypes>>|Discord.APIActionRowComponent.&lt;Discord.APIActionRowComponentTypes>)></span>
 
 
                 
@@ -4625,7 +4662,7 @@
 
             <tr>
                 
-                    <td class="name"><code>unPauseAfter</code></td>
+                    <td class="name"><code>unpauseAfter</code></td>
                 
 
                 <td class="type">
@@ -4668,7 +4705,7 @@
                 <td class="type">
                 
                     
-<span class="param-type">Discord.EmbedColorResolveAble</span>
+<span class="param-type">Discord.ColorResolvable</span>
 
 
                 
@@ -4729,7 +4766,7 @@
                     </td>
                 
 
-                <td class="description last"><p>The text that gets displayed next to &quot;GiveawayMessages#drawing&quot; in the paused embed, when there is no &quot;unPauseAfter&quot;.</p></td>
+                <td class="description last"><p>The text that gets displayed next to &quot;GiveawayMessages#drawing&quot; in the paused embed, when there is no &quot;unpauseAfter&quot;.</p></td>
             </tr>
 
         
