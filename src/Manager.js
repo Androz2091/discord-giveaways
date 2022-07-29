@@ -43,7 +43,7 @@ class GiveawaysManager extends EventEmitter {
 
         /**
          * The Discord Client
-         * @type {Client}
+         * @type {Discord.Client}
          */
         this.client = client;
         /**
