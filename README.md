@@ -335,7 +335,7 @@ client.giveawaysManager.start(interaction.channel, {
     lastChance: {
         enabled: true,
         content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-        threshold: 5000,
+        threshold: 10_000,
         embedColor: '#FF0000'
     }
 });
