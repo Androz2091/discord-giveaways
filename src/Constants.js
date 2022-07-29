@@ -116,7 +116,7 @@ exports.BonusEntry = {};
 exports.LastChanceOptions = {
     enabled: false,
     content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-    threshold: 5000,
+    threshold: 10_000,
     embedColor: '#FF0000'
 };
 
