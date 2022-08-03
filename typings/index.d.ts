@@ -139,7 +139,7 @@ export interface GiveawayMessages {
 export interface MessageObject {
     content?: string;
     embed?: JSONEncodable<APIEmbed> | APIEmbed;
-    components: (
+    components?: (
         | JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>>
         | APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>
     )[];
