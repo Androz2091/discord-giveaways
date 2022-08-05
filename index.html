@@ -36,7 +36,7 @@
     
 
 
-    <h3>discord-giveaways 6.0.0</h3>
+    <h3>discord-giveaways 6.0.1</h3>
 
 
 
@@ -118,7 +118,7 @@ You can pass an options object to customize the giveaways. Here is a list of the
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
     const ms = require('ms');
 
-    if (interaction.isCommand() && interaction.commandName === 'start') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'start') {
         // /start 2d 1 Awesome prize!
         // Will create a giveaway with a duration of two days, with one winner and the prize will be &quot;Awesome prize!&quot;
 
@@ -163,7 +163,7 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 </code></pre>
 <h3>Reroll a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
-    if (interaction.isCommand() && interaction.commandName === 'reroll') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'reroll') {
         const messageId = interaction.options.getString('message_id');
         client.giveawaysManager
             .reroll(messageId)
@@ -186,7 +186,7 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 </a>
 <h3>Edit a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
-    if (interaction.isCommand() && interaction.commandName === 'edit') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'edit') {
         const messageId = interaction.options.getString('message_id');
         client.giveawaysManager
             .edit(messageId, {
@@ -213,7 +213,7 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 <p><strong>Note</strong>: to reduce giveaway duration, define <code>addTime</code> with a negative number! For example <code>addTime: -5000</code> will reduce giveaway duration by 5 seconds!</p>
 <h3>Delete a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
-    if (interaction.isCommand() && interaction.commandName === 'delete') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'delete') {
         const messageId = interaction.options.getString('message_id');
         client.giveawaysManager
             .delete(messageId)
@@ -232,7 +232,7 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 <p>⚠️ <strong>Note</strong>: when you use the delete function, the giveaway data and the message of the giveaway are deleted (by default). You cannot restore a giveaway once you have deleted it!</p>
 <h3>End a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
-    if (interaction.isCommand() && interaction.commandName === 'end') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'end') {
         const messageId = interaction.options.getString('message_id');
         client.giveawaysManager
             .end(messageId)
@@ -250,7 +250,7 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 </ul>
 <h3>Pause a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
-    if (interaction.isCommand() && interaction.commandName === 'pause') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'pause') {
         const messageId = interaction.options.getString('message_id');
         client.giveawaysManager
             .pause(messageId)
@@ -273,7 +273,7 @@ if (!giveaway) return interaction.reply(`Unable to find a giveaway for \`${query
 <p>⚠️ <strong>Note</strong>: the pause function overwrites/edits the <a href="https://github.com/Androz2091/discord-giveaways#pause-options">pauseOptions object property</a> of a giveaway!</p>
 <h3>Unpause a giveaway</h3>
 <pre class="prettyprint source lang-js"><code>client.on('interactionCreate', (interaction) => {
-    if (interaction.isCommand() && interaction.commandName === 'unpause') {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'unpause') {
         const messageId = interaction.options.getString('message_id');
         client.giveawaysManager
             .unpause(messageId)
@@ -341,7 +341,7 @@ But if you really want to do it in this way and need more information/help, plea
     lastChance: {
         enabled: true,
         content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
-        threshold: 5000,
+        threshold: 10_000,
         embedColor: '#FF0000'
     }
 });
