@@ -15,7 +15,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     // This function is called when the manager needs to get all giveaways which are stored in the database.
     async getAllGiveaways() {
         // Get all giveaways from the database
-        return await giveawayDB.all();
+        return (await giveawayDB.all()).map((element) => element.data);
     }
 
     // This function is called when a giveaway needs to be saved in the database.
