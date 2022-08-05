@@ -672,7 +672,10 @@ class Giveaway extends EventEmitter {
             });
             if (!this.message) return;
 
-            if (this.isDrop || this.endAt < this.client.readyTimestamp) this.endAt = Date.now();
+            if (this.endAt < this.client.readyTimestamp || this.isDrop || this.options.pauseOptions?.isPaused) {
+                this.endAt = Date.now();
+            }
+            if (this.options.pauseOptions?.isPaused) this.options.pauseOptions.isPaused = false;
             await this.manager.editGiveaway(this.messageId, this.data);
             const winners = await this.roll();
 
