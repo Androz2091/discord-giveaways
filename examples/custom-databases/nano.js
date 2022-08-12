@@ -11,7 +11,7 @@ let giveawayDB;
 (async () => {
     if (!(await nano.db.list()).includes('giveaways')) await nano.db.create('giveaways');
     giveawayDB = nano.use('giveaways');
-    // Start the manager only after the DB got checked to prevent an error
+    // Start the manager only after the DB got checked
     client.giveawaysManager._init();
 })();
 
@@ -25,7 +25,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageId, giveawayData) {
-        // Add the new giveaway to the database
+        // Add the new giveaway data to the database
         await giveawayDB.insert(giveawayData, messageId);
         // Don't forget to return something!
         return true;
@@ -33,7 +33,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be edited in the database.
     async editGiveaway(messageId, giveawayData) {
-        // Get the unedited giveaway from the database
+        // Get the old giveaway data from the database
         const giveaway = await giveawayDB.get(messageId);
         // Edit the giveaway
         await giveawayDB.insert({ ...giveaway, ...giveawayData });
@@ -43,9 +43,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be deleted from the database.
     async deleteGiveaway(messageId) {
-        // Get the giveaway from the database
+        // Get the giveaway data from the database
         const giveaway = await giveawayDB.get(messageId);
-        // Remove the giveaway from the database
+        // Remove the giveaway data from the database
         await giveawayDB.destroy(messageId, giveaway._rev);
         // Don't forget to return something!
         return true;
@@ -63,8 +63,8 @@ const manager = new GiveawayManagerWithOwnDatabase(
             reaction: '🎉'
         }
     },
-    false
-); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
+    false // ATTENTION: Add "false" in order to not start the manager until the DB got checked
+);
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 

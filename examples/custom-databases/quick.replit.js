@@ -10,7 +10,7 @@ const db = new Database();
 // Check the DB when it is ready
 db.once('ready', async () => {
     if (!Array.isArray(await db.get('giveaways'))) await db.set('giveaways', []);
-    // Start the manager only after the DB got checked to prevent an error
+    // Start the manager only after the DB got checked
     client.giveawaysManager._init();
 });
 
@@ -24,7 +24,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
 
     // This function is called when a giveaway needs to be saved in the database.
     async saveGiveaway(messageId, giveawayData) {
-        // Add the new giveaway to the database
+        // Add the new giveaway data to the database
         await db.push('giveaways', giveawayData);
         // Don't forget to return something!
         return true;
@@ -34,9 +34,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     async editGiveaway(messageId, giveawayData) {
         // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
-        // Remove the unedited giveaway from the array
+        // Remove the old giveaway data from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageId !== messageId);
-        // Push the edited giveaway into the array
+        // Push the new giveaway into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
@@ -48,7 +48,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     async deleteGiveaway(messageId) {
         // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
-        // Remove the giveaway from the array
+        // Remove the giveaway data from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageId !== messageId);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
@@ -68,8 +68,8 @@ const manager = new GiveawayManagerWithOwnDatabase(
             reaction: '🎉'
         }
     },
-    false
-); // ATTENTION: Add "false" in order to not start the manager until the DB got checked, see below
+    false // ATTENTION: Add "false" in order to not start the manager until the DB got checked
+);
 // We now have a giveawaysManager property to access the manager everywhere!
 client.giveawaysManager = manager;
 

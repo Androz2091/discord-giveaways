@@ -22,7 +22,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     async saveGiveaway(messageId, giveawayData) {
         // Get all giveaways from the database
         const giveawaysArray = await db.get('giveaways');
-        // Push the new giveaway into the array
+        // Push the new giveaway data into the array
         giveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', giveawaysArray);
@@ -34,9 +34,9 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     async editGiveaway(messageId, giveawayData) {
         // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
-        // Remove the unedited giveaway from the array
+        // Remove the old giveaway data from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageId !== messageId);
-        // Push the edited giveaway into the array
+        // Push the new giveaway data into the array
         newGiveawaysArray.push(giveawayData);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
@@ -48,7 +48,7 @@ const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
     async deleteGiveaway(messageId) {
         // Get all giveaways from the database
         const giveaways = await db.get('giveaways');
-        // Remove the giveaway from the array
+        // Remove the giveaway data from the array
         const newGiveawaysArray = giveaways.filter((giveaway) => giveaway.messageId !== messageId);
         // Save the updated array
         await db.set('giveaways', newGiveawaysArray);
