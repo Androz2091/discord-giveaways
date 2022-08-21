@@ -338,7 +338,6 @@ class Giveaway extends EventEmitter {
     /**
      * Ensure that an end timeout is created for this giveaway, in case it will end soon
      * @private
-     * @returns {NodeJS.Timeout}
      */
     ensureEndTimeout() {
         if (this.endTimeout) return;
