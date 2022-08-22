@@ -377,7 +377,7 @@ class Giveaway extends EventEmitter {
      */
     fillInEmbed(embed) {
         if (!embed || typeof embed !== 'object') return null;
-        embed = Discord.EmbedBuilder.from(embed);
+        embed = Discord.EmbedBuilder.from(embed.data);
         embed.setTitle(this.fillInString(embed.data.title));
         embed.setDescription(this.fillInString(embed.data.description));
         if (typeof embed.data.author?.name === 'string')
