@@ -229,6 +229,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.Snowflake} guildId The Id of the guild.
  * @property {Discord.Snowflake[]} [winnerIds] The winner Ids of the giveaway after it ended.
  * @property {Discord.Snowflake} messageId The Id of the message.
+ * @property {Discord.Snowflake} endMessageId The Id of the message of ended giveaway.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
  * @property {boolean} [botsCanWin] If bots can win the giveaway.
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.

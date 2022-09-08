@@ -78,6 +78,11 @@ class Giveaway extends EventEmitter {
          */
         this.messageId = options.messageId;
         /**
+         * The Id of the message of ended giveaway.
+         * @type {Discord.Snowflake}
+         */
+        this.endMessageId = null;
+        /**
          * The Id of the guild of the giveaway.
          * @type {Discord.Snowflake}
          */
@@ -302,6 +307,7 @@ class Giveaway extends EventEmitter {
     get data() {
         return {
             messageId: this.messageId,
+            endMessageId: this.endMessageId,
             channelId: this.channelId,
             guildId: this.guildId,
             startAt: this.startAt,
@@ -686,7 +692,6 @@ class Giveaway extends EventEmitter {
 
             if (winners.length > 0) {
                 this.winnerIds = winners.map((w) => w.id);
-                await this.manager.editGiveaway(this.messageId, this.data);
                 const embed = this.manager.generateEndEmbed(this, winners);
                 await this.message
                     .edit({
@@ -704,7 +709,7 @@ class Giveaway extends EventEmitter {
                 if (message?.length > 2000) {
                     const firstContentPart = winMessage.slice(0, winMessage.indexOf('{winners}'));
                     if (firstContentPart.length) {
-                        channel.send({
+                        const endMessage = await channel.send({
                             content: firstContentPart,
                             allowedMentions: this.allowedMentions,
                             reply: {
@@ -715,6 +720,7 @@ class Giveaway extends EventEmitter {
                                 failIfNotExists: false
                             }
                         });
+                        this.endMessageId = endMessage.id;
                     }
                     while (formattedWinners.length >= 2000) {
                         await channel.send({
@@ -746,7 +752,7 @@ class Giveaway extends EventEmitter {
                     const embedDescription = embed.data.description?.replace('{winners}', formattedWinners) ?? '';
 
                     if (embedDescription.length <= 4096) {
-                        channel.send({
+                        const endMessage = await channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
                             components,
@@ -760,12 +766,13 @@ class Giveaway extends EventEmitter {
                                 failIfNotExists: false
                             }
                         });
+                        this.endMessageId = endMessage.id;
                     } else {
                         const firstEmbed = new Discord.EmbedBuilder(embed).setDescription(
                             embed.data.description.slice(0, embed.data.description.indexOf('{winners}')) || null
                         );
                         if (Discord.embedLength(firstEmbed.data)) {
-                            channel.send({
+                            const endMessage = await channel.send({
                                 content: message?.length <= 2000 ? message : null,
                                 embeds: [firstEmbed],
                                 allowedMentions: this.allowedMentions,
@@ -778,6 +785,7 @@ class Giveaway extends EventEmitter {
                                     failIfNotExists: false
                                 }
                             });
+                            this.endMessageId = endMessage.id;
                         }
 
                         const tempEmbed = new Discord.EmbedBuilder().setColor(embed.data.color ?? null);
@@ -807,7 +815,7 @@ class Giveaway extends EventEmitter {
                         }
                     }
                 } else if (message?.length <= 2000) {
-                    channel.send({
+                    const endMessage = await channel.send({
                         content: message,
                         components,
                         allowedMentions: this.allowedMentions,
@@ -819,13 +827,16 @@ class Giveaway extends EventEmitter {
                             failIfNotExists: false
                         }
                     });
+                    this.endMessageId = endMessage.id;
                 }
+
+                await this.manager.editGiveaway(this.messageId, this.data);
                 resolve(winners);
             } else {
                 const message = this.fillInString(noWinnerMessage?.content || noWinnerMessage);
                 const embed = this.fillInEmbed(noWinnerMessage?.embed);
                 if (message || embed) {
-                    channel.send({
+                    const endMessage = await channel.send({
                         content: message,
                         embeds: embed ? [embed] : null,
                         components: this.fillInComponents(noWinnerMessage?.components),
@@ -836,6 +847,7 @@ class Giveaway extends EventEmitter {
                             failIfNotExists: false
                         }
                     });
+                    this.endMessageId = endMessage.id;
                 }
 
                 await this.message
@@ -893,7 +905,7 @@ class Giveaway extends EventEmitter {
                 if (message?.length > 2000) {
                     const firstContentPart = congratMessage.slice(0, congratMessage.indexOf('{winners}'));
                     if (firstContentPart.length) {
-                        channel.send({
+                        const endMessage = await channel.send({
                             content: firstContentPart,
                             allowedMentions: this.allowedMentions,
                             reply: {
@@ -904,6 +916,7 @@ class Giveaway extends EventEmitter {
                                 failIfNotExists: false
                             }
                         });
+                        this.endMessageId = endMessage.id;
                     }
 
                     while (formattedWinners.length >= 2000) {
@@ -935,7 +948,7 @@ class Giveaway extends EventEmitter {
                     const embed = this.fillInEmbed(options.messages.congrat.embed);
                     const embedDescription = embed.data.description?.replace('{winners}', formattedWinners) ?? '';
                     if (embedDescription.length <= 4096) {
-                        channel.send({
+                        const endMessage = await channel.send({
                             content: message?.length <= 2000 ? message : null,
                             embeds: [embed.setDescription(embedDescription)],
                             components,
@@ -949,12 +962,13 @@ class Giveaway extends EventEmitter {
                                 failIfNotExists: false
                             }
                         });
+                        this.endMessageId = endMessage.id;
                     } else {
                         const firstEmbed = new Discord.EmbedBuilder(embed).setDescription(
                             embed.data.description.slice(0, embed.data.description.indexOf('{winners}')) || null
                         );
                         if (Discord.embedLength(firstEmbed.toJSON())) {
-                            channel.send({
+                            const endMessage = await channel.send({
                                 content: message?.length <= 2000 ? message : null,
                                 embeds: [firstEmbed],
                                 allowedMentions: this.allowedMentions,
@@ -967,6 +981,7 @@ class Giveaway extends EventEmitter {
                                     failIfNotExists: false
                                 }
                             });
+                            this.endMessageId = endMessage.id;
                         }
 
                         const tempEmbed = new Discord.EmbedBuilder().setColor(embed.data.color ?? null);
@@ -996,7 +1011,7 @@ class Giveaway extends EventEmitter {
                         }
                     }
                 } else if (message?.length <= 2000) {
-                    channel.send({
+                    const endMessage = await channel.send({
                         content: message,
                         components,
                         allowedMentions: this.allowedMentions,
@@ -1008,12 +1023,13 @@ class Giveaway extends EventEmitter {
                             failIfNotExists: false
                         }
                     });
+                    this.endMessageId = endMessage.id;
                 }
                 resolve(winners);
             } else {
                 if (options.messages.replyWhenNoWinner !== false) {
                     const embed = this.fillInEmbed(options.messages.error.embed);
-                    channel.send({
+                    const endMessage = channel.send({
                         content: this.fillInString(options.messages.error.content || options.messages.error),
                         embeds: embed ? [embed] : null,
                         components: this.fillInComponents(options.messages.error.components),
@@ -1026,6 +1042,7 @@ class Giveaway extends EventEmitter {
                             failIfNotExists: false
                         }
                     });
+                    this.endMessageId = endMessage.id;
                 }
                 resolve([]);
             }

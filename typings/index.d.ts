@@ -252,6 +252,7 @@ export interface GiveawayData<ExtraData = any> {
     ended: boolean;
     winnerIds?: Snowflake[];
     messageId: Snowflake;
+    endMessageId: Snowflake;
     reaction?: EmojiIdentifierResolvable;
     exemptPermissions?: PermissionResolvable[];
     exemptMembers?: string;
