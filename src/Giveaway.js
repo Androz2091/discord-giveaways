@@ -132,6 +132,11 @@ class Giveaway extends EventEmitter {
          * @type {?Discord.Message}
          */
         this.message = null;
+        /**
+         * The Entries amount of how many entered the Giveaway (Amount will be valid, once rolled (ended)!)
+         * @type {number}
+         */
+        this.entriesAmount = 0;
     }
 
     /**
@@ -550,6 +555,8 @@ class Giveaway extends EventEmitter {
         const users = await this.fetchAllEntrants().catch(() => {});
         if (!users?.size) return [];
 
+        this.entriesAmount = users.size;
+        
         // Bonus Entries
         let userArray;
         if (!this.isDrop && this.bonusEntries.length) {
