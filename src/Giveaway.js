@@ -122,6 +122,8 @@ class Giveaway extends EventEmitter {
          * @type {Discord.MessageMentionOptions}
          */
         this.allowedMentions = options.allowedMentions;
+        this.buttons = options.buttons ?? null;
+        this.entrantIds = options.entrantIds ?? this.buttons ? [] : null;
         /**
          * The giveaway data.
          * @type {GiveawayData}
@@ -179,9 +181,11 @@ class Giveaway extends EventEmitter {
 
     /**
      * The emoji used for the reaction on the giveaway message.
-     * @type {Discord.EmojiIdentifierResolvable}
+     * @type {?Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
+        if (this.buttons) return null;
+
         if (!this.options.reaction && this.message) {
             const emoji = Discord.resolvePartialEmoji(this.manager.options.default.reaction);
             if (!this.message.reactions.cache.has(emoji.id ?? emoji.name)) {
@@ -239,7 +243,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * If the giveaway is a drop, or not.
-     * Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
+     * Drop means that if the amount of valid entrantIds to the giveaway is the same as "winnerCount" then it immediately ends.
      * @type {boolean}
      */
     get isDrop() {
@@ -264,6 +268,8 @@ class Giveaway extends EventEmitter {
      * @type {?Discord.MessageReaction}
      */
     get messageReaction() {
+        if (this.buttons) return null;
+
         const emoji = Discord.resolvePartialEmoji(this.reaction);
         return (
             this.message?.reactions.cache.find((r) =>
@@ -296,7 +302,7 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * The raw giveaway object for this giveaway.
+     * The raw giveaway object for this giveaway. This is what is stored in the database.
      * @type {GiveawayData}
      */
     get data() {
@@ -326,12 +332,14 @@ class Giveaway extends EventEmitter {
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
+            buttons: this.options.buttons.join ? this.options.buttons : undefined,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions,
             isDrop: this.options.isDrop || undefined,
-            allowedMentions: this.allowedMentions
+            allowedMentions: this.allowedMentions,
+            entrantIds: this.entrantIds ?? undefined
         };
     }
 
@@ -448,11 +456,21 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * Fetches all users of the giveaway reaction, except bots, if not otherwise specified.
+     * Fetches all valid users which entered the giveaway
      * @returns {Promise<Discord.Collection<Discord.Snowflake, Discord.User>>} The collection of reaction users.
      */
     async fetchAllEntrants() {
         return new Promise(async (resolve, reject) => {
+            if (this.entrantIds) {
+                const users = await Promise.all(
+                    this.entrantIds.map(async (id) => {
+                        const user = await this.client.users.fetch(id).catch(() => {});
+                        return [id, user];
+                    })
+                );
+                return resolve(new Discord.Collection(users));
+            }
+
             const message = await this.fetchMessage().catch((err) => reject(err));
             if (!message) return;
             this.message = message;

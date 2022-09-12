@@ -167,6 +167,7 @@ exports.GiveawaysManagerOptions = {
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉',
+        buttons: { join: null, leave: null },
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
