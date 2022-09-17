@@ -6,9 +6,13 @@ const client = new Discord.Client({
 // Load quickmongo
 const { Database } = require('quickmongo');
 const giveawayDB = new Database('mongodb://localhost/database', { collectionName: 'giveaways' });
+giveawayDB.connect();
 
 // Start the manager only after the DB turned ready
-giveawayDB.once('ready', () => client.giveawaysManager._init());
+giveawayDB.once('ready', () => {
+    console.log('Connected to the database');
+    client.giveawaysManager._init();
+});
 
 const { GiveawaysManager } = require('discord-giveaways');
 const GiveawayManagerWithOwnDatabase = class extends GiveawaysManager {
