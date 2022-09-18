@@ -252,9 +252,7 @@ class GiveawaysManager extends EventEmitter {
                 image: typeof options.image === 'string' ? options.image : undefined,
                 reaction: Discord.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
                 buttons:
-                    !Discord.resolvePartialEmoji(this.options.defaults.reaction) &&
-                    !Discord.resolvePartialEmoji(options.reaction) &&
-                    options.buttons?.join
+                    !Discord.resolvePartialEmoji(options.reaction) && options.buttons?.join
                         ? deepmerge(this.options.buttons ?? {}, options.buttons)
                         : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
@@ -288,11 +286,9 @@ class GiveawaysManager extends EventEmitter {
                 embeds: [embed],
                 allowedMentions: giveaway.allowedMentions,
                 components: giveaway.buttons
-                    ? [
-                          new Discord.ActionRowBuilder().addComponents(
-                              giveaway.fillInComponents([giveaway.buttons.join, giveaway.buttons.leave])
-                          )
-                      ]
+                    ? giveaway.fillInComponents([
+                          { components: [giveaway.buttons.join, giveaway.buttons.leave].filter(Boolean) }
+                      ])
                     : undefined
             });
             giveaway.messageId = message.id;
