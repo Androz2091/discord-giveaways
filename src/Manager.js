@@ -642,7 +642,7 @@ class GiveawaysManager extends EventEmitter {
             }
         };
 
-        this.client.on('messageReactionAdd', async (messageReaction, user) => {
+        this.client.on(Discord.Events.MessageReactionAdd, async (messageReaction, user) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageReaction.message.id);
             if (!giveaway) return;
             if (!messageReaction.message.guild?.available) return;
@@ -657,7 +657,7 @@ class GiveawaysManager extends EventEmitter {
             if (giveaway.isDrop && messageReaction.count - 1 >= giveaway.winnerCount) await checkForDropEnd(giveaway);
         });
 
-        this.client.on('messageReactionRemove', async (messageReaction, user) => {
+        this.client.on(Discord.Events.MessageReactionRemove, async (messageReaction, user) => {
             const giveaway = this.giveaways.find((g) => g.messageId === messageReaction.message.id);
             if (!giveaway) return;
             if (!messageReaction.message.guild?.available) return;
@@ -669,7 +669,7 @@ class GiveawaysManager extends EventEmitter {
             this.emit('giveawayReactionAdded', giveaway, member, messageReaction);
         });
 
-        this.client.on('interactionCreated', async (interaction) => {
+        this.client.on(Discord.Events.InteractionCreate, async (interaction) => {
             if (!interaction.isButton()) return;
             const giveaway = this.giveaways.find((g) => g.messageId === interaction.message.id);
             if (!giveaway) return;
@@ -693,7 +693,9 @@ class GiveawaysManager extends EventEmitter {
     async _init() {
         let rawGiveaways = await this.getAllGiveaways();
 
-        await (this.client.readyAt ? Promise.resolve() : new Promise((resolve) => this.client.once('ready', resolve)));
+        await (this.client.readyAt
+            ? Promise.resolve()
+            : new Promise((resolve) => this.client.once(Discord.Events.ClientReady, resolve)));
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
