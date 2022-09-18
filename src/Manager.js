@@ -651,6 +651,7 @@ class GiveawaysManager extends EventEmitter {
             if (!member) return;
             const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
             if (messageReaction.emoji.name !== emoji.name || messageReaction.emoji.id !== emoji.id) return;
+
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, messageReaction);
             this.emit('giveawayReactionAdded', giveaway, member, messageReaction);
 
@@ -666,6 +667,7 @@ class GiveawaysManager extends EventEmitter {
             if (!member) return;
             const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
             if (messageReaction.emoji.name !== emoji.name || messageReaction.emoji.id !== emoji.id) return;
+
             this.emit('giveawayReactionAdded', giveaway, member, messageReaction);
         });
 
@@ -675,11 +677,13 @@ class GiveawaysManager extends EventEmitter {
             if (!giveaway) return;
             if (!interaction.guild?.available) return;
             if (!interaction.channel.viewable) return;
+
             if (giveaway.buttons.join?.customId === interaction.customId)
                 this.emit('giveawayJoined', giveaway, interaction.member, interaction);
             else if (giveaway.buttons.leave?.customId === interaction.customId)
                 this.emit('giveawayLeft', giveaway, interaction.member, interaction);
             else return;
+            
             giveaway.entrantIds.push(interaction.member.id);
 
             if (giveaway.isDrop && giveaway.entrantIds.length >= giveaway.winnerCount) await checkForDropEnd(giveaway);
@@ -693,9 +697,7 @@ class GiveawaysManager extends EventEmitter {
     async _init() {
         let rawGiveaways = await this.getAllGiveaways();
 
-        await (this.client.readyAt
-            ? Promise.resolve()
-            : new Promise((resolve) => this.client.once(Discord.Events.ClientReady, resolve)));
+        await (this.client.readyAt ? Promise.resolve() : new Promise((resolve) => this.client.once(Discord.Events.InteractionCreate, resolve)));
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
