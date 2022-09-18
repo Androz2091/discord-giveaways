@@ -332,7 +332,7 @@ class Giveaway extends EventEmitter {
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
-            buttons: this.options.buttons.join ? this.options.buttons : undefined,
+            buttons: this.options.buttons ? this.options.buttons : undefined,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance,
