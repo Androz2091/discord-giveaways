@@ -63,7 +63,7 @@ exports.GiveawayMessages = {
 
 /**
  * @typedef {Object} ButtonsObject
- * 
+ *
  * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} join The button to join the giveaway.
  * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} [leave] The button to leave the giveaway.
  */
@@ -153,8 +153,8 @@ exports.PauseOptions = {
  * @typedef GiveawaysManagerOptions
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
- * @property {number} [forceUpdateEvery=null] Force the giveaway messages to be updated at a specific interval.
- * @property {number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB.<br>⚠ Giveaways deleted from the DB cannot get rerolled anymore!
+ * @property {?number} [forceUpdateEvery=null] Force the giveaway messages to be updated at a specific interval.
+ * @property {?number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB.<br>⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {Object} [default] The default options for new giveaways.
  * @property {boolean} [default.botsCanWin=false] If bots can win giveaways.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
@@ -163,7 +163,7 @@ exports.PauseOptions = {
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embeds when they have ended.
  * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
  * @property {LastChanceOptions} [default.lastChance] The options for the last chance system.
- * @property {ButtonsObject} [default.buttons] The buttons for the giveaways.
+ * @property {?ButtonsObject} [default.buttons=null] The buttons for the giveaways.
  */
 exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
@@ -176,7 +176,7 @@ exports.GiveawaysManagerOptions = {
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉',
-        buttons: { join: null, leave: null },
+        buttons: null,
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
