@@ -678,13 +678,20 @@ class GiveawaysManager extends EventEmitter {
             if (!interaction.guild?.available) return;
             if (!interaction.channel.viewable) return;
 
-            if (giveaway.buttons.join?.customId === interaction.customId)
+            if (
+                giveaway.buttons.join?.customId === interaction.customId &&
+                !giveaway.entrantIds.includes(interaction.member.id)
+            ) {
+                giveaway.entrantIds.push(interaction.member.id);
                 this.emit('giveawayJoined', giveaway, interaction.member, interaction);
-            else if (giveaway.buttons.leave?.customId === interaction.customId)
+            } else if (
+                giveaway.buttons.leave?.customId === interaction.customId &&
+                giveaway.entrantIds.includes(interaction.member.id)
+            ) {
+                const index = giveaway.entrantIds.indexOf(interaction.member.id);
+                giveaway.entrantIds.splice(index, 1);
                 this.emit('giveawayLeft', giveaway, interaction.member, interaction);
-            else return;
-            
-            giveaway.entrantIds.push(interaction.member.id);
+            } else return;
 
             if (giveaway.isDrop && giveaway.entrantIds.length >= giveaway.winnerCount) await checkForDropEnd(giveaway);
         });
@@ -697,7 +704,9 @@ class GiveawaysManager extends EventEmitter {
     async _init() {
         let rawGiveaways = await this.getAllGiveaways();
 
-        await (this.client.readyAt ? Promise.resolve() : new Promise((resolve) => this.client.once(Discord.Events.InteractionCreate, resolve)));
+        await (this.client.readyAt
+            ? Promise.resolve()
+            : new Promise((resolve) => this.client.once(Discord.Events.InteractionCreate, resolve)));
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
