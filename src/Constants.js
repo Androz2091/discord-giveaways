@@ -62,6 +62,13 @@ exports.GiveawayMessages = {
  */
 
 /**
+ * @typedef {Object} ButtonsObject
+ * 
+ * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} join The button to join the giveaway.
+ * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} [leave] The button to leave the giveaway.
+ */
+
+/**
  * The start options for new giveaways.
  * @typedef GiveawayStartOptions
  *
@@ -76,6 +83,7 @@ exports.GiveawayMessages = {
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed when it is running.
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
+ * @property {ButtonsObject} [buttons] The buttons for the giveaway.
  * @property {GiveawayMessages} [messages] The giveaway messages.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {string} [image] The URL appearing as the image on the giveaway embed.
@@ -155,6 +163,7 @@ exports.PauseOptions = {
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embeds when they have ended.
  * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
  * @property {LastChanceOptions} [default.lastChance] The options for the last chance system.
+ * @property {ButtonsObject} [default.buttons] The buttons for the giveaways.
  */
 exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
@@ -211,6 +220,7 @@ exports.GiveawayRerollOptions = {
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
  * @property {ExemptMembersFunction} [newExemptMembers] The new filter function to exempt members from winning the giveaway.
  * @property {LastChanceOptions} [newLastChance] The new options for the last chance system.<br>Will get merged with the existing object, if there.
+ * @property {ButtonsObject} [newButtons] The new buttons for the giveaway.
  */
 exports.GiveawayEditOptions = {};
 
@@ -231,6 +241,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.Snowflake[]} [winnerIds] The winner Ids of the giveaway after it ended.
  * @property {Discord.Snowflake} messageId The Id of the message.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
+ * @property {ButtonsObject} [buttons] The buttons for the giveaway.
  * @property {boolean} [botsCanWin] If bots can win the giveaway.
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.
  * @property {string} [exemptMembers] Filter function to exempt members from winning the giveaway.
@@ -243,5 +254,6 @@ exports.GiveawayEditOptions = {};
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
  * @property {boolean} [isDrop] If the giveaway is a drop, or not.<br>Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
  * @property {Discord.MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the giveaway messages content.
+ * @property {Snowflake[]} [entrantIds] The entrant ids for this giveaway, if buttons are used.
  */
 exports.GiveawayData = {};

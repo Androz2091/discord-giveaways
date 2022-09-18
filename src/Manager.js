@@ -251,10 +251,7 @@ class GiveawaysManager extends EventEmitter {
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 image: typeof options.image === 'string' ? options.image : undefined,
                 reaction: Discord.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
-                buttons:
-                    !Discord.resolvePartialEmoji(options.reaction) && options.buttons?.join
-                        ? deepmerge(this.options.buttons ?? {}, options.buttons)
-                        : undefined,
+                buttons: deepmerge(this.options.buttons ?? {}, options.buttons ?? {}),
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
                 exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,

@@ -14,6 +14,7 @@ const {
     BonusEntry,
     PauseOptions,
     MessageObject,
+    ButtonsObject,
     DEFAULT_CHECK_INTERVAL
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
@@ -122,13 +123,34 @@ class Giveaway extends EventEmitter {
          * @type {Discord.MessageMentionOptions}
          */
         this.allowedMentions = options.allowedMentions;
-        this.buttons = options.buttons ?? null;
+        /**
+         * The buttons of the giveaway, if any.
+         * @type {?ButtonsObject}
+         */
+        this.buttons = options.buttons?.join ? options.buttons : null;
+        /**
+         * The entrant ids for this giveaway, if buttons are used.
+         * @type {?Discord.Snowflake[]}
+         */
         this.entrantIds = options.entrantIds ?? this.buttons ? [] : null;
         /**
-         * The giveaway data.
-         * @type {GiveawayData}
+         * Giveaway options which need to be processed in a getter or function.
+         * @type {Object}
+         * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
+         * @property {boolean} [botsCanWin] If bots can win the giveaway.
+         * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.
+         * @property {string} [exemptMembers] Filter function to exempt members from winning the giveaway.
+         * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway.
+         * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed when it is running.
+         * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
+         * @property {LastChanceOptions} [lastChance] The options for the last chance system.
+         * @property {PauseOptions} [pauseOptions] The options for the pause system.
+         * @property {boolean} [isDrop] If the giveaway is a drop, or not.<br>Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
          */
-        this.options = options;
+        this.options = Object.keys(options).reduce((obj, key) => {
+            if (!Object.keys(this).includes(key)) obj[key] = options[key];
+            return obj;
+        }, {});
         /**
          * The message instance of the embed of this giveaway.
          * @type {?Discord.Message}
@@ -332,7 +354,7 @@ class Giveaway extends EventEmitter {
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
-            buttons: this.options.buttons ? this.options.buttons : undefined,
+            buttons: this.buttons ?? undefined,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance,
