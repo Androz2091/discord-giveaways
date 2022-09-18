@@ -706,7 +706,7 @@ class GiveawaysManager extends EventEmitter {
 
         await (this.client.readyAt
             ? Promise.resolve()
-            : new Promise((resolve) => this.client.once(Discord.Events.InteractionCreate, resolve)));
+            : new Promise((resolve) => this.client.once(Discord.Events.ClientReady, resolve)));
 
         // Filter giveaways for each shard
         if (this.client.shard && this.client.guilds.cache.size) {
