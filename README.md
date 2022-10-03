@@ -521,8 +521,14 @@ const manager = new GiveawaysManager(client, {
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         buttons: {
-            join: new Discord.ButtonBuilder().setLabel('Join').setStyle('PRIMARY').setCustomId('123'),
-            leave: new Discord.ButtonBuilder().setLabel('Leave').setStyle('SECONDARY').setCustomId('1234')
+            join: new Discord.ButtonBuilder()
+                .setLabel('Join')
+                .setStyle(Discord.ButtonStyle.Primary)
+                .setCustomId('123'),
+            leave: new Discord.ButtonBuilder()
+                .setLabel('Leave')
+                .setStyle(Discord.ButtonStyle.Secondary)
+                .setCustomId('1234')
         }
     }
 });
