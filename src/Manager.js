@@ -236,8 +236,8 @@ class GiveawaysManager extends EventEmitter {
                 return reject(`Both "options.reaction" and "options.buttons.join" are set.`);
             }
             if (
-                this.options.buttons?.join?.style === Discord.ButtonStyle.Link ||
-                this.options.buttons?.leave?.style === Discord.ButtonStyle.Link
+                options.buttons?.join?.style === Discord.ButtonStyle.Link ||
+                options.buttons?.leave?.style === Discord.ButtonStyle.Link
             ) {
                 return reject(`"options.buttons.join" or "options.buttons.leave" is a "Link" button.`);
             }
