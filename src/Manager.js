@@ -698,10 +698,14 @@ class GiveawaysManager extends EventEmitter {
             if (!interaction.guild?.available) return;
             if (!interaction.channel.viewable) return;
 
-            if (
-                giveaway.buttons.join?.customId === interaction.customId &&
-                !giveaway.entrantIds.includes(interaction.member.id)
-            ) {
+            if (giveaway.buttons.join?.customId === interaction.customId) {
+                // If only one button is used, remove the user if he has already joined
+                if (!giveaway.buttons.leave && giveaway.entrantIds.includes(interaction.member.id)) {
+                    const index = giveaway.entrantIds.indexOf(interaction.member.id);
+                    giveaway.entrantIds.splice(index, 1);
+                    return this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+                }
+
                 giveaway.entrantIds.push(interaction.member.id);
                 this.emit('giveawayJoined', giveaway, interaction.member, interaction);
             } else if (
