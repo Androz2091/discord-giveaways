@@ -509,6 +509,25 @@ client.giveawaysManager.reroll(messageId, {
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
 [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in these messages.
 
+## Buttons instead of reaction
+
+```js
+// Requires Manager from discord-giveaways
+const { GiveawaysManager } = require('discord-giveaways');
+const manager = new GiveawaysManager(client, {
+    storage: './giveaways.json',
+    default: {
+        botsCanWin: false,
+        embedColor: '#FF0000',
+        embedColorEnd: '#000000',
+        buttons: {
+            join: new Discord.ButtonBuilder().setLabel('Join').setStyle('PRIMARY').setCustomId('123'),
+            leave: new Discord.ButtonBuilder().setLabel('Leave').setStyle('SECONDARY').setCustomId('1234')
+        }
+    }
+});
+```
+
 ## Custom Database
 
 You can use your custom database to save giveaways, instead of the json files (the "database" by default for `discord-giveaways`).  
