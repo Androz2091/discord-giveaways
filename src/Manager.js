@@ -62,6 +62,9 @@ class GiveawaysManager extends EventEmitter {
          */
         this.options = deepmerge(GiveawaysManagerOptions, options || {});
 
+        // Ensure correct merge order
+        if (!options?.default?.reaction && options?.default?.buttons?.join) this.options.default.reaction = null;
+
         if (init) this._init();
     }
 
@@ -232,7 +235,8 @@ class GiveawaysManager extends EventEmitter {
             if (!options.isDrop && (!Number.isFinite(options.duration) || options.duration < 1)) {
                 return reject(`"options.duration is not a positive number. (val=${options.duration})`);
             }
-            if (Discord.resolvePartialEmoji(options.reaction) && this.options.buttons?.join) {
+            let reaction = Discord.resolvePartialEmoji(options.reaction) ? options.reaction : undefined;
+            if (reaction && options.buttons?.join) {
                 return reject(`Both "options.reaction" and "options.buttons.join" are set.`);
             }
             if (
@@ -256,8 +260,11 @@ class GiveawaysManager extends EventEmitter {
                         : GiveawayMessages,
                 thumbnail: typeof options.thumbnail === 'string' ? options.thumbnail : undefined,
                 image: typeof options.image === 'string' ? options.image : undefined,
-                reaction: Discord.resolvePartialEmoji(options.reaction) ? options.reaction : undefined,
-                buttons: deepmerge(this.options.buttons ?? {}, options.buttons ?? {}),
+                reaction,
+                buttons:
+                    !reaction && !(this.options.default.reaction && this.options.default.buttons?.join)
+                        ? deepmerge(this.options.default.buttons ?? {}, options.buttons ?? {})
+                        : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
                 exemptPermissions: Array.isArray(options.exemptPermissions) ? options.exemptPermissions : undefined,
                 exemptMembers: typeof options.exemptMembers === 'function' ? options.exemptMembers : undefined,
@@ -296,7 +303,7 @@ class GiveawaysManager extends EventEmitter {
             });
             giveaway.messageId = message.id;
 
-            const reaction = giveaway.reaction ? await message.react(giveaway.reaction) : null;
+            reaction = giveaway.reaction ? await message.react(giveaway.reaction) : null;
 
             giveaway.message = reaction?.message ?? message;
             this.giveaways.push(giveaway);

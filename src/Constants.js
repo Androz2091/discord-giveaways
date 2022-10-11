@@ -163,7 +163,7 @@ exports.PauseOptions = {
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embeds when they have ended.
  * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
  * @property {LastChanceOptions} [default.lastChance] The options for the last chance system.
- * @property {?ButtonsObject} [default.buttons=null] The buttons for the giveaways.
+ * @property {ButtonsObject} [default.buttons=null] The buttons for the giveaways.
  */
 exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
