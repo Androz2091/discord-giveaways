@@ -265,7 +265,7 @@ class Giveaway extends EventEmitter {
 
     /**
      * If the giveaway is a drop, or not.
-     * Drop means that if the amount of valid entrantIds to the giveaway is the same as "winnerCount" then it immediately ends.
+     * Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
      * @type {boolean}
      */
     get isDrop() {
