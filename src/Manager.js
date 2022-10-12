@@ -262,7 +262,8 @@ class GiveawaysManager extends EventEmitter {
                 image: typeof options.image === 'string' ? options.image : undefined,
                 reaction,
                 buttons:
-                    !reaction && !(this.options.default.reaction && this.options.default.buttons?.join)
+                    !reaction &&
+                    !(this.options.default.reaction && this.options.default.buttons?.join && !options.buttons?.join)
                         ? deepmerge(this.options.default.buttons ?? {}, options.buttons ?? {})
                         : undefined,
                 botsCanWin: typeof options.botsCanWin === 'boolean' ? options.botsCanWin : undefined,
@@ -310,19 +311,34 @@ class GiveawaysManager extends EventEmitter {
             await this.saveGiveaway(giveaway.messageId, giveaway.data);
             resolve(giveaway);
 
-            if (giveaway.isDrop && !giveaway.buttons) {
-                reaction.message
-                    .awaitReactions({
-                        filter: async (r, u) =>
-                            [r.emoji.name, r.emoji.id]
-                                .filter(Boolean)
-                                .includes(reaction.emoji.id ?? reaction.emoji.name) &&
-                            u.id !== this.client.user.id &&
-                            (await giveaway.checkWinnerEntry(u)),
-                        maxUsers: giveaway.winnerCount
-                    })
-                    .then(() => this.end(giveaway.messageId))
-                    .catch(() => {});
+            if (!giveaway.isDrop) return;
+
+            if (!giveaway.buttons) {
+                const collector = reaction.message.createReactionCollector({
+                    filter: async (r, u) =>
+                        [r.emoji.name, r.emoji.id].filter(Boolean).includes(reaction.emoji.id ?? reaction.emoji.name) &&
+                        u.id !== this.client.user.id &&
+                        (await giveaway.checkWinnerEntry(u))
+                });
+                collector.on('collect', (r) => {
+                    if (r.count - 1 >= giveaway.winnerCount) {
+                        this.end(giveaway.messageId).catch(() => {});
+                        collector.stop();
+                    }
+                });
+            } else {
+                const collector = giveaway.message.createMessageComponentCollector({
+                    filter: async (interaction) =>
+                        interaction.customId === giveaway.buttons.join.customId &&
+                        (await giveaway.checkWinnerEntry(interaction.user)),
+                    componentType: Discord.ComponentType.Button
+                });
+                collector.on('collect', () => {
+                    if (giveaway.entrantIds.length >= giveaway.winnerCount) {
+                        this.end(giveaway.messageId).catch(() => {});
+                        collector.stop();
+                    }
+                });
             }
         });
     }
@@ -670,6 +686,7 @@ class GiveawaysManager extends EventEmitter {
         };
 
         this.client.on(Discord.Events.MessageReactionAdd, async (messageReaction, user) => {
+            if (user.id === this.client.user.id) return;
             const giveaway = this.giveaways.find((g) => g.messageId === messageReaction.message.id);
             if (!giveaway) return;
             if (!messageReaction.message.guild?.available) return;
@@ -677,7 +694,7 @@ class GiveawaysManager extends EventEmitter {
             const member = await messageReaction.message.guild.members.fetch(user).catch(() => {});
             if (!member) return;
             const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
-            if (messageReaction.emoji.name !== emoji.name || messageReaction.emoji.id !== emoji.id) return;
+            if (messageReaction.emoji.name != emoji.name || messageReaction.emoji.id != emoji.id) return;
 
             if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, messageReaction);
             this.emit('giveawayReactionAdded', giveaway, member, messageReaction);
@@ -686,32 +703,35 @@ class GiveawaysManager extends EventEmitter {
         });
 
         this.client.on(Discord.Events.MessageReactionRemove, async (messageReaction, user) => {
+            if (user.id === this.client.user.id) return;
             const giveaway = this.giveaways.find((g) => g.messageId === messageReaction.message.id);
-            if (!giveaway) return;
+            if (!giveaway || giveaway.ended) return;
             if (!messageReaction.message.guild?.available) return;
             if (!messageReaction.message.channel.viewable) return;
             const member = await messageReaction.message.guild.members.fetch(user).catch(() => {});
             if (!member) return;
             const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
-            if (messageReaction.emoji.name !== emoji.name || messageReaction.emoji.id !== emoji.id) return;
+            if (messageReaction.emoji.name != emoji.name || messageReaction.emoji.id != emoji.id) return;
 
-            this.emit('giveawayReactionAdded', giveaway, member, messageReaction);
+            this.emit('giveawayReactionRemoved', giveaway, member, messageReaction);
         });
 
         this.client.on(Discord.Events.InteractionCreate, async (interaction) => {
             if (!interaction.isButton()) return;
             const giveaway = this.giveaways.find((g) => g.messageId === interaction.message.id);
-            if (!giveaway) return;
+            if (!giveaway || !giveaway.buttons || giveaway.ended) return;
             if (!interaction.guild?.available) return;
             if (!interaction.channel.viewable) return;
 
-            if (giveaway.buttons.join?.customId === interaction.customId) {
+            if (giveaway.buttons.join.customId === interaction.customId) {
                 // If only one button is used, remove the user if he has already joined
                 if (!giveaway.buttons.leave && giveaway.entrantIds.includes(interaction.member.id)) {
                     const index = giveaway.entrantIds.indexOf(interaction.member.id);
                     giveaway.entrantIds.splice(index, 1);
-                    return this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+                    if (!giveaway.ended) this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+                    return;
                 }
+                if (giveaway.entrantIds.includes(interaction.member.id)) return;
 
                 giveaway.entrantIds.push(interaction.member.id);
                 this.emit('giveawayJoined', giveaway, interaction.member, interaction);
@@ -721,7 +741,7 @@ class GiveawaysManager extends EventEmitter {
             ) {
                 const index = giveaway.entrantIds.indexOf(interaction.member.id);
                 giveaway.entrantIds.splice(index, 1);
-                this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+                if (!giveaway.ended) this.emit('giveawayLeft', giveaway, interaction.member, interaction);
             } else return;
 
             if (giveaway.isDrop && giveaway.entrantIds.length >= giveaway.winnerCount) await checkForDropEnd(giveaway);
