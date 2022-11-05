@@ -523,7 +523,7 @@ class GiveawaysManager extends EventEmitter {
                     const users = await giveaway.fetchAllEntrants().catch(() => {});
 
                     let validUsers = 0;
-                    for (const user of [...(users?.values() || [])]) {
+                    for (const user of users?.values() || []) {
                         if (await giveaway.checkWinnerEntry(user)) validUsers++;
                         if (validUsers === giveaway.winnerCount) {
                             await this.end(giveaway.messageId).catch(() => {});
@@ -651,7 +651,7 @@ class GiveawaysManager extends EventEmitter {
                 const users = await giveaway.fetchAllEntrants().catch(() => {});
 
                 let validUsers = 0;
-                for (const user of [...(users?.values() || [])]) {
+                for (const user of users?.values() || []) {
                     if (await giveaway.checkWinnerEntry(user)) validUsers++;
                     if (validUsers === giveaway.winnerCount) {
                         await this.end(giveaway.messageId).catch(() => {});
