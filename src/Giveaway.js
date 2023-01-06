@@ -354,7 +354,9 @@ class Giveaway extends EventEmitter {
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
-            buttons: this.buttons ?? undefined,
+            buttons: this.buttons
+                ? Object.fromEntries(Object.entries(this.buttons).filter(([_, v]) => v !== null))
+                : undefined,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance,

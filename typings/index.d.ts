@@ -20,7 +20,8 @@ import type {
     JSONEncodable,
     APIActionRowComponent,
     APIMessageActionRowComponent,
-    APIModalActionRowComponent
+    APIModalActionRowComponent,
+    APIButtonComponent
 } from 'discord.js';
 
 export const version: string;
@@ -88,15 +89,16 @@ export interface PauseOptions {
 }
 export interface GiveawaysManagerOptions<ExtraData> {
     storage?: string;
-    forceUpdateEvery?: number;
-    endedGiveawaysLifetime?: number;
+    forceUpdateEvery?: number | null;
+    endedGiveawaysLifetime?: number | null;
     default?: {
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
-        reaction?: EmojiIdentifierResolvable;
+        reaction?: EmojiIdentifierResolvable | null;
+        buttons?: ButtonsObject | null;
         lastChance?: LastChanceOptions;
     };
 }
@@ -112,6 +114,7 @@ export interface GiveawayStartOptions<ExtraData> {
     embedColor?: ColorResolvable;
     embedColorEnd?: ColorResolvable;
     reaction?: EmojiIdentifierResolvable;
+    buttons?: ButtonsObject;
     messages?: GiveawayMessages;
     thumbnail?: string;
     image?: string;
@@ -144,6 +147,12 @@ export interface MessageObject {
         | APIActionRowComponent<APIMessageActionRowComponent | APIModalActionRowComponent>
     )[];
     replyToGiveaway?: boolean;
+}
+export interface ButtonsObject {
+    join: JSONEncodable<APIButtonComponent> | APIButtonComponent;
+    leave?: JSONEncodable<APIButtonComponent> | APIButtonComponent;
+    joinReply?: string | Omit<MessageObject, 'replyToGiveaway'>;
+    leaveReply?: string | Omit<MessageObject, 'replyToGiveaway'>;
 }
 export interface GiveawaysManagerEvents<ExtraData = any> {
     giveawayDeleted: [Giveaway<ExtraData>];
@@ -183,7 +192,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly embedColor: ColorResolvable;
     readonly embedColorEnd: ColorResolvable;
     readonly botsCanWin: boolean;
-    readonly reaction: EmojiIdentifierResolvable;
+    readonly reaction: EmojiIdentifierResolvable | null;
     readonly lastChance: Required<LastChanceOptions>;
 
     // getters calculated using other values
@@ -196,8 +205,10 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly pauseOptions: Required<PauseOptions>;
     readonly isDrop: boolean;
     readonly messageReaction: MessageReaction | null;
+
     private ensureEndTimeout(): void;
     private checkWinnerEntry(user: User): Promise<boolean>;
+
     public checkBonusEntries(user: User): Promise<number>;
     public fetchAllEntrants(): Promise<Collection<Snowflake, User>>;
     public fillInString(string: string): string;
@@ -225,6 +236,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newPrize?: string;
     addTime?: number;
     setEndTimestamp?: number;
+    newButtons?: ButtonsObject;
     newMessages?: GiveawayMessages;
     newThumbnail?: string;
     newImage?: string;
@@ -253,6 +265,7 @@ export interface GiveawayData<ExtraData = any> {
     winnerIds?: Snowflake[];
     messageId: Snowflake;
     reaction?: EmojiIdentifierResolvable;
+    buttons?: ButtonsObject;
     exemptPermissions?: PermissionResolvable[];
     exemptMembers?: string;
     bonusEntries?: string;

@@ -717,34 +717,79 @@ class GiveawaysManager extends EventEmitter {
         });
 
         this.client.on(Discord.Events.InteractionCreate, async (interaction) => {
-            if (!interaction.isButton()) return;
+            if (!interaction.isButton() || !interaction.guild?.available || !interaction.channel?.viewable) return;
             const giveaway = this.giveaways.find((g) => g.messageId === interaction.message.id);
             if (!giveaway || !giveaway.buttons || giveaway.ended) return;
-            if (!interaction.guild?.available) return;
-            if (!interaction.channel.viewable) return;
 
             if (giveaway.buttons.join.customId === interaction.customId) {
                 // If only one button is used, remove the user if he has already joined
                 if (!giveaway.buttons.leave && giveaway.entrantIds.includes(interaction.member.id)) {
                     const index = giveaway.entrantIds.indexOf(interaction.member.id);
                     giveaway.entrantIds.splice(index, 1);
-                    if (!giveaway.ended) this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+
+                    if (giveaway.buttons.leaveReply) {
+                        const embed = this.fillInEmbed(giveaway.buttons.leaveReply.embed);
+                        await interaction
+                            .reply({
+                                content: this.fillInString(
+                                    giveaway.buttons.leaveReply.content || giveaway.buttons.leaveReply
+                                ),
+                                embeds: embed ? [embed] : null,
+                                components: this.fillInComponents(giveaway.buttons.leaveReply.components),
+                                ephemeral: true
+                            })
+                            .catch(() => {});
+                    }
+
+                    this.emit('giveawayLeft', giveaway, interaction.member, interaction);
                     return;
                 }
                 if (giveaway.entrantIds.includes(interaction.member.id)) return;
 
                 giveaway.entrantIds.push(interaction.member.id);
+
+                if (giveaway.buttons.joinReply) {
+                    const embed = this.fillInEmbed(giveaway.buttons.joinReply.embed);
+                    await interaction
+                        .reply({
+                            content: this.fillInString(
+                                giveaway.buttons.joinReply.content || giveaway.buttons.joinReply
+                            ),
+                            embeds: embed ? [embed] : null,
+                            components: this.fillInComponents(giveaway.buttons.joinReply.components),
+                            ephemeral: true
+                        })
+                        .catch(() => {});
+                }
+
                 this.emit('giveawayJoined', giveaway, interaction.member, interaction);
+
+                if (giveaway.isDrop && giveaway.entrantIds.length >= giveaway.winnerCount) {
+                    await checkForDropEnd(giveaway);
+                }
             } else if (
                 giveaway.buttons.leave?.customId === interaction.customId &&
                 giveaway.entrantIds.includes(interaction.member.id)
             ) {
                 const index = giveaway.entrantIds.indexOf(interaction.member.id);
                 giveaway.entrantIds.splice(index, 1);
-                if (!giveaway.ended) this.emit('giveawayLeft', giveaway, interaction.member, interaction);
-            } else return;
 
-            if (giveaway.isDrop && giveaway.entrantIds.length >= giveaway.winnerCount) await checkForDropEnd(giveaway);
+                if (giveaway.buttons.leaveReply) {
+                    const embed = this.fillInEmbed(giveaway.buttons.leaveReply.embed);
+                    await interaction
+                        .reply({
+                            content: this.fillInString(
+                                giveaway.buttons.leaveReply.content || giveaway.buttons.leaveReply
+                            ),
+                            embeds: embed ? [embed] : null,
+                            components: this.fillInComponents(giveaway.buttons.leaveReply.components),
+                            ephemeral: true
+                        })
+                        .catch(() => {});
+                }
+
+                this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+            }
         });
     }
 

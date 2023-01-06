@@ -54,18 +54,20 @@ exports.GiveawayMessages = {
  */
 
 /**
+ * @typedef {Object} ButtonsObject
+ *
+ * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} join The button to join the giveaway.
+ * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} [leave] The button to leave the giveaway.
+ * @property {?(string|MessageObject)} [joinReply] Sent in the channel as the ephemeral interaction reply to the join-button.
+ * @property {?(string|MessageObject)} [leaveReply] Sent in the channel as the ephemeral interaction reply to the leave-button.
+ */
+
+/**
  * @typedef {Function} ExemptMembersFunction
  *
  * @param {Discord.GuildMember} member
  * @param {Giveaway} giveaway
  * @returns {Promise<boolean>|boolean}
- */
-
-/**
- * @typedef {Object} ButtonsObject
- *
- * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} join The button to join the giveaway.
- * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} [leave] The button to leave the giveaway.
  */
 
 /**
@@ -134,9 +136,9 @@ exports.LastChanceOptions = {
  *
  * @property {boolean} [isPaused=false] If the giveaway is paused.
  * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused.
- * @property {number} [unpauseAfter=null] The number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
+ * @property {?number} [unpauseAfter=null] The number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
  * @property {Discord.ColorResolvable} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
- * @private @property {number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused.<br>⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
+ * @private @property {?number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused.<br>⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
  * @property {string} [infiniteDurationText='`NEVER`'] The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unpauseAfter".
  */
 exports.PauseOptions = {
@@ -161,9 +163,11 @@ exports.PauseOptions = {
  * @property {ExemptMembersFunction} [default.exemptMembers] Function to filter members.<br>If true is returned, the member won't be able to win a giveaway.
  * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The color of the giveaway embeds when they are running.
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embeds when they have ended.
- * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
+ * @property {?Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
  * @property {LastChanceOptions} [default.lastChance] The options for the last chance system.
- * @property {ButtonsObject} [default.buttons=null] The buttons for the giveaways.
+ * @property {?ButtonsObject} [default.buttons] The buttons for the giveaways.
+ * @property {?(string|MessageObject)} [default.buttons.joinReply='✅ joined'] Sent in the channel as the ephemeral interaction reply to the join-button.
+ * @property {?(string|MessageObject)} [default.buttons.leaveReply='✅ left'] Sent in the channel as the ephemeral interaction reply to the leave-button.
  */
 exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
@@ -176,7 +180,10 @@ exports.GiveawaysManagerOptions = {
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉',
-        buttons: null,
+        buttons: {
+            joinReply: '✅ joined',
+            leaveReply: '✅ left'
+        },
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',

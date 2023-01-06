@@ -512,14 +512,11 @@ You can [access giveaway properties](https://github.com/Androz2091/discord-givea
 ## Buttons instead of reaction
 
 ```js
-// Requires Manager from discord-giveaways
+const Discord = require('discord.js');
 const { GiveawaysManager } = require('discord-giveaways');
 const manager = new GiveawaysManager(client, {
     storage: './giveaways.json',
     default: {
-        botsCanWin: false,
-        embedColor: '#FF0000',
-        embedColorEnd: '#000000',
         buttons: {
             join: new Discord.ButtonBuilder()
                 .setLabel('Join')
@@ -533,6 +530,13 @@ const manager = new GiveawaysManager(client, {
     }
 });
 ```
+
+-   **options.default.buttons.join**: the button to join the giveaway.
+-   **options.default.buttons.leave**: the button to leave the giveaway. If not set, the join-button doubles as the leave-button
+-   **options.default.buttons.joinReply**: sent in the channel as the ephemeral interaction reply to the join-button. If set to "null", custom behaviour can be added via the [event](https://discord-giveaways.js.org/GiveawaysManager.html#event:giveawayJoined).
+-   **options.default.buttons.leaveReply**: sent in the channel as the ephemeral interaction reply to the leave-button. If set to "null", custom behaviour can be added via the [event](https://discord-giveaways.js.org/GiveawaysManager.html#event:giveawayLeft).
+
+You can [access other giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these properties.  
 
 ## Custom Database
 
