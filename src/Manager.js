@@ -721,25 +721,25 @@ class GiveawaysManager extends EventEmitter {
             const giveaway = this.giveaways.find((g) => g.messageId === interaction.message.id);
             if (!giveaway || !giveaway.buttons || giveaway.ended) return;
 
+            const replyToInteraction = async (message) => {
+                const embed = giveaway.fillInEmbed(message.embed);
+                await interaction
+                    .reply({
+                        content: giveaway.fillInString(message.content || message),
+                        embeds: embed ? [embed] : null,
+                        components: giveaway.fillInComponents(message.components),
+                        ephemeral: true
+                    })
+                    .catch(() => {});
+            };
+
             if (giveaway.buttons.join.customId === interaction.customId) {
                 // If only one button is used, remove the user if he has already joined
                 if (!giveaway.buttons.leave && giveaway.entrantIds.includes(interaction.member.id)) {
                     const index = giveaway.entrantIds.indexOf(interaction.member.id);
                     giveaway.entrantIds.splice(index, 1);
 
-                    if (giveaway.buttons.leaveReply) {
-                        const embed = giveaway.fillInEmbed(giveaway.buttons.leaveReply.embed);
-                        await interaction
-                            .reply({
-                                content: giveaway.fillInString(
-                                    giveaway.buttons.leaveReply.content || giveaway.buttons.leaveReply
-                                ),
-                                embeds: embed ? [embed] : null,
-                                components: giveaway.fillInComponents(giveaway.buttons.leaveReply.components),
-                                ephemeral: true
-                            })
-                            .catch(() => {});
-                    }
+                    if (giveaway.buttons.leaveReply) await replyToInteraction(giveaway.buttons.leaveReply);
 
                     this.emit('giveawayLeft', giveaway, interaction.member, interaction);
                     return;
@@ -748,19 +748,7 @@ class GiveawaysManager extends EventEmitter {
 
                 giveaway.entrantIds.push(interaction.member.id);
 
-                if (giveaway.buttons.joinReply) {
-                    const embed = giveaway.fillInEmbed(giveaway.buttons.joinReply.embed);
-                    await interaction
-                        .reply({
-                            content: giveaway.fillInString(
-                                giveaway.buttons.joinReply.content || giveaway.buttons.joinReply
-                            ),
-                            embeds: embed ? [embed] : null,
-                            components: giveaway.fillInComponents(giveaway.buttons.joinReply.components),
-                            ephemeral: true
-                        })
-                        .catch(() => {});
-                }
+                if (giveaway.buttons.joinReply) await replyToInteraction(giveaway.buttons.joinReply);
 
                 this.emit('giveawayJoined', giveaway, interaction.member, interaction);
 
@@ -774,19 +762,7 @@ class GiveawaysManager extends EventEmitter {
                 const index = giveaway.entrantIds.indexOf(interaction.member.id);
                 giveaway.entrantIds.splice(index, 1);
 
-                if (giveaway.buttons.leaveReply) {
-                    const embed = giveaway.fillInEmbed(giveaway.buttons.leaveReply.embed);
-                    await interaction
-                        .reply({
-                            content: giveaway.fillInString(
-                                giveaway.buttons.leaveReply.content || giveaway.buttons.leaveReply
-                            ),
-                            embeds: embed ? [embed] : null,
-                            components: giveaway.fillInComponents(giveaway.buttons.leaveReply.components),
-                            ephemeral: true
-                        })
-                        .catch(() => {});
-                }
+                if (giveaway.buttons.leaveReply) await replyToInteraction(giveaway.buttons.leaveReply);
 
                 this.emit('giveawayLeft', giveaway, interaction.member, interaction);
             }
