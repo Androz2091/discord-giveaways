@@ -728,14 +728,14 @@ class GiveawaysManager extends EventEmitter {
                     giveaway.entrantIds.splice(index, 1);
 
                     if (giveaway.buttons.leaveReply) {
-                        const embed = this.fillInEmbed(giveaway.buttons.leaveReply.embed);
+                        const embed = giveaway.fillInEmbed(giveaway.buttons.leaveReply.embed);
                         await interaction
                             .reply({
-                                content: this.fillInString(
+                                content: giveaway.fillInString(
                                     giveaway.buttons.leaveReply.content || giveaway.buttons.leaveReply
                                 ),
                                 embeds: embed ? [embed] : null,
-                                components: this.fillInComponents(giveaway.buttons.leaveReply.components),
+                                components: giveaway.fillInComponents(giveaway.buttons.leaveReply.components),
                                 ephemeral: true
                             })
                             .catch(() => {});
@@ -749,14 +749,14 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.entrantIds.push(interaction.member.id);
 
                 if (giveaway.buttons.joinReply) {
-                    const embed = this.fillInEmbed(giveaway.buttons.joinReply.embed);
+                    const embed = giveaway.fillInEmbed(giveaway.buttons.joinReply.embed);
                     await interaction
                         .reply({
-                            content: this.fillInString(
+                            content: giveaway.fillInString(
                                 giveaway.buttons.joinReply.content || giveaway.buttons.joinReply
                             ),
                             embeds: embed ? [embed] : null,
-                            components: this.fillInComponents(giveaway.buttons.joinReply.components),
+                            components: giveaway.fillInComponents(giveaway.buttons.joinReply.components),
                             ephemeral: true
                         })
                         .catch(() => {});
@@ -775,14 +775,14 @@ class GiveawaysManager extends EventEmitter {
                 giveaway.entrantIds.splice(index, 1);
 
                 if (giveaway.buttons.leaveReply) {
-                    const embed = this.fillInEmbed(giveaway.buttons.leaveReply.embed);
+                    const embed = giveaway.fillInEmbed(giveaway.buttons.leaveReply.embed);
                     await interaction
                         .reply({
-                            content: this.fillInString(
+                            content: giveaway.fillInString(
                                 giveaway.buttons.leaveReply.content || giveaway.buttons.leaveReply
                             ),
                             embeds: embed ? [embed] : null,
-                            components: this.fillInComponents(giveaway.buttons.leaveReply.components),
+                            components: giveaway.fillInComponents(giveaway.buttons.leaveReply.components),
                             ephemeral: true
                         })
                         .catch(() => {});
