@@ -191,25 +191,25 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
 
     public channelId: Snowflake;
     public client: Client;
+    public manager: GiveawaysManager<ExtraData>;
+    public messageId: Snowflake;
+    public guildId: Snowflake;
+    public prize: string;
+    public winnerCount: number;
+    public startAt: number;
     public endAt: number;
     public ended: boolean;
-    public guildId: Snowflake;
-    public hostedBy?: User;
-    public manager: GiveawaysManager<ExtraData>;
     public message: Message | null;
-    public messageId: Snowflake;
+    public hostedBy?: User;
     public messages: Required<GiveawayMessages>;
     public thumbnail?: string;
     public image?: string;
     public extraData?: ExtraData;
     public options: GiveawayData<ExtraData>;
-    public prize: string;
-    public startAt: number;
-    public winnerCount: number;
+    public entrantIds?: Snowflake[];
     public winnerIds: Snowflake[];
     public allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
     private endTimeout?: NodeJS.Timeout;
-    private isEnding?: boolean;
 
     // getters calculated using default manager options
     readonly exemptPermissions: PermissionResolvable[];
@@ -306,6 +306,7 @@ export interface GiveawayData<ExtraData = any> {
     pauseOptions?: PauseOptions;
     isDrop?: boolean;
     allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
+    entrantIds?: Snowflake[];
 }
 
 export enum Events {
