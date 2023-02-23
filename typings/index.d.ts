@@ -1,30 +1,32 @@
 import type { EventEmitter } from 'node:events';
 import type {
+    ActionRowBuilder,
+    APIActionRowComponent,
+    APIButtonComponent,
+    APIEmbed,
+    APIMessageActionRowComponent,
+    APIModalActionRowComponent,
+    Awaitable,
+    ButtonComponent,
     Client,
     Collection,
     ColorResolvable,
+    EmbedBuilder,
     EmojiIdentifierResolvable,
     GuildMember,
+    GuildTextBasedChannel,
+    JSONEncodable,
     Message,
-    ActionRowBuilder,
-    EmbedBuilder,
+    MessageActionRowComponentBuilder,
     MessageMentionOptions,
     MessageReaction,
     PermissionResolvable,
     Snowflake,
-    User,
-    Awaitable,
-    APIEmbed,
-    MessageActionRowComponentBuilder,
-    GuildTextBasedChannel,
-    JSONEncodable,
-    APIActionRowComponent,
-    APIMessageActionRowComponent,
-    APIModalActionRowComponent,
-    APIButtonComponent
+    User
 } from 'discord.js';
 
 export const version: string;
+
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     constructor(client: Client, options?: GiveawaysManagerOptions<ExtraData>, init?: boolean);
 
@@ -69,16 +71,19 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
         ...args: GiveawaysManagerEvents<ExtraData>[K]
     ): boolean;
 }
+
 export interface BonusEntry<ExtraData> {
     bonus(member: GuildMember, giveaway: Giveaway<ExtraData>): Awaitable<number>;
     cumulative?: boolean;
 }
+
 export interface LastChanceOptions {
     enabled?: boolean;
     embedColor?: ColorResolvable;
     content?: string;
     threshold?: number;
 }
+
 export interface PauseOptions {
     isPaused?: boolean;
     content?: string;
@@ -87,6 +92,7 @@ export interface PauseOptions {
     durationAfterPause?: number | null;
     infiniteDurationText?: string;
 }
+
 export interface GiveawaysManagerOptions<ExtraData> {
     storage?: string;
     forceUpdateEvery?: number | null;
@@ -102,6 +108,7 @@ export interface GiveawaysManagerOptions<ExtraData> {
         lastChance?: LastChanceOptions;
     };
 }
+
 export interface GiveawayStartOptions<ExtraData> {
     prize: string;
     winnerCount: number;
@@ -124,6 +131,7 @@ export interface GiveawayStartOptions<ExtraData> {
     isDrop?: boolean;
     allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
 }
+
 export interface GiveawayMessages {
     giveaway?: string;
     giveawayEnded?: string;
@@ -139,6 +147,7 @@ export interface GiveawayMessages {
     endedAt?: string;
     hostedBy?: string;
 }
+
 export interface MessageObject {
     content?: string;
     embed?: JSONEncodable<APIEmbed> | APIEmbed;
@@ -148,20 +157,35 @@ export interface MessageObject {
     )[];
     replyToGiveaway?: boolean;
 }
+
 export interface ButtonsObject {
     join: JSONEncodable<APIButtonComponent> | APIButtonComponent;
     leave?: JSONEncodable<APIButtonComponent> | APIButtonComponent;
     joinReply?: string | Omit<MessageObject, 'replyToGiveaway'>;
     leaveReply?: string | Omit<MessageObject, 'replyToGiveaway'>;
 }
+
 export interface GiveawaysManagerEvents<ExtraData = any> {
-    giveawayDeleted: [Giveaway<ExtraData>];
-    giveawayEnded: [Giveaway<ExtraData>, GuildMember[]];
-    giveawayRerolled: [Giveaway<ExtraData>, GuildMember[]];
-    giveawayReactionAdded: [Giveaway<ExtraData>, GuildMember, MessageReaction];
-    giveawayReactionRemoved: [Giveaway<ExtraData>, GuildMember, MessageReaction];
-    endedGiveawayReactionAdded: [Giveaway<ExtraData>, GuildMember, MessageReaction];
+    giveawayDeleted: [giveaway: Giveaway<ExtraData>];
+    giveawayEnded: [giveaway: Giveaway<ExtraData>, member: GuildMember[]];
+    giveawayRerolled: [giveaway: Giveaway<ExtraData>, member: GuildMember[]];
+    giveawayReactionAdded: [
+        giveaway: Giveaway<ExtraData>,
+        member: GuildMember,
+        interaction: MessageReaction | ButtonComponent
+    ];
+    giveawayReactionRemoved: [
+        giveaway: Giveaway<ExtraData>,
+        member: GuildMember,
+        interaction: MessageReaction | ButtonComponent
+    ];
+    endedGiveawayReactionAdded: [
+        giveaway: Giveaway<ExtraData>,
+        member: GuildMember,
+        interaction: MessageReaction | ButtonComponent
+    ];
 }
+
 export class Giveaway<ExtraData = any> extends EventEmitter {
     constructor(manager: GiveawaysManager<ExtraData>, options: GiveawayData<ExtraData>);
 
@@ -231,6 +255,7 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public pause(options?: Omit<PauseOptions, 'isPaused' | 'durationAfterPause'>): Promise<Giveaway<ExtraData>>;
     public unpause(): Promise<Giveaway<ExtraData>>;
 }
+
 export interface GiveawayEditOptions<ExtraData> {
     newWinnerCount?: number;
     newPrize?: string;
@@ -245,6 +270,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newExtraData?: ExtraData;
     newLastChance?: LastChanceOptions;
 }
+
 export interface GiveawayRerollOptions {
     winnerCount?: number;
     messages?: {
@@ -253,6 +279,7 @@ export interface GiveawayRerollOptions {
         replyWhenNoWinner?: boolean;
     };
 }
+
 export interface GiveawayData<ExtraData = any> {
     startAt: number;
     endAt: number;
@@ -279,4 +306,13 @@ export interface GiveawayData<ExtraData = any> {
     pauseOptions?: PauseOptions;
     isDrop?: boolean;
     allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
+}
+
+export enum Events {
+    EndedGiveawayReactionAdded = 'endedGiveawayReactionAdded',
+    GiveawayDeleted = 'giveawayDeleted',
+    GiveawayEnded = 'giveawayEnded',
+    GiveawayMemberJoined = 'giveawayMemberJoined',
+    GiveawayMemberLeft = 'giveawayMemberLeft',
+    GiveawayRerolled = 'giveawayRerolled'
 }

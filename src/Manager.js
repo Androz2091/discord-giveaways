@@ -18,6 +18,7 @@ const {
     DEFAULT_CHECK_INTERVAL,
     DELETE_DROP_DATA_AFTER
 } = require('./Constants.js');
+const Events = require('./Events');
 const Giveaway = require('./Giveaway.js');
 const { validateEmbedColor, embedEqual, buttonEqual } = require('./utils.js');
 
@@ -188,7 +189,7 @@ class GiveawaysManager extends EventEmitter {
             giveaway
                 .end(noWinnerMessage)
                 .then((winners) => {
-                    this.emit('giveawayEnded', giveaway, winners);
+                    this.emit(Events.GiveawayEnded, giveaway, winners);
                     resolve(winners);
                 })
                 .catch(reject);
@@ -360,7 +361,7 @@ class GiveawaysManager extends EventEmitter {
             giveaway
                 .reroll(options)
                 .then((winners) => {
-                    this.emit('giveawayRerolled', giveaway, winners);
+                    this.emit(Events.GiveawayRerolled, giveaway, winners);
                     resolve(winners);
                 })
                 .catch(reject);
@@ -438,7 +439,7 @@ class GiveawaysManager extends EventEmitter {
             }
             this.giveaways = this.giveaways.filter((g) => g.messageId !== messageId);
             await this.deleteGiveaway(messageId);
-            this.emit('giveawayDeleted', giveaway);
+            this.emit(Events.GiveawayDeleted, giveaway);
             resolve(giveaway);
         });
     }
@@ -689,15 +690,14 @@ class GiveawaysManager extends EventEmitter {
             if (user.id === this.client.user.id) return;
             const giveaway = this.giveaways.find((g) => g.messageId === messageReaction.message.id);
             if (!giveaway) return;
-            if (!messageReaction.message.guild?.available) return;
-            if (!messageReaction.message.channel.viewable) return;
+            if (!messageReaction.message.guild?.available || !messageReaction.message.channel.viewable) return;
             const member = await messageReaction.message.guild.members.fetch(user).catch(() => {});
             if (!member) return;
             const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
             if (messageReaction.emoji.name != emoji.name || messageReaction.emoji.id != emoji.id) return;
 
-            if (giveaway.ended) return this.emit('endedGiveawayReactionAdded', giveaway, member, messageReaction);
-            this.emit('giveawayReactionAdded', giveaway, member, messageReaction);
+            if (giveaway.ended) return this.emit(Events.EndedGiveawayReactionAdded, giveaway, member, messageReaction);
+            this.emit(Events.GiveawayMemberJoined, giveaway, member, messageReaction);
 
             if (giveaway.isDrop && messageReaction.count - 1 >= giveaway.winnerCount) await checkForDropEnd(giveaway);
         });
@@ -706,14 +706,13 @@ class GiveawaysManager extends EventEmitter {
             if (user.id === this.client.user.id) return;
             const giveaway = this.giveaways.find((g) => g.messageId === messageReaction.message.id);
             if (!giveaway || giveaway.ended) return;
-            if (!messageReaction.message.guild?.available) return;
-            if (!messageReaction.message.channel.viewable) return;
+            if (!messageReaction.message.guild?.available || !messageReaction.message.channel.viewable) return;
             const member = await messageReaction.message.guild.members.fetch(user).catch(() => {});
             if (!member) return;
             const emoji = Discord.resolvePartialEmoji(giveaway.reaction);
             if (messageReaction.emoji.name != emoji.name || messageReaction.emoji.id != emoji.id) return;
 
-            this.emit('giveawayReactionRemoved', giveaway, member, messageReaction);
+            this.emit(Events.GiveawayMemberLeft, giveaway, member, messageReaction);
         });
 
         this.client.on(Discord.Events.InteractionCreate, async (interaction) => {
@@ -741,7 +740,7 @@ class GiveawaysManager extends EventEmitter {
 
                     if (giveaway.buttons.leaveReply) await replyToInteraction(giveaway.buttons.leaveReply);
 
-                    this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+                    this.emit(Events.GiveawayMemberLeft, giveaway, interaction.member, interaction);
                     return;
                 }
                 if (giveaway.entrantIds.includes(interaction.member.id)) return;
@@ -750,7 +749,7 @@ class GiveawaysManager extends EventEmitter {
 
                 if (giveaway.buttons.joinReply) await replyToInteraction(giveaway.buttons.joinReply);
 
-                this.emit('giveawayJoined', giveaway, interaction.member, interaction);
+                this.emit(Events.GiveawayMemberJoined, giveaway, interaction.member, interaction);
 
                 if (giveaway.isDrop && giveaway.entrantIds.length >= giveaway.winnerCount) {
                     await checkForDropEnd(giveaway);
@@ -764,7 +763,7 @@ class GiveawaysManager extends EventEmitter {
 
                 if (giveaway.buttons.leaveReply) await replyToInteraction(giveaway.buttons.leaveReply);
 
-                this.emit('giveawayLeft', giveaway, interaction.member, interaction);
+                this.emit(Events.GiveawayMemberLeft, giveaway, interaction.member, interaction);
             }
         });
     }
@@ -812,93 +811,5 @@ class GiveawaysManager extends EventEmitter {
         this._handleEvents();
     }
 }
-
-/**
- * Emitted when a giveaway ended.
- * @event GiveawaysManager#giveawayEnded
- * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember[]} winners The giveaway winners
- *
- * @example
- * // This can be used to add features such as a congratulatory message in DM
- * manager.on('giveawayEnded', (giveaway, winners) => {
- *      winners.forEach((member) => {
- *          member.send('Congratulations, ' + member.user.username + ', you won: ' + giveaway.prize);
- *      });
- * });
- */
-
-/**
- * Emitted when someone entered a giveaway.
- * @event GiveawaysManager#giveawayReactionAdded
- * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember} member The member who entered the giveaway
- * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
- *
- * @example
- * // This can be used to add features such as removing reactions of members when they do not have a specific role (= giveaway requirements)
- * // Best used with the "exemptMembers" property of the giveaways
- * manager.on('giveawayReactionAdded', (giveaway, member, reaction) => {
- *     if (!member.roles.cache.get('123456789')) {
- *          reaction.users.remove(member.user);
- *          member.send('You must have this role to participate in the giveaway: Staff');
- *     }
- * });
- */
-
-/**
- * Emitted when someone removed their reaction to a giveaway.
- * @event GiveawaysManager#giveawayReactionRemoved
- * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember} member The member who remove their reaction giveaway
- * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
- *
- * @example
- * // This can be used to add features such as a member-left-giveaway message per DM
- * manager.on('giveawayReactionRemoved', (giveaway, member, reaction) => {
- *      return member.send('That\'s sad, you won\'t be able to win the super cookie!');
- * });
- */
-
-/**
- * Emitted when someone reacted to a ended giveaway.
- * @event GiveawaysManager#endedGiveawayReactionAdded
- * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember} member The member who reacted to the ended giveaway
- * @param {Discord.MessageReaction} reaction The reaction to enter the giveaway
- *
- * @example
- * // This can be used to prevent new participants when giveaways get rerolled
- * manager.on('endedGiveawayReactionAdded', (giveaway, member, reaction) => {
- *      return reaction.users.remove(member.user);
- * });
- */
-
-/**
- * Emitted when a giveaway was rerolled.
- * @event GiveawaysManager#giveawayRerolled
- * @param {Giveaway} giveaway The giveaway instance
- * @param {Discord.GuildMember[]} winners The winners of the giveaway
- *
- * @example
- * // This can be used to add features such as a congratulatory message per DM
- * manager.on('giveawayRerolled', (giveaway, winners) => {
- *      winners.forEach((member) => {
- *          member.send('Congratulations, ' + member.user.username + ', you won: ' + giveaway.prize);
- *      });
- * });
- */
-
-/**
- * Emitted when a giveaway was deleted.
- * @event GiveawaysManager#giveawayDeleted
- * @param {Giveaway} giveaway The giveaway instance
- *
- * @example
- * // This can be used to add logs
- * manager.on('giveawayDeleted', (giveaway) => {
- *      console.log('Giveaway with message Id ' + giveaway.messageId + ' was deleted.')
- * });
- */
 
 module.exports = GiveawaysManager;
