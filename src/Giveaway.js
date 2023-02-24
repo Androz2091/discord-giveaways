@@ -790,7 +790,7 @@ class Giveaway extends EventEmitter {
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
-                            embeds: [embed.setDescription(embedDescription)],
+                            embeds: [embed.setDescription(embedDescription || null)],
                             components,
                             allowedMentions: this.allowedMentions,
                             reply: {
@@ -976,10 +976,11 @@ class Giveaway extends EventEmitter {
                     if (message?.length > 2000) formattedWinners = winners.map((w) => `<@${w.id}>`).join(', ');
                     const embed = this.fillInEmbed(options.messages.congrat.embed);
                     const embedDescription = embed.data.description?.replace('{winners}', formattedWinners) ?? '';
+
                     if (embedDescription.length <= 4096) {
                         channel.send({
                             content: message?.length <= 2000 ? message : null,
-                            embeds: [embed.setDescription(embedDescription)],
+                            embeds: [embed.setDescription(embedDescription || null)],
                             components,
                             allowedMentions: this.allowedMentions,
                             reply: {
