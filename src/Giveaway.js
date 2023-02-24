@@ -132,7 +132,7 @@ class Giveaway extends EventEmitter {
          * The entrant ids for this giveaway, if buttons are used.
          * @type {?Discord.Snowflake[]}
          */
-        this.entrantIds = options.entrantIds ?? this.buttons ? [] : null;
+        this.entrantIds = options.entrantIds ?? (this.buttons ? [] : null);
         /**
          * Giveaway options which need to be processed in a getter or function.
          * @type {Object}
