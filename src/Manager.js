@@ -765,6 +765,8 @@ class GiveawaysManager extends EventEmitter {
 
                 this.emit(Events.GiveawayMemberLeft, giveaway, interaction.member, interaction);
             }
+
+            await this.editGiveaway(giveaway.messageId, giveaway.data);
         });
     }
 
