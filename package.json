@@ -38,7 +38,7 @@
   },
   "homepage": "https://discord-giveaways.js.org",
   "dependencies": {
-    "deepmerge-ts": "^4.2.1",
+    "deepmerge-ts": "^5.0.0",
     "serialize-javascript": "^6.0.0"
   },
   "devDependencies": {
