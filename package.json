@@ -46,7 +46,7 @@
     "discord.js": "^14.0.3",
     "eslint": "^8.20.0",
     "eslint-plugin-node": "^11.1.0",
-    "jsdoc": "^3.6.11",
+    "jsdoc": "^4.0.2",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
     "typescript": "^4.7.4"
   },
