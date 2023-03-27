@@ -28,3 +28,14 @@ exports.embedEqual = (embed1, embed2) => {
     }
     return true;
 };
+
+exports.buttonEqual = (button1, button2) => {
+    if (button1.custom_Id !== button2.custom_Id) return false;
+    if (button1.label !== button2.label) return false;
+    if (button1.style !== button2.style) return false;
+    if (button1.emoji?.name !== button2.emoji?.name) return false;
+    if (button1.emoji?.id !== button2.emoji?.id) return false;
+    if (button1.url !== button2.url) return false;
+    if (button1.disabled !== button2.disabled) return false;
+    return true;
+};

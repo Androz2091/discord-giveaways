@@ -14,6 +14,7 @@ const {
     BonusEntry,
     PauseOptions,
     MessageObject,
+    ButtonsObject,
     DEFAULT_CHECK_INTERVAL
 } = require('./Constants.js');
 const GiveawaysManager = require('./Manager.js');
@@ -123,10 +124,33 @@ class Giveaway extends EventEmitter {
          */
         this.allowedMentions = options.allowedMentions;
         /**
-         * The giveaway data.
-         * @type {GiveawayData}
+         * The buttons of the giveaway, if any.
+         * @type {?ButtonsObject}
          */
-        this.options = options;
+        this.buttons = options.buttons?.join ? options.buttons : null;
+        /**
+         * The entrant ids for this giveaway, if buttons are used.
+         * @type {?Discord.Snowflake[]}
+         */
+        this.entrantIds = options.entrantIds ?? (this.buttons ? [] : null);
+        /**
+         * Giveaway options which need to be processed in a getter or function.
+         * @type {Object}
+         * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
+         * @property {boolean} [botsCanWin] If bots can win the giveaway.
+         * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.
+         * @property {string} [exemptMembers] Filter function to exempt members from winning the giveaway.
+         * @property {string} [bonusEntries] The array of BonusEntry objects for the giveaway.
+         * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed when it is running.
+         * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
+         * @property {LastChanceOptions} [lastChance] The options for the last chance system.
+         * @property {PauseOptions} [pauseOptions] The options for the pause system.
+         * @property {boolean} [isDrop] If the giveaway is a drop, or not.<br>Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
+         */
+        this.options = Object.keys(options).reduce((obj, key) => {
+            if (!Object.keys(this).includes(key)) obj[key] = options[key];
+            return obj;
+        }, {});
         /**
          * The message instance of the embed of this giveaway.
          * @type {?Discord.Message}
@@ -179,9 +203,11 @@ class Giveaway extends EventEmitter {
 
     /**
      * The emoji used for the reaction on the giveaway message.
-     * @type {Discord.EmojiIdentifierResolvable}
+     * @type {?Discord.EmojiIdentifierResolvable}
      */
     get reaction() {
+        if (this.buttons) return null;
+
         if (!this.options.reaction && this.message) {
             const emoji = Discord.resolvePartialEmoji(this.manager.options.default.reaction);
             if (!this.message.reactions.cache.has(emoji.id ?? emoji.name)) {
@@ -264,6 +290,8 @@ class Giveaway extends EventEmitter {
      * @type {?Discord.MessageReaction}
      */
     get messageReaction() {
+        if (this.buttons) return null;
+
         const emoji = Discord.resolvePartialEmoji(this.reaction);
         return (
             this.message?.reactions.cache.find((r) =>
@@ -296,7 +324,7 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * The raw giveaway object for this giveaway.
+     * The raw giveaway object for this giveaway. This is what is stored in the database.
      * @type {GiveawayData}
      */
     get data() {
@@ -326,12 +354,16 @@ class Giveaway extends EventEmitter {
                     ? this.options.bonusEntries || undefined
                     : serialize(this.options.bonusEntries),
             reaction: this.options.reaction,
+            buttons: this.buttons
+                ? Object.fromEntries(Object.entries(this.buttons).filter(([_, v]) => v !== null))
+                : undefined,
             winnerIds: this.winnerIds.length ? this.winnerIds : undefined,
             extraData: this.extraData,
             lastChance: this.options.lastChance,
             pauseOptions: this.options.pauseOptions,
             isDrop: this.options.isDrop || undefined,
-            allowedMentions: this.allowedMentions
+            allowedMentions: this.allowedMentions,
+            entrantIds: this.entrantIds ?? undefined
         };
     }
 
@@ -448,11 +480,21 @@ class Giveaway extends EventEmitter {
     }
 
     /**
-     * Fetches all users of the giveaway reaction, except bots, if not otherwise specified.
+     * Fetches all valid users which entered the giveaway
      * @returns {Promise<Discord.Collection<Discord.Snowflake, Discord.User>>} The collection of reaction users.
      */
     async fetchAllEntrants() {
         return new Promise(async (resolve, reject) => {
+            if (this.entrantIds) {
+                const users = await Promise.all(
+                    this.entrantIds.map(async (id) => {
+                        const user = await this.client.users.fetch(id).catch(() => {});
+                        return [id, user];
+                    })
+                );
+                return resolve(new Discord.Collection(users));
+            }
+
             const message = await this.fetchMessage().catch((err) => reject(err));
             if (!message) return;
             this.message = message;
@@ -637,6 +679,7 @@ class Giveaway extends EventEmitter {
             if (options.newLastChance && typeof options.newLastChance === 'object' && !this.isDrop) {
                 this.options.lastChance = deepmerge(this.options.lastChance || {}, options.newLastChance);
             }
+            if (this.newButtons?.join && this.buttons) this.buttons = this.newButtons;
 
             await this.manager.editGiveaway(this.messageId, this.data);
             if (this.remainingTime <= 0) this.manager.end(this.messageId).catch(() => {});

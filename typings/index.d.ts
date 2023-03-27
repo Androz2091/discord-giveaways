@@ -1,29 +1,32 @@
 import type { EventEmitter } from 'node:events';
 import type {
+    ActionRowBuilder,
+    APIActionRowComponent,
+    APIButtonComponent,
+    APIEmbed,
+    APIMessageActionRowComponent,
+    APIModalActionRowComponent,
+    Awaitable,
+    ButtonComponent,
     Client,
     Collection,
     ColorResolvable,
+    EmbedBuilder,
     EmojiIdentifierResolvable,
     GuildMember,
+    GuildTextBasedChannel,
+    JSONEncodable,
     Message,
-    ActionRowBuilder,
-    EmbedBuilder,
+    MessageActionRowComponentBuilder,
     MessageMentionOptions,
     MessageReaction,
     PermissionResolvable,
     Snowflake,
-    User,
-    Awaitable,
-    APIEmbed,
-    MessageActionRowComponentBuilder,
-    GuildTextBasedChannel,
-    JSONEncodable,
-    APIActionRowComponent,
-    APIMessageActionRowComponent,
-    APIModalActionRowComponent
+    User
 } from 'discord.js';
 
 export const version: string;
+
 export class GiveawaysManager<ExtraData = any> extends EventEmitter {
     constructor(client: Client, options?: GiveawaysManagerOptions<ExtraData>, init?: boolean);
 
@@ -68,16 +71,19 @@ export class GiveawaysManager<ExtraData = any> extends EventEmitter {
         ...args: GiveawaysManagerEvents<ExtraData>[K]
     ): boolean;
 }
+
 export interface BonusEntry<ExtraData> {
     bonus(member: GuildMember, giveaway: Giveaway<ExtraData>): Awaitable<number>;
     cumulative?: boolean;
 }
+
 export interface LastChanceOptions {
     enabled?: boolean;
     embedColor?: ColorResolvable;
     content?: string;
     threshold?: number;
 }
+
 export interface PauseOptions {
     isPaused?: boolean;
     content?: string;
@@ -86,20 +92,23 @@ export interface PauseOptions {
     durationAfterPause?: number | null;
     infiniteDurationText?: string;
 }
+
 export interface GiveawaysManagerOptions<ExtraData> {
     storage?: string;
-    forceUpdateEvery?: number;
-    endedGiveawaysLifetime?: number;
+    forceUpdateEvery?: number | null;
+    endedGiveawaysLifetime?: number | null;
     default?: {
         botsCanWin?: boolean;
         exemptPermissions?: PermissionResolvable[];
         exemptMembers?: (member: GuildMember, giveaway: Giveaway<ExtraData>) => Awaitable<boolean>;
         embedColor?: ColorResolvable;
         embedColorEnd?: ColorResolvable;
-        reaction?: EmojiIdentifierResolvable;
+        reaction?: EmojiIdentifierResolvable | null;
+        buttons?: ButtonsObject | null;
         lastChance?: LastChanceOptions;
     };
 }
+
 export interface GiveawayStartOptions<ExtraData> {
     prize: string;
     winnerCount: number;
@@ -112,6 +121,7 @@ export interface GiveawayStartOptions<ExtraData> {
     embedColor?: ColorResolvable;
     embedColorEnd?: ColorResolvable;
     reaction?: EmojiIdentifierResolvable;
+    buttons?: ButtonsObject;
     messages?: GiveawayMessages;
     thumbnail?: string;
     image?: string;
@@ -121,6 +131,7 @@ export interface GiveawayStartOptions<ExtraData> {
     isDrop?: boolean;
     allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
 }
+
 export interface GiveawayMessages {
     giveaway?: string;
     giveawayEnded?: string;
@@ -136,6 +147,7 @@ export interface GiveawayMessages {
     endedAt?: string;
     hostedBy?: string;
 }
+
 export interface MessageObject {
     content?: string;
     embed?: JSONEncodable<APIEmbed> | APIEmbed;
@@ -145,45 +157,66 @@ export interface MessageObject {
     )[];
     replyToGiveaway?: boolean;
 }
-export interface GiveawaysManagerEvents<ExtraData = any> {
-    giveawayDeleted: [Giveaway<ExtraData>];
-    giveawayEnded: [Giveaway<ExtraData>, GuildMember[]];
-    giveawayRerolled: [Giveaway<ExtraData>, GuildMember[]];
-    giveawayReactionAdded: [Giveaway<ExtraData>, GuildMember, MessageReaction];
-    giveawayReactionRemoved: [Giveaway<ExtraData>, GuildMember, MessageReaction];
-    endedGiveawayReactionAdded: [Giveaway<ExtraData>, GuildMember, MessageReaction];
+
+export interface ButtonsObject {
+    join: JSONEncodable<APIButtonComponent> | APIButtonComponent;
+    leave?: JSONEncodable<APIButtonComponent> | APIButtonComponent;
+    joinReply?: string | Omit<MessageObject, 'replyToGiveaway'>;
+    leaveReply?: string | Omit<MessageObject, 'replyToGiveaway'>;
 }
+
+export interface GiveawaysManagerEvents<ExtraData = any> {
+    giveawayDeleted: [giveaway: Giveaway<ExtraData>];
+    giveawayEnded: [giveaway: Giveaway<ExtraData>, member: GuildMember[]];
+    giveawayRerolled: [giveaway: Giveaway<ExtraData>, member: GuildMember[]];
+    giveawayReactionAdded: [
+        giveaway: Giveaway<ExtraData>,
+        member: GuildMember,
+        interaction: MessageReaction | ButtonComponent
+    ];
+    giveawayReactionRemoved: [
+        giveaway: Giveaway<ExtraData>,
+        member: GuildMember,
+        interaction: MessageReaction | ButtonComponent
+    ];
+    endedGiveawayReactionAdded: [
+        giveaway: Giveaway<ExtraData>,
+        member: GuildMember,
+        interaction: MessageReaction | ButtonComponent
+    ];
+}
+
 export class Giveaway<ExtraData = any> extends EventEmitter {
     constructor(manager: GiveawaysManager<ExtraData>, options: GiveawayData<ExtraData>);
 
     public channelId: Snowflake;
     public client: Client;
+    public manager: GiveawaysManager<ExtraData>;
+    public messageId: Snowflake;
+    public guildId: Snowflake;
+    public prize: string;
+    public winnerCount: number;
+    public startAt: number;
     public endAt: number;
     public ended: boolean;
-    public guildId: Snowflake;
-    public hostedBy?: User;
-    public manager: GiveawaysManager<ExtraData>;
     public message: Message | null;
-    public messageId: Snowflake;
+    public hostedBy?: User;
     public messages: Required<GiveawayMessages>;
     public thumbnail?: string;
     public image?: string;
     public extraData?: ExtraData;
     public options: GiveawayData<ExtraData>;
-    public prize: string;
-    public startAt: number;
-    public winnerCount: number;
+    public entrantIds?: Snowflake[];
     public winnerIds: Snowflake[];
     public allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
     private endTimeout?: NodeJS.Timeout;
-    private isEnding?: boolean;
 
     // getters calculated using default manager options
     readonly exemptPermissions: PermissionResolvable[];
     readonly embedColor: ColorResolvable;
     readonly embedColorEnd: ColorResolvable;
     readonly botsCanWin: boolean;
-    readonly reaction: EmojiIdentifierResolvable;
+    readonly reaction: EmojiIdentifierResolvable | null;
     readonly lastChance: Required<LastChanceOptions>;
 
     // getters calculated using other values
@@ -196,8 +229,10 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     readonly pauseOptions: Required<PauseOptions>;
     readonly isDrop: boolean;
     readonly messageReaction: MessageReaction | null;
+
     private ensureEndTimeout(): void;
     private checkWinnerEntry(user: User): Promise<boolean>;
+
     public checkBonusEntries(user: User): Promise<number>;
     public fetchAllEntrants(): Promise<Collection<Snowflake, User>>;
     public fillInString(string: string): string;
@@ -220,11 +255,13 @@ export class Giveaway<ExtraData = any> extends EventEmitter {
     public pause(options?: Omit<PauseOptions, 'isPaused' | 'durationAfterPause'>): Promise<Giveaway<ExtraData>>;
     public unpause(): Promise<Giveaway<ExtraData>>;
 }
+
 export interface GiveawayEditOptions<ExtraData> {
     newWinnerCount?: number;
     newPrize?: string;
     addTime?: number;
     setEndTimestamp?: number;
+    newButtons?: ButtonsObject;
     newMessages?: GiveawayMessages;
     newThumbnail?: string;
     newImage?: string;
@@ -233,6 +270,7 @@ export interface GiveawayEditOptions<ExtraData> {
     newExtraData?: ExtraData;
     newLastChance?: LastChanceOptions;
 }
+
 export interface GiveawayRerollOptions {
     winnerCount?: number;
     messages?: {
@@ -241,6 +279,7 @@ export interface GiveawayRerollOptions {
         replyWhenNoWinner?: boolean;
     };
 }
+
 export interface GiveawayData<ExtraData = any> {
     startAt: number;
     endAt: number;
@@ -253,6 +292,7 @@ export interface GiveawayData<ExtraData = any> {
     winnerIds?: Snowflake[];
     messageId: Snowflake;
     reaction?: EmojiIdentifierResolvable;
+    buttons?: ButtonsObject;
     exemptPermissions?: PermissionResolvable[];
     exemptMembers?: string;
     bonusEntries?: string;
@@ -266,4 +306,14 @@ export interface GiveawayData<ExtraData = any> {
     pauseOptions?: PauseOptions;
     isDrop?: boolean;
     allowedMentions?: Omit<MessageMentionOptions, 'repliedUser'>;
+    entrantIds?: Snowflake[];
+}
+
+export enum Events {
+    EndedGiveawayReactionAdded = 'endedGiveawayReactionAdded',
+    GiveawayDeleted = 'giveawayDeleted',
+    GiveawayEnded = 'giveawayEnded',
+    GiveawayMemberJoined = 'giveawayMemberJoined',
+    GiveawayMemberLeft = 'giveawayMemberLeft',
+    GiveawayRerolled = 'giveawayRerolled'
 }

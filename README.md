@@ -15,8 +15,8 @@ Discord Giveaways is a powerful [Node.js](https://nodejs.org) module that allows
 -   📁 Support for all databases! (default is json)
 -   ⚙️ Very customizable! (prize, duration, winners, ignored permissions, bonus entries, etc...)
 -   🚀 Super powerful: start, edit, reroll, end, delete and pause giveaways!
--   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayReactionAdded, giveawayReactionRemoved, endedGiveawayReactionAdded
--   🕸️ Support for shards!
+-   💥 Events: giveawayEnded, giveawayRerolled, giveawayDeleted, giveawayMemberJoined, giveawayMemberLeft
+-   🕸️ Support for buttons and shards!
 -   and much more!
 
 ## Installation
@@ -508,6 +508,38 @@ client.giveawaysManager.reroll(messageId, {
 
 You can [access giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these messages.  
 [Message options](https://github.com/Androz2091/discord-giveaways#message-options) are available in these messages.
+
+## Buttons instead of reaction
+
+```js
+const Discord = require('discord.js');
+const { GiveawaysManager } = require('discord-giveaways');
+const manager = new GiveawaysManager(client, {
+    storage: './giveaways.json',
+    default: {
+        buttons: {
+            join: new Discord.ButtonBuilder()
+                .setLabel('Join')
+                .setStyle(Discord.ButtonStyle.Primary)
+                .setCustomId('join'),
+            leave: new Discord.ButtonBuilder()
+                .setLabel('Leave')
+                .setStyle(Discord.ButtonStyle.Secondary)
+                .setCustomId('leave')
+        }
+    }
+});
+```
+
+-   **options.default.buttons.join**: the button to join giveaways.
+-   **options.default.buttons.leave**: the button to leave giveaways.  
+    ^^^ If not set, the join-button doubles as the leave-button.
+-   **options.default.buttons.joinReply**: sent in the channel as the ephemeral interaction reply to the join-button.  
+    ^^^ If set to `null`, custom behaviour can be added via the [event](https://discord-giveaways.js.org/GiveawaysManager.html#event:giveawayJoined).
+-   **options.default.buttons.leaveReply**: sent in the channel as the ephemeral interaction reply to the leave-button.  
+    ^^^ If set to `null`, custom behaviour can be added via the [event](https://discord-giveaways.js.org/GiveawaysManager.html#event:giveawayLeft).
+
+You can [access other giveaway properties](https://github.com/Androz2091/discord-giveaways#access-giveaway-properties-in-messages) in these properties.  
 
 ## Custom Database
 

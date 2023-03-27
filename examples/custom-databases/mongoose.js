@@ -44,6 +44,13 @@ const giveawaySchema = new mongoose.Schema(
         hostedBy: String,
         winnerIds: { type: [String], default: undefined },
         reaction: mongoose.Mixed,
+        buttons: {
+            join: mongoose.Mixed,
+            leave: mongoose.Mixed,
+            joinReply: mongoose.Mixed,
+            leaveReply: mongoose.Mixed
+        },
+        entrantIds: { type: [String], default: undefined },
         botsCanWin: Boolean,
         embedColor: mongoose.Mixed,
         embedColorEnd: mongoose.Mixed,

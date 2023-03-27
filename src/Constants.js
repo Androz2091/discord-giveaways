@@ -54,6 +54,15 @@ exports.GiveawayMessages = {
  */
 
 /**
+ * @typedef {Object} ButtonsObject
+ *
+ * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} join The button to join the giveaway.
+ * @property {Discord.JSONEncodable<Discord.APIButtonComponent>|Discord.APIButtonComponent} [leave] The button to leave the giveaway.
+ * @property {?(string|MessageObject)} [joinReply] Sent in the channel as the ephemeral interaction reply to the join-button.
+ * @property {?(string|MessageObject)} [leaveReply] Sent in the channel as the ephemeral interaction reply to the leave-button.
+ */
+
+/**
  * @typedef {Function} ExemptMembersFunction
  *
  * @param {Discord.GuildMember} member
@@ -76,6 +85,7 @@ exports.GiveawayMessages = {
  * @property {Discord.ColorResolvable} [embedColor] The color of the giveaway embed when it is running.
  * @property {Discord.ColorResolvable} [embedColorEnd] The color of the giveaway embed when it has ended.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
+ * @property {ButtonsObject} [buttons] The buttons for the giveaway.
  * @property {GiveawayMessages} [messages] The giveaway messages.
  * @property {string} [thumbnail] The URL appearing as the thumbnail on the giveaway embed.
  * @property {string} [image] The URL appearing as the image on the giveaway embed.
@@ -126,9 +136,9 @@ exports.LastChanceOptions = {
  *
  * @property {boolean} [isPaused=false] If the giveaway is paused.
  * @property {string} [content='⚠️ **THIS GIVEAWAY IS PAUSED !** ⚠️'] The text of the embed when the giveaway is paused.
- * @property {number} [unpauseAfter=null] The number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
+ * @property {?number} [unpauseAfter=null] The number of milliseconds, or a timestamp in milliseconds, after which the giveaway will automatically unpause.
  * @property {Discord.ColorResolvable} [embedColor='#FFFF00'] The color of the embed when the giveaway is paused.
- * @private @property {number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused.<br>⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
+ * @private @property {?number} [durationAfterPause=null|giveaway.remainingTime] The remaining duration after the giveaway is unpaused.<br>⚠ This property gets set by the manager so that the pause system works properly. It is not recommended to set it manually!
  * @property {string} [infiniteDurationText='`NEVER`'] The text that gets displayed next to "GiveawayMessages#drawing" in the paused embed, when there is no "unpauseAfter".
  */
 exports.PauseOptions = {
@@ -145,16 +155,19 @@ exports.PauseOptions = {
  * @typedef GiveawaysManagerOptions
  *
  * @property {string} [storage='./giveaways.json'] The storage path for the giveaways.
- * @property {number} [forceUpdateEvery=null] Force the giveaway messages to be updated at a specific interval.
- * @property {number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB.<br>⚠ Giveaways deleted from the DB cannot get rerolled anymore!
+ * @property {?number} [forceUpdateEvery=null] Force the giveaway messages to be updated at a specific interval.
+ * @property {?number} [endedGiveawaysLifetime=null] The number of milliseconds after which ended giveaways should get deleted from the DB.<br>⚠ Giveaways deleted from the DB cannot get rerolled anymore!
  * @property {Object} [default] The default options for new giveaways.
  * @property {boolean} [default.botsCanWin=false] If bots can win giveaways.
  * @property {Discord.PermissionResolvable[]} [default.exemptPermissions=[]] Members with any of these permissions won't be able to win a giveaway.
  * @property {ExemptMembersFunction} [default.exemptMembers] Function to filter members.<br>If true is returned, the member won't be able to win a giveaway.
  * @property {Discord.ColorResolvable} [default.embedColor='#FF0000'] The color of the giveaway embeds when they are running.
  * @property {Discord.ColorResolvable} [default.embedColorEnd='#000000'] The color of the giveaway embeds when they have ended.
- * @property {Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
+ * @property {?Discord.EmojiIdentifierResolvable} [default.reaction='🎉'] The reaction to participate in giveaways.
  * @property {LastChanceOptions} [default.lastChance] The options for the last chance system.
+ * @property {?ButtonsObject} [default.buttons] The buttons for the giveaways.
+ * @property {?(string|MessageObject)} [default.buttons.joinReply='✅ joined'] Sent in the channel as the ephemeral interaction reply to the join-button.
+ * @property {?(string|MessageObject)} [default.buttons.leaveReply='✅ left'] Sent in the channel as the ephemeral interaction reply to the leave-button.
  */
 exports.GiveawaysManagerOptions = {
     storage: './giveaways.json',
@@ -167,6 +180,10 @@ exports.GiveawaysManagerOptions = {
         embedColor: '#FF0000',
         embedColorEnd: '#000000',
         reaction: '🎉',
+        buttons: {
+            joinReply: '✅ joined',
+            leaveReply: '✅ left'
+        },
         lastChance: {
             enabled: false,
             content: '⚠️ **LAST CHANCE TO ENTER !** ⚠️',
@@ -210,6 +227,7 @@ exports.GiveawayRerollOptions = {
  * @property {BonusEntry[]} [newBonusEntries] The new BonusEntry objects.
  * @property {ExemptMembersFunction} [newExemptMembers] The new filter function to exempt members from winning the giveaway.
  * @property {LastChanceOptions} [newLastChance] The new options for the last chance system.<br>Will get merged with the existing object, if there.
+ * @property {ButtonsObject} [newButtons] The new buttons for the giveaway.
  */
 exports.GiveawayEditOptions = {};
 
@@ -230,6 +248,7 @@ exports.GiveawayEditOptions = {};
  * @property {Discord.Snowflake[]} [winnerIds] The winner Ids of the giveaway after it ended.
  * @property {Discord.Snowflake} messageId The Id of the message.
  * @property {Discord.EmojiIdentifierResolvable} [reaction] The reaction to participate in the giveaway.
+ * @property {ButtonsObject} [buttons] The buttons for the giveaway.
  * @property {boolean} [botsCanWin] If bots can win the giveaway.
  * @property {Discord.PermissionResolvable[]} [exemptPermissions] Members with any of these permissions will not be able to win the giveaway.
  * @property {string} [exemptMembers] Filter function to exempt members from winning the giveaway.
@@ -242,5 +261,6 @@ exports.GiveawayEditOptions = {};
  * @property {PauseOptions} [pauseOptions] The options for the pause system.
  * @property {boolean} [isDrop] If the giveaway is a drop, or not.<br>Drop means that if the amount of valid entrants to the giveaway is the same as "winnerCount" then it immediately ends.
  * @property {Discord.MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the giveaway messages content.
+ * @property {Snowflake[]} [entrantIds] The entrant ids for this giveaway, if buttons are used.
  */
 exports.GiveawayData = {};
