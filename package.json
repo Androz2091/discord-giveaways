@@ -48,7 +48,7 @@
     "eslint-plugin-node": "^11.1.0",
     "jsdoc": "^4.0.2",
     "jsdoc-skyceil": "Androz2091/jsdoc-skyceil",
-    "typescript": "^4.7.4"
+    "typescript": "^5.0.4"
   },
   "peerDependencies": {
     "discord.js": ">=14.0.0"
