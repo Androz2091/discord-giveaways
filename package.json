@@ -37,10 +37,6 @@
     "url": "https://github.com/Androz2091/discord-giveaways/issues"
   },
   "homepage": "https://discord-giveaways.js.org",
-  "dependencies": {
-    "deepmerge-ts": "^4.2.1",
-    "serialize-javascript": "^6.0.0"
-  },
   "devDependencies": {
     "@types/node": "^18.0.3",
     "discord.js": "^14.0.3",
