@@ -87,7 +87,7 @@ export interface PauseOptions {
     infiniteDurationText?: string;
 }
 export interface GiveawaysManagerOptions<ExtraData> {
-    storage?: string;
+    storage?: string | boolean;
     forceUpdateEvery?: number;
     endedGiveawaysLifetime?: number;
     default?: {
