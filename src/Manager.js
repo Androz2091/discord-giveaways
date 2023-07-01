@@ -686,7 +686,7 @@ class GiveawaysManager extends EventEmitter {
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
 
         setInterval(() => {
-            if (this.client.readyAt) this._checkGiveaway.call(this);
+            if (this.client.readyAt) this._checkGiveaway();
         }, this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL);
         this.ready = true;
 
