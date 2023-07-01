@@ -1,10 +1,9 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, setInterval } = require('node:timers');
 const { writeFile, readFile, access } = require('node:fs/promises');
-
 const Discord = require('discord.js');
-const serialize = require('serialize-javascript');
-const { deepmerge } = require('deepmerge-ts');
+const { serialize } = require('../functions/serialize');
+const { deepmerge } = require('../functions/deepMerge');
 
 const {
     GiveawayMessages,
@@ -18,7 +17,9 @@ const {
     DEFAULT_CHECK_INTERVAL,
     DELETE_DROP_DATA_AFTER
 } = require('./Constants.js');
+
 const Giveaway = require('./Giveaway.js');
+
 const { validateEmbedColor, embedEqual } = require('./utils.js');
 
 /**
@@ -685,7 +686,7 @@ class GiveawaysManager extends EventEmitter {
         rawGiveaways.forEach((giveaway) => this.giveaways.push(new Giveaway(this, giveaway)));
 
         setInterval(() => {
-            if (this.client.readyAt) this._checkGiveaway.call(this);
+            if (this.client.readyAt) this._checkGiveaway();
         }, this.options.forceUpdateEvery || DEFAULT_CHECK_INTERVAL);
         this.ready = true;
 

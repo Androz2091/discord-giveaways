@@ -1,9 +1,9 @@
 const { EventEmitter } = require('node:events');
 const { setTimeout, clearTimeout } = require('node:timers');
-
 const Discord = require('discord.js');
-const { deepmerge, deepmergeCustom } = require('deepmerge-ts');
-const serialize = require('serialize-javascript');
+const { deepmerge } = require('../functions/deepMerge');
+const { deepmergeCustom } = require('../functions/deepmergeCustom');
+const { serialize } = require('../functions/serialize');
 
 const {
     GiveawayEditOptions,
@@ -1123,4 +1123,4 @@ class Giveaway extends EventEmitter {
     }
 }
 
-module.exports = Giveaway;
+module.exports = Giveaway;  
