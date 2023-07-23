@@ -136,7 +136,7 @@ class Giveaway extends EventEmitter {
          * The Entries amount of how many entered the Giveaway (Amount will be valid, once rolled (ended)!)
          * @type {number}
          */
-        this.entriesAmount = 0;
+        this.finalEntrantAmount = null;
     }
 
     /**
@@ -555,7 +555,7 @@ class Giveaway extends EventEmitter {
         const users = await this.fetchAllEntrants().catch(() => {});
         if (!users?.size) return [];
 
-        this.entriesAmount = users.size;
+        this.finalEntrantAmount = users.size;
         
         // Bonus Entries
         let userArray;
